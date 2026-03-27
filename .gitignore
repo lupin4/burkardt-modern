@@ -1,0 +1,44 @@
+# Compiled Objects
+*.o
+*.obj
+*.lo
+*.slo
+
+# Fortran Modules
+*.mod
+*.smod
+
+# Libraries
+*.a
+*.lib
+*.la
+*.lai
+*.so
+*.dylib
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Debug
+*.dwo
+*.pdb
+*.ilk
+*.dSYM/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Build
+build/
