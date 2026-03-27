@@ -2,7 +2,7 @@
 
 ### John Burkardt's Computational Geometry — Modernized to Fortran 2018
 
-53 libraries. 223,338 lines. 1,300+ routines. Upgraded from Fortran 90 reference code to production-grade Fortran 2018 with parallelism, vectorization, and modern type safety.
+53 libraries upgraded from Fortran 90 reference code to production-grade Fortran 2018 with parallelism, vectorization, and modern type safety.
 
 ---
 
