@@ -14134,22 +14134,22 @@ function i4_uniform ( a, b, seed )
 !
 !  Parameters:
 !
-!    Input, integer ( kind = 4 ) ( kind = 4 ) A, B, the limits of the interval.
+!    Input, integer ( kind = 4 ) A, B, the limits of the interval.
 !
-!    Input/output, integer ( kind = 4 ) ( kind = 4 ) SEED, the "seed" value, which
+!    Input/output, integer ( kind = 4 ) SEED, the "seed" value, which
 !    should NOT be 0.  On output, SEED has been updated.
 !
-!    Output, integer ( kind = 4 ) ( kind = 4 ) I4_UNIFORM, a number between A and B.
+!    Output, integer ( kind = 4 ) I4_UNIFORM, a number between A and B.
 !
   implicit none
 
-  integer ( kind = 4 ) ( kind = 4 ) a
-  integer ( kind = 4 ) ( kind = 4 ) b
-  integer ( kind = 4 ) ( kind = 4 ) i4_uniform
-  integer ( kind = 4 ) ( kind = 4 ) k
+  integer ( kind = 4 ) a
+  integer ( kind = 4 ) b
+  integer ( kind = 4 ) i4_uniform
+  integer ( kind = 4 ) k
   real    ( kind = 4 ) r
-  integer ( kind = 4 ) ( kind = 4 ) seed
-  integer ( kind = 4 ) ( kind = 4 ) value
+  integer ( kind = 4 ) seed
+  integer ( kind = 4 ) value
 
   if ( seed == 0 ) then
     write ( *, '(a)' ) ' '
@@ -43556,7 +43556,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
       ifac = htsrc(b,c,d,n,p,fc,ht)
 
       if ( ifac <= 0 ) then
-        ierror = 300
+        ierr = 300
         return
       end if
 
@@ -43571,7 +43571,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
       ifac = htsrc(a,c,d,n,p,fc,ht)
 
       if ( ifac <= 0 ) then
-        ierror = 300
+        ierr = 300
         return
       end if
 
@@ -43586,7 +43586,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
       ifac = htsrc(a,b,d,n,p,fc,ht)
 
       if ( ifac <= 0 ) then
-        ierror = 300
+        ierr = 300
         return
       end if
 
@@ -43616,19 +43616,19 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
         if ( zero(1) ) then
           ifac = htsrc(b,c,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
-            ierror = 300
+            ierr = 300
             return
           end if
         else if ( zero(2) ) then
           ifac = htsrc(a,c,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
-            ierror = 300
+            ierr = 300
             return
           end if
         else if ( zero(3) ) then
           ifac = htsrc(a,b,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
-            ierror = 300
+            ierr = 300
             return
           end if
         end if
@@ -43652,7 +43652,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
             ifac = htsrc(a,b,d,n,p,fc,ht)
 
             if ( ifac <= 0 ) then
-              ierror = 300
+              ierr = 300
               return
             end if
 
@@ -43667,7 +43667,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
             ifac = htsrc(a,c,d,n,p,fc,ht)
 
             if ( ifac <= 0 ) then
-              ierror = 300
+              ierr = 300
               return
             end if
 
@@ -43720,7 +43720,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
           ifac = htsrc(a,b,d,n,p,fc,ht)
 
           if ( ifac <= 0 ) then
-            ierror = 300
+            ierr = 300
             return
           end if
 

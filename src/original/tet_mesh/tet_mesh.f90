@@ -5474,7 +5474,7 @@ subroutine tetrahedron_order4_physical_to_reference ( tet_xyz, n, phy, ref )
                ) / det
 
   ref(3,1:n) = (   ( a(2,1) * a(3,2) - a(2,2) * a(3,1) ) &
-                 * ( phy(1,1:n) - tet_xyz 1,1) ) &
+                 * ( phy(1,1:n) - tet_xyz(1,1) ) &
                  - ( a(1,1) * a(3,2) - a(1,2) * a(3,1) ) &
                  * ( phy(2,1:n) - tet_xyz(2,1) ) &
                  + ( a(1,1) * a(2,2) - a(1,2) * a(2,1) ) &

@@ -3,14 +3,13 @@
 modernize.py — Auto-modernize Burkardt Fortran to Fortran 2018.
 
 Mechanical transforms (safe, preserves semantics):
-  1. Replace kind=4/8 with iso_fortran_env named constants
+  1. Replace kind=4/8 with iso_fortran_env named constants (int32, real64, etc.)
   2. Add explicit intent(in/out/inout) from Burkardt !! docstring hints
-  3. Replace 2.0D+00 literals with 2.0_dp
+     — validated against body usage to avoid incorrect annotations
+  3. Replace 2.0D+00 literals with 2.0_real64
   4. Wrap in module with implicit none, private default
-  5. Add bind(C, name="...") on all public subroutines/functions
-  6. Add value attribute on scalar intent(in) bind(C) params
-  7. Remove timestamp/get_unit/r8mat_write/r8vec_print utility copies
-  8. Strip trailing 'return' before 'end'
+  5. Remove timestamp/get_unit/r8mat_write/r8vec_print utility copies
+  6. Strip trailing 'return' before 'end'
 
 Usage:
     python scripts/modernize.py src/original/grids/ball_grid.f90 src/modern/grids/ball_grid.f90
@@ -41,7 +40,6 @@ SKIP_ROUTINES = {
 
 def parse_routines(content):
     """Split Fortran content into individual routine blocks."""
-    # Join continuation lines for easier parsing
     lines = content.split('\n')
     routines = []
     current = []
@@ -83,8 +81,6 @@ def extract_param_info(routine_text):
     """Extract parameter names, types, intents from Burkardt docstrings."""
     params = {}
 
-    # Parse from !! docstring: "Input, integer ( kind = 4 ) N, ..."
-    # or "Output, real ( kind = 8 ) BG(3,NG), ..."
     for m in re.finditer(
         r'!!\s+(Input|Output|Input/output),\s+'
         r'(integer|real|logical|character|complex)\s*'
@@ -112,10 +108,8 @@ def detect_array_params(routine_text, param_names):
     """Detect which parameters are arrays from their declarations."""
     arrays = set()
     for pname in param_names:
-        # Look for declarations like: real ( kind = 8 ) bg(3,ng) or real(dp) :: bg(3,ng)
         pattern = rf'\b{re.escape(pname)}\s*\('
         if re.search(pattern, routine_text, re.IGNORECASE):
-            # Check it's in a declaration context (not a call)
             for line in routine_text.split('\n'):
                 stripped = line.strip().lower()
                 if re.match(r'(integer|real|double|logical|complex|character)', stripped):
@@ -125,37 +119,60 @@ def detect_array_params(routine_text, param_names):
     return arrays
 
 
-def modernize_types(text):
-    """Replace kind=4/8 with iso_fortran_env constants."""
-    # integer ( kind = 4 ) -> integer(ip)
-    text = re.sub(r'integer\s*\(\s*kind\s*=\s*4\s*\)', 'integer(ip)', text, flags=re.IGNORECASE)
-    text = re.sub(r'integer\s*\(\s*4\s*\)', 'integer(ip)', text, flags=re.IGNORECASE)
+def find_modified_params(routine_text, param_names):
+    """Detect which parameters are modified in the routine body."""
+    modified = set()
 
-    # integer ( kind = 8 ) -> integer(int64)  (rare but exists)
+    for line in routine_text.split('\n'):
+        stripped = line.strip().lower()
+
+        if not stripped or stripped.startswith('!'):
+            continue
+        if re.match(r'(integer|real|double|logical|complex|character|implicit|use\b|save\b|data\b|parameter\b)', stripped):
+            continue
+
+        for pname in param_names:
+            if re.match(rf'{re.escape(pname)}\s*(\(.*?\))?\s*=\s*[^=]', stripped):
+                modified.add(pname)
+
+    return modified
+
+
+def modernize_types(text):
+    """Replace kind=4/8 with iso_fortran_env constants.
+
+    Uses int32/real64/real32 directly (no aliases) to avoid name collisions
+    with local variables like 'ip', 'dp', 'sp'.
+    """
+    # integer ( kind = 4 ) -> integer(int32)
+    text = re.sub(r'integer\s*\(\s*kind\s*=\s*4\s*\)', 'integer(int32)', text, flags=re.IGNORECASE)
+    text = re.sub(r'integer\s*\(\s*4\s*\)', 'integer(int32)', text, flags=re.IGNORECASE)
+
+    # integer ( kind = 8 ) -> integer(int64)
     text = re.sub(r'integer\s*\(\s*kind\s*=\s*8\s*\)', 'integer(int64)', text, flags=re.IGNORECASE)
 
-    # real ( kind = 8 ) -> real(dp)
-    text = re.sub(r'real\s*\(\s*kind\s*=\s*8\s*\)', 'real(dp)', text, flags=re.IGNORECASE)
-    text = re.sub(r'real\s*\(\s*8\s*\)', 'real(dp)', text, flags=re.IGNORECASE)
+    # real ( kind = 8 ) -> real(real64)
+    text = re.sub(r'real\s*\(\s*kind\s*=\s*8\s*\)', 'real(real64)', text, flags=re.IGNORECASE)
+    text = re.sub(r'real\s*\(\s*8\s*\)', 'real(real64)', text, flags=re.IGNORECASE)
 
-    # real ( kind = 4 ) -> real(sp)
-    text = re.sub(r'real\s*\(\s*kind\s*=\s*4\s*\)', 'real(sp)', text, flags=re.IGNORECASE)
+    # real ( kind = 4 ) -> real(real32)
+    text = re.sub(r'real\s*\(\s*kind\s*=\s*4\s*\)', 'real(real32)', text, flags=re.IGNORECASE)
 
-    # double precision -> real(dp)
-    text = re.sub(r'double\s+precision\b', 'real(dp)', text, flags=re.IGNORECASE)
+    # double precision -> real(real64)
+    text = re.sub(r'double\s+precision\b', 'real(real64)', text, flags=re.IGNORECASE)
 
     # logical ( kind = 4 ) -> logical
     text = re.sub(r'logical\s*\(\s*kind\s*=\s*4\s*\)', 'logical', text, flags=re.IGNORECASE)
 
-    # complex ( kind = 8 ) -> complex(dp)
-    text = re.sub(r'complex\s*\(\s*kind\s*=\s*8\s*\)', 'complex(dp)', text, flags=re.IGNORECASE)
+    # complex ( kind = 8 ) -> complex(real64)
+    text = re.sub(r'complex\s*\(\s*kind\s*=\s*8\s*\)', 'complex(real64)', text, flags=re.IGNORECASE)
 
-    # Replace D+00 literals: 2.0D+00 -> 2.0_dp, 1.0D-03 -> 1.0e-03_dp
-    text = re.sub(r'(\d+\.\d*)[Dd]([+-]?\d+)', r'\1e\2_dp', text)
+    # Replace D+00 literals: 2.0D+00 -> 2.0e+00_real64
+    text = re.sub(r'(\d+\.\d*)[Dd]([+-]?\d+)', r'\1e\2_real64', text)
 
-    # Replace real(..., kind = 8) -> real(..., dp)
-    text = re.sub(r',\s*kind\s*=\s*8\s*\)', ', dp)', text, flags=re.IGNORECASE)
-    text = re.sub(r',\s*kind\s*=\s*4\s*\)', ', sp)', text, flags=re.IGNORECASE)
+    # Replace real(..., kind = 8) -> real(..., real64)
+    text = re.sub(r',\s*kind\s*=\s*8\s*\)', ', real64)', text, flags=re.IGNORECASE)
+    text = re.sub(r',\s*kind\s*=\s*4\s*\)', ', real32)', text, flags=re.IGNORECASE)
 
     return text
 
@@ -163,13 +180,16 @@ def modernize_types(text):
 def modernize_routine(name, text, module_name):
     """Modernize a single routine."""
     lines = text.split('\n')
-
-    # Extract subroutine/function signature
     first_line = lines[0].strip()
 
-    # Determine if function or subroutine
     is_function = 'function' in first_line.lower() and 'subroutine' not in first_line.lower()
-    kind = 'function' if is_function else 'subroutine'
+
+    # Remove 'pure' and 'elemental' — too many false positives with impure callees
+    first_line_clean = re.sub(r'\bpure\s+', '', first_line, flags=re.IGNORECASE)
+    first_line_clean = re.sub(r'\belemental\s+', '', first_line_clean, flags=re.IGNORECASE)
+    if first_line_clean != first_line:
+        lines[0] = lines[0].replace(first_line, first_line_clean)
+        text = '\n'.join(lines)
 
     # Extract parameter list
     m = re.search(r'\(([^)]*)\)', first_line)
@@ -179,10 +199,14 @@ def modernize_routine(name, text, module_name):
     # Get intents from docstrings
     param_info = extract_param_info(text)
 
-    # Get array info
-    arrays = detect_array_params(text, param_names)
+    # Validate intents: check which params are modified in the body
+    modified = find_modified_params(text, set(param_info.keys()))
+    for pname in list(param_info.keys()):
+        info = param_info[pname]
+        if info['intent'] == 'in' and pname in modified:
+            param_info[pname]['intent'] = 'inout'
 
-    # Modernize types in the body
+    # Modernize types
     new_text = modernize_types(text)
 
     # Remove 'implicit none' (module-level handles it)
@@ -194,16 +218,12 @@ def modernize_routine(name, text, module_name):
     # Add intent to declarations where we know it
     for pname, info in param_info.items():
         intent = info['intent']
-        # Match type declaration of this param (no existing intent)
-        # e.g., "  real(dp) c(3)" or "  integer(ip) n"
         pattern = rf'^(\s*(?:integer|real|logical|complex|character)\s*(?:\([^)]*\))?)\s+({re.escape(pname)}\b.*)$'
-        replacement = rf'\1, intent({intent}) :: \2'
 
         new_lines = []
         for line in new_text.split('\n'):
             m2 = re.match(pattern, line.strip(), re.IGNORECASE)
             if m2 and 'intent' not in line.lower() and '::' not in line:
-                # Reconstruct with intent and ::
                 indent = len(line) - len(line.lstrip())
                 type_part = m2.group(1)
                 var_part = m2.group(2)
@@ -213,24 +233,6 @@ def modernize_routine(name, text, module_name):
                 new_lines.append(line)
         new_text = '\n'.join(new_lines)
 
-    # Add bind(C) to the signature
-    # Find the subroutine/function line and add bind(C)
-    sig_lines = new_text.split('\n')
-    for idx, line in enumerate(sig_lines):
-        if re.match(rf'\s*(?:recursive\s+)?(?:pure\s+)?{kind}\s+{re.escape(name)}\s*\(', line, re.IGNORECASE):
-            # Find end of signature (may span multiple lines with &)
-            end_idx = idx
-            while end_idx < len(sig_lines) and ')' not in sig_lines[end_idx]:
-                end_idx += 1
-
-            # Add bind(C) after closing paren
-            sig_lines[end_idx] = sig_lines[end_idx].rstrip()
-            if sig_lines[end_idx].endswith(')'):
-                sig_lines[end_idx] += f' &\n      bind(C, name="{name}")'
-            break
-
-    new_text = '\n'.join(sig_lines)
-
     return new_text
 
 
@@ -239,23 +241,17 @@ def modernize_file(input_path, output_path):
     with open(input_path, 'r', errors='replace') as f:
         content = f.read()
 
-    # Parse into routines
     routines = parse_routines(content)
-
     if not routines:
         return 0
 
-    # Filter out utility routines
     keep = [(name, text) for name, text in routines if name not in SKIP_ROUTINES]
-
     if not keep:
         return 0
 
-    # Derive module name from filename
     basename = Path(input_path).stem
     module_name = f'{basename}_mod'
 
-    # Build output
     out_lines = []
     out_lines.append(f'!> {basename} — Modern Fortran 2018')
     out_lines.append(f'!>')
@@ -263,13 +259,8 @@ def modernize_file(input_path, output_path):
     out_lines.append(f'')
     out_lines.append(f'module {module_name}')
     out_lines.append(f'  use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64')
-    out_lines.append(f'  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool')
     out_lines.append(f'  implicit none')
     out_lines.append(f'  private')
-    out_lines.append(f'')
-    out_lines.append(f'  integer, parameter :: dp = real64')
-    out_lines.append(f'  integer, parameter :: sp = real32')
-    out_lines.append(f'  integer, parameter :: ip = int32')
     out_lines.append(f'')
 
     # Public declarations
@@ -282,10 +273,8 @@ def modernize_file(input_path, output_path):
     out_lines.append(f'contains')
     out_lines.append(f'')
 
-    # Modernize each routine
     for name, text in keep:
         modernized = modernize_routine(name, text, module_name)
-        # Indent routine body inside module
         mod_lines = modernized.split('\n')
         for ml in mod_lines:
             if ml.strip():
@@ -297,7 +286,6 @@ def modernize_file(input_path, output_path):
     out_lines.append(f'end module {module_name}')
     out_lines.append('')
 
-    # Write output
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, 'w') as f:
         f.write('\n'.join(out_lines))
@@ -315,7 +303,6 @@ def main():
     output_path = sys.argv[2]
 
     if os.path.isdir(input_path):
-        # Batch mode
         total_files = 0
         total_routines = 0
 
@@ -333,7 +320,7 @@ def main():
                     total_routines += count
                     print(f'  {rel}: {count} routines')
 
-        print(f'\nTotal: {total_files} files, {total_routines} routines modernized')
+        print(f'\nTotal: {total_files} files, {total_routines} modernized')
 
     else:
         count = modernize_file(input_path, output_path)

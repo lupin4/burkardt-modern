@@ -1091,7 +1091,7 @@ subroutine line_unit_quad_test ( degree_max )
     deallocate ( x )
 
     write ( *, '(a)' ) ' '
-    call line_unit_monomial ( expon, quad )
+    call line_unit_monomial ( expon(1), quad )
     write ( *, '(2x,a,2x,g14.6)' ) ' Exact', quad
 
     if ( .not. more ) then

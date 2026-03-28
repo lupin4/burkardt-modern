@@ -2627,6 +2627,7 @@ subroutine dtris2 ( npt, vcl, ind, ntri, til, tnbr, ierror )
   integer ( kind = 4 ) tnbr(3,npt*2)
   real ( kind = 8 ) tol
   integer ( kind = 4 ) top
+  integer ( kind = 4 ) maxst
   real ( kind = 8 ) vcl(2,npt)
 
   maxst = npt
