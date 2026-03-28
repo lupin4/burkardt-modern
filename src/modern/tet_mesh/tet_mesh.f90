@@ -1,16 +1,11 @@
-!> tet_mesh — Modern Fortran 2018
+!> tet_mesh â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module tet_mesh_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: i4_uniform_ab, i4col_compare, i4col_sort_a, i4col_sort2_a, i4col_sorted_unique_count, i4col_swap
   public :: i4i4_sort_a, i4i4i4_sort_a, mesh_base_one, r8_uniform_01, r8mat_det_4d, r8mat_solve
@@ -25,8 +20,7 @@ module tet_mesh_mod
 
 contains
 
-  function i4_uniform_ab ( a, b, seed ) &
-        bind(C, name="i4_uniform_ab")
+  function i4_uniform_ab ( a, b, seed )
 
   !*****************************************************************************80
   !
@@ -34,7 +28,7 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !    The pseudorandom number will be scaled to be uniformly distributed
   !    between A and B.
@@ -82,22 +76,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) A, B, the limits of the interval.
+  !    Input, integer(int32) A, B, the limits of the interval.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, integer(ip) I4_UNIFORM_AB, a number between A and B.
+  !    Output, integer(int32) I4_UNIFORM_AB, a number between A and B.
   !
 
-    integer(ip), intent(in), value :: a
-    integer(ip), intent(in), value :: b
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: i4_uniform_ab
-    integer(ip) :: k
-    real(sp) :: r
-    integer(ip), intent(inout) :: seed
-    integer(ip) :: value
+    integer(int32) a
+    integer(int32) b
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) i4_uniform_ab
+    integer(int32) k
+    real(real32) r
+    integer(int32) seed
+    integer(int32) value
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -114,25 +108,24 @@ contains
       seed = seed + i4_huge
     end if
 
-    r = real ( seed, sp) * 4.656612875E-10
+    r = real ( seed, real32) * 4.656612875E-10
   !
   !  Scale R to lie between A-0.5 and B+0.5.
   !
-    r = ( 1.0E+00 - r ) * ( real ( min ( a, b ), sp) - 0.5E+00 ) & 
-      +             r   * ( real ( max ( a, b ), sp) + 0.5E+00 )
+    r = ( 1.0E+00 - r ) * ( real ( min ( a, b ), real32) - 0.5E+00 ) & 
+      +             r   * ( real ( max ( a, b ), real32) + 0.5E+00 )
   !
   !  Use rounding to convert R to an integer between A and B.
   !
-    value = nint ( r, sp)
+    value = nint ( r, real32)
 
     value = max ( value, min ( a, b ) )
     value = min ( value, max ( a, b ) )
 
     i4_uniform_ab = value
-  end function i4_uniform_ab
+  end
 
-  subroutine i4col_compare ( m, n, a, i, j, isgn ) &
-        bind(C, name="i4col_compare")
+  subroutine i4col_compare ( m, n, a, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -167,28 +160,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), an array of N columns of vectors 
+  !    Input, integer(int32) A(M,N), an array of N columns of vectors 
   !    of length M.
   !
-  !    Input, integer(ip) I, J, the columns to be compared.
+  !    Input, integer(int32) I, J, the columns to be compared.
   !    I and J must be between 1 and N.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, column I < column J,
   !     0, column I = column J,
   !    +1, column J < column I.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(m,n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
-    integer(ip) :: k
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) k
   !
   !  Check.
   !
@@ -239,10 +232,9 @@ contains
       k = k + 1
 
     end do
-  end subroutine i4col_compare
+  end
 
-  subroutine i4col_sort_a ( m, n, a ) &
-        bind(C, name="i4col_sort_a")
+  subroutine i4col_sort_a ( m, n, a )
 
   !*****************************************************************************80
   !
@@ -274,25 +266,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows of A, and the length of
+  !    Input, integer(int32) M, the number of rows of A, and the length of
   !    a vector of data.
   !
-  !    Input, integer(ip) N, the number of columns of A.
+  !    Input, integer(int32) N, the number of columns of A.
   !
-  !    Input/output, integer(ip) A(M,N).
+  !    Input/output, integer(int32) A(M,N).
   !    On input, the array of N columns of M-vectors.
   !    On output, the columns of A have been sorted in ascending
   !    lexicographic order.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
 
     if ( m <= 0 ) then
     end if
@@ -332,10 +324,9 @@ contains
       end if
 
     end do
-  end subroutine i4col_sort_a
+  end
 
-  subroutine i4col_sort2_a ( m, n, a ) &
-        bind(C, name="i4col_sort2_a")
+  subroutine i4col_sort2_a ( m, n, a )
 
   !*****************************************************************************80
   !
@@ -355,28 +346,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows of A.
+  !    Input, integer(int32) M, the number of rows of A.
   !
-  !    Input, integer(ip) N, the number of columns of A, and the length
+  !    Input, integer(int32) N, the number of columns of A, and the length
   !    of a vector of data.
   !
-  !    Input/output, integer(ip) A(M,N).
+  !    Input/output, integer(int32) A(M,N).
   !    On input, the array of N columns of M vectors.
   !    On output, the elements of each column of A have been sorted in ascending
   !    order.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: col
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
-    integer(ip) :: row
-    integer(ip) :: t
+    integer(int32) a(m,n)
+    integer(int32) col
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) row
+    integer(int32) t
 
     if ( m <= 1 ) then
     end if
@@ -426,10 +417,9 @@ contains
       end do
 
     end do
-  end subroutine i4col_sort2_a
+  end
 
-  pure subroutine i4col_sorted_unique_count ( m, n, a, unique_num ) &
-        bind(C, name="i4col_sorted_unique_count")
+  subroutine i4col_sorted_unique_count ( m, n, a, unique_num )
 
   !*****************************************************************************80
   !
@@ -456,21 +446,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), a sorted array, containing
+  !    Input, integer(int32) A(M,N), a sorted array, containing
   !    N columns of data.
   !
-  !    Output, integer(ip) UNIQUE_NUM, the number of unique columns.
+  !    Output, integer(int32) UNIQUE_NUM, the number of unique columns.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(m,n)
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip), intent(out) :: unique_num
+    integer(int32) a(m,n)
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) unique_num
 
     if ( n <= 0 ) then
       unique_num = 0
@@ -487,10 +477,9 @@ contains
       end if
 
     end do
-  end subroutine i4col_sorted_unique_count
+  end
 
-  subroutine i4col_swap ( m, n, a, j1, j2 ) &
-        bind(C, name="i4col_swap")
+  subroutine i4col_swap ( m, n, a, j1, j2 )
 
   !*****************************************************************************80
   !
@@ -528,22 +517,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns in 
+  !    Input, integer(int32) M, N, the number of rows and columns in 
   !    the array.
   !
-  !    Input/output, integer(ip) A(M,N), an array of N columns 
+  !    Input/output, integer(int32) A(M,N), an array of N columns 
   !    of length M.
   !
-  !    Input, integer(ip) J1, J2, the columns to be swapped.
+  !    Input, integer(int32) J1, J2, the columns to be swapped.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: col(m)
-    integer(ip), intent(in), value :: j1
-    integer(ip), intent(in), value :: j2
+    integer(int32) a(m,n)
+    integer(int32) col(m)
+    integer(int32) j1
+    integer(int32) j2
 
     if ( j1 < 1 .or. n < j1 .or. j2 < 1 .or. n < j2 ) then
 
@@ -563,10 +552,9 @@ contains
     col(1:m)  = a(1:m,j1)
     a(1:m,j1) = a(1:m,j2)
     a(1:m,j2) = col(1:m)
-  end subroutine i4col_swap
+  end
 
-  pure subroutine i4i4_sort_a ( i1, i2, j1, j2 ) &
-        bind(C, name="i4i4_sort_a")
+  subroutine i4i4_sort_a ( i1, i2, j1, j2 )
 
   !*****************************************************************************80
   !
@@ -594,17 +582,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I1, I2, the values to sort.
+  !    Input, integer(int32) I1, I2, the values to sort.
   !
-  !    Output, integer(ip) J1, J2, the sorted values.
+  !    Output, integer(int32) J1, J2, the sorted values.
   !
 
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip), intent(out) :: j1
-    integer(ip), intent(out) :: j2
-    integer(ip) :: k1
-    integer(ip) :: k2
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) k1
+    integer(int32) k2
   !
   !  Copy arguments, so that the user can make "reasonable" calls like:
   !
@@ -615,10 +603,9 @@ contains
 
     j1 = min ( k1, k2 )
     j2 = max ( k1, k2 )
-  end subroutine i4i4_sort_a
+  end
 
-  pure subroutine i4i4i4_sort_a ( i1, i2, i3, j1, j2, j3 ) &
-        bind(C, name="i4i4i4_sort_a")
+  subroutine i4i4i4_sort_a ( i1, i2, i3, j1, j2, j3 )
 
   !*****************************************************************************80
   !
@@ -646,20 +633,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I1, I2, I3, the values to sort.
+  !    Input, integer(int32) I1, I2, I3, the values to sort.
   !
-  !    Output, integer(ip) J1, J2, J3, the sorted values.
+  !    Output, integer(int32) J1, J2, J3, the sorted values.
   !
 
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip), intent(in), value :: i3
-    integer(ip), intent(out) :: j1
-    integer(ip), intent(out) :: j2
-    integer(ip), intent(out) :: j3
-    integer(ip) :: k1
-    integer(ip) :: k2
-    integer(ip) :: k3
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) j3
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) k3
   !
   !  Copy arguments, so that the user can make "reasonable" calls like:
   !
@@ -673,10 +660,9 @@ contains
     j2 = min ( max ( k1, k2 ), &
          min ( max ( k2, k3 ), max ( k3, k1 ) ) )
     j3 = max ( max ( k1, k2 ), max ( k2, k3 ) )
-  end subroutine i4i4i4_sort_a
+  end
 
-  subroutine mesh_base_one ( node_num, element_order, element_num, element_node ) &
-        bind(C, name="mesh_base_one")
+  subroutine mesh_base_one ( node_num, element_order, element_num, element_node )
 
   !*****************************************************************************80
   !
@@ -716,17 +702,17 @@ contains
   !    definitions.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(inout) :: element_node(element_order,element_num)
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: node
-    integer(ip) :: node_max
-    integer(ip) :: node_min
-    integer(ip), intent(in), value :: node_num
-    integer(ip) :: order
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) node
+    integer(int32) node_max
+    integer(int32) node_min
+    integer(int32) node_num
+    integer(int32) order
 
     node_min = + i4_huge
     node_max = - i4_huge
@@ -754,10 +740,9 @@ contains
       write ( *, '(a,i8)' ) '  NODE_MAX = ', node_max
       write ( *, '(a,i8)' ) '  NODE_NUM = ', node_num
     end if
-  end subroutine mesh_base_one
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -765,9 +750,9 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
-  !    For now, the input quantity SEED is an integer(ip) variable.
+  !    For now, the input quantity SEED is an integer(int32) variable.
   !
   !    This routine implements the recursion
   !
@@ -826,16 +811,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -855,11 +840,10 @@ contains
   !  Although SEED can be represented exactly as a 32 bit integer,
   !  it generally cannot be represented exactly as a 32 bit real number!
   !
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  pure function r8mat_det_4d ( a ) &
-        bind(C, name="r8mat_det_4d")
+  function r8mat_det_4d ( a )
 
   !*****************************************************************************80
   !
@@ -867,7 +851,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8MAT is a two dimensional matrix of real(dp) real values.
+  !    An R8MAT is a two dimensional matrix of real(real64) real values.
   !
   !  Licensing:
   !
@@ -883,13 +867,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the matrix whose determinant is desired.
+  !    Input, real(real64) A(4,4), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) R8MAT_DET_4D, the determinant of the matrix.
+  !    Output, real(real64) R8MAT_DET_4D, the determinant of the matrix.
   !
 
-    real(dp), intent(in) :: a(4,4)
-    real(dp) :: r8mat_det_4d
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
 
     r8mat_det_4d = &
            a(1,1) * ( &
@@ -908,10 +892,9 @@ contains
                a(2,1) * ( a(3,2) * a(4,3) - a(3,3) * a(4,2) ) &
              - a(2,2) * ( a(3,1) * a(4,3) - a(3,3) * a(4,1) ) &
              + a(2,3) * ( a(3,1) * a(4,2) - a(3,2) * a(4,1) ) )
-  end function r8mat_det_4d
+  end
 
-  pure subroutine r8mat_solve ( n, rhs_num, a, info ) &
-        bind(C, name="r8mat_solve")
+  subroutine r8mat_solve ( n, rhs_num, a, info )
 
   !*****************************************************************************80
   !
@@ -931,34 +914,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !
-  !    Input, integer(ip) RHS_NUM, the number of right hand sides.  
+  !    Input, integer(int32) RHS_NUM, the number of right hand sides.  
   !    RHS_NUM must be at least 0.
   !
-  !    Input/output, real(dp) A(N,N+RHS_NUM), contains in rows and
+  !    Input/output, real(real64) A(N,N+RHS_NUM), contains in rows and
   !    columns 1 to N the coefficient matrix, and in columns N+1 through
   !    N+rhs_num, the right hand sides.  On output, the coefficient matrix
   !    area has been destroyed, while the right hand sides have
   !    been overwritten with the corresponding solutions.
   !
-  !    Output, integer(ip) INFO, singularity flag.
+  !    Output, integer(int32) INFO, singularity flag.
   !    0, the matrix was not singular, the solutions were computed;
   !    J, factorization failed on step J, and the solutions could not
   !    be computed.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: rhs_num
+    integer(int32) n
+    integer(int32) rhs_num
 
-    real(dp), intent(inout) :: a(n,n+rhs_num)
-    real(dp) :: apivot
-    real(dp) :: factor
-    integer(ip) :: i
-    integer(ip), intent(out) :: info
-    integer(ip) :: ipivot
-    integer(ip) :: j
-    real(dp) :: t(n+rhs_num)
+    real(real64) a(n,n+rhs_num)
+    real(real64) apivot
+    real(real64) factor
+    integer(int32) i
+    integer(int32) info
+    integer(int32) ipivot
+    integer(int32) j
+    real(real64) t(n+rhs_num)
 
     info = 0
 
@@ -976,7 +959,7 @@ contains
         end if
       end do
 
-      if ( apivot == 0.0_dp ) then
+      if ( apivot == 0.0e+00_real64 ) then
         info = j
       end if
   !
@@ -990,7 +973,7 @@ contains
   !
   !  A(J,J) becomes 1.
   !
-      a(j,j) = 1.0_dp
+      a(j,j) = 1.0e+00_real64
       a(j,j+1:n+rhs_num) = a(j,j+1:n+rhs_num) / apivot
   !
   !  A(I,J) becomes 0.
@@ -999,17 +982,16 @@ contains
 
         if ( i /= j ) then
           factor = a(i,j)
-          a(i,j) = 0.0_dp
+          a(i,j) = 0.0e+00_real64
           a(i,j+1:n+rhs_num) = a(i,j+1:n+rhs_num) - factor * a(j,j+1:n+rhs_num)
         end if
 
       end do
 
     end do
-  end subroutine r8mat_solve
+  end
 
-  pure subroutine r8mat_uniform_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_uniform_01")
+  subroutine r8mat_uniform_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -1051,24 +1033,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns in 
+  !    Input, integer(int32) M, N, the number of rows and columns in 
   !    the array.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which 
+  !    Input/output, integer(int32) SEED, the "seed" value, which 
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudorandom values.
+  !    Output, real(real64) R(M,N), the array of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
+    integer(int32) i
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) j
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(m,n)
 
     do j = 1, n
 
@@ -1082,14 +1064,13 @@ contains
           seed = seed + i4_huge
         end if
 
-        r(i,j) = real ( seed, dp) * 4.656612875e-10_dp
+        r(i,j) = real ( seed, real64) * 4.656612875e-10_real64
 
       end do
     end do
-  end subroutine r8mat_uniform_01
+  end
 
-  pure subroutine r8vec_cross_3d ( v1, v2, v3 ) &
-        bind(C, name="r8vec_cross_3d")
+  subroutine r8vec_cross_3d ( v1, v2, v3 )
 
   !*****************************************************************************80
   !
@@ -1122,24 +1103,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), the two vectors.
+  !    Input, real(real64) V1(3), V2(3), the two vectors.
   !
-  !    Output, real(dp) V3(3), the cross product vector.
+  !    Output, real(real64) V3(3), the cross product vector.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in) :: v1(dim_num)
-    real(dp), intent(in) :: v2(dim_num)
-    real(dp), intent(out) :: v3(dim_num)
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
+    real(real64) v3(dim_num)
 
     v3(1) = v1(2) * v2(3) - v1(3) * v2(2)
     v3(2) = v1(3) * v2(1) - v1(1) * v2(3)
     v3(3) = v1(1) * v2(2) - v1(2) * v2(1)
-  end subroutine r8vec_cross_3d
+  end
 
-  pure function r8vec_norm ( n, a ) &
-        bind(C, name="r8vec_norm")
+  function r8vec_norm ( n, a )
 
   !*****************************************************************************80
   !
@@ -1167,23 +1147,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in A.
+  !    Input, integer(int32) N, the number of entries in A.
   !
-  !    Input, real(dp) A(N), the vector whose L2 norm is desired.
+  !    Input, real(real64) A(N), the vector whose L2 norm is desired.
   !
-  !    Output, real(dp) R8VEC_NORM, the L2 norm of A.
+  !    Output, real(real64) R8VEC_NORM, the L2 norm of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp) :: r8vec_norm
+    real(real64) a(n)
+    real(real64) r8vec_norm
 
     r8vec_norm = sqrt ( sum ( a(1:n)**2 ) )
-  end function r8vec_norm
+  end
 
-  pure subroutine r8vec_mean ( n, a, mean ) &
-        bind(C, name="r8vec_mean")
+  subroutine r8vec_mean ( n, a, mean )
 
   !*****************************************************************************80
   !
@@ -1203,23 +1182,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input, real(dp) A(N), the vector whose mean is desired.
+  !    Input, real(real64) A(N), the vector whose mean is desired.
   !
-  !    Output, real(dp) MEAN, the mean of the vector entries.
+  !    Output, real(real64) MEAN, the mean of the vector entries.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp), intent(out) :: mean
+    real(real64) a(n)
+    real(real64) mean
 
-    mean = sum ( a(1:n) ) / real ( n, dp)
-  end subroutine r8vec_mean
+    mean = sum ( a(1:n) ) / real ( n, real64)
+  end
 
-  subroutine r8vec_uniform_01 ( n, seed, r ) &
-        bind(C, name="r8vec_uniform_01")
+  subroutine r8vec_uniform_01 ( n, seed, r )
 
   !*****************************************************************************80
   !
@@ -1229,7 +1207,7 @@ contains
   !
   !    An R8VEC is a vector of R8's.
   !
-  !    For now, the input quantity SEED is an integer(ip) variable.
+  !    For now, the input quantity SEED is an integer(int32) variable.
   !
   !  Licensing:
   !
@@ -1263,20 +1241,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -1295,13 +1273,12 @@ contains
         seed = seed + 2147483647
       end if
 
-      r(i) = real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_01
+  end
 
-  pure subroutine r8vec_variance ( n, a, variance ) &
-        bind(C, name="r8vec_variance")
+  subroutine r8vec_variance ( n, a, variance )
 
   !*****************************************************************************80
   !
@@ -1329,37 +1306,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !    N should be at least 2.
   !
-  !    Input, real(dp) A(N), the vector.
+  !    Input, real(real64) A(N), the vector.
   !
-  !    Output, real(dp) VARIANCE, the variance of the vector.
+  !    Output, real(real64) VARIANCE, the variance of the vector.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp) :: mean
-    real(dp), intent(out) :: variance
+    real(real64) a(n)
+    real(real64) mean
+    real(real64) variance
 
     if ( n < 2 ) then
 
-      variance = 0.0_dp
+      variance = 0.0e+00_real64
 
     else
 
-      mean = sum ( a(1:n) ) / real ( n, dp)
+      mean = sum ( a(1:n) ) / real ( n, real64)
 
       variance = sum ( ( a(1:n) - mean )**2 )
 
-      variance = variance / real ( n - 1, dp)
+      variance = variance / real ( n - 1, real64)
 
     end if
-  end subroutine r8vec_variance
+  end
 
-  subroutine sort_heap_external ( n, indx, i, j, isgn ) &
-        bind(C, name="sort_heap_external")
+  subroutine sort_heap_external ( n, indx, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -1397,9 +1373,9 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items to be sorted.
+  !    Input, integer(int32) N, the number of items to be sorted.
   !
-  !    Input/output, integer(ip) INDX, the main communication signal.
+  !    Input/output, integer(int32) INDX, the main communication signal.
   !
   !    The user must set INDX to 0 before the first call.
   !    Thereafter, the user should not change the value of INDX until
@@ -1418,27 +1394,27 @@ contains
   !
   !      equal to 0, the sorting is done.
   !
-  !    Output, integer(ip) I, J, the indices of two items.
+  !    Output, integer(int32) I, J, the indices of two items.
   !    On return with INDX positive, elements I and J should be interchanged.
   !    On return with INDX negative, elements I and J should be compared, and
   !    the result reported in ISGN on the next call.
   !
-  !    Input, integer(ip) ISGN, results of comparison of elements I 
+  !    Input, integer(int32) ISGN, results of comparison of elements I 
   !    and J.  (Used only when the previous call returned INDX less than 0).
   !    ISGN <= 0 means I is less than or equal to J;
   !    0 <= ISGN means I is greater than or equal to J.
   !
 
-    integer(ip), intent(out) :: i
-    integer(ip), save :: i_save = 0
-    integer(ip), intent(inout) :: indx
-    integer(ip), intent(in), value :: isgn
-    integer(ip), intent(out) :: j
-    integer(ip), save :: j_save = 0
-    integer(ip), save :: k = 0
-    integer(ip), save :: k1 = 0
-    integer(ip), intent(in), value :: n
-    integer(ip), save :: n1 = 0
+    integer(int32) i
+    integer(int32), save :: i_save = 0
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32), save :: j_save = 0
+    integer(int32), save :: k = 0
+    integer(int32), save :: k1 = 0
+    integer(int32) n
+    integer(int32), save :: n1 = 0
   !
   !  INDX = 0: This is the first call.
   !
@@ -1542,11 +1518,10 @@ contains
       i = i_save
       j = j_save
     end if
-  end subroutine sort_heap_external
+  end
 
   subroutine tet_mesh_neighbor_tets ( tet_order, tet_num, tet_node, &
-    tet_neighbor ) &
-        bind(C, name="tet_mesh_neighbor_tets")
+    tet_neighbor )
 
   !*****************************************************************************80
   !
@@ -1621,37 +1596,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TET_ORDER, the order of the tetrahedrons.
+  !    Input, integer(int32) TET_ORDER, the order of the tetrahedrons.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), the 
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), the 
   !    indices of the nodes.
   !
-  !    Output, integer(ip) TET_NEIGHBOR(4,TET_NUM), the four
+  !    Output, integer(int32) TET_NEIGHBOR(4,TET_NUM), the four
   !    tetrahedrons that are direct neighbors of a given tetrahedron.  If 
   !    there is no neighbor sharing a given face, the index is set to -1.
   !
 
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: c
-    integer(ip) :: face
-    integer(ip) :: face1
-    integer(ip) :: face2
-    integer(ip) :: faces(5,4*tet_num)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: tet
-    integer(ip), intent(out) :: tet_neighbor(4,tet_num)
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    integer(ip) :: tet1
-    integer(ip) :: tet2
+    integer(int32) a
+    integer(int32) b
+    integer(int32) c
+    integer(int32) face
+    integer(int32) face1
+    integer(int32) face2
+    integer(int32) faces(5,4*tet_num)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) tet
+    integer(int32) tet_neighbor(4,tet_num)
+    integer(int32) tet_node(tet_order,tet_num)
+    integer(int32) tet1
+    integer(int32) tet2
   !
   !  Step 1.
   !  From the list of nodes for tetrahedron T, of the form: (I,J,K,L)
@@ -1727,11 +1702,10 @@ contains
       end if
 
     end do
-  end subroutine tet_mesh_neighbor_tets
+  end
 
   subroutine tet_mesh_node_order ( tet_order, tet_num, tet_node, &
-    node_num, node_order ) &
-        bind(C, name="tet_mesh_node_order")
+    node_num, node_order )
 
   !*****************************************************************************80
   !
@@ -1758,28 +1732,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TET_ORDER, the order of the mesh, either 
+  !    Input, integer(int32) TET_ORDER, the order of the mesh, either 
   !    4 or 10.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), the indices
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), the indices
   !    of the nodes.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) NODE_ORDER(NODE_NUM), the order of each node.
+  !    Output, integer(int32) NODE_ORDER(NODE_NUM), the order of each node.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32) node_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    integer(ip) :: i
-    integer(ip) :: node
-    integer(ip), intent(out) :: node_order(node_num)
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
+    integer(int32) i
+    integer(int32) node
+    integer(int32) node_order(node_num)
+    integer(int32) tet
+    integer(int32) tet_node(tet_order,tet_num)
 
     node_order(1:node_num) = 0
 
@@ -1796,11 +1770,10 @@ contains
         end if
       end do
     end do
-  end subroutine tet_mesh_node_order
+  end
 
   subroutine tet_mesh_order4_adj_count ( node_num, tet_num, tet_node, &
-    adj_num, adj_row ) &
-        bind(C, name="tet_mesh_order4_adj_count")
+    adj_num, adj_row )
 
   !*****************************************************************************80
   !
@@ -1833,31 +1806,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(4,TET_NUM), the indices of 
+  !    Input, integer(int32) TET_NODE(4,TET_NUM), the indices of 
   !    the nodes.
   !
-  !    Output, integer(ip) ADJ_NUM, the total number of adjacency
+  !    Output, integer(int32) ADJ_NUM, the total number of adjacency
   !    relationships,
   !
-  !    Output, integer(ip) ADJ_ROW(NODE_NUM+1), the ADJ pointer array.
+  !    Output, integer(int32) ADJ_ROW(NODE_NUM+1), the ADJ pointer array.
   !
 
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) tet_num
+    integer(int32) node_num
 
-    integer(ip), intent(out) :: adj_num
-    integer(ip), intent(out) :: adj_row(node_num+1)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: pair(2,6*tet_num)
-    integer(ip) :: pair_num
-    integer(ip) :: pair_unique_num
-    integer(ip), intent(in) :: tet_node(4,tet_num)
+    integer(int32) adj_num
+    integer(int32) adj_row(node_num+1)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) pair(2,6*tet_num)
+    integer(int32) pair_num
+    integer(int32) pair_unique_num
+    integer(int32) tet_node(4,tet_num)
   !
   !  Each order 4 tetrahedron defines 6 adjacency pairs.
   !
@@ -1927,11 +1900,10 @@ contains
     do i = 2, node_num+1
       adj_row(i) = adj_row(i-1) + adj_row(i)
     end do
-  end subroutine tet_mesh_order4_adj_count
+  end
 
   subroutine tet_mesh_order4_adj_set ( node_num, tet_num, tet_node, &
-    adj_num, adj_row, adj ) &
-        bind(C, name="tet_mesh_order4_adj_set")
+    adj_num, adj_row, adj )
 
   !*****************************************************************************80
   !
@@ -1966,34 +1938,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(4,TET_NUM), the indices of 
+  !    Input, integer(int32) TET_NODE(4,TET_NUM), the indices of 
   !    the nodes.
   !
-  !    Input, integer(ip) ADJ_NUM, the total number of adjacency 
+  !    Input, integer(int32) ADJ_NUM, the total number of adjacency 
   !    relationships,
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1), the ADJ pointer array.
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1), the ADJ pointer array.
   !
-  !    Output, integer(ip) ADJ(ADJ_NUM), the adjacency information.
+  !    Output, integer(int32) ADJ(ADJ_NUM), the adjacency information.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) tet_num
+    integer(int32) node_num
 
-    integer(ip), intent(out) :: adj(adj_num)
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: adj_row_copy(node_num+1)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: pair(2,6*tet_num)
-    integer(ip) :: pair_num
-    integer(ip), intent(in) :: tet_node(4,tet_num)
+    integer(int32) adj(adj_num)
+    integer(int32) adj_row(node_num+1)
+    integer(int32) adj_row_copy(node_num+1)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) pair(2,6*tet_num)
+    integer(int32) pair_num
+    integer(int32) tet_node(4,tet_num)
   !
   !  Each order 4 tetrahedron defines 6 adjacency pairs.
   !
@@ -2054,11 +2026,10 @@ contains
       adj_row_copy(j) = adj_row_copy(j) + 1
 
     end do
-  end subroutine tet_mesh_order4_adj_set
+  end
 
   subroutine tet_mesh_order4_boundary_face_count ( tet_num, tet_node, &
-    boundary_face_num ) &
-        bind(C, name="tet_mesh_order4_boundary_face_count")
+    boundary_face_num )
 
   !*****************************************************************************80
   !
@@ -2093,24 +2064,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(4,TET_NUM), the indices of 
+  !    Input, integer(int32) TET_NODE(4,TET_NUM), the indices of 
   !    the nodes.
   !
-  !    Output, integer(ip) BOUNDARY_FACE_NUM, the number of boundary 
+  !    Output, integer(int32) BOUNDARY_FACE_NUM, the number of boundary 
   !    faces.
   !
 
-    integer(ip), intent(in), value :: tet_num
+    integer(int32) tet_num
 
-    integer(ip), intent(out) :: boundary_face_num
-    integer(ip) :: face(3,4*tet_num)
-    integer(ip) :: face_num
-    integer(ip) :: interior_face_num
-    integer(ip) :: m
-    integer(ip), intent(in) :: tet_node(4,tet_num)
-    integer(ip) :: unique_face_num
+    integer(int32) boundary_face_num
+    integer(int32) face(3,4*tet_num)
+    integer(int32) face_num
+    integer(int32) interior_face_num
+    integer(int32) m
+    integer(int32) tet_node(4,tet_num)
+    integer(int32) unique_face_num
 
     m = 3
     face_num = 4 * tet_num
@@ -2148,10 +2119,9 @@ contains
     interior_face_num = 4 * tet_num - unique_face_num
 
     boundary_face_num = 4 * tet_num - 2 * interior_face_num
-  end subroutine tet_mesh_order4_boundary_face_count
+  end
 
-  subroutine tet_mesh_order4_edge_count ( tet_num, tet_node, edge_num ) &
-        bind(C, name="tet_mesh_order4_edge_count")
+  subroutine tet_mesh_order4_edge_count ( tet_num, tet_node, edge_num )
 
   !*****************************************************************************80
   !
@@ -2179,21 +2149,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(4,TET_NUM), the indices of 
+  !    Input, integer(int32) TET_NODE(4,TET_NUM), the indices of 
   !    the nodes.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
 
-    integer(ip), intent(in), value :: tet_num
+    integer(int32) tet_num
 
-    integer(ip) :: edge(2,6*tet_num)
-    integer(ip), intent(out) :: edge_num
-    integer(ip) :: edge_num_raw
-    integer(ip) :: m
-    integer(ip), intent(in) :: tet_node(4,tet_num)
+    integer(int32) edge(2,6*tet_num)
+    integer(int32) edge_num
+    integer(int32) edge_num_raw
+    integer(int32) m
+    integer(int32) tet_node(4,tet_num)
 
     m = 3
     edge_num_raw = 6 * tet_num
@@ -2229,11 +2199,10 @@ contains
   !  Get the number of unique columns.
   !
     call i4col_sorted_unique_count ( m, edge_num_raw, edge, edge_num )
-  end subroutine tet_mesh_order4_edge_count
+  end
 
-  pure subroutine tet_mesh_order4_example_set ( node_num, tet_num, &
-    node_xyz, tet_node ) &
-        bind(C, name="tet_mesh_order4_example_set")
+  subroutine tet_mesh_order4_example_set ( node_num, tet_num, &
+    node_xyz, tet_node )
 
   !*****************************************************************************80
   !
@@ -2253,21 +2222,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Output, real(dp) NODE_XYZ(3,NODE_NUM), the node coordinates.
+  !    Output, real(real64) NODE_XYZ(3,NODE_NUM), the node coordinates.
   !
-  !    Output, integer(ip) TET_NODE(4,TET_NUM), the nodes 
+  !    Output, integer(int32) TET_NODE(4,TET_NUM), the nodes 
   !    forming each tet.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
+    integer(int32) node_num
+    integer(int32) tet_num
 
-    integer(ip), intent(out), dimension ( 4, tet_num ) :: tet_node
-    real(dp), intent(out), dimension ( 3, node_num ) :: node_xyz
+    integer(int32), dimension ( 4, tet_num ) :: tet_node
+    real(real64), dimension ( 3, node_num ) :: node_xyz
 
     tet_node(1:4,1:tet_num) = reshape ( (/  &
        1,   2,   4,  10, &
@@ -2417,74 +2386,73 @@ contains
     /), (/ 4, tet_num /) )
 
     node_xyz(1:3,1:node_num) = reshape ( (/ &
-    0.0_dp,  0.0_dp,  0.0_dp, &
-    0.0_dp,  0.0_dp,  0.5_dp, &
-    0.0_dp,  0.0_dp,  1.0_dp, &
-    0.0_dp,  0.5_dp,  0.0_dp, &
-    0.0_dp,  0.5_dp,  0.5_dp, &
-    0.0_dp,  0.5_dp,  1.0_dp, &
-    0.0_dp,  1.0_dp,  0.0_dp, &
-    0.0_dp,  1.0_dp,  0.5_dp, &
-    0.0_dp,  1.0_dp,  1.0_dp, &
-    0.5_dp,  0.0_dp,  0.0_dp, &
-    0.5_dp,  0.0_dp,  0.5_dp, &
-    0.5_dp,  0.0_dp,  1.0_dp, &
-    0.5_dp,  0.5_dp,  0.0_dp, &
-    0.5_dp,  0.5_dp,  0.5_dp, &
-    0.5_dp,  0.5_dp,  1.0_dp, &
-    0.5_dp,  1.0_dp,  0.0_dp, &
-    0.5_dp,  1.0_dp,  0.5_dp, &
-    0.5_dp,  1.0_dp,  1.0_dp, &
-    1.0_dp,  0.0_dp,  0.0_dp, &
-    1.0_dp,  0.0_dp,  0.5_dp, &
-    1.0_dp,  0.0_dp,  1.0_dp, &
-    1.0_dp,  0.5_dp,  0.0_dp, &
-    1.0_dp,  0.5_dp,  0.5_dp, &
-    1.0_dp,  0.5_dp,  1.0_dp, &
-    1.0_dp,  1.0_dp,  0.0_dp, &
-    1.0_dp,  1.0_dp,  0.5_dp, &
-    1.0_dp,  1.0_dp,  1.0_dp, &
-    1.5_dp,  0.0_dp,  0.0_dp, &
-    1.5_dp,  0.0_dp,  0.5_dp, &
-    1.5_dp,  0.0_dp,  1.0_dp, &
-    1.5_dp,  0.5_dp,  0.0_dp, &
-    1.5_dp,  0.5_dp,  0.5_dp, &
-    1.5_dp,  0.5_dp,  1.0_dp, &
-    1.5_dp,  1.0_dp,  0.0_dp, &
-    1.5_dp,  1.0_dp,  0.5_dp, &
-    1.5_dp,  1.0_dp,  1.0_dp, &
-    2.0_dp,  0.0_dp,  0.0_dp, &
-    2.0_dp,  0.0_dp,  0.5_dp, &
-    2.0_dp,  0.0_dp,  1.0_dp, &
-    2.0_dp,  0.5_dp,  0.0_dp, &
-    2.0_dp,  0.5_dp,  0.5_dp, &
-    2.0_dp,  0.5_dp,  1.0_dp, &
-    2.0_dp,  1.0_dp,  0.0_dp, &
-    2.0_dp,  1.0_dp,  0.5_dp, &
-    2.0_dp,  1.0_dp,  1.0_dp, &
-    2.5_dp,  0.0_dp,  0.0_dp, &
-    2.5_dp,  0.0_dp,  0.5_dp, &
-    2.5_dp,  0.0_dp,  1.0_dp, &
-    2.5_dp,  0.5_dp,  0.0_dp, &
-    2.5_dp,  0.5_dp,  0.5_dp, &
-    2.5_dp,  0.5_dp,  1.0_dp, &
-    2.5_dp,  1.0_dp,  0.0_dp, &
-    2.5_dp,  1.0_dp,  0.5_dp, &
-    2.5_dp,  1.0_dp,  1.0_dp, &
-    3.0_dp,  0.0_dp,  0.0_dp, &
-    3.0_dp,  0.0_dp,  0.5_dp, &
-    3.0_dp,  0.0_dp,  1.0_dp, &
-    3.0_dp,  0.5_dp,  0.0_dp, &
-    3.0_dp,  0.5_dp,  0.5_dp, &
-    3.0_dp,  0.5_dp,  1.0_dp, &
-    3.0_dp,  1.0_dp,  0.0_dp, &
-    3.0_dp,  1.0_dp,  0.5_dp, &
-    3.0_dp,  1.0_dp,  1.0_dp  &  
+    0.0e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+    0.0e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &
+    0.0e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &
+    0.0e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &
+    0.0e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &
+    0.0e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &
+    0.0e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &
+    0.0e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &
+    0.0e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &
+    0.5e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+    0.5e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &
+    0.5e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &
+    0.5e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &
+    0.5e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &
+    0.5e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &
+    0.5e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &
+    0.5e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &
+    0.5e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &
+    1.0e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+    1.0e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &
+    1.0e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &
+    1.0e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &
+    1.0e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &
+    1.0e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &
+    1.0e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &
+    1.0e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &
+    1.0e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &
+    1.5e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+    1.5e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &
+    1.5e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &
+    1.5e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &
+    1.5e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &
+    1.5e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &
+    1.5e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &
+    1.5e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &
+    1.5e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &
+    2.0e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+    2.0e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &
+    2.0e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &
+    2.0e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &
+    2.0e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &
+    2.0e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &
+    2.0e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &
+    2.0e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &
+    2.0e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &
+    2.5e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+    2.5e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &
+    2.5e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &
+    2.5e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &
+    2.5e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &
+    2.5e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &
+    2.5e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &
+    2.5e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &
+    2.5e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &
+    3.0e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+    3.0e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &
+    3.0e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &
+    3.0e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &
+    3.0e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &
+    3.0e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &
+    3.0e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &
+    3.0e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &
+    3.0e+00_real64,  1.0e+00_real64,  1.0e+00_real64  &  
     /), (/ 3, node_num /) )
-  end subroutine tet_mesh_order4_example_set
+  end
 
-  pure subroutine tet_mesh_order4_example_size ( node_num, tet_num ) &
-        bind(C, name="tet_mesh_order4_example_size")
+  subroutine tet_mesh_order4_example_size ( node_num, tet_num )
 
   !*****************************************************************************80
   !
@@ -2504,21 +2472,20 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) NODE_NUM, the number of nodes.
+  !    Output, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Output, integer(int32) TET_NUM, the number of tetrahedrons.
   !
 
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: tet_num
+    integer(int32) node_num
+    integer(int32) tet_num
 
     node_num = 63
     tet_num = 144
-  end subroutine tet_mesh_order4_example_size
+  end
 
   subroutine tet_mesh_order4_refine_compute ( node_num1, tet_num1, node_xyz1, &
-    tet_node1, node_num2, tet_num2, edge_data, node_xyz2, tet_node2 ) &
-        bind(C, name="tet_mesh_order4_refine_compute")
+    tet_node1, node_num2, tet_num2, edge_data, node_xyz2, tet_node2 )
 
   !*****************************************************************************80
   !
@@ -2585,54 +2552,54 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes in the input
+  !    Input, integer(int32) NODE_NUM1, the number of nodes in the input
   !    mesh.
   !
-  !    Input, integer(ip) TET_NUM1, the number of tetrahedrons in 
+  !    Input, integer(int32) TET_NUM1, the number of tetrahedrons in 
   !    the input mesh.
   !
-  !    Input, real(dp) NODE_XYZ1(3,NODE_NUM1), the coordinates of
+  !    Input, real(real64) NODE_XYZ1(3,NODE_NUM1), the coordinates of
   !    the nodes that make up the input mesh.
   !
-  !    Input, integer(ip) TET_NODE1(4,TET_NUM1), the indices of 
+  !    Input, integer(int32) TET_NODE1(4,TET_NUM1), the indices of 
   !    the nodes in the input mesh.
   !
-  !    Input, integer(ip) NODE_NUM2, the number of nodes for the 
+  !    Input, integer(int32) NODE_NUM2, the number of nodes for the 
   !    refined mesh.
   !
-  !    Input, integer(ip) TET_NUM2, the number of tetrahedrons in the
+  !    Input, integer(int32) TET_NUM2, the number of tetrahedrons in the
   !    refined mesh.
   !
-  !    Input, integer(ip) EDGE_DATA(5,6*TET_NUM), edge data.
+  !    Input, integer(int32) EDGE_DATA(5,6*TET_NUM), edge data.
   !
-  !    Output, real(dp) NODE_XYZ2(3,NODE_NUM2), the coordinates of
+  !    Output, real(real64) NODE_XYZ2(3,NODE_NUM2), the coordinates of
   !    the nodes that make up the output mesh.
   !
-  !    Output, integer(ip) TET_NODE2(4,TET_NUM2), the indices of 
+  !    Output, integer(int32) TET_NODE2(4,TET_NUM2), the indices of 
   !    the nodes in the output mesh.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(in), value :: node_num2
-    integer(ip), intent(in), value :: tet_num1
-    integer(ip), intent(in), value :: tet_num2
+    integer(int32) node_num1
+    integer(int32) node_num2
+    integer(int32) tet_num1
+    integer(int32) tet_num2
 
-    integer(ip) :: edge
-    integer(ip), intent(in) :: edge_data(5,6*tet_num1)
-    integer(ip) :: n1
-    integer(ip) :: n1_old
-    integer(ip) :: n2
-    integer(ip) :: n2_old
-    integer(ip) :: node
-    real(dp), intent(in) :: node_xyz1(3,node_num1)
-    real(dp), intent(out) :: node_xyz2(3,node_num2)
-    integer(ip), intent(in) :: tet_node1(4,tet_num1)
-    integer(ip), intent(out) :: tet_node2(4,tet_num2)
-    integer(ip) :: tet1
-    integer(ip) :: tet2
-    integer(ip) :: v
-    integer(ip) :: v1
-    integer(ip) :: v2
+    integer(int32) edge
+    integer(int32) edge_data(5,6*tet_num1)
+    integer(int32) n1
+    integer(int32) n1_old
+    integer(int32) n2
+    integer(int32) n2_old
+    integer(int32) node
+    real(real64) node_xyz1(3,node_num1)
+    real(real64) node_xyz2(3,node_num2)
+    integer(int32) tet_node1(4,tet_num1)
+    integer(int32) tet_node2(4,tet_num2)
+    integer(int32) tet1
+    integer(int32) tet2
+    integer(int32) v
+    integer(int32) v1
+    integer(int32) v2
   !
   !  Generate the index and coordinates of the new midside nodes, 
   !  and update the tetradehron-node data.
@@ -2676,7 +2643,7 @@ contains
         end if
 
         node_xyz2(1:3,node) = &
-          ( node_xyz2(1:3,n1) + node_xyz2(1:3,n2) ) / 2.0_dp
+          ( node_xyz2(1:3,n1) + node_xyz2(1:3,n2) ) / 2.0e+00_real64
 
         n1_old = n1
         n2_old = n2
@@ -2743,11 +2710,10 @@ contains
       end if
 
     end do
-  end subroutine tet_mesh_order4_refine_compute
+  end
 
   subroutine tet_mesh_order4_refine_size ( node_num1, tet_num1, tet_node1, &
-    node_num2, tet_num2, edge_data ) &
-        bind(C, name="tet_mesh_order4_refine_size")
+    node_num2, tet_num2, edge_data )
 
   !*****************************************************************************80
   !
@@ -2789,43 +2755,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes in the 
+  !    Input, integer(int32) NODE_NUM1, the number of nodes in the 
   !    original mesh.
   !
-  !    Input, integer(ip) TET_NUM1, the number of tetrahedrons in the
+  !    Input, integer(int32) TET_NUM1, the number of tetrahedrons in the
   !    original mesh.
   !
-  !    Input, integer(ip) TET_NODE1(4,TET_NUM1), the indices of 
+  !    Input, integer(int32) TET_NODE1(4,TET_NUM1), the indices of 
   !    the nodes that form the tetrahedrons in the input mesh.
   !
-  !    Output, integer(ip) NODE_NUM2, the number of nodes in the 
+  !    Output, integer(int32) NODE_NUM2, the number of nodes in the 
   !    refined mesh.
   !
-  !    Output, integer(ip) TET_NUM2, the number of tetrahedrons in the
+  !    Output, integer(int32) TET_NUM2, the number of tetrahedrons in the
   !    refined mesh.
   !
-  !    Output, integer(ip) EDGE_DATA(5,6*TET_NUM1), edge data.
+  !    Output, integer(int32) EDGE_DATA(5,6*TET_NUM1), edge data.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(in), value :: tet_num1
+    integer(int32) node_num1
+    integer(int32) tet_num1
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: edge
-    integer(ip), intent(out) :: edge_data(5,6*tet_num1)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: n1
-    integer(ip) :: n1_old
-    integer(ip) :: n2
-    integer(ip) :: n2_old
-    integer(ip), intent(out) :: node_num2
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node1(4,tet_num1)
-    integer(ip), intent(out) :: tet_num2
+    integer(int32) a
+    integer(int32) b
+    integer(int32) edge
+    integer(int32) edge_data(5,6*tet_num1)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) n1
+    integer(int32) n1_old
+    integer(int32) n2
+    integer(int32) n2_old
+    integer(int32) node_num2
+    integer(int32) tet
+    integer(int32) tet_node1(4,tet_num1)
+    integer(int32) tet_num2
   !
   !  Step 1.
   !  From the list of nodes for tetrahedron T, of the form: (I,J,K,L)
@@ -2904,11 +2870,10 @@ contains
     end do
 
     tet_num2 = 8 * tet_num1
-  end subroutine tet_mesh_order4_refine_size
+  end
 
   subroutine tet_mesh_order4_to_order10_compute ( tet_num, tet_node1, &
-    node_num1, node_xyz1, edge_data, tet_node2, node_num2, node_xyz2 ) &
-        bind(C, name="tet_mesh_order4_to_order10_compute")
+    node_num1, node_xyz1, edge_data, tet_node2, node_num2, node_xyz2 )
 
   !*****************************************************************************80
   !
@@ -2959,49 +2924,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons in the
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons in the
   !    linear mesh.
   !
-  !    Input, integer(ip) TET_NODE1(4,TET_NUM), the indices of 
+  !    Input, integer(int32) TET_NODE1(4,TET_NUM), the indices of 
   !    the nodes in the linear mesh.
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes for the 
+  !    Input, integer(int32) NODE_NUM1, the number of nodes for the 
   !    linear mesh.
   !
-  !    Input, real(dp) NODE_XYZ1(3,NODE_NUM1), the coordinates of
+  !    Input, real(real64) NODE_XYZ1(3,NODE_NUM1), the coordinates of
   !    the nodes that make up the linear mesh.
   !
-  !    Input, integer(ip) EDGE_DATA(5,6*TET_NUM), edge data.
+  !    Input, integer(int32) EDGE_DATA(5,6*TET_NUM), edge data.
   !
-  !    Output, integer(ip) TET_NODE2(10,TET_NUM), the indices of 
+  !    Output, integer(int32) TET_NODE2(10,TET_NUM), the indices of 
   !    the nodes in the quadratic mesh.
   !
-  !    Input, integer(ip) NODE_NUM2, the number of nodes for the 
+  !    Input, integer(int32) NODE_NUM2, the number of nodes for the 
   !    quadratic mesh.
   !
-  !    Output, real(dp) NODE_XYZ2(3,NODE_NUM2), the coordinates of
+  !    Output, real(real64) NODE_XYZ2(3,NODE_NUM2), the coordinates of
   !    the nodes that make up the quadratic mesh.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(in), value :: node_num2
-    integer(ip), intent(in), value :: tet_num
+    integer(int32) node_num1
+    integer(int32) node_num2
+    integer(int32) tet_num
 
-    integer(ip) :: edge
-    integer(ip), intent(in) :: edge_data(5,6*tet_num)
-    integer(ip) :: n1
-    integer(ip) :: n1_old
-    integer(ip) :: n2
-    integer(ip) :: n2_old
-    integer(ip) :: node
-    real(dp), intent(in) :: node_xyz1(3,node_num1)
-    real(dp), intent(out) :: node_xyz2(3,node_num2)
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node1(4,tet_num)
-    integer(ip), intent(out) :: tet_node2(10,tet_num)
-    integer(ip) :: v
-    integer(ip) :: v1
-    integer(ip) :: v2
+    integer(int32) edge
+    integer(int32) edge_data(5,6*tet_num)
+    integer(int32) n1
+    integer(int32) n1_old
+    integer(int32) n2
+    integer(int32) n2_old
+    integer(int32) node
+    real(real64) node_xyz1(3,node_num1)
+    real(real64) node_xyz2(3,node_num2)
+    integer(int32) tet
+    integer(int32) tet_node1(4,tet_num)
+    integer(int32) tet_node2(10,tet_num)
+    integer(int32) v
+    integer(int32) v1
+    integer(int32) v2
   !
   !  Generate the index and coordinates of the new midside nodes, 
   !  and update the tetradehron node data.
@@ -3036,7 +3001,7 @@ contains
         end if
 
         node_xyz2(1:3,node) = &
-          ( node_xyz2(1:3,n1) + node_xyz2(1:3,n2) ) / 2.0_dp
+          ( node_xyz2(1:3,n1) + node_xyz2(1:3,n2) ) / 2.0e+00_real64
 
         n1_old = n1
         n2_old = n2
@@ -3069,11 +3034,10 @@ contains
       tet_node2(v,tet) = node
 
     end do
-  end subroutine tet_mesh_order4_to_order10_compute
+  end
 
   subroutine tet_mesh_order4_to_order10_size ( tet_num, tet_node1, &
-    node_num1, edge_data, node_num2 ) &
-        bind(C, name="tet_mesh_order4_to_order10_size")
+    node_num1, edge_data, node_num2 )
 
   !*****************************************************************************80
   !
@@ -3116,39 +3080,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons in the
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons in the
   !    linear mesh.
   !
-  !    Input, integer(ip) TET_NODE1(4,TET_NUM), the indices of 
+  !    Input, integer(int32) TET_NODE1(4,TET_NUM), the indices of 
   !    the nodes in the linear mesh.
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes for the 
+  !    Input, integer(int32) NODE_NUM1, the number of nodes for the 
   !    linear mesh.
   !
-  !    Output, integer(ip) EDGE_DATA(5,6*TET_NUM), edge data.
+  !    Output, integer(int32) EDGE_DATA(5,6*TET_NUM), edge data.
   !
-  !    Output, integer(ip) NODE_NUM2, the number of nodes for the
+  !    Output, integer(int32) NODE_NUM2, the number of nodes for the
   !    quadratic mesh.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(in), value :: tet_num
+    integer(int32) node_num1
+    integer(int32) tet_num
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: edge
-    integer(ip), intent(out) :: edge_data(5,6*tet_num)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: n1
-    integer(ip) :: n1_old
-    integer(ip) :: n2
-    integer(ip) :: n2_old
-    integer(ip), intent(out) :: node_num2
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node1(4,tet_num)
+    integer(int32) a
+    integer(int32) b
+    integer(int32) edge
+    integer(int32) edge_data(5,6*tet_num)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) n1
+    integer(int32) n1_old
+    integer(int32) n2
+    integer(int32) n2_old
+    integer(int32) node_num2
+    integer(int32) tet
+    integer(int32) tet_node1(4,tet_num)
   !
   !  Step 1.
   !  From the list of nodes for tetrahedron T, of the form: (I,J,K,L)
@@ -3225,11 +3189,10 @@ contains
         n2_old = n2
       end if
     end do
-  end subroutine tet_mesh_order4_to_order10_size
+  end
 
   subroutine tet_mesh_order10_adj_count ( node_num, tet_num, tet_node, &
-    adj_num, adj_row ) &
-        bind(C, name="tet_mesh_order10_adj_count")
+    adj_num, adj_row )
 
   !*****************************************************************************80
   !
@@ -3265,31 +3228,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(10,TET_NUM), the indices of 
+  !    Input, integer(int32) TET_NODE(10,TET_NUM), the indices of 
   !    the nodes.
   !
-  !    Output, integer(ip) ADJ_NUM, the total number of adjacency
+  !    Output, integer(int32) ADJ_NUM, the total number of adjacency
   !    relationships,
   !
-  !    Output, integer(ip) ADJ_ROW(NODE_NUM+1), the ADJ pointer array.
+  !    Output, integer(int32) ADJ_ROW(NODE_NUM+1), the ADJ pointer array.
   !
 
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) tet_num
+    integer(int32) node_num
 
-    integer(ip), intent(out) :: adj_num
-    integer(ip), intent(out) :: adj_row(node_num+1)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: pair(2,45*tet_num)
-    integer(ip) :: pair_num
-    integer(ip) :: pair_unique_num
-    integer(ip), intent(in) :: tet_node(10,tet_num)
+    integer(int32) adj_num
+    integer(int32) adj_row(node_num+1)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) pair(2,45*tet_num)
+    integer(int32) pair_num
+    integer(int32) pair_unique_num
+    integer(int32) tet_node(10,tet_num)
   !
   !  Each order 10 tetrahedron defines 45 adjacency pairs.
   !
@@ -3349,11 +3312,10 @@ contains
     do i = 2, node_num+1
       adj_row(i) = adj_row(i-1) + adj_row(i)
     end do
-  end subroutine tet_mesh_order10_adj_count
+  end
 
   subroutine tet_mesh_order10_adj_set ( node_num, tet_num, tet_node, &
-    adj_num, adj_row, adj ) &
-        bind(C, name="tet_mesh_order10_adj_set")
+    adj_num, adj_row, adj )
 
   !*****************************************************************************80
   !
@@ -3391,34 +3353,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(10,TET_NUM), the indices of 
+  !    Input, integer(int32) TET_NODE(10,TET_NUM), the indices of 
   !    the nodes.
   !
-  !    Input, integer(ip) ADJ_NUM, the total number of adjacency 
+  !    Input, integer(int32) ADJ_NUM, the total number of adjacency 
   !    relationships,
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1), the ADJ pointer array.
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1), the ADJ pointer array.
   !
-  !    Output, integer(ip) ADJ(ADJ_NUM), the adjacency information.
+  !    Output, integer(int32) ADJ(ADJ_NUM), the adjacency information.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) tet_num
+    integer(int32) node_num
 
-    integer(ip), intent(out) :: adj(adj_num)
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: adj_row_copy(node_num+1)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: pair(2,45*tet_num)
-    integer(ip) :: pair_num
-    integer(ip), intent(in) :: tet_node(10,tet_num)
+    integer(int32) adj(adj_num)
+    integer(int32) adj_row(node_num+1)
+    integer(int32) adj_row_copy(node_num+1)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) pair(2,45*tet_num)
+    integer(int32) pair_num
+    integer(int32) tet_node(10,tet_num)
   !
   !  Each order 10 tetrahedron defines 45 adjacency pairs.
   !
@@ -3469,11 +3431,10 @@ contains
       adj_row_copy(j) = adj_row_copy(j) + 1
 
     end do
-  end subroutine tet_mesh_order10_adj_set
+  end
 
-  pure subroutine tet_mesh_order10_example_set ( node_num, tet_num, &
-    node_xyz, tet_node ) &
-        bind(C, name="tet_mesh_order10_example_set")
+  subroutine tet_mesh_order10_example_set ( node_num, tet_num, &
+    node_xyz, tet_node )
 
   !*****************************************************************************80
   !
@@ -3493,21 +3454,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Output, real(dp) NODE_XYZ(3,NODE_NUM), the node coordinates.
+  !    Output, real(real64) NODE_XYZ(3,NODE_NUM), the node coordinates.
   !
-  !    Output, integer(ip) TET_NODE(10,TET_NUM), the nodes 
+  !    Output, integer(int32) TET_NODE(10,TET_NUM), the nodes 
   !    forming each tet.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
+    integer(int32) node_num
+    integer(int32) tet_num
 
-    integer(ip), intent(out), dimension ( 10, tet_num ) :: tet_node
-    real(dp), intent(out), dimension ( 3, node_num ) :: node_xyz
+    integer(int32), dimension ( 10, tet_num ) :: tet_node
+    real(real64), dimension ( 3, node_num ) :: node_xyz
 
     tet_node(1:10,1:tet_num) = reshape ( (/ &
       4,   3,   5,   1,  16,  19,  17,  11,  10,  12, &
@@ -3519,38 +3480,37 @@ contains
     /), (/ 10, tet_num /) )
 
     node_xyz(1:3,1:node_num) = reshape ( (/ &
-     0.0_dp,  0.0_dp,  0.0_dp, &   
-     0.0_dp,  0.0_dp,  1.0_dp, &    
-     0.0_dp,  1.0_dp,  0.0_dp, &    
-     0.0_dp,  1.0_dp,  1.0_dp, &    
-     1.0_dp,  0.0_dp,  0.0_dp, &  
-     1.0_dp,  0.0_dp,  1.0_dp, &
-     1.0_dp,  1.0_dp,  0.0_dp, &    
-     1.0_dp,  1.0_dp,  1.0_dp, &    
-     0.0_dp,  0.0_dp,  0.5_dp, &    
-     0.0_dp,  0.5_dp,  0.0_dp, &   
-     0.0_dp,  0.5_dp,  0.5_dp, &   
-     0.5_dp,  0.0_dp,  0.0_dp, &   
-     0.0_dp,  0.5_dp,  1.0_dp, &    
-     0.5_dp,  0.0_dp,  0.5_dp, &    
-     0.5_dp,  0.0_dp,  1.0_dp, &   
-     0.0_dp,  1.0_dp,  0.5_dp, &    
-     0.5_dp,  0.5_dp,  0.0_dp, &   
-     0.5_dp,  1.0_dp,  0.0_dp, &   
-     0.5_dp,  0.5_dp,  0.5_dp, &    
-     0.5_dp,  0.5_dp,  1.0_dp, &   
-     0.5_dp,  1.0_dp,  0.5_dp, &    
-     0.5_dp,  1.0_dp,  1.0_dp, &    
-     1.0_dp,  0.0_dp,  0.5_dp, &    
-     1.0_dp,  0.5_dp,  0.0_dp, &    
-     1.0_dp,  0.5_dp,  0.5_dp, &    
-     1.0_dp,  0.5_dp,  1.0_dp, &   
-     1.0_dp,  1.0_dp,  0.5_dp  &    
+     0.0e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &   
+     0.0e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &    
+     0.0e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &    
+     0.0e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &    
+     1.0e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &  
+     1.0e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &
+     1.0e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &    
+     1.0e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &    
+     0.0e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &    
+     0.0e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &   
+     0.0e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &   
+     0.5e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &   
+     0.0e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &    
+     0.5e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &    
+     0.5e+00_real64,  0.0e+00_real64,  1.0e+00_real64, &   
+     0.0e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &    
+     0.5e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &   
+     0.5e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &   
+     0.5e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &    
+     0.5e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &   
+     0.5e+00_real64,  1.0e+00_real64,  0.5e+00_real64, &    
+     0.5e+00_real64,  1.0e+00_real64,  1.0e+00_real64, &    
+     1.0e+00_real64,  0.0e+00_real64,  0.5e+00_real64, &    
+     1.0e+00_real64,  0.5e+00_real64,  0.0e+00_real64, &    
+     1.0e+00_real64,  0.5e+00_real64,  0.5e+00_real64, &    
+     1.0e+00_real64,  0.5e+00_real64,  1.0e+00_real64, &   
+     1.0e+00_real64,  1.0e+00_real64,  0.5e+00_real64  &    
     /), (/ 3, node_num /) )
-  end subroutine tet_mesh_order10_example_set
+  end
 
-  pure subroutine tet_mesh_order10_example_size ( node_num, tet_num ) &
-        bind(C, name="tet_mesh_order10_example_size")
+  subroutine tet_mesh_order10_example_size ( node_num, tet_num )
 
   !*****************************************************************************80
   !
@@ -3570,21 +3530,20 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) NODE_NUM, the number of nodes.
+  !    Output, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Output, integer(int32) TET_NUM, the number of tetrahedrons.
   !
 
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: tet_num
+    integer(int32) node_num
+    integer(int32) tet_num
 
     node_num = 27
     tet_num = 6
-  end subroutine tet_mesh_order10_example_size
+  end
 
-  pure subroutine tet_mesh_order10_to_order4_compute ( tet_num1, tet_node1, &
-    tet_num2, tet_node2 ) &
-        bind(C, name="tet_mesh_order10_to_order4_compute")
+  subroutine tet_mesh_order10_to_order4_compute ( tet_num1, tet_node1, &
+    tet_num2, tet_node2 )
 
   !*****************************************************************************80
   !
@@ -3631,36 +3590,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TET_NUM1, the number of tetrahedrons in 
+  !    Input, integer(int32) TET_NUM1, the number of tetrahedrons in 
   !    the quadratic tet mesh.
   !
-  !    Input, integer(ip) TET_NODE1(10,TET_NUM1), the indices of 
+  !    Input, integer(int32) TET_NODE1(10,TET_NUM1), the indices of 
   !    the nodes in the quadratic tet mesh.
   !
-  !    Input, integer(ip) TET_NUM2, the number of tetrahedrons in 
+  !    Input, integer(int32) TET_NUM2, the number of tetrahedrons in 
   !    the linear tet mesh.  TET_NUM2 = 8 * TET_NUM1.
   !
-  !    Output, integer(ip) TET_NODE2(4,TET_NUM2), the indices of 
+  !    Output, integer(int32) TET_NODE2(4,TET_NUM2), the indices of 
   !    the nodes in the linear tet mesh.
   !
 
-    integer(ip), intent(in), value :: tet_num1
-    integer(ip), intent(in), value :: tet_num2
+    integer(int32) tet_num1
+    integer(int32) tet_num2
 
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: n5
-    integer(ip) :: n6
-    integer(ip) :: n7
-    integer(ip) :: n8
-    integer(ip) :: n9
-    integer(ip) :: nx
-    integer(ip) :: tet1
-    integer(ip) :: tet2
-    integer(ip), intent(in) :: tet_node1(10,tet_num1)
-    integer(ip), intent(out) :: tet_node2(4,tet_num2)
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) n5
+    integer(int32) n6
+    integer(int32) n7
+    integer(int32) n8
+    integer(int32) n9
+    integer(int32) nx
+    integer(int32) tet1
+    integer(int32) tet2
+    integer(int32) tet_node1(10,tet_num1)
+    integer(int32) tet_node2(4,tet_num2)
 
     tet2 = 0
 
@@ -3695,11 +3654,10 @@ contains
       tet_node2(1:4,tet2 ) = (/ n6, n8, n9, nx /)
 
     end do
-  end subroutine tet_mesh_order10_to_order4_compute
+  end
 
-  pure subroutine tet_mesh_order10_to_order4_size ( node_num1, tet_num1, &
-    node_num2, tet_num2 ) &
-        bind(C, name="tet_mesh_order10_to_order4_size")
+  subroutine tet_mesh_order10_to_order4_size ( node_num1, tet_num1, &
+    node_num2, tet_num2 )
 
   !*****************************************************************************80
   !
@@ -3736,32 +3694,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes in the 
+  !    Input, integer(int32) NODE_NUM1, the number of nodes in the 
   !    quadratic mesh.
   !
-  !    Input, integer(ip) TET_NUM1, the number of tetrahedrons in the
+  !    Input, integer(int32) TET_NUM1, the number of tetrahedrons in the
   !    quadratic mesh.
   !
-  !    Output, integer(ip) NODE_NUM2, the number of nodes for the 
+  !    Output, integer(int32) NODE_NUM2, the number of nodes for the 
   !    linear mesh.
   !
-  !    Output, integer(ip) TET_NUM2, the number of tetrahedrons in the
+  !    Output, integer(int32) TET_NUM2, the number of tetrahedrons in the
   !    linear mesh.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(out) :: node_num2
-    integer(ip), intent(in), value :: tet_num1
-    integer(ip), intent(out) :: tet_num2
+    integer(int32) node_num1
+    integer(int32) node_num2
+    integer(int32) tet_num1
+    integer(int32) tet_num2
 
     node_num2 = node_num1
     tet_num2 = 8 * tet_num1
-  end subroutine tet_mesh_order10_to_order4_size
+  end
 
   subroutine tet_mesh_quad ( node_num, node_xyz, tet_order, &
     tet_num, tet_node, f, quad_num, quad_xyz, quad_w, quad_value, &
-    region_volume ) &
-        bind(C, name="tet_mesh_quad")
+    region_volume )
 
   !*****************************************************************************80
   !
@@ -3786,8 +3743,8 @@ contains
   !
   !      subroutine f ( n, xyz_vec, f_vec )
   !      integer n
-  !      real(dp) f_vec(n)
-  !      real(dp) xyz_vec(3,n)
+  !      real(real64) f_vec(n)
+  !      real(real64) xyz_vec(3,n)
   !
   !    and it returns in each entry F_VEC(1:N), the value of the integrand
   !    at XYZ_VEC(1:3,1:N).
@@ -3806,56 +3763,56 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes in the tet mesh.
+  !    Input, integer(int32) NODE_NUM, the number of nodes in the tet mesh.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the coordinates 
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the coordinates 
   !    of the nodes.
   !
-  !    Input, integer(ip) TET_ORDER, the order of tetrahedrons in 
+  !    Input, integer(int32) TET_ORDER, the order of tetrahedrons in 
   !    the tet mesh.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons in the 
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons in the 
   !    tet mesh.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), the indices
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), the indices
   !    of the nodes.
   !
   !    Input, external F, the name of the subroutine that evaluates the integrand.
   !
-  !    Input, integer(ip) QUAD_NUM, the order of the quadrature rule.
+  !    Input, integer(int32) QUAD_NUM, the order of the quadrature rule.
   !
-  !    Input, real(dp) QUAD_XYZ(3,QUAD_NUM), the abscissas of the 
+  !    Input, real(real64) QUAD_XYZ(3,QUAD_NUM), the abscissas of the 
   !    quadrature rule, in the unit tetrahedron.
   !
-  !    Input, real(dp) QUAD_W(QUAD_NUM), the weights of the 
+  !    Input, real(real64) QUAD_W(QUAD_NUM), the weights of the 
   !    quadrature rule.
   !
-  !    Output, real(dp) QUAD_VALUE, the estimate of the integral
+  !    Output, real(real64) QUAD_VALUE, the estimate of the integral
   !    of F(X,Y) over the region covered by the tet mesh.
   !
-  !    Output, real(dp) REGION_VOLUME, the volume of the region.
+  !    Output, real(real64) REGION_VOLUME, the volume of the region.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: quad_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32) node_num
+    integer(int32) quad_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
     external f
-    real(dp), intent(in) :: node_xyz(3,node_num)
-    real(dp) :: quad_f(quad_num)
-    real(dp), intent(out) :: quad_value
-    real(dp), intent(in) :: quad_w(quad_num)
-    real(dp), intent(in) :: quad_xyz(3,quad_num)
-    real(dp) :: quad2_xyz(3,quad_num)
-    real(dp), intent(out) :: region_volume
-    integer(ip) :: tet
-    real(dp) :: tet_volume
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    real(dp) :: tet_xyz(3,4)
+    real(real64) node_xyz(3,node_num)
+    real(real64) quad_f(quad_num)
+    real(real64) quad_value
+    real(real64) quad_w(quad_num)
+    real(real64) quad_xyz(3,quad_num)
+    real(real64) quad2_xyz(3,quad_num)
+    real(real64) region_volume
+    integer(int32) tet
+    real(real64) tet_volume
+    integer(int32) tet_node(tet_order,tet_num)
+    real(real64) tet_xyz(3,4)
 
-    quad_value = 0.0_dp
-    region_volume = 0.0_dp
+    quad_value = 0.0e+00_real64
+    region_volume = 0.0e+00_real64
 
     do tet = 1, tet_num
 
@@ -3874,11 +3831,10 @@ contains
       region_volume = region_volume + tet_volume
 
     end do
-  end subroutine tet_mesh_quad
+  end
 
   subroutine tet_mesh_quality1 ( node_num, node_xyz, tet_order, tet_num, &
-    tet_node, tet_quality ) &
-        bind(C, name="tet_mesh_quality1")
+    tet_node, tet_quality )
 
   !*****************************************************************************80
   !
@@ -3907,32 +3863,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TET_ORDER, the order of the mesh, either
+  !    Input, integer(int32) TET_ORDER, the order of the mesh, either
   !    4 or 10.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), the 
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), the 
   !    indices of the nodes.
   !
-  !    Output, real(dp) TET_QUALITY(TET_NUM), the quality
+  !    Output, real(real64) TET_QUALITY(TET_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    real(dp), intent(out) :: tet_quality(tet_num)
-    real(dp) :: tet_xyz(dim_num,4)
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tet
+    integer(int32) tet_node(tet_order,tet_num)
+    real(real64) tet_quality(tet_num)
+    real(real64) tet_xyz(dim_num,4)
 
     do tet = 1, tet_num
 
@@ -3941,11 +3897,10 @@ contains
       call tetrahedron_quality1_3d ( tet_xyz, tet_quality(tet) )
 
     end do
-  end subroutine tet_mesh_quality1
+  end
 
   subroutine tet_mesh_quality2 ( node_num, node_xyz, tet_order, tet_num, &
-    tet_node, tet_quality ) &
-        bind(C, name="tet_mesh_quality2")
+    tet_node, tet_quality )
 
   !*****************************************************************************80
   !
@@ -3975,32 +3930,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TET_ORDER, the order of the mesh, either 
+  !    Input, integer(int32) TET_ORDER, the order of the mesh, either 
   !    4 or 10.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), the 
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), the 
   !    indices of the nodes.
   !
-  !    Output, real(dp) TET_QUALITY(TET_NUM), the quality
+  !    Output, real(real64) TET_QUALITY(TET_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    real(dp), intent(out) :: tet_quality(tet_num)
-    real(dp) :: tet_xyz(dim_num,4)
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tet
+    integer(int32) tet_node(tet_order,tet_num)
+    real(real64) tet_quality(tet_num)
+    real(real64) tet_xyz(dim_num,4)
 
     do tet = 1, tet_num
 
@@ -4009,11 +3964,10 @@ contains
       call tetrahedron_quality2_3d ( tet_xyz, tet_quality(tet) )
 
     end do
-  end subroutine tet_mesh_quality2
+  end
 
   subroutine tet_mesh_quality3 ( node_num, node_xyz, tet_order, tet_num, &
-    tet_node, tet_quality ) &
-        bind(C, name="tet_mesh_quality3")
+    tet_node, tet_quality )
 
   !*****************************************************************************80
   !
@@ -4043,32 +3997,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TET_ORDER, the order of the mesh, either 
+  !    Input, integer(int32) TET_ORDER, the order of the mesh, either 
   !    4 or 10.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), 
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), 
   !    the indices of the nodes.
   !
-  !    Output, real(dp) TET_QUALITY(TET_NUM), the quality
+  !    Output, real(real64) TET_QUALITY(TET_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    real(dp), intent(out) :: tet_quality(tet_num)
-    real(dp) :: tet_xyz(dim_num,4)
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tet
+    integer(int32) tet_node(tet_order,tet_num)
+    real(real64) tet_quality(tet_num)
+    real(real64) tet_xyz(dim_num,4)
 
     do tet = 1, tet_num
 
@@ -4077,11 +4031,10 @@ contains
       call tetrahedron_quality3_3d ( tet_xyz, tet_quality(tet) )
 
     end do
-  end subroutine tet_mesh_quality3
+  end
 
   subroutine tet_mesh_quality4 ( node_num, node_xyz, tet_order, tet_num, &
-    tet_node, tet_quality ) &
-        bind(C, name="tet_mesh_quality4")
+    tet_node, tet_quality )
 
   !*****************************************************************************80
   !
@@ -4111,32 +4064,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TET_ORDER, the order of the mesh, either 
+  !    Input, integer(int32) TET_ORDER, the order of the mesh, either 
   !    4 or 10.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), the 
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), the 
   !    indices of the nodes.
   !
-  !    Output, real(dp) TET_QUALITY(TET_NUM), the quality
+  !    Output, real(real64) TET_QUALITY(TET_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    real(dp), intent(out) :: tet_quality(tet_num)
-    real(dp) :: tet_xyz(dim_num,4)
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tet
+    integer(int32) tet_node(tet_order,tet_num)
+    real(real64) tet_quality(tet_num)
+    real(real64) tet_xyz(dim_num,4)
 
     do tet = 1, tet_num
 
@@ -4145,11 +4098,10 @@ contains
       call tetrahedron_quality4_3d ( tet_xyz, tet_quality(tet) )
 
     end do
-  end subroutine tet_mesh_quality4
+  end
 
   subroutine tet_mesh_quality5 ( node_num, node_xyz, tet_order, tet_num, &
-    tet_node, tet_quality ) &
-        bind(C, name="tet_mesh_quality5")
+    tet_node, tet_quality )
 
   !*****************************************************************************80
   !
@@ -4178,33 +4130,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TET_ORDER, the order of the mesh, 
+  !    Input, integer(int32) TET_ORDER, the order of the mesh, 
   !    either 4 or 10.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), 
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), 
   !    the indices of the nodes.
   !
-  !    Output, real(dp) TET_QUALITY(TET_NUM), the quality
+  !    Output, real(real64) TET_QUALITY(TET_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    real(dp), intent(out) :: tet_quality(tet_num)
-    real(dp) :: tet_xyz(dim_num,4)
-    real(dp) :: volume_max
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tet
+    integer(int32) tet_node(tet_order,tet_num)
+    real(real64) tet_quality(tet_num)
+    real(real64) tet_xyz(dim_num,4)
+    real(real64) volume_max
 
     do tet = 1, tet_num
 
@@ -4216,14 +4168,13 @@ contains
 
     volume_max = maxval ( tet_quality(1:tet_num) )
 
-    if ( 0.0_dp < volume_max ) then
+    if ( 0.0e+00_real64 < volume_max ) then
       tet_quality(1:tet_num) = tet_quality(1:tet_num) / volume_max
     end if
-  end subroutine tet_mesh_quality5
+  end
 
   subroutine tet_mesh_search_delaunay ( node_num, node_xyz, tet_order, &
-    tet_num, tet_node, tet_neighbor, p, tet_index, face, step_num ) &
-        bind(C, name="tet_mesh_search_delaunay")
+    tet_num, tet_node, tet_neighbor, p, tet_index, face, step_num )
 
   !*****************************************************************************80
   !
@@ -4276,27 +4227,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the coordinates of 
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the coordinates of 
   !    the nodes.
   !
-  !    Input, integer(ip) TET_ORDER, the order of the tetrahedrons.
+  !    Input, integer(int32) TET_ORDER, the order of the tetrahedrons.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM),
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM),
   !    the nodes that make up each tetrahedron.
   !
-  !    Input, integer(ip) TET_NEIGHBOR(4,TET_NUM), the 
+  !    Input, integer(int32) TET_NEIGHBOR(4,TET_NUM), the 
   !    tetrahedron neighbor list.
   !
-  !    Input, real(dp) P(3), the coordinates of a point.
+  !    Input, real(real64) P(3), the coordinates of a point.
   !
-  !    Output, integer(ip) TET_INDEX, the index of the tetrahedron 
+  !    Output, integer(int32) TET_INDEX, the index of the tetrahedron 
   !    where the search ended.  If a cycle occurred, then TET_INDEX = -1.
   !
-  !    Output, integer(ip) FACE, indicates the position of the point P in
+  !    Output, integer(int32) FACE, indicates the position of the point P in
   !    face TET_INDEX:
   !    0, the interior or boundary of the tetrahedron;
   !    -1, outside the convex hull of the tet mesh, past face 1;
@@ -4304,23 +4255,23 @@ contains
   !    -3, outside the convex hull of the tet mesh, past face 3.
   !    -4, outside the convex hull of the tet mesh, past face 4.
   !
-  !    Output, integer(ip) STEP_NUM, the number of steps taken.
+  !    Output, integer(int32) STEP_NUM, the number of steps taken.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    real(dp) :: alpha(dim_num+1)
-    integer(ip), intent(out) :: face
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    real(dp), intent(in) :: p(dim_num)
-    integer(ip), intent(out) :: step_num
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    integer(ip), intent(out) :: tet_index
-    integer(ip), save :: tet_index_save = -1
-    integer(ip), intent(in) :: tet_neighbor(dim_num+1,tet_num)
+    real(real64) alpha(dim_num+1)
+    integer(int32) face
+    real(real64) node_xyz(dim_num,node_num)
+    real(real64) p(dim_num)
+    integer(int32) step_num
+    integer(int32) tet_node(tet_order,tet_num)
+    integer(int32) tet_index
+    integer(int32), save :: tet_index_save = -1
+    integer(int32) tet_neighbor(dim_num+1,tet_num)
   !
   !  If possible, start with the previous successful value of TET_INDEX.
   !
@@ -4352,10 +4303,10 @@ contains
   !  If the barycentric coordinates are all positive, then the point
   !  is inside the tetrahedron and we're done.
   !
-      if ( 0.0_dp <= alpha(1) .and. &
-           0.0_dp <= alpha(2) .and. &
-           0.0_dp <= alpha(3) .and. &
-           0.0_dp <= alpha(4) ) then
+      if ( 0.0e+00_real64 <= alpha(1) .and. &
+           0.0e+00_real64 <= alpha(2) .and. &
+           0.0e+00_real64 <= alpha(3) .and. &
+           0.0e+00_real64 <= alpha(4) ) then
         exit
       end if
   !
@@ -4364,18 +4315,18 @@ contains
   !  If there is a negative barycentric coordinate for which there exists an
   !  opposing tetrahedron neighbor closer to the point, move to that tetrahedron.
   !
-      if ( alpha(1) < 0.0_dp .and. 0 < tet_neighbor(1,tet_index) ) then
+      if ( alpha(1) < 0.0e+00_real64 .and. 0 < tet_neighbor(1,tet_index) ) then
         tet_index = tet_neighbor(1,tet_index)
         cycle
-      else if ( alpha(2) < 0.0_dp .and. &
+      else if ( alpha(2) < 0.0e+00_real64 .and. &
         0 < tet_neighbor(2,tet_index) ) then
         tet_index = tet_neighbor(2,tet_index)
         cycle
-      else if ( alpha(3) < 0.0_dp .and. &
+      else if ( alpha(3) < 0.0e+00_real64 .and. &
         0 < tet_neighbor(3,tet_index) ) then
         tet_index = tet_neighbor(3,tet_index)
         cycle
-      else if ( alpha(4) < 0.0_dp .and. &
+      else if ( alpha(4) < 0.0e+00_real64 .and. &
         0 < tet_neighbor(4,tet_index) ) then
         tet_index = tet_neighbor(4,tet_index)
         cycle
@@ -4386,16 +4337,16 @@ contains
   !
   !  Note the face and exit.
   !
-      if ( alpha(1) < 0.0_dp ) then
+      if ( alpha(1) < 0.0e+00_real64 ) then
         face = -1
         exit
-      else if ( alpha(2) < 0.0_dp ) then
+      else if ( alpha(2) < 0.0e+00_real64 ) then
         face = -2
         exit
-      else if ( alpha(3) < 0.0_dp ) then
+      else if ( alpha(3) < 0.0e+00_real64 ) then
         face = -3
         exit
-      else if ( alpha(4) < 0.0_dp ) then
+      else if ( alpha(4) < 0.0e+00_real64 ) then
         face = -4
         exit
       end if
@@ -4403,11 +4354,10 @@ contains
     end do
 
     tet_index_save = tet_index
-  end subroutine tet_mesh_search_delaunay
+  end
 
   subroutine tet_mesh_search_naive ( node_num, node_xyz, &
-    tet_order, tet_num, tet_node, p, tet_index, step_num ) &
-        bind(C, name="tet_mesh_search_naive")
+    tet_order, tet_num, tet_node, p, tet_index, step_num )
 
   !*****************************************************************************80
   !
@@ -4432,40 +4382,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the coordinates 
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the coordinates 
   !    of the nodes.
   !
-  !    Input, integer(ip) TET_ORDER, the order of the tetrahedrons.
+  !    Input, integer(int32) TET_ORDER, the order of the tetrahedrons.
   !
-  !    Input, integer(ip) TET_NUM, the number of tetrahedrons in
+  !    Input, integer(int32) TET_NUM, the number of tetrahedrons in
   !    the mesh.
   !
-  !    Input, integer(ip) TET_NODE(TET_ORDER,TET_NUM), 
+  !    Input, integer(int32) TET_NODE(TET_ORDER,TET_NUM), 
   !    the nodes that make up each tetrahedron.
   !
-  !    Input, real(dp) P(3), the coordinates of a point.
+  !    Input, real(real64) P(3), the coordinates of a point.
   !
-  !    Output, integer(ip) TET_INDEX, the index of the tetrahedron
+  !    Output, integer(int32) TET_INDEX, the index of the tetrahedron
   !    where the search ended, or -1 if no tetrahedron was found containing
   !    the point.
   !
-  !    Output, integer(ip) STEP_NUM, the number of tetrahedrons checked.
+  !    Output, integer(int32) STEP_NUM, the number of tetrahedrons checked.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tet_num
-    integer(ip), intent(in), value :: tet_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tet_num
+    integer(int32) tet_order
 
-    real(dp) :: alpha(4)
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    real(dp), intent(in) :: p(dim_num)
-    integer(ip), intent(out) :: step_num
-    integer(ip) :: tet
-    integer(ip), intent(in) :: tet_node(tet_order,tet_num)
-    integer(ip), intent(out) :: tet_index
+    real(real64) alpha(4)
+    real(real64) node_xyz(dim_num,node_num)
+    real(real64) p(dim_num)
+    integer(int32) step_num
+    integer(int32) tet
+    integer(int32) tet_node(tet_order,tet_num)
+    integer(int32) tet_index
 
     tet_index = -1
     step_num = 0
@@ -4481,10 +4431,9 @@ contains
       end if
 
     end do
-  end subroutine tet_mesh_search_naive
+  end
 
-  subroutine tetrahedron_barycentric ( tetra, p, c ) &
-        bind(C, name="tetrahedron_barycentric")
+  subroutine tetrahedron_barycentric ( tetra, p, c )
 
   !*****************************************************************************80
   !
@@ -4517,23 +4466,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Input, real(dp) P(3), the point to be checked.
+  !    Input, real(real64) P(3), the point to be checked.
   !
-  !    Output, real(dp) C(4), the barycentric coordinates of P with
+  !    Output, real(real64) C(4), the barycentric coordinates of P with
   !    respect to the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), parameter :: rhs_num = 1
+    integer(int32), parameter :: dim_num = 3
+    integer(int32), parameter :: rhs_num = 1
 
-    real(dp) :: a(dim_num,dim_num+rhs_num)
-    real(dp), intent(out) :: c(dim_num+1)
-    integer(ip) :: i
-    integer(ip) :: info
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: tetra(dim_num,4)
+    real(real64) a(dim_num,dim_num+rhs_num)
+    real(real64) c(dim_num+1)
+    integer(int32) i
+    integer(int32) info
+    real(real64) p(dim_num)
+    real(real64) tetra(dim_num,4)
   !
   !  Set up the linear system
   !
@@ -4564,11 +4513,10 @@ contains
 
     c(2:4) = a(1:dim_num,4)
 
-    c(1) = 1.0_dp - sum ( c(2:4) )
-  end subroutine tetrahedron_barycentric
+    c(1) = 1.0e+00_real64 - sum ( c(2:4) )
+  end
 
-  subroutine tetrahedron_circumsphere_3d ( tet_xyz, r, pc ) &
-        bind(C, name="tetrahedron_circumsphere_3d")
+  subroutine tetrahedron_circumsphere_3d ( tet_xyz, r, pc )
 
   !*****************************************************************************80
   !
@@ -4610,23 +4558,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4) the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4) the coordinates of the vertices.
   !
-  !    Output, real(dp) R, PC(3), the center of the
+  !    Output, real(real64) R, PC(3), the center of the
   !    circumscribed sphere, and its radius.  If the linear system is
   !    singular, then R = -1, PC(1:3) = 0.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), parameter :: rhs_num = 1
+    integer(int32), parameter :: dim_num = 3
+    integer(int32), parameter :: rhs_num = 1
 
-    real(dp) :: a(dim_num,dim_num+rhs_num)
-    integer(ip) :: i
-    integer(ip) :: info
-    integer(ip) :: j
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: tet_xyz(dim_num,4)
+    real(real64) a(dim_num,dim_num+rhs_num)
+    integer(int32) i
+    integer(int32) info
+    integer(int32) j
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) tet_xyz(dim_num,4)
   !
   !  Set up the linear system.
   !
@@ -4647,19 +4595,18 @@ contains
   !  If the system was singular, return a consolation prize.
   !
     if ( info /= 0 ) then
-      r = -1.0_dp
-      pc(1:dim_num) = 0.0_dp
+      r = -1.0e+00_real64
+      pc(1:dim_num) = 0.0e+00_real64
     end if
   !
   !  Compute the radius and center.
   !
-    r = 0.5_dp * sqrt ( sum ( a(1:dim_num,4)**2 ) )
+    r = 0.5e+00_real64 * sqrt ( sum ( a(1:dim_num,4)**2 ) )
 
-    pc(1:dim_num) = tet_xyz(1:dim_num,1) + 0.5_dp * a(1:dim_num,4)
-  end subroutine tetrahedron_circumsphere_3d
+    pc(1:dim_num) = tet_xyz(1:dim_num,1) + 0.5e+00_real64 * a(1:dim_num,4)
+  end
 
-  pure subroutine tetrahedron_edge_length_3d ( tet_xyz, edge_length ) &
-        bind(C, name="tetrahedron_edge_length_3d")
+  subroutine tetrahedron_edge_length_3d ( tet_xyz, edge_length )
 
   !*****************************************************************************80
   !
@@ -4679,19 +4626,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !
-  !    Output, real(dp) EDGE_LENGTH(6), the length of the edges.
+  !    Output, real(real64) EDGE_LENGTH(6), the length of the edges.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8vec_norm
-    real(dp), intent(out) :: edge_length(6)
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip) :: k
-    real(dp), intent(in) :: tet_xyz(dim_num,4)
+    real(real64) r8vec_norm
+    real(real64) edge_length(6)
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) k
+    real(real64) tet_xyz(dim_num,4)
 
     k = 0
     do j1 = 1, 3
@@ -4701,10 +4648,9 @@ contains
           tet_xyz(1:dim_num,j2) - tet_xyz(1:dim_num,j1) )
       end do
     end do
-  end subroutine tetrahedron_edge_length_3d
+  end
 
-  subroutine tetrahedron_insphere_3d ( tet_xyz, r, pc ) &
-        bind(C, name="tetrahedron_insphere_3d")
+  subroutine tetrahedron_insphere_3d ( tet_xyz, r, pc )
 
   !*****************************************************************************80
   !
@@ -4744,35 +4690,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !
-  !    Output, real(dp) R, PC(3), the radius and the center
+  !    Output, real(real64) R, PC(3), the radius and the center
   !    of the sphere.  
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: b(4,4)
-    real(dp) :: gamma
-    real(dp) :: l123
-    real(dp) :: l124
-    real(dp) :: l134
-    real(dp) :: l234
-    real(dp) :: n123(1:dim_num)
-    real(dp) :: n124(1:dim_num)
-    real(dp) :: n134(1:dim_num)
-    real(dp) :: n234(1:dim_num)
-    real(dp), intent(out) :: pc(1:dim_num)
-    real(dp), intent(out) :: r
-    real(dp) :: r8mat_det_4d
-    real(dp) :: r8vec_norm
-    real(dp), intent(in) :: tet_xyz(1:dim_num,4)
-    real(dp) :: v21(1:dim_num)
-    real(dp) :: v31(1:dim_num)
-    real(dp) :: v41(1:dim_num)
-    real(dp) :: v32(1:dim_num)
-    real(dp) :: v42(1:dim_num)
-    real(dp) :: v43(1:dim_num)
+    real(real64) b(4,4)
+    real(real64) gamma
+    real(real64) l123
+    real(real64) l124
+    real(real64) l134
+    real(real64) l234
+    real(real64) n123(1:dim_num)
+    real(real64) n124(1:dim_num)
+    real(real64) n134(1:dim_num)
+    real(real64) n234(1:dim_num)
+    real(real64) pc(1:dim_num)
+    real(real64) r
+    real(real64) r8mat_det_4d
+    real(real64) r8vec_norm
+    real(real64) tet_xyz(1:dim_num,4)
+    real(real64) v21(1:dim_num)
+    real(real64) v31(1:dim_num)
+    real(real64) v41(1:dim_num)
+    real(real64) v32(1:dim_num)
+    real(real64) v42(1:dim_num) 
+    real(real64) v43(1:dim_num) 
 
     v21(1:dim_num) = tet_xyz(1:dim_num,2) - tet_xyz(1:dim_num,1)
     v31(1:dim_num) = tet_xyz(1:dim_num,3) - tet_xyz(1:dim_num,1)
@@ -4798,7 +4744,7 @@ contains
                   / ( l234 + l134 + l124 + l123 )
 
     b(1:dim_num,1:4) = tet_xyz(1:dim_num,1:4)
-    b(4,1:4) = 1.0_dp
+    b(4,1:4) = 1.0e+00_real64
 
     gamma = abs ( r8mat_det_4d ( b ) )
 
@@ -4817,10 +4763,9 @@ contains
   !     + tet_xyz(1,3) * tet_xyz(2,1) * tet_xyz(3,2) ) )
 
     r = gamma / ( l234 + l134 + l124 + l123 )
-  end subroutine tetrahedron_insphere_3d
+  end
 
-  pure subroutine tetrahedron_order4_physical_to_reference ( tet_xyz, n, phy, ref ) &
-        bind(C, name="tetrahedron_order4_physical_to_reference")
+  subroutine tetrahedron_order4_physical_to_reference ( tet_xyz, n, phy, ref )
 
   !*****************************************************************************80
   !
@@ -4853,26 +4798,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.  
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.  
   !    The vertices are assumed to be the images of
   !    (0,0,0), (1,0,0), (0,1,0) and (0,0,1) respectively.
   !
-  !    Input, integer(ip) N, the number of points to transform.
+  !    Input, integer(int32) N, the number of points to transform.
   !
-  !    Input, real(dp) PHY(3,N), the coordinates of physical points
+  !    Input, real(real64) PHY(3,N), the coordinates of physical points
   !    to be transformed.
   !
-  !    Output, real(dp) REF(3,N), the coordinates of the corresponding
+  !    Output, real(real64) REF(3,N), the coordinates of the corresponding
   !    points in the reference space.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(3,3)
-    real(dp) :: det
-    real(dp), intent(in) :: phy(3,n)
-    real(dp), intent(out) :: ref(3,n)
-    real(dp), intent(in) :: tet_xyz( 3,4)
+    real(real64) a(3,3)
+    real(real64) det
+    real(real64) phy(3,n)
+    real(real64) ref(3,n)
+    real(real64) tet_xyz( 3,4)
   !
   !  Set up the matrix.
   !
@@ -4888,8 +4833,8 @@ contains
   !
   !  If the determinant is zero, bail out.
   !
-    if ( det == 0.0_dp ) then
-      ref(1:3,1:n) = 0.0_dp
+    if ( det == 0.0e+00_real64 ) then
+      ref(1:3,1:n) = 0.0e+00_real64
     end if
   !
   !  Compute the solution.
@@ -4911,16 +4856,15 @@ contains
                  ) / det
 
     ref(3,1:n) = (   ( a(2,1) * a(3,2) - a(2,2) * a(3,1) ) &
-                   * ( phy(1,1:n) - tet_xyz 1,1) ) &
+                   * ( phy(1,1:n) - tet_xyz(1,1) ) &
                    - ( a(1,1) * a(3,2) - a(1,2) * a(3,1) ) &
                    * ( phy(2,1:n) - tet_xyz(2,1) ) &
                    + ( a(1,1) * a(2,2) - a(1,2) * a(2,1) ) &
                    * ( phy(3,1:n) - tet_xyz(3,1) ) &
                  ) / det
-  end subroutine tetrahedron_order4_physical_to_reference
+  end
 
-  pure subroutine tetrahedron_order4_reference_to_physical ( tet_xyz, n, ref, phy ) &
-        bind(C, name="tetrahedron_order4_reference_to_physical")
+  subroutine tetrahedron_order4_reference_to_physical ( tet_xyz, n, ref, phy )
 
   !*****************************************************************************80
   !
@@ -4953,36 +4897,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !    The vertices are assumed to be the images of (0,0,0), (1,0,0),
   !    (0,1,0) and (0,0,1) respectively.
   !
-  !    Input, integer(ip) N, the number of points to transform.
+  !    Input, integer(int32) N, the number of points to transform.
   !
-  !    Input, real(dp) REF(3,N), points in the reference tetrahedron.
+  !    Input, real(real64) REF(3,N), points in the reference tetrahedron.
   !
-  !    Output, real(dp) PHY(3,N), corresponding points in the
+  !    Output, real(real64) PHY(3,N), corresponding points in the
   !    physical tetrahedron.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    real(dp), intent(out) :: phy(3,n)
-    real(dp), intent(in) :: ref(3,n)
-    real(dp), intent(in) :: tet_xyz( 3,4)
+    integer(int32) i
+    real(real64) phy(3,n)
+    real(real64) ref(3,n)
+    real(real64) tet_xyz( 3,4)
 
     do i = 1, 3
       phy(i,1:n) = &
-          tet_xyz( i,1) * ( 1.0_dp - ref(1,1:n) - ref(2,1:n) - ref(3,1:n) ) &
+          tet_xyz( i,1) * ( 1.0e+00_real64 - ref(1,1:n) - ref(2,1:n) - ref(3,1:n) ) &
         + tet_xyz( i,2) *             ref(1,1:n)                             &
         + tet_xyz( i,3) *                          ref(2,1:n)                &
         + tet_xyz( i,4) *                                       ref(3,1:n)
     end do
-  end subroutine tetrahedron_order4_reference_to_physical
+  end
 
-  subroutine tetrahedron_quality1_3d ( tet_xyz, quality ) &
-        bind(C, name="tetrahedron_quality1_3d")
+  subroutine tetrahedron_quality1_3d ( tet_xyz, quality )
 
   !*****************************************************************************80
   !
@@ -5009,28 +4952,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !
-  !    Output, real(dp) QUALITY, the quality of the tetrahedron.
+  !    Output, real(real64) QUALITY, the quality of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: pc(dim_num)
-    real(dp), intent(out) :: quality
-    real(dp) :: r_in
-    real(dp) :: r_out
-    real(dp), intent(in) :: tet_xyz(dim_num,4)
+    real(real64) pc(dim_num)
+    real(real64) quality
+    real(real64) r_in
+    real(real64) r_out
+    real(real64) tet_xyz(dim_num,4)
 
     call tetrahedron_circumsphere_3d ( tet_xyz, r_out, pc )
 
     call tetrahedron_insphere_3d ( tet_xyz, r_in, pc )
 
-    quality = 3.0_dp * r_in / r_out
-  end subroutine tetrahedron_quality1_3d
+    quality = 3.0e+00_real64 * r_in / r_out
+  end
 
-  subroutine tetrahedron_quality2_3d ( tet_xyz, quality2 ) &
-        bind(C, name="tetrahedron_quality2_3d")
+  subroutine tetrahedron_quality2_3d ( tet_xyz, quality2 )
 
   !*****************************************************************************80
   !
@@ -5071,19 +5013,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !
-  !    Output, real(dp) QUALITY2, the quality of the tetrahedron.
+  !    Output, real(real64) QUALITY2, the quality of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: edge_length(6)
-    real(dp) :: l_max
-    real(dp) :: pc(dim_num)
-    real(dp), intent(out) :: quality2
-    real(dp) :: r_in
-    real(dp), intent(in) :: tet_xyz(dim_num,4)
+    real(real64) edge_length(6)
+    real(real64) l_max
+    real(real64) pc(dim_num)
+    real(real64) quality2
+    real(real64) r_in
+    real(real64) tet_xyz(dim_num,4)
 
     call tetrahedron_edge_length_3d ( tet_xyz, edge_length )
 
@@ -5091,11 +5033,10 @@ contains
 
     call tetrahedron_insphere_3d ( tet_xyz, r_in, pc )
 
-    quality2 = 2.0_dp * sqrt ( 6.0_dp ) * r_in / l_max
-  end subroutine tetrahedron_quality2_3d
+    quality2 = 2.0e+00_real64 * sqrt ( 6.0e+00_real64 ) * r_in / l_max
+  end
 
-  pure subroutine tetrahedron_quality3_3d ( tet_xyz, quality3 ) &
-        bind(C, name="tetrahedron_quality3_3d")
+  subroutine tetrahedron_quality3_3d ( tet_xyz, quality3 )
 
   !*****************************************************************************80
   !
@@ -5137,29 +5078,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !
-  !    Output, real(dp) QUALITY3, the mean ratio of the tetrahedron.
+  !    Output, real(real64) QUALITY3, the mean ratio of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: ab(dim_num)
-    real(dp) :: ac(dim_num)
-    real(dp) :: ad(dim_num)
-    real(dp) :: bc(dim_num)
-    real(dp) :: bd(dim_num)
-    real(dp) :: cd(dim_num)
-    real(dp) :: denom
-    real(dp) :: lab
-    real(dp) :: lac
-    real(dp) :: lad
-    real(dp) :: lbc
-    real(dp) :: lbd
-    real(dp) :: lcd
-    real(dp), intent(out) :: quality3
-    real(dp), intent(in) :: tet_xyz(dim_num,4)
-    real(dp) :: volume
+    real(real64) ab(dim_num)
+    real(real64) ac(dim_num)
+    real(real64) ad(dim_num)
+    real(real64) bc(dim_num)
+    real(real64) bd(dim_num)
+    real(real64) cd(dim_num)
+    real(real64) denom
+    real(real64) lab
+    real(real64) lac
+    real(real64) lad
+    real(real64) lbc
+    real(real64) lbd
+    real(real64) lcd
+    real(real64) quality3
+    real(real64) tet_xyz(dim_num,4)
+    real(real64) volume
   !
   !  Compute the vectors representing the sides of the tetrahedron.
   !
@@ -5184,19 +5125,18 @@ contains
     volume = abs ( &
         ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
       + ab(2) * ( ac(3) * ad(1) - ac(1) * ad(3) ) &
-      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0_dp
+      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0e+00_real64
 
     denom = lab + lac + lad + lbc + lbd + lcd
 
-    if ( denom == 0.0_dp ) then
-      quality3 = 0.0_dp
+    if ( denom == 0.0e+00_real64 ) then
+      quality3 = 0.0e+00_real64
     else
-      quality3 = 12.0_dp * ( 3.0_dp * volume )**( 2.0_dp / 3.0_dp ) / denom
+      quality3 = 12.0e+00_real64 * ( 3.0e+00_real64 * volume )**( 2.0e+00_real64 / 3.0e+00_real64 ) / denom
     end if
-  end subroutine tetrahedron_quality3_3d
+  end
 
-  pure subroutine tetrahedron_quality4_3d ( tet_xyz, quality4 ) &
-        bind(C, name="tetrahedron_quality4_3d")
+  subroutine tetrahedron_quality4_3d ( tet_xyz, quality4 )
 
   !*****************************************************************************80
   !
@@ -5233,36 +5173,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !
-  !    Output, real(dp) QUALITY4, the value of the quality measure.
+  !    Output, real(real64) QUALITY4, the value of the quality measure.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a(dim_num)
-    real(dp) :: ab(dim_num)
-    real(dp) :: ac(dim_num)
-    real(dp) :: ad(dim_num)
-    real(dp) :: b(dim_num)
-    real(dp) :: bc(dim_num)
-    real(dp) :: bd(dim_num)
-    real(dp) :: c(dim_num)
-    real(dp) :: cd(dim_num)
-    real(dp) :: d(dim_num)
-    real(dp) :: denom
-    real(dp) :: l1
-    real(dp) :: l2
-    real(dp) :: l3
-    real(dp) :: lab
-    real(dp) :: lac
-    real(dp) :: lad
-    real(dp) :: lbc
-    real(dp) :: lbd
-    real(dp) :: lcd
-    real(dp), intent(out) :: quality4
-    real(dp), intent(in) :: tet_xyz(dim_num,4)
-    real(dp) :: volume
+    real(real64) a(dim_num)
+    real(real64) ab(dim_num)
+    real(real64) ac(dim_num)
+    real(real64) ad(dim_num)
+    real(real64) b(dim_num)
+    real(real64) bc(dim_num)
+    real(real64) bd(dim_num)
+    real(real64) c(dim_num)
+    real(real64) cd(dim_num)
+    real(real64) d(dim_num)
+    real(real64) denom
+    real(real64) l1
+    real(real64) l2
+    real(real64) l3
+    real(real64) lab
+    real(real64) lac
+    real(real64) lad
+    real(real64) lbc
+    real(real64) lbd
+    real(real64) lcd
+    real(real64) quality4
+    real(real64) tet_xyz(dim_num,4)
+    real(real64) volume
   !
   !  Compute the vectors that represent the sides.
   !
@@ -5287,9 +5227,9 @@ contains
     volume = abs ( &
         ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
       + ab(2) * ( ac(3) * ad(1) - ac(1) * ad(3) ) &
-      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0_dp
+      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0e+00_real64
 
-    quality4 = 1.0_dp
+    quality4 = 1.0e+00_real64
 
     l1 = lab + lac
     l2 = lab + lad
@@ -5299,10 +5239,10 @@ contains
           * ( l2 + lbd ) * ( l2 - lbd ) &
           * ( l3 + lcd ) * ( l3 - lcd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lab + lbc
@@ -5313,10 +5253,10 @@ contains
           * ( l2 + lad ) * ( l2 - lad ) &
           * ( l3 + lcd ) * ( l3 - lcd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lac + lbc
@@ -5327,10 +5267,10 @@ contains
           * ( l2 + lad ) * ( l2 - lad ) &
           * ( l3 + lbd ) * ( l3 - lbd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lad + lbd
@@ -5341,17 +5281,16 @@ contains
           * ( l2 + lac ) * ( l2 - lac ) &
           * ( l3 + lbc ) * ( l3 - lbc )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
-    quality4 = quality4 * 1.5_dp * sqrt ( 6.0_dp )
-  end subroutine tetrahedron_quality4_3d
+    quality4 = quality4 * 1.5e+00_real64 * sqrt ( 6.0e+00_real64 )
+  end
 
-  pure subroutine tetrahedron_reference_sample ( n, seed, p ) &
-        bind(C, name="tetrahedron_reference_sample")
+  subroutine tetrahedron_reference_sample ( n, seed, p )
 
   !*****************************************************************************80
   !
@@ -5371,25 +5310,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points to sample.
+  !    Input, integer(int32) N, the number of points to sample.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) P(3,N), random points in the tetrahedron.
+  !    Output, real(real64) P(3,N), random points in the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) n
 
-    real(dp) :: alpha
-    real(dp) :: beta
-    real(dp) :: gamma
-    integer(ip) :: j
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp) :: r
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    real(real64) alpha
+    real(real64) beta
+    real(real64) gamma
+    integer(int32) j
+    real(real64) p(dim_num,n)
+    real(real64) r
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     do j = 1, n
 
@@ -5403,7 +5342,7 @@ contains
   !  The plane will intersect sides 12, 13, and 14 at a fraction
   !  ALPHA = R^1/3 of the distance from vertex 1 to vertices 2, 3, and 4.
   !
-      alpha = r ** ( 1.0_dp / 3.0_dp )
+      alpha = r ** ( 1.0e+00_real64 / 3.0e+00_real64 )
   !
   !  Determine the coordinates of the points on sides 12, 13 and 14 intersected
   !  by the plane, which form a triangle TR.
@@ -5431,15 +5370,14 @@ contains
       gamma = r8_uniform_01 ( seed )
 
       p(1:dim_num,j) = (/ &
-        alpha * ( 1.0_dp - beta ) *             gamma, &
-        alpha *             beta   * ( 1.0_dp - gamma ), &
+        alpha * ( 1.0e+00_real64 - beta ) *             gamma, &
+        alpha *             beta   * ( 1.0e+00_real64 - gamma ), &
         alpha *             beta   *             gamma /)
 
     end do
-  end subroutine tetrahedron_reference_sample
+  end
 
-  pure subroutine tetrahedron_sample ( tet_xyz, n, seed, p ) &
-        bind(C, name="tetrahedron_sample")
+  subroutine tetrahedron_sample ( tet_xyz, n, seed, p )
 
   !*****************************************************************************80
   !
@@ -5459,31 +5397,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !
-  !    Input, integer(ip) N, the  number of points to sample.
+  !    Input, integer(int32) N, the  number of points to sample.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) P(3,N), random points in the tetrahedron.
+  !    Output, real(real64) P(3,N), random points in the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) n
 
-    real(dp) :: alpha
-    real(dp) :: beta
-    real(dp) :: gamma
-    integer(ip) :: j
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp) :: p12(dim_num)
-    real(dp) :: p13(dim_num)
-    real(dp) :: r
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(in) :: tet_xyz(dim_num,4)
-    real(dp) :: tr(dim_num,3)
+    real(real64) alpha
+    real(real64) beta
+    real(real64) gamma
+    integer(int32) j
+    real(real64) p(dim_num,n)
+    real(real64) p12(dim_num)
+    real(real64) p13(dim_num)
+    real(real64) r
+    real(real64) r8_uniform_01
+    integer(int32) seed
+    real(real64) tet_xyz(dim_num,4)
+    real(real64) tr(dim_num,3)
 
     do j = 1, n
 
@@ -5497,16 +5435,16 @@ contains
   !  The plane will intersect sides 12, 13, and 14 at a fraction
   !  ALPHA = R^1/3 of the distance from vertex 1 to vertices 2, 3, and 4.
   !
-      alpha = r ** ( 1.0_dp / 3.0_dp )
+      alpha = r ** ( 1.0e+00_real64 / 3.0e+00_real64 )
   !
   !  Determine the coordinates of the points on sides 12, 13 and 14 intersected
   !  by the plane, which form a triangle TR.
   !
-      tr(1:dim_num,1) = ( 1.0_dp - alpha ) * tet_xyz(1:dim_num,1) &
+      tr(1:dim_num,1) = ( 1.0e+00_real64 - alpha ) * tet_xyz(1:dim_num,1) &
                                   + alpha   * tet_xyz(1:dim_num,2)
-      tr(1:dim_num,2) = ( 1.0_dp - alpha ) * tet_xyz(1:dim_num,1) &
+      tr(1:dim_num,2) = ( 1.0e+00_real64 - alpha ) * tet_xyz(1:dim_num,1) &
                                   + alpha   * tet_xyz(1:dim_num,3)
-      tr(1:dim_num,3) = ( 1.0_dp - alpha ) * tet_xyz(1:dim_num,1) &
+      tr(1:dim_num,3) = ( 1.0e+00_real64 - alpha ) * tet_xyz(1:dim_num,1) &
                                   + alpha   * tet_xyz(1:dim_num,4)
   !
   !  Now choose, uniformly at random, a point in this triangle.
@@ -5526,24 +5464,23 @@ contains
   !  Determine the coordinates of the points on sides 2 and 3 intersected
   !  by line L.
   !
-      p12(1:dim_num) = ( 1.0_dp - beta ) * tr(1:dim_num,1) &
+      p12(1:dim_num) = ( 1.0e+00_real64 - beta ) * tr(1:dim_num,1) &
                                  + beta   * tr(1:dim_num,2)
-      p13(1:dim_num) = ( 1.0_dp - beta ) * tr(1:dim_num,1) &
+      p13(1:dim_num) = ( 1.0e+00_real64 - beta ) * tr(1:dim_num,1) &
                                  + beta   * tr(1:dim_num,3)
   !
   !  Now choose, uniformly at random, a point on the line L.
   !
       gamma = r8_uniform_01 ( seed )
 
-      p(1:dim_num,j) = ( 1.0_dp - gamma ) * p12(1:dim_num) &
+      p(1:dim_num,j) = ( 1.0e+00_real64 - gamma ) * p12(1:dim_num) &
                      +             gamma   * p13(1:dim_num)
 
 
     end do
-  end subroutine tetrahedron_sample
+  end
 
-  pure subroutine tetrahedron_volume ( tet_xyz, volume ) &
-        bind(C, name="tetrahedron_volume")
+  subroutine tetrahedron_volume ( tet_xyz, volume )
 
   !*****************************************************************************80
   !
@@ -5563,22 +5500,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TET_XYZ(3,4), the coordinates of the vertices.
+  !    Input, real(real64) TET_XYZ(3,4), the coordinates of the vertices.
   !
-  !    Output, real(dp) VOLUME, the volume of the tetrahedron.
+  !    Output, real(real64) VOLUME, the volume of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a(4,4)
-    real(dp) :: r8mat_det_4d
-    real(dp), intent(in) :: tet_xyz(dim_num,4)
-    real(dp), intent(out) :: volume
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
+    real(real64) tet_xyz(dim_num,4)
+    real(real64) volume
 
     a(1:dim_num,1:4) = tet_xyz(1:dim_num,1:4)
-    a(4,1:4) = 1.0_dp
+    a(4,1:4) = 1.0e+00_real64
 
-    volume = abs ( r8mat_det_4d ( a ) ) / 6.0_dp
-  end subroutine tetrahedron_volume
+    volume = abs ( r8mat_det_4d ( a ) ) / 6.0e+00_real64
+  end
 
 end module tet_mesh_mod

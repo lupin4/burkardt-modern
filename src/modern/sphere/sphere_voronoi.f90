@@ -1,23 +1,17 @@
-!> sphere_voronoi -- Modern Fortran 2018
+!> sphere_voronoi — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module sphere_voronoi_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: stripack_interface, poly_count, poly_count_max, vr_to_xyzf, xyz_read
 
 contains
 
-  subroutine stripack_interface ( point_file_name ) &
-        bind(C, name="stripack_interface")
+  subroutine stripack_interface ( point_file_name )
 
   !*****************************************************************************80
   !
@@ -30,7 +24,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -45,49 +39,48 @@ contains
   !    Input, character ( len = * ) POINT_FILE_NAME, the name of the input file.
   !
 
-    character ( len = * ), intent(in) :: point_file_name
-
-    real(dp) :: a
-    real(dp), allocatable, dimension ( : ) :: ds
-    real(dp) :: elat
-    real(dp) :: elon
-    integer(ip) :: i
-    integer(ip) :: ierror
-    integer(ip) :: iunit
-    integer(ip), allocatable, dimension ( : ) :: iwk
-    integer(ip) :: k
-    integer(ip) :: kt
-    integer(ip), allocatable, dimension ( :, : ) :: lbtri
-    integer(ip), allocatable, dimension ( : ) :: lend
-    integer(ip), allocatable, dimension ( : ) :: list
-    integer(ip), allocatable, dimension ( : ) :: listc
-    integer(ip) :: lnew
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip), allocatable, dimension ( : ) :: lptr
-    integer(ip), allocatable, dimension ( :, : ) :: ltri
-    integer(ip) :: n
-    integer(ip) :: na
-    integer(ip) :: nb
-    integer(ip) :: nn
-    real(dp) :: norm
-    integer(ip) :: nt
-    integer(ip) :: ntemp
-    logical :: numbr
-    integer(ip) :: nv
-    real(dp), parameter :: pltsiz = 7.5_dp
-    real(dp), allocatable, dimension ( : ) :: rc
-    integer(ip) :: side_max
-    real(dp) :: vlat
-    real(dp) :: vlon
-    character ( len = 255 ) :: voronoi_plot_file_name
-    character ( len = 255 ) :: voronoi_plot_title
-    real(dp), allocatable, dimension ( : ) :: x
-    real(dp), allocatable, dimension ( : ) :: xc
-    real(dp), allocatable, dimension ( : ) :: y
-    real(dp), allocatable, dimension ( : ) :: yc
-    real(dp), allocatable, dimension ( : ) :: z
-    real(dp), allocatable, dimension ( : ) :: zc
+    real(real64) a
+    real(real64), allocatable, dimension ( : ) :: ds
+    real(real64) elat
+    real(real64) elon
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) iunit
+    integer(int32), allocatable, dimension ( : ) :: iwk
+    integer(int32) k
+    integer(int32) kt
+    integer(int32), allocatable, dimension ( :, : ) :: lbtri
+    integer(int32), allocatable, dimension ( : ) :: lend
+    integer(int32), allocatable, dimension ( : ) :: list
+    integer(int32), allocatable, dimension ( : ) :: listc
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32), allocatable, dimension ( : ) :: lptr
+    integer(int32), allocatable, dimension ( :, : ) :: ltri
+    integer(int32) n
+    integer(int32) na
+    integer(int32) nb
+    integer(int32) nn
+    real(real64) norm
+    integer(int32) nt
+    integer(int32) ntemp
+    logical numbr
+    integer(int32) nv
+    real(real64), parameter :: pltsiz = 7.5e+00_real64
+    character ( len = * ) point_file_name
+    real(real64), allocatable, dimension ( : ) :: rc
+    integer(int32) side_max
+    real(real64) vlat
+    real(real64) vlon
+    character ( len = 255 ) voronoi_plot_file_name
+    character ( len = 255 ) voronoi_plot_title
+    real(real64), allocatable, dimension ( : ) :: x
+    real(real64), allocatable, dimension ( : ) :: xc
+    real(real64), allocatable, dimension ( : ) :: y
+    real(real64), allocatable, dimension ( : ) :: yc
+    real(real64), allocatable, dimension ( : ) :: z
+    real(real64), allocatable, dimension ( : ) :: zc
   !
   !  Count the number of lines of (X,Y,Z) data.
   !
@@ -182,14 +175,14 @@ contains
 
     call poly_count ( n, lend, lptr, listc, side_max )
   !
-  !  Plot the portion of the Voronoi diagram contained
+  !  Plot the portion of the Voronoi diagram contained 
   !  in the hemisphere centered at E = (ELAT,ELON), where ELAT and ELON
   !  are taken to be the center of the range of
   !  the nodal latitudes and longitudes.
   !
-    elat = 0.0_dp
-    elon = 0.0_dp
-    a = 90.0_dp
+    elat = 0.0e+00_real64
+    elon = 0.0e+00_real64
+    a = 90.0e+00_real64
     numbr = ( n <= 200 )
     nt = 2 * n - 4
 
@@ -239,10 +232,9 @@ contains
     deallocate ( yc )
     deallocate ( z )
     deallocate ( zc )
-  end subroutine stripack_interface
+  end
 
-  subroutine poly_count ( n, lend, lptr, listc, side_max ) &
-        bind(C, name="poly_count")
+  subroutine poly_count ( n, lend, lptr, listc, side_max )
 
   !*****************************************************************************80
   !
@@ -250,7 +242,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -262,32 +254,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of Voronoi polygons.
+  !    Input, integer(int32) N, the number of Voronoi polygons.
   !
-  !    Input, integer(ip) LEND(N), some kind of pointer.
+  !    Input, integer(int32) LEND(N), some kind of pointer.
   !
-  !    Input, integer(ip) LPTR(6*(N-2)), some other kind of pointer.
+  !    Input, integer(int32) LPTR(6*(N-2)), some other kind of pointer.
   !
-  !    Input, integer(ip) LISTC(6*(N-2)), some other kind of pointer.
+  !    Input, integer(int32) LISTC(6*(N-2)), some other kind of pointer.
   !
-  !    Input, integer(ip) SIDE_MAX, the maximum polygonal order.
+  !    Input, integer(int32) SIDE_MAX, the maximum polygonal order.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: side_max
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: listc(6*(n-2))
-    integer(ip), intent(in) :: lptr(6*(n-2))
+    integer(int32) n
+    integer(int32) side_max
 
-    integer(ip) :: count(0:side_max)
-    integer(ip) :: edges
-    integer(ip) :: i
-    integer(ip) :: kv
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip) :: n0
-    integer(ip) :: sides
-    integer(ip) :: vertices
+    integer(int32) count(0:side_max)
+    integer(int32) edges
+    integer(int32) i
+    integer(int32) kv
+    integer(int32) lend(n)
+    integer(int32) listc(6*(n-2))
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) n0
+    integer(int32) sides
+    integer(int32) vertices
 
     count(0:side_max) = 0
 
@@ -354,10 +346,9 @@ contains
         write ( *, '(2x,i8,2x,i8)' ) i, count(i)
       end if
     end do
-  end subroutine poly_count
+  end
 
-  subroutine poly_count_max ( n, lend, lptr, listc, side_max ) &
-        bind(C, name="poly_count_max")
+  subroutine poly_count_max ( n, lend, lptr, listc, side_max )
 
   !*****************************************************************************80
   !
@@ -365,7 +356,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -377,28 +368,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of Voronoi polygons.
+  !    Input, integer(int32) N, the number of Voronoi polygons.
   !
-  !    Input, integer(ip) LEND(N), some kind of pointer.
+  !    Input, integer(int32) LEND(N), some kind of pointer.
   !
-  !    Input, integer(ip) LPTR(6*(N-2)), some other kind of pointer.
+  !    Input, integer(int32) LPTR(6*(N-2)), some other kind of pointer.
   !
-  !    Input, integer(ip) LISTC(6*(N-2)), some other kind of pointer.
+  !    Input, integer(int32) LISTC(6*(N-2)), some other kind of pointer.
   !
-  !    Output, integer(ip) SIDE_MAX, the highest order polygon.
+  !    Output, integer(int32) SIDE_MAX, the highest order polgon.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: listc(6*(n-2))
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip), intent(out) :: side_max
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip) :: n0
-    integer(ip) :: sides
+    integer(int32) i
+    integer(int32) lend(n)
+    integer(int32) listc(6*(n-2))
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) n0
+    integer(int32) side_max
+    integer(int32) sides
 
     side_max = - 1
 
@@ -429,10 +420,9 @@ contains
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'POLY_COUNT_MAX'
     write ( *, '(a,i8)' ) '  Highest order polygon is ', side_max
-  end subroutine poly_count_max
+  end
 
-  subroutine vr_to_xyzf ( n, xc, yc, zc, listc, lptr, lend, point_file_name ) &
-        bind(C, name="vr_to_xyzf")
+  subroutine vr_to_xyzf ( n, xc, yc, zc, listc, lptr, lend, point_file_name )
 
   !*****************************************************************************80
   !
@@ -447,7 +437,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -459,39 +449,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes.
+  !    Input, integer(int32) N, the number of nodes.
   !
-  !    Input, real(dp) XC(2*(N-2)), YC(2*(N-2)), ZC(2*(N-2)),
+  !    Input, real(real64) XC(2*(N-2)), YC(2*(N-2)), ZC(2*(N-2)),
   !    the coordinates  of the Voronoi vertices.
   !
-  !    Input, integer(ip) LISTC(6*(N-2)), LPTR(6*(N-2)), LEND(N),
+  !    Input, integer(int32) LISTC(6*(N-2)), LPTR(6*(N-2)), LEND(N), 
   !    information defining the triangulation, created by TRMESH.
   !
   !    Input, character ( len = * ) POINT_FILE_NAME, the name of the
   !    file containing the point coordinates.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: xc(2*(n-2))
-    real(dp), intent(in) :: yc(2*(n-2))
-    real(dp), intent(in) :: zc(2*(n-2))
-    integer(ip), intent(in) :: listc(6*(n-2))
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip), intent(in) :: lend(n)
-    character ( len = * ), intent(in) :: point_file_name
+    integer(int32) n
 
     logical, parameter :: header = .false.
-    integer(ip) :: i
-    integer(ip) :: iunit
-    integer(ip) :: kv1
-    integer(ip) :: kv2
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip) :: node1
-    integer(ip) :: node2
-    character ( len = 40 ) :: string
-    character ( len = 255 ) :: voronoi_face_file_name
-    character ( len = 255 ) :: voronoi_vertex_file_name
+    integer(int32) i
+    integer(int32) iunit
+    integer(int32) kv1
+    integer(int32) kv2
+    integer(int32) lend(n)
+    integer(int32) listc(6*(n-2))
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) node1
+    integer(int32) node2
+    character ( len = *  ) point_file_name
+    character ( len = 40 ) string
+    character ( len = 255 ) voronoi_face_file_name
+    character ( len = 255 ) voronoi_vertex_file_name
+    real(real64) xc(2*(n-2))
+    real(real64) yc(2*(n-2))
+    real(real64) zc(2*(n-2))
   !
   !  Write the Voronoi diagram vertex file.
   !
@@ -549,7 +539,7 @@ contains
 
       lpl = lend(i)
 
-      kv2 = listc(lpl)
+      kv2 = listc(lpl) 
       write ( iunit, '(i8)', advance = 'no' ) kv2
 
       lp = lpl
@@ -577,10 +567,9 @@ contains
     write ( *, '(a)' ) 'VR_TO_XYZF:'
     write ( *, '(a)' ) '  Wrote the Voronoi XYZF file "'  &
       // trim ( voronoi_face_file_name ) // '".'
-  end subroutine vr_to_xyzf
+  end
 
-  subroutine xyz_read ( point_file_name, n, x, y, z, ierror ) &
-        bind(C, name="xyz_read")
+  subroutine xyz_read ( point_file_name, n, x, y, z, ierror )
 
   !*****************************************************************************80
   !
@@ -591,9 +580,22 @@ contains
   !    Comment lines begin with '#";
   !    The XYZ coordinates of a point are written on a single line.
   !
+  !  Example:
+  !
+  !     # cube.xyz
+  !     #
+  !     0 0 0
+  !     0 0 1
+  !     0 1 0
+  !     0 1 1
+  !     1 0 0
+  !     1 0 1
+  !     1 1 0
+  !     1 1 1
+  !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -605,34 +607,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, character ( len = * ) POINT_FILE_NAME, the name of the input file.
+  !    Input, character ( len = * ) XYZ_FILE_NAME, the name of the input file.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Output, real(dp) X(N), Y(N), Z(N), the point coordinates.
+  !    Output, real(real64) X(N), Y(N), Z(N), the point coordinates.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    0, no error occurred.
   !    nonzero, an error occurred.
   !
 
-    character ( len = * ), intent(in) :: point_file_name
-    integer(ip), intent(in), value :: n
-    real(dp), intent(out) :: x(n)
-    real(dp), intent(out) :: y(n)
-    real(dp), intent(out) :: z(n)
-    integer(ip), intent(out) :: ierror
+    integer(int32) n
 
-    logical :: done
-    integer(ip) :: i
-    integer(ip) :: ios
-    integer(ip) :: iunit
-    integer(ip) :: lchar
-    character ( len = 255 ) :: line
-    integer(ip) :: n2
-    real(dp) :: temp(3)
-    integer(ip) :: text_num
-    character ( len = 255 ) :: word
+    logical done
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) ios
+    integer(int32) iunit
+    integer(int32) lchar
+    character ( len = 255 ) line
+    integer(int32) n2
+    real(real64) temp(3)
+    integer(int32) text_num
+    character ( len = 255 ) word
+    real(real64) x(n)
+    character ( len = * ) point_file_name
+    real(real64) y(n)
+    real(real64) z(n)
 
     n2 = 0
     ierror = 0
@@ -720,6 +722,6 @@ contains
     write ( *, '(a,i8,a)' ) '  Read ', text_num, ' text lines from ' &
       // trim ( point_file_name )
     write ( *, '(a,i8,a)' ) '  Read ', n2, ' sets of (X,Y,Z) coordinates.'
-  end subroutine xyz_read
+  end
 
 end module sphere_voronoi_mod

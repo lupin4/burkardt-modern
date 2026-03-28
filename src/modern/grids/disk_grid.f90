@@ -1,23 +1,17 @@
-!> disk_grid -- Modern Fortran 2018
+!> disk_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module disk_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: disk_grid, disk_grid_count, disk_grid_fibonacci, r82vec_print_part
 
 contains
 
-  subroutine disk_grid ( n, r, c, ng, cg ) &
-        bind(C, name="disk_grid")
+  subroutine disk_grid ( n, r, c, ng, cg )
 
   !*****************************************************************************80
   !
@@ -44,28 +38,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) C(2), the coordinates of the center of the circle.
+  !    Input, real(real64) C(2), the coordinates of the center of the circle.
   !
-  !    Input, integer(ip) NG, the number of grid points, as determined by
+  !    Input, integer(int32) NG, the number of grid points, as determined by
   !    DISK_GRID_COUNT.
   !
-  !    Output, real(dp) CG(2,NG), the grid points inside the circle.
+  !    Output, real(real64) CG(2,NG), the grid points inside the circle.
   !
 
-    integer(ip), intent(in), value :: ng
-    real(dp), intent(in) :: c(2)
-    real(dp), intent(out) :: cg(2,ng)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in), value :: n
-    integer(ip) :: p
-    real(dp), intent(in), value :: r
-    real(dp) :: x
-    real(dp) :: y
+    integer(int32) ng
+
+    real(real64) c(2)
+    real(real64) cg(2,ng)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) n
+    integer(int32) p
+    real(real64) r
+    real(real64) x
+    real(real64) y
 
     p = 0
 
@@ -73,21 +68,21 @@ contains
 
       i = 0
       x = c(1)
-      y = c(2) + r * real ( 2 * j, dp) / real ( 2 * n + 1, dp)
+      y = c(2) + r * real ( 2 * j, real64) / real ( 2 * n + 1, real64)
       p = p + 1
       cg(1,p) = x
       cg(2,p) = y
 
-      if ( j > 0 ) then
+      if ( 0 < j ) then
         p = p + 1
         cg(1,p) = x
-        cg(2,p) = 2.0_dp * c(2) - y
+        cg(2,p) = 2.0e+00_real64 * c(2) - y
       end if
 
       do
 
         i = i + 1
-        x = c(1) + r * real ( 2 * i, dp) / real ( 2 * n + 1, dp)
+        x = c(1) + r * real ( 2 * i, real64) / real ( 2 * n + 1, real64)
 
         if ( r * r < ( x - c(1) )**2 + ( y - c(2) )**2 ) then
           exit
@@ -97,25 +92,24 @@ contains
         cg(1,p) = x
         cg(2,p) = y
         p = p + 1
-        cg(1,p) = 2.0_dp * c(1) - x
+        cg(1,p) = 2.0e+00_real64 * c(1) - x
         cg(2,p) = y
 
-        if ( j > 0 ) then
+        if ( 0 < j ) then
           p = p + 1
           cg(1,p) = x
-          cg(2,p) = 2.0_dp * c(2) - y
+          cg(2,p) = 2.0e+00_real64 * c(2) - y
           p = p + 1
-          cg(1,p) = 2.0_dp * c(1) - x
-          cg(2,p) = 2.0_dp * c(2) - y
+          cg(1,p) = 2.0e+00_real64 * c(1) - x
+          cg(2,p) = 2.0e+00_real64 * c(2) - y
         end if
 
       end do
 
     end do
-  end subroutine disk_grid
+  end
 
-  subroutine disk_grid_count ( n, r, c, ng ) &
-        bind(C, name="disk_grid_count")
+  subroutine disk_grid_count ( n, r, c, ng )
 
   !*****************************************************************************80
   !
@@ -142,24 +136,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) C(2), the coordinates of the center of the circle.
+  !    Input, real(real64) C(2), the coordinates of the center of the circle.
   !
-  !    Output, integer(ip) NG, the number of grid points inside
+  !    Output, integer(int32) NG, the number of grid points inside 
   !    the circle.
   !
 
-    real(dp), intent(in) :: c(2)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ng
-    real(dp), intent(in), value :: r
-    real(dp) :: x
-    real(dp) :: y
+    real(real64) c(2)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) n
+    integer(int32) ng
+    real(real64) r
+    real(real64) x
+    real(real64) y
 
     ng = 0
 
@@ -167,17 +161,17 @@ contains
 
       i = 0
       x = c(1)
-      y = c(2) + r * real ( 2 * j, dp) / real ( 2 * n + 1, dp)
+      y = c(2) + r * real ( 2 * j, real64) / real ( 2 * n + 1, real64)
       ng = ng + 1
 
-      if ( j > 0 ) then
+      if ( 0 < j ) then
         ng = ng + 1
       end if
 
       do
 
         i = i + 1
-        x = c(1) + r * real ( 2 * i, dp) / real ( 2 * n + 1, dp)
+        x = c(1) + r * real ( 2 * i, real64) / real ( 2 * n + 1, real64)
 
         if ( r * r < ( x - c(1) )**2 + ( y - c(2) )**2 ) then
           exit
@@ -185,7 +179,7 @@ contains
 
         ng = ng + 1
         ng = ng + 1
-        if ( j > 0 ) then
+        if ( 0 < j ) then
           ng = ng + 1
           ng = ng + 1
         end if
@@ -193,10 +187,9 @@ contains
       end do
 
     end do
-  end subroutine disk_grid_count
+  end
 
-  pure subroutine disk_grid_fibonacci ( n, r, c, g ) &
-        bind(C, name="disk_grid_fibonacci")
+  subroutine disk_grid_fibonacci ( n, r, c, g )
 
   !*****************************************************************************80
   !
@@ -223,39 +216,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points desired.
+  !    Input, integer(int32) N, the number of points desired.
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) C(2), the coordinates of the center of the circle.
+  !    Input, real(real64) C(2), the coordinates of the center of the circle.
   !
-  !    Output, real(dp) G(2,N), the grid points.
+  !    Output, real(real64) G(2,N), the grid points.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: c(2)
-    real(dp), intent(out) :: g(2,n)
-    real(dp) :: gr
-    real(dp) :: gt
-    integer(ip) :: i
-    real(dp) :: phi
-    real(dp), parameter :: pi = 3.141592653589793e+00_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: r0
+    integer(int32) n
 
-    r0 = r / sqrt ( real ( n, dp) - 0.5_dp )
-    phi = ( 1.0_dp + sqrt ( 5.0_dp ) ) / 2.0_dp
+    real(real64) c(2)
+    real(real64) g(2,n)
+    real(real64) gr
+    real(real64) gt
+    integer(int32) i
+    real(real64) phi
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) r0
+
+    r0 = r / sqrt ( real ( n, real64) - 0.5e+00_real64 )
+    phi = ( 1.0e+00_real64 + sqrt ( 5.0e+00_real64 ) ) / 2.0e+00_real64
 
     do i = 1, n
-      gr = r0 * sqrt ( real ( i, dp) - 0.5_dp )
-      gt = 2.0_dp * pi * real ( i, dp) / phi
+      gr = r0 * sqrt ( real ( i, real64) - 0.5e+00_real64 )
+      gt = 2.0e+00_real64 * pi * real ( i, real64) / phi
       g(1,i) = c(1) + gr * cos ( gt )
       g(2,i) = c(2) + gr * sin ( gt )
     end do
-  end subroutine disk_grid_fibonacci
+  end
 
-  subroutine r82vec_print_part ( n, a, max_print, title ) &
-        bind(C, name="r82vec_print_part")
+  subroutine r82vec_print_part ( n, a, max_print, title )
 
   !*****************************************************************************80
   !
@@ -286,21 +279,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries of the vector.
+  !    Input, integer(int32) N, the number of entries of the vector.
   !
-  !    Input, real(dp) A(2,N), the vector to be printed.
+  !    Input, real(real64) A(2,N), the vector to be printed.
   !
-  !    Input, integer(ip) MAX_PRINT, the maximum number of lines
+  !    Input, integer(int32) MAX_PRINT, the maximum number of lines
   !    to print.
   !
   !    Input, character ( len = * ) TITLE, a title.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a(2,n)
-    integer(ip) :: i
-    integer(ip), intent(in), value :: max_print
-    character ( len = * ), intent(in) :: title
+    integer(int32) n
+
+    real(real64) a(2,n)
+    integer(int32) i
+    integer(int32) max_print
+    character ( len = * ) title
 
     if ( max_print <= 0 ) then
     end if
@@ -337,6 +331,6 @@ contains
         '...more entries...'
 
     end if
-  end subroutine r82vec_print_part
+  end
 
 end module disk_grid_mod

@@ -1,16 +1,11 @@
-!> circle_segment � Modern Fortran 2018
+!> circle_segment — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module circle_segment_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: circle_segment_angle_from_chord, circle_segment_angle_from_chord_angles, circle_segment_angle_from_height, circle_segment_area_from_angle, circle_segment_area_from_chord, circle_segment_area_from_height
   public :: circle_segment_area_from_sample, circle_segment_cdf, circle_segment_centroid_from_chord, circle_segment_centroid_from_height, circle_segment_centroid_from_sample, circle_segment_contains_point
@@ -21,8 +16,7 @@ module circle_segment_mod
 
 contains
 
-  pure subroutine circle_segment_angle_from_chord ( r, c, p1, p2, theta ) &
-        bind(C, name="circle_segment_angle_from_chord")
+  subroutine circle_segment_angle_from_chord ( r, c, p1, p2, theta )
 
   !*****************************************************************************80
   !
@@ -52,26 +46,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2), the center of the circle.
+  !    Input, real(real64) C(2), the center of the circle.
   !
-  !    Input, real(dp) P1(2), P2(2), the ends of the chord.
+  !    Input, real(real64) P1(2), P2(2), the ends of the chord.
   !
-  !    Output, real(dp) THETA, the angle of the circle segment.
+  !    Output, real(real64) THETA, the angle of the circle segment.
   !    0 <= THETA < 2 * PI.
   !
 
-    real(dp), intent(in) :: c(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_atan
-    real(dp), intent(out) :: theta
-    real(dp) :: v1(2)
-    real(dp) :: v2(2)
+    real(real64) c(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) r8_atan
+    real(real64) theta
+    real(real64) v1(2)
+    real(real64) v2(2)
   !
   !  Compute the radial vectors V1 and V2.
   !
@@ -84,17 +78,16 @@ contains
   !
   !  Force 0 <= THETA < 2 * PI.
   !
-    do while ( theta < 0.0_dp )
-      theta = theta + 2.0_dp * pi
+    do while ( theta < 0.0e+00_real64 )
+      theta = theta + 2.0e+00_real64 * pi
     end do
 
-    do while ( 2.0_dp * pi <= theta )
-      theta = theta - 2.0_dp * pi
+    do while ( 2.0e+00_real64 * pi <= theta )
+      theta = theta - 2.0e+00_real64 * pi
     end do
-  end subroutine circle_segment_angle_from_chord
+  end
 
-  pure subroutine circle_segment_angle_from_chord_angles ( omega1, omega2, theta ) &
-        bind(C, name="circle_segment_angle_from_chord_angles")
+  subroutine circle_segment_angle_from_chord_angles ( omega1, omega2, theta )
 
   !*****************************************************************************80
   !
@@ -124,27 +117,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) OMEGA1, OMEGA2, the angles of the points P1 
+  !    Input, real(real64) OMEGA1, OMEGA2, the angles of the points P1 
   !    and P2.  OMEGA1 <= OMEGA2.
   !
-  !    Output, real(dp) THETA, the angle of the circle segment.
+  !    Output, real(real64) THETA, the angle of the circle segment.
   !    Essentially, THETA = OMEGA2 - OMEGA1.
   !
 
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: omega1
-    real(dp), intent(in), value :: omega2
-    real(dp), intent(out) :: theta
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) omega1
+    real(real64) omega2
+    real(real64) theta
 
     do while ( omega2 < omega1 )
-      omega2 = omega2 + 2.0_dp * pi
+      omega2 = omega2 + 2.0e+00_real64 * pi
     end do
 
     theta = omega2 - omega1
-  end subroutine circle_segment_angle_from_chord_angles
+  end
 
-  subroutine circle_segment_angle_from_height ( r, h, theta ) &
-        bind(C, name="circle_segment_angle_from_height")
+  subroutine circle_segment_angle_from_height ( r, h, theta )
 
   !*****************************************************************************80
   !
@@ -174,46 +166,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) H, the "height" of the circle segment.
+  !    Input, real(real64) H, the "height" of the circle segment.
   !    0 <= H <= 2 * R.
   !
-  !    Output, real(dp) THETA, the angle of the circle segment.
+  !    Output, real(real64) THETA, the angle of the circle segment.
   !
 
-    real(dp), intent(in), value :: h
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_asin
-  ! real(dp) r8_acos
-    real(dp), intent(out) :: theta
+    real(real64) h
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) r8_asin
+  ! real(real64) r8_acos
+    real(real64) theta
 
-    if ( h <= 0.0_dp ) then
+    if ( h <= 0.0e+00_real64 ) then
 
-      theta = 0.0_dp
+      theta = 0.0e+00_real64
 
     else if ( h <= r ) then
 
-  !   theta = 2.0_dp * r8_acos ( ( r - h ) / r )
-      theta = 2.0_dp * r8_asin ( sqrt ( r * r - ( r - h ) * ( r - h ) ) / r )
+  !   theta = 2.0e+00_real64 * r8_acos ( ( r - h ) / r )
+      theta = 2.0e+00_real64 * r8_asin ( sqrt ( r * r - ( r - h ) * ( r - h ) ) / r )
 
-    else if ( h <= 2.0_dp * r ) then
+    else if ( h <= 2.0e+00_real64 * r ) then
 
-  !   theta = 2.0_dp * r8_acos ( ( r - h ) / r )
-      theta = 2.0_dp * r8_asin ( sqrt ( r * r - ( r - h ) * ( r - h ) ) / r )
-      theta = 2.0_dp * pi - theta
+  !   theta = 2.0e+00_real64 * r8_acos ( ( r - h ) / r )
+      theta = 2.0e+00_real64 * r8_asin ( sqrt ( r * r - ( r - h ) * ( r - h ) ) / r )
+      theta = 2.0e+00_real64 * pi - theta
 
     else
 
-      theta = 2.0_dp * pi
+      theta = 2.0e+00_real64 * pi
 
     end if
-  end subroutine circle_segment_angle_from_height
+  end
 
-  pure subroutine circle_segment_area_from_angle ( r, theta, area ) &
-        bind(C, name="circle_segment_area_from_angle")
+  subroutine circle_segment_area_from_angle ( r, theta, area )
 
   !*****************************************************************************80
   !
@@ -243,23 +234,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) THETA, the angle of the circle segment.
+  !    Input, real(real64) THETA, the angle of the circle segment.
   !
-  !    Output, real(dp) AREA, the area of the circle segment.
+  !    Output, real(real64) AREA, the area of the circle segment.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: theta
+    real(real64) area
+    real(real64) r
+    real(real64) theta
 
-    area = r * r * ( theta - sin ( theta ) ) / 2.0_dp
-  end subroutine circle_segment_area_from_angle
+    area = r * r * ( theta - sin ( theta ) ) / 2.0e+00_real64
+  end
 
-  pure subroutine circle_segment_area_from_chord ( r, c, p1, p2, area ) &
-        bind(C, name="circle_segment_area_from_chord")
+  subroutine circle_segment_area_from_chord ( r, c, p1, p2, area )
 
   !*****************************************************************************80
   !
@@ -289,30 +279,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2), the center of the circle.
+  !    Input, real(real64) C(2), the center of the circle.
   !
-  !    Input, real(dp) P1(2), P2(2), the ends of the chord.
+  !    Input, real(real64) P1(2), P2(2), the ends of the chord.
   !
-  !    Output, real(dp) AREA, the area of the circle segment.
+  !    Output, real(real64) AREA, the area of the circle segment.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: c(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
+    real(real64) area
+    real(real64) c(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) r
+    real(real64) theta
 
     call circle_segment_angle_from_chord ( r, c, p1, p2, theta )
 
-    area = r * r * ( theta - sin ( theta ) ) / 2.0_dp
-  end subroutine circle_segment_area_from_chord
+    area = r * r * ( theta - sin ( theta ) ) / 2.0e+00_real64
+  end
 
-  pure subroutine circle_segment_area_from_height ( r, h, area ) &
-        bind(C, name="circle_segment_area_from_height")
+  subroutine circle_segment_area_from_height ( r, h, area )
 
   !*****************************************************************************80
   !
@@ -342,46 +331,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) H, the height of the circle segment.
+  !    Input, real(real64) H, the height of the circle segment.
   !    0 <= H <= 2 * R.
   !
-  !    Output, real(dp) AREA, the area of the circle segment.
+  !    Output, real(real64) AREA, the area of the circle segment.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: h
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_asin
-    real(dp) :: theta
+    real(real64) area
+    real(real64) h
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) r8_asin
+    real(real64) theta
 
-    if ( h <= 0.0_dp ) then
+    if ( h <= 0.0e+00_real64 ) then
 
-      area = 0.0_dp
+      area = 0.0e+00_real64
 
     else if ( h <= r ) then
 
-      theta = 2.0_dp * r8_asin ( sqrt ( r * r - ( r - h ) * ( r - h ) ) / r )
-      area = r * r * ( theta - sin ( theta ) ) / 2.0_dp
+      theta = 2.0e+00_real64 * r8_asin ( sqrt ( r * r - ( r - h ) * ( r - h ) ) / r )
+      area = r * r * ( theta - sin ( theta ) ) / 2.0e+00_real64
 
-    else if ( h <= 2.0_dp * r ) then
+    else if ( h <= 2.0e+00_real64 * r ) then
 
-      theta = 2.0_dp * r8_asin ( sqrt ( r * r - ( r - h ) * ( r - h ) ) / r )
-      theta = 2.0_dp * pi - theta
-      area = r * r * ( theta - sin ( theta ) ) / 2.0_dp
+      theta = 2.0e+00_real64 * r8_asin ( sqrt ( r * r - ( r - h ) * ( r - h ) ) / r )
+      theta = 2.0e+00_real64 * pi - theta
+      area = r * r * ( theta - sin ( theta ) ) / 2.0e+00_real64
 
     else
 
       area = pi * r * r
 
     end if
-  end subroutine circle_segment_area_from_height
+  end
 
-  subroutine circle_segment_area_from_sample ( r, c, p1, p2, n, seed, area ) &
-        bind(C, name="circle_segment_area_from_sample")
+  subroutine circle_segment_area_from_sample ( r, c, p1, p2, n, seed, area )
 
   !*****************************************************************************80
   !
@@ -411,53 +399,53 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2,1), the center of the circle.
+  !    Input, real(real64) C(2,1), the center of the circle.
   !
-  !    Input, real(dp) P1(2,1), P2(2,1), the ends of the chord.
+  !    Input, real(real64) P1(2,1), P2(2,1), the ends of the chord.
   !
-  !    Input, integer(ip) N, the number of sample points.
+  !    Input, integer(int32) N, the number of sample points.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) AREA, the area of the circle segment.
+  !    Output, real(real64) AREA, the area of the circle segment.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: angle(n)
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: c(2)
-    integer(ip) :: i
-    integer(ip) :: m
-    real(dp) :: omega1
-    real(dp) :: omega2
-    real(dp) :: p(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp) :: p2(2)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: r2(n)
-    real(dp) :: r8_atan
-    real(dp) :: rmh
-    integer(ip), intent(inout) :: seed
-    real(dp) :: vdotp(n)
-    real(dp) :: x(n)
-    real(dp) :: y(n)
+    real(real64) angle(n)
+    real(real64) area
+    real(real64) c(2)
+    integer(int32) i
+    integer(int32) m
+    real(real64) omega1
+    real(real64) omega2
+    real(real64) p(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) r2(n)
+    real(real64) r8_atan
+    real(real64) rmh
+    integer(int32) seed
+    real(real64) vdotp(n)
+    real(real64) x(n)
+    real(real64) y(n)
   !
   !  Determine the angles of the chord endpoints.
   !
     omega1 = r8_atan ( p1(2) - c(2), p1(1) - c(1) )
-    do while ( omega1 < 0.0_dp )
-      omega1 = omega1 + 2.0_dp * pi
+    do while ( omega1 < 0.0e+00_real64 )
+      omega1 = omega1 + 2.0e+00_real64 * pi
     end do
 
     omega2 = r8_atan ( p2(2) - c(2), p2(1) - c(1) );
     do while ( omega2 < omega1 )
-      omega2 = omega2 + 2.0_dp * pi
+      omega2 = omega2 + 2.0e+00_real64 * pi
     end do
   !
   !  Get N random points in the circle.
@@ -465,7 +453,7 @@ contains
   !  That way, the check OMEGA1 <= ANGLE <= OMEGA2 will be legitimate.
   !
     call r8vec_uniform_01 ( n, seed, angle )
-    angle(1:n) = omega1 + 2.0_dp * pi * angle(1:n)
+    angle(1:n) = omega1 + 2.0e+00_real64 * pi * angle(1:n)
 
     call r8vec_uniform_01 ( n, seed, r2 )
     r2(1:n) = sqrt ( r2(1:n) )
@@ -475,7 +463,7 @@ contains
   !
   !  Determine the vector that touches the circle segment base.
   !
-    p(1:2) = 0.5_dp * ( p1(1:2) + p2(1:2) ) - c(1:2)
+    p(1:2) = 0.5e+00_real64 * ( p1(1:2) + p2(1:2) ) - c(1:2)
 
     rmh = sqrt ( p(1)**2 + p(2)**2 )
     p(1:2) = p(1:2) / rmh
@@ -502,11 +490,10 @@ contains
   !
   !  The area of the segment is its relative share of the circle area.
   !
-    area = pi * r**2 * real ( m, dp) / real ( n, dp)
-  end subroutine circle_segment_area_from_sample
+    area = pi * r**2 * real ( m, real64) / real ( n, real64)
+  end
 
-  pure subroutine circle_segment_cdf ( r, h, h2, cdf ) &
-        bind(C, name="circle_segment_cdf")
+  subroutine circle_segment_cdf ( r, h, h2, cdf )
 
   !*****************************************************************************80
   !
@@ -547,40 +534,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) H, the "height" of the circle segment.
+  !    Input, real(real64) H, the "height" of the circle segment.
   !    0 <= H <= 2 * R.
   !
-  !    Input, real(dp) H2, the "height" of the new circle segment 
+  !    Input, real(real64) H2, the "height" of the new circle segment 
   !    defined by a given point in the circle segment.  0 <= H2 <= H.
   !
-  !    Output, real(dp) CDF, the cumulative density function for H2, 
+  !    Output, real(real64) CDF, the cumulative density function for H2, 
   !    the probability that a point chosen at random in the circle segment 
   !    would define a smaller circle segment of height H2 or less.
   !
 
-    real(dp) :: a
-    real(dp) :: a2
-    real(dp), intent(out) :: cdf
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: h2
-    real(dp), intent(in), value :: r
+    real(real64) a
+    real(real64) a2
+    real(real64) cdf
+    real(real64) h
+    real(real64) h2
+    real(real64) r
 
-    if ( h2 <= 0.0_dp ) then
-      cdf = 0.0_dp
+    if ( h2 <= 0.0e+00_real64 ) then
+      cdf = 0.0e+00_real64
     else if ( h <= h2 ) then
-      cdf = 1.0_dp
+      cdf = 1.0e+00_real64
     else
       call circle_segment_area_from_height ( r, h,  a  )
       call circle_segment_area_from_height ( r, h2, a2 )
       cdf = a2 / a
     end if
-  end subroutine circle_segment_cdf
+  end
 
-  pure subroutine circle_segment_centroid_from_chord ( r, c, p1, p2, d ) &
-        bind(C, name="circle_segment_centroid_from_chord")
+  subroutine circle_segment_centroid_from_chord ( r, c, p1, p2, d )
 
   !*****************************************************************************80
   !
@@ -613,26 +599,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2), the center of the circle.
+  !    Input, real(real64) C(2), the center of the circle.
   !
-  !    Input, real(dp) P1(2), P2(2), the coordinates of the endpoints 
+  !    Input, real(real64) P1(2), P2(2), the coordinates of the endpoints 
   !    of the chord.
   !
-  !    Output, real(dp) D(2), the coordinates of the centroid.
+  !    Output, real(real64) D(2), the coordinates of the centroid.
   !
 
-    real(dp), intent(in) :: c(2)
-    real(dp), intent(out) :: d(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in), value :: r
-    real(dp) :: s
-    real(dp) :: theta
-    real(dp) :: thetah
-    real(dp) :: v1(2)
+    real(real64) c(2)
+    real(real64) d(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) r
+    real(real64) s
+    real(real64) theta
+    real(real64) thetah
+    real(real64) v1(2)
   !
   !  Get the angle subtended by P1:P2.
   !
@@ -644,7 +630,7 @@ contains
   !
   !  Rotate V1 through THETA / 2.
   !
-    thetah = theta / 2.0_dp
+    thetah = theta / 2.0e+00_real64
 
     d(1) = cos ( thetah ) * v1(1) - sin ( thetah ) * v1(2)
     d(2) = sin ( thetah ) * v1(1) + cos ( thetah ) * v1(2)
@@ -652,8 +638,8 @@ contains
   !  Scale this vector so it represents the distance to the centroid
   !  relative to R.
   !
-    s = 4.0_dp * ( sin ( theta / 2.0 ) ) ** 3 &
-      / 3.0_dp / ( theta - sin ( theta ) )
+    s = 4.0e+00_real64 * ( sin ( theta / 2.0 ) ) ** 3 &
+      / 3.0e+00_real64 / ( theta - sin ( theta ) )
 
     d(1) = s * d(1)
     d(2) = s * d(2)
@@ -662,10 +648,9 @@ contains
   !
     d(1) = d(1) + c(1)
     d(2) = d(2) + c(2)
-  end subroutine circle_segment_centroid_from_chord
+  end
 
-  subroutine circle_segment_centroid_from_height ( r, h, d ) &
-        bind(C, name="circle_segment_centroid_from_height")
+  subroutine circle_segment_centroid_from_height ( r, h, d )
 
   !*****************************************************************************80
   !
@@ -697,31 +682,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) H, the "height" of the circle segment.
+  !    Input, real(real64) H, the "height" of the circle segment.
   !    0 <= H <= 2 * R.
   !
-  !    Output, real(dp) D(2), the coordinates of the centroid.
+  !    Output, real(real64) D(2), the coordinates of the centroid.
   !
 
-    real(dp), intent(out) :: d(2)
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
-    real(dp) :: x
-    real(dp) :: y
+    real(real64) d(2)
+    real(real64) h
+    real(real64) r
+    real(real64) theta
+    real(real64) x
+    real(real64) y
 
     call circle_segment_angle_from_height ( r, h, theta )
 
-    d(1) = 0.0_dp
-    d(2) = 4.0_dp * r * ( sin ( theta / 2.0_dp ) ) ** 3 / 3.0_dp &
+    d(1) = 0.0e+00_real64
+    d(2) = 4.0e+00_real64 * r * ( sin ( theta / 2.0e+00_real64 ) ) ** 3 / 3.0e+00_real64 &
       / ( theta - sin ( theta ) )
-  end subroutine circle_segment_centroid_from_height
+  end
 
-  subroutine circle_segment_centroid_from_sample ( r, c, p1, p2, n, seed, d ) &
-        bind(C, name="circle_segment_centroid_from_sample")
+  subroutine circle_segment_centroid_from_sample ( r, c, p1, p2, n, seed, d )
 
   !*****************************************************************************80
   !
@@ -751,41 +735,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2), the center of the circle.
+  !    Input, real(real64) C(2), the center of the circle.
   !
-  !    Input, real(dp) P1(2), P2(2), the ends of the chord.
+  !    Input, real(real64) P1(2), P2(2), the ends of the chord.
   !
-  !    Input, integer(ip) N, the number of sample points.
+  !    Input, integer(int32) N, the number of sample points.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) D(2), the estimated centroid of the 
+  !    Output, real(real64) D(2), the estimated centroid of the 
   !    circle segment.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: c(2)
-    real(dp), intent(out) :: d(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in), value :: r
-    integer(ip), intent(inout) :: seed
-    real(dp) :: x(n)
-    real(dp) :: y(n)
+    real(real64) c(2)
+    real(real64) d(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) r
+    integer(int32) seed
+    real(real64) x(n)
+    real(real64) y(n)
 
     call circle_segment_sample_from_chord ( r, c, p1, p2, n, seed, x, y )
 
-    d(1) = sum ( x(1:n) ) / real ( n, dp)
-    d(2) = sum ( y(1:n) ) / real ( n, dp)
-  end subroutine circle_segment_centroid_from_sample
+    d(1) = sum ( x(1:n) ) / real ( n, real64)
+    d(2) = sum ( y(1:n) ) / real ( n, real64)
+  end
 
-  subroutine circle_segment_contains_point ( r, c, omega1, omega2, xy, value ) &
-        bind(C, name="circle_segment_contains_point")
+  subroutine circle_segment_contains_point ( r, c, omega1, omega2, xy, value )
 
   !*****************************************************************************80
   !
@@ -819,35 +802,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2), the center of the circle.
+  !    Input, real(real64) C(2), the center of the circle.
   !
-  !    Input, real(dp) OMEGA1, OMEGA2, the angles of the two points on 
+  !    Input, real(real64) OMEGA1, OMEGA2, the angles of the two points on 
   !    the circumference of the circle that define the circle segment.
   !    OMEGA1 < OMEGA2 <= OMEGA1 + 2 * PI
   !
-  !    Input, real(dp) XY(2), a point.
+  !    Input, real(real64) XY(2), a point.
   !
-  !    Output, integer(ip) VALUE, is TRUE if the point is inside 
+  !    Output, integer(int32) VALUE, is TRUE if the point is inside 
   !    the circle segment.
   !
 
-    real(dp), intent(in) :: c(2)
-    real(dp) :: h
-    real(dp), intent(in), value :: omega1
-    real(dp), intent(in), value :: omega2
-    real(dp) :: omegah
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
-    real(dp) :: v(2)
-    real(dp) :: v_omega
-    real(dp) :: v_project
-    real(dp) :: v_r
-    integer(ip), intent(out) :: value
-    real(dp), intent(in) :: xy(2)
+    real(real64) c(2)
+    real(real64) h
+    real(real64) omega1
+    real(real64) omega2
+    real(real64) omegah
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) theta
+    real(real64) v(2)
+    real(real64) v_omega
+    real(real64) v_project
+    real(real64) v_r
+    integer(int32) value
+    real(real64) xy(2)
 
     if ( r <= 0.0 ) then
       write ( *, '(a)' ) ' '
@@ -857,7 +840,7 @@ contains
     end if
 
     do while ( omega2 < omega1 )
-      omega2 = omega2 + 2.0_dp * pi
+      omega2 = omega2 + 2.0e+00_real64 * pi
     end do
   !
   !  Compute the vector V = XY - C:
@@ -876,12 +859,12 @@ contains
   !
     v_omega = atan2 ( v(2), v(1) )
 
-    do while ( omega1 <= v_omega + 2.0_dp * pi )
-      v_omega = v_omega - 2.0_dp * pi
+    do while ( omega1 <= v_omega + 2.0e+00_real64 * pi )
+      v_omega = v_omega - 2.0e+00_real64 * pi
     end do
 
-    do while ( v_omega + 2.0_dp * pi <= omega1 )
-      v_omega = v_omega + 2.0_dp * pi
+    do while ( v_omega + 2.0e+00_real64 * pi <= omega1 )
+      v_omega = v_omega + 2.0e+00_real64 * pi
     end do
 
     if ( omega2 < v_omega ) then
@@ -890,7 +873,7 @@ contains
   !
   !  c: Projection of V onto unit centerline must be at least R-H.
   !
-    omegah = 0.5_dp * ( omega1 + omega2 )
+    omegah = 0.5e+00_real64 * ( omega1 + omega2 )
     v_project = v(1) * cos ( omegah ) + v(2) * sin ( omegah )
 
     theta = omega2 - omega1
@@ -901,10 +884,9 @@ contains
     end if
 
     value = 1
-  end subroutine circle_segment_contains_point
+  end
 
-  subroutine circle_segment_height_from_angle ( r, angle, h ) &
-        bind(C, name="circle_segment_height_from_angle")
+  subroutine circle_segment_height_from_angle ( r, angle, h )
 
   !*****************************************************************************80
   !
@@ -937,43 +919,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) ANGLE, the angle of the circle segment.
+  !    Input, real(real64) ANGLE, the angle of the circle segment.
   !    0 <= ANGLE <= 2.0 * PI.
   !
-  !    Output, real(dp) H, the height of the circle segment.
+  !    Output, real(real64) H, the height of the circle segment.
   !
 
-    real(dp), intent(in), value :: angle
-    real(dp), intent(out) :: h
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
+    real(real64) angle
+    real(real64) h
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
 
-    if ( angle < 0.0_dp ) then
+    if ( angle < 0.0e+00_real64 ) then
       write ( *, '(a)' ) ''
       write ( *, '(a)' ) 'CIRCLE_SEGMENT_HEIGHT_FROM_ANGLE - Fatal error!'
       write ( *, '(a)' ) '  ANGLE < 0.0.'
       stop
     end if
 
-    if ( angle == 0.0_dp ) then
-      h = 0.0_dp
+    if ( angle == 0.0e+00_real64 ) then
+      h = 0.0e+00_real64
     end if
 
-    if ( angle == 2.0_dp * pi ) then
-      h = 2.0_dp * r
+    if ( angle == 2.0e+00_real64 * pi ) then
+      h = 2.0e+00_real64 * r
     end if
 
-    if ( 2.0_dp * pi < angle ) then
+    if ( 2.0e+00_real64 * pi < angle ) then
       write ( *, '(a)' ) ''
       write ( *, '(a)' ) 'CIRCLE_SEGMENT_HEIGHT_FROM_ANGLE - Fatal error!'
       write ( *, '(a)' ) '  2.0 * pi < ANGLE.'
       stop
     end if
 
-    if ( r <= 0.0_dp ) then
+    if ( r <= 0.0e+00_real64 ) then
       write ( *, '(a)' ) ''
       write ( *, '(a)' ) 'CIRCLE_SEGMENT_HEIGHT_FROM_ANGLE - Fatal error!'
       write ( *, '(a)' ) '  R <= 0.0.'
@@ -981,14 +963,13 @@ contains
     end if
 
     if ( angle <= pi ) then
-      h = r * ( 1.0_dp - cos (                  angle   / 2.0_dp ) )
+      h = r * ( 1.0e+00_real64 - cos (                  angle   / 2.0e+00_real64 ) )
     else
-      h = r * ( 1.0_dp + cos ( ( 2.0_dp * pi - angle ) / 2.0_dp ) )
+      h = r * ( 1.0e+00_real64 + cos ( ( 2.0e+00_real64 * pi - angle ) / 2.0e+00_real64 ) )
     end if
-  end subroutine circle_segment_height_from_angle
+  end
 
-  subroutine circle_segment_height_from_area ( r, area, h ) &
-        bind(C, name="circle_segment_height_from_area")
+  subroutine circle_segment_height_from_area ( r, area, h )
 
   !*****************************************************************************80
   !
@@ -1021,44 +1002,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) AREA, the area of the circle segment.
+  !    Input, real(real64) AREA, the area of the circle segment.
   !    0 <= AREA <= 2.0 * PI * R^2.
   !
-  !    Output, real(dp) H, the height of the circle segment.
+  !    Output, real(real64) H, the height of the circle segment.
   !
 
-    real(dp) :: a
-    real(dp) :: a1
-    real(dp) :: a2
-    real(dp), intent(in), value :: area
-    real(dp) :: area_circle
-    real(dp) :: eps
-    real(dp), intent(out) :: h
-    real(dp) :: h1
-    real(dp) :: h2
-    integer(ip) :: it
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_epsilon
+    real(real64) a
+    real(real64) a1
+    real(real64) a2
+    real(real64) area
+    real(real64) area_circle
+    real(real64) eps
+    real(real64) h
+    real(real64) h1
+    real(real64) h2
+    integer(int32) it
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) r8_epsilon
 
-    if ( area < 0.0_dp ) then
+    if ( area < 0.0e+00_real64 ) then
       write ( *, '(a)' ) ''
       write ( *, '(a)' ) 'CIRCLE_SEGMENT_HEIGHT_FROM_AREA - Fatal error!'
       write ( *, '(a)' ) '  AREA < 0.0.'
       stop
     end if
 
-    area_circle = 2.0_dp * pi * r ** 2
+    area_circle = 2.0e+00_real64 * pi * r ** 2
 
-    if ( area == 0.0_dp ) then
-      h = 0.0_dp
+    if ( area == 0.0e+00_real64 ) then
+      h = 0.0e+00_real64
     end if
 
     if ( area == area_circle ) then
-      h = 2.0_dp * r
+      h = 2.0e+00_real64 * r
     end if
 
     if ( area_circle < area ) then
@@ -1068,16 +1049,16 @@ contains
       stop
     end if
 
-    if ( r <= 0.0_dp ) then
+    if ( r <= 0.0e+00_real64 ) then
       write ( *, '(a)' ) ''
       write ( *, '(a)' ) 'CIRCLE_SEGMENT_HEIGHT_FROM_AREA - Fatal error!'
       write ( *, '(a)' ) '  R <= 0.0.'
       stop
     end if
 
-    h1 = 0.0_dp
+    h1 = 0.0e+00_real64
     call circle_segment_area_from_height ( r, h1, a1 )
-    h2 = 2.0_dp * r
+    h2 = 2.0e+00_real64 * r
     call circle_segment_area_from_height ( r, h2, a2 )
 
     it = 0
@@ -1085,7 +1066,7 @@ contains
 
     do while ( it < 30 )
 
-      h = 0.5_dp * ( h1 + h2 )
+      h = 0.5e+00_real64 * ( h1 + h2 )
       call circle_segment_area_from_height ( r, h, a )
       it = it + 1
 
@@ -1102,10 +1083,9 @@ contains
       end if
 
     end do
-  end subroutine circle_segment_height_from_area
+  end
 
-  subroutine circle_segment_height_from_chord ( r, c, p1, p2, h ) &
-        bind(C, name="circle_segment_height_from_chord")
+  subroutine circle_segment_height_from_chord ( r, c, p1, p2, h )
 
   !*****************************************************************************80
   !
@@ -1135,31 +1115,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2), the coordinates of the circle center.
+  !    Input, real(real64) C(2), the coordinates of the circle center.
   !
-  !    Input, real(dp) P1(2), P2(2), the coordinates of the 
+  !    Input, real(real64) P1(2), P2(2), the coordinates of the 
   !    chord endpoints.
   !
-  !    Output, real(dp) H, the height of the circle segment.
+  !    Output, real(real64) H, the height of the circle segment.
   !
 
-    real(dp), intent(in) :: c(2)
-    real(dp), intent(out) :: h
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
+    real(real64) c(2)
+    real(real64) h
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) r
+    real(real64) theta
 
     call circle_segment_angle_from_chord ( r, c, p1, p2, theta )
 
     call circle_segment_height_from_angle ( r, theta, h )
-  end subroutine circle_segment_height_from_chord
+  end
 
-  pure subroutine circle_segment_rotation_from_chord ( r, c, p1, p2, alpha ) &
-        bind(C, name="circle_segment_rotation_from_chord")
+  subroutine circle_segment_rotation_from_chord ( r, c, p1, p2, alpha )
 
   !*****************************************************************************80
   !
@@ -1189,31 +1168,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2), the center of the circle.
+  !    Input, real(real64) C(2), the center of the circle.
   !
-  !    Input, real(dp) P1(2), P2(2), the ends of the chord.
+  !    Input, real(real64) P1(2), P2(2), the ends of the chord.
   !    Warning! If P1 = P2, we can't tell whether the segment is the whole
   !    circle or none of it!
   !
-  !    Output, real(dp) ALPHA, the rotation of the circle segment.
+  !    Output, real(real64) ALPHA, the rotation of the circle segment.
   !    0 <= ALPHA < 2 * PI.
   !
 
-    real(dp), intent(out) :: alpha
-    real(dp), intent(in) :: c(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_atan
-    real(dp) :: rho1
-    real(dp) :: rho2
-    real(dp) :: theta
-    real(dp) :: v1(2)
-    real(dp) :: v2(2)
+    real(real64) alpha
+    real(real64) c(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) r8_atan
+    real(real64) rho1
+    real(real64) rho2
+    real(real64) theta
+    real(real64) v1(2)
+    real(real64) v2(2)
   !
   !  Compute the radial vectors V1 and V2.
   !
@@ -1228,7 +1207,7 @@ contains
   !  Force RHO2 to be bigger than RHO1.
   !
     do while ( rho2 <= rho1 )
-      rho2 = rho2 + 2.0_dp * pi
+      rho2 = rho2 + 2.0e+00_real64 * pi
     end do
   !
   !  Compute THETA.
@@ -1237,15 +1216,14 @@ contains
   !
   !  ALPHA is RHO1, plus half of the angular distance between P1 and P2.
   !
-    alpha = rho1 + 0.5_dp * theta
+    alpha = rho1 + 0.5e+00_real64 * theta
 
-    do while ( 2.0_dp * pi <= alpha )
-      alpha = alpha - 2.0_dp * pi
+    do while ( 2.0e+00_real64 * pi <= alpha )
+      alpha = alpha - 2.0e+00_real64 * pi
     end do
-  end subroutine circle_segment_rotation_from_chord
+  end
 
-  subroutine circle_segment_sample_from_chord ( r, c, p1, p2, n, seed, x, y ) &
-        bind(C, name="circle_segment_sample_from_chord")
+  subroutine circle_segment_sample_from_chord ( r, c, p1, p2, n, seed, x, y )
 
   !*****************************************************************************80
   !
@@ -1275,49 +1253,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) C(2), the center of the circle.
+  !    Input, real(real64) C(2), the center of the circle.
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the chord.
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the chord.
   !
-  !    Input, integer(ip) N, the number of sample points.
+  !    Input, integer(int32) N, the number of sample points.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) X(N), Y(N), the sample points.
+  !    Output, real(real64) X(N), Y(N), the sample points.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: c(2)
-    real(dp) :: c2(2)
-    real(dp) :: eta(n)
-    real(dp) :: h
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in), value :: r
-    integer(ip), intent(inout) :: seed
-    real(dp) :: vc(2)
-    real(dp) :: vr(2)
-    real(dp), intent(out) :: x(n)
-    real(dp) :: xi(n)
-    real(dp), intent(out) :: y(n)
+    real(real64) c(2)
+    real(real64) c2(2)
+    real(real64) eta(n)
+    real(real64) h
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) r
+    integer(int32) seed
+    real(real64) vc(2)
+    real(real64) vr(2)
+    real(real64) x(n)
+    real(real64) xi(n)
+    real(real64) y(n)
   !
   !  Determine unit vectors VR and VC.
   !  VR points to the center of the chord from the radius.
   !  VC points along the chord, from P1 to P2.
   !
-    vr(1:2) = 0.5_dp * ( p1(1:2) + p2(1:2) ) - c(1:2)
+    vr(1:2) = 0.5e+00_real64 * ( p1(1:2) + p2(1:2) ) - c(1:2)
     vr(1:2) = vr(1:2) / sqrt ( vr(1)**2 + vr(2)**2 )
     vc(1:2) = p2(1:2) - p1(1:2)
     vc(1:2) = vc(1:2) / sqrt ( vc(1)**2 + vc(2)**2 )
   !
   !  Get the height of the circle segment.
   !
-    c2 = (/ 0.0_dp, 0.0_dp /)
+    c2 = (/ 0.0e+00_real64, 0.0e+00_real64 /)
     call circle_segment_height_from_chord ( r, c2, p1, p2, h )
   !
   !  Sample (xi,eta) in the reference coordinates, where the chord
@@ -1330,10 +1308,9 @@ contains
   !
     x(1:n) = c(1) + eta(1:n) * vr(1) + xi(1:n) * vc(1)
     y(1:n) = c(2) + eta(1:n) * vr(2) + xi(1:n) * vc(2)
-  end subroutine circle_segment_sample_from_chord
+  end
 
-  subroutine circle_segment_sample_from_height ( r, h, n, seed, x, y ) &
-        bind(C, name="circle_segment_sample_from_height")
+  subroutine circle_segment_sample_from_height ( r, h, n, seed, x, y )
 
   !*****************************************************************************80
   !
@@ -1363,33 +1340,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) H, the height of the circle segment.
+  !    Input, real(real64) H, the height of the circle segment.
   !    0 <= H <= 2 * R.
   !
-  !    Input, integer(ip) N, the number of sample points.
+  !    Input, integer(int32) N, the number of sample points.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, real(dp) X(N), Y(N), the sample points.
+  !    Output, real(real64) X(N), Y(N), the sample points.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: area
-    real(dp) :: area2(n)
-    real(dp), intent(in), value :: h
-    real(dp) :: h2(n)
-    integer(ip) :: i
-    real(dp), intent(in), value :: r
-    integer(ip), intent(inout) :: seed
-    real(dp) :: u(n)
-    real(dp) :: wh(n)
-    real(dp), intent(out) :: x(n)
-    real(dp), intent(out) :: y(n)
+    real(real64) area
+    real(real64) area2(n)
+    real(real64) h
+    real(real64) h2(n)
+    integer(int32) i
+    real(real64) r
+    integer(int32) seed
+    real(real64) u(n)
+    real(real64) wh(n)
+    real(real64) x(n)
+    real(real64) y(n)
 
     call circle_segment_area_from_height ( r, h, area )
   !
@@ -1415,17 +1392,16 @@ contains
   !
     call r8vec_uniform_01 ( n, seed, u )
 
-    x(1:n) = ( 2.0_dp * u(1:n) - 1.0 ) * wh(1:n)
+    x(1:n) = ( 2.0e+00_real64 * u(1:n) - 1.0 ) * wh(1:n)
   !
   !  Our circle center is at (0,0).  Our height of H2 is subtracted
   !  from the height R at the peak of the circle.  Determine the Y
   !  coordinate using this fact.
   !
     y(1:n) = r - h2(1:n)
-  end subroutine circle_segment_sample_from_height
+  end
 
-  pure subroutine circle_segment_width_from_height ( r, h, w ) &
-        bind(C, name="circle_segment_width_from_height")
+  subroutine circle_segment_width_from_height ( r, h, w )
 
   !*****************************************************************************80
   !
@@ -1459,24 +1435,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !    0 < R.
   !
-  !    Input, real(dp) H, the height of the circle segment.
+  !    Input, real(real64) H, the height of the circle segment.
   !    0 <= H <= 2 * R.
   !
-  !    Output, real(dp) W, the width of the circle segment.
+  !    Output, real(real64) W, the width of the circle segment.
   !
 
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
-    real(dp), intent(out) :: w
+    real(real64) h
+    real(real64) r
+    real(real64) w
 
-    w = 2.0_dp * sqrt ( h * ( 2.0_dp * r - h ) )
-  end subroutine circle_segment_width_from_height
+    w = 2.0e+00_real64 * sqrt ( h * ( 2.0e+00_real64 * r - h ) )
+  end
 
-  subroutine filename_inc ( filename ) &
-        bind(C, name="filename_inc")
+  subroutine filename_inc ( filename )
 
   !*****************************************************************************80
   !
@@ -1523,11 +1498,11 @@ contains
   !
 
     character c
-    integer(ip) :: change
-    integer(ip) :: digit
-    character ( len = * ), intent(inout) :: filename
-    integer(ip) :: i
-    integer(ip) :: lens
+    integer(int32) change
+    integer(int32) digit
+    character ( len = * ) filename
+    integer(int32) i
+    integer(int32) lens
 
     lens = len_trim ( filename )
 
@@ -1571,10 +1546,9 @@ contains
     if ( change == 0 ) then
       filename = ' '
     end if
-  end subroutine filename_inc
+  end
 
-  pure subroutine gauss ( n, alpha, beta, x, w ) &
-        bind(C, name="gauss")
+  subroutine gauss ( n, alpha, beta, x, w )
 
   !*****************************************************************************80
   !
@@ -1611,33 +1585,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the desired quadrature rule.
+  !    Input, integer(int32) N, the order of the desired quadrature rule.
   !
-  !    Input, real(dp) ALPHA(N), BETA(N), the alpha and beta recurrence 
+  !    Input, real(real64) ALPHA(N), BETA(N), the alpha and beta recurrence 
   !    coefficients for the othogonal polynomials associated with the
   !    weight function.
   !
-  !    Output, real(dp) X(N), W(N), the nodes and  weights of the desired 
+  !    Output, real(real64) X(N), W(N), the nodes and  weights of the desired 
   !    quadrature rule.  The nodes are listed in increasing order.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(n,n)
-    real(dp), intent(in) :: alpha(n)
-    real(dp), intent(in) :: beta(n)
-    integer(ip) :: i
-    integer(ip) :: it_max
-    integer(ip) :: it_num
-    integer(ip) :: rot_num
-    real(dp) :: t
-    real(dp) :: v(n,n)
-    real(dp), intent(out) :: w(n)
-    real(dp), intent(out) :: x(n)
+    real(real64) a(n,n)
+    real(real64) alpha(n)
+    real(real64) beta(n)
+    integer(int32) i
+    integer(int32) it_max
+    integer(int32) it_num
+    integer(int32) rot_num
+    real(real64) t
+    real(real64) v(n,n)
+    real(real64) w(n)
+    real(real64) x(n)
   !
   !  Define the tridiagonal Jacobi matrix.
   !
-    a(1:n,1:n) = 0.0_dp
+    a(1:n,1:n) = 0.0e+00_real64
 
     do i = 1, n
       a(i,i) = alpha(i)
@@ -1656,10 +1630,9 @@ contains
     call jacobi_eigenvalue ( n, a, it_max, v, x, it_num, rot_num )
 
     w(1:n) = beta(1) * v(1,1:n)**2
-  end subroutine gauss
+  end
 
-  pure subroutine jacobi_eigenvalue ( n, a, it_max, v, d, it_num, rot_num ) &
-        bind(C, name="jacobi_eigenvalue")
+  subroutine jacobi_eigenvalue ( n, a, it_max, v, d, it_num, rot_num )
 
   !*****************************************************************************80
   !
@@ -1685,59 +1658,59 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !
-  !    Input, real(dp) A(N,N), the matrix, which must be square, real,
+  !    Input, real(real64) A(N,N), the matrix, which must be square, real,
   !    and symmetric.
   !
-  !    Input, integer(ip) IT_MAX, the maximum number of iterations.
+  !    Input, integer(int32) IT_MAX, the maximum number of iterations.
   !
-  !    Output, real(dp) V(N,N), the matrix of eigenvectors.
+  !    Output, real(real64) V(N,N), the matrix of eigenvectors.
   !
-  !    Output, real(dp) D(N), the eigenvalues, in descending order.
+  !    Output, real(real64) D(N), the eigenvalues, in descending order.
   !
-  !    Output, integer(ip) IT_NUM, the total number of iterations.
+  !    Output, integer(int32) IT_NUM, the total number of iterations.
   !
-  !    Output, integer(ip) ROT_NUM, the total number of rotations.
+  !    Output, integer(int32) ROT_NUM, the total number of rotations.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n,n)
-    real(dp) :: bw(n)
-    real(dp) :: c
-    real(dp), intent(out) :: d(n)
-    real(dp) :: g
-    real(dp) :: gapq
-    real(dp) :: h
-    integer(ip) :: i
-    integer(ip), intent(in), value :: it_max
-    integer(ip), intent(out) :: it_num
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: m
-    integer(ip) :: p
-    integer(ip) :: q
-    integer(ip), intent(out) :: rot_num
-    real(dp) :: s
-    real(dp) :: t
-    real(dp) :: tau
-    real(dp) :: term
-    real(dp) :: termp
-    real(dp) :: termq
-    real(dp) :: theta
-    real(dp) :: thresh
-    real(dp), intent(out) :: v(n,n)
-    real(dp) :: w(n)
-    real(dp) :: zw(n)
+    real(real64) a(n,n)
+    real(real64) bw(n)
+    real(real64) c
+    real(real64) d(n)
+    real(real64) g
+    real(real64) gapq
+    real(real64) h
+    integer(int32) i
+    integer(int32) it_max
+    integer(int32) it_num
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) m
+    integer(int32) p
+    integer(int32) q
+    integer(int32) rot_num
+    real(real64) s
+    real(real64) t
+    real(real64) tau
+    real(real64) term
+    real(real64) termp
+    real(real64) termq
+    real(real64) theta
+    real(real64) thresh
+    real(real64) v(n,n)
+    real(real64) w(n)
+    real(real64) zw(n)
 
     do j = 1, n
       do i = 1, n
         if ( i == j ) then
-          v(i,j) = 1.0_dp
+          v(i,j) = 1.0e+00_real64
         else
-          v(i,j) = 0.0_dp
+          v(i,j) = 0.0e+00_real64
         end if
       end do
     end do
@@ -1747,7 +1720,7 @@ contains
     end do
 
     bw(1:n) = d(1:n)
-    zw(1:n) = 0.0_dp
+    zw(1:n) = 0.0e+00_real64
     it_num = 0
     rot_num = 0
 
@@ -1758,23 +1731,23 @@ contains
   !  The convergence threshold is based on the size of the elements in
   !  the strict upper triangle of the matrix.
   !
-      thresh = 0.0_dp
+      thresh = 0.0e+00_real64
       do j = 1, n
         do i = 1, j - 1
           thresh = thresh + a(i,j) ** 2
         end do
       end do
 
-      thresh = sqrt ( thresh ) / real ( 4 * n, dp)
+      thresh = sqrt ( thresh ) / real ( 4 * n, real64)
 
-      if ( thresh == 0.0_dp ) then
+      if ( thresh == 0.0e+00_real64 ) then
         exit 
       end if
 
       do p = 1, n
         do q = p + 1, n
 
-          gapq = 10.0_dp * abs ( a(p,q) )
+          gapq = 10.0e+00_real64 * abs ( a(p,q) )
           termp = gapq + abs ( d(p) )
           termq = gapq + abs ( d(q) )
   !
@@ -1784,7 +1757,7 @@ contains
                termp == abs ( d(p) ) .and. &
                termq == abs ( d(q) ) ) then
 
-            a(p,q) = 0.0_dp
+            a(p,q) = 0.0e+00_real64
   !
   !  Otherwise, apply a rotation.
   !
@@ -1796,16 +1769,16 @@ contains
             if ( term == abs ( h ) ) then
               t = a(p,q) / h
             else
-              theta = 0.5_dp * h / a(p,q)
-              t = 1.0_dp / ( abs ( theta ) + sqrt ( 1.0_dp + theta * theta ) )
-              if ( theta < 0.0_dp ) then 
+              theta = 0.5e+00_real64 * h / a(p,q)
+              t = 1.0e+00_real64 / ( abs ( theta ) + sqrt ( 1.0e+00_real64 + theta * theta ) )
+              if ( theta < 0.0e+00_real64 ) then 
                 t = - t
               end if
             end if
 
-            c = 1.0_dp / sqrt ( 1.0_dp + t * t )
+            c = 1.0e+00_real64 / sqrt ( 1.0e+00_real64 + t * t )
             s = t * c
-            tau = s / ( 1.0_dp + c )
+            tau = s / ( 1.0e+00_real64 + c )
             h = t * a(p,q)
   !
   !  Accumulate corrections to diagonal elements.
@@ -1815,7 +1788,7 @@ contains
             d(p) = d(p) - h
             d(q) = d(q) + h
 
-            a(p,q) = 0.0_dp
+            a(p,q) = 0.0e+00_real64
   !
   !  Rotate, using information from the upper triangle of A only.
   !
@@ -1858,7 +1831,7 @@ contains
 
       bw(1:n) = bw(1:n) + zw(1:n)
       d(1:n) = bw(1:n)
-      zw(1:n) = 0.0_dp
+      zw(1:n) = 0.0e+00_real64
 
     end do
   !
@@ -1895,10 +1868,9 @@ contains
       end if
 
     end do
-  end subroutine jacobi_eigenvalue
+  end
 
-  subroutine r_jacobi ( n, a, b, alpha, beta ) &
-        bind(C, name="r_jacobi")
+  subroutine r_jacobi ( n, a, b, alpha, beta )
 
   !*****************************************************************************80
   !
@@ -1936,48 +1908,48 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of coefficients desired.
+  !    Input, integer(int32) N, the number of coefficients desired.
   !
-  !    Input, real(dp) A, B, the parameters for the Jacobi polynomial.
+  !    Input, real(real64) A, B, the parameters for the Jacobi polynomial.
   !    -1.0 < A, -1.0 < B.
   !
-  !    Output, real(dp) ALPHA(N), BETA(N), the first N recurrence
+  !    Output, real(real64) ALPHA(N), BETA(N), the first N recurrence
   !    coefficients.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(out) :: alpha(n)
-    real(dp), intent(in), value :: b
-    real(dp), intent(out) :: beta(n)
-    integer(ip) :: i
-    real(dp) :: i_r8
-    real(dp) :: mu
-    real(dp) :: nab
-    real(dp) :: nu
-    real(dp) :: r8_gamma
+    real(real64) a
+    real(real64) alpha(n)
+    real(real64) b
+    real(real64) beta(n)
+    integer(int32) i
+    real(real64) i_r8
+    real(real64) mu
+    real(real64) nab
+    real(real64) nu
+    real(real64) r8_gamma
 
-    if ( a <= -1.0_dp ) then 
+    if ( a <= -1.0e+00_real64 ) then 
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'R_JACOBI - Fatal error!'
       write ( *, '(a)' ) '  Illegal value of A.'
       stop
     end if
 
-    if ( b <= -1.0_dp ) then 
+    if ( b <= -1.0e+00_real64 ) then 
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'R_JACOBI - Fatal error!'
       write ( *, '(a)' ) '  Illegal value of B.'
       stop
     end if
 
-    nu = ( b - a ) / ( a + b + 2.0_dp )
+    nu = ( b - a ) / ( a + b + 2.0e+00_real64 )
 
-    mu = 2.0_dp ** ( a + b + 1.0_dp ) &
-      * r8_gamma ( a + 1.0_dp ) &
-      * r8_gamma ( b + 1.0_dp ) &
-      / r8_gamma ( a + b + 2.0_dp )
+    mu = 2.0e+00_real64 ** ( a + b + 1.0e+00_real64 ) &
+      * r8_gamma ( a + 1.0e+00_real64 ) &
+      * r8_gamma ( b + 1.0e+00_real64 ) &
+      / r8_gamma ( a + b + 2.0e+00_real64 )
 
     alpha(1) = nu
     beta(1) = mu 
@@ -1986,29 +1958,28 @@ contains
     end if
 
     do i = 2, n
-      i_r8 = real ( i, dp)
+      i_r8 = real ( i, real64)
       alpha(i) = ( b - a ) * ( b + a ) & 
-        / ( 2.0_dp * ( i_r8 - 1.0_dp ) + a + b ) &
-        / ( 2.0_dp * i_r8 + a + b )
+        / ( 2.0e+00_real64 * ( i_r8 - 1.0e+00_real64 ) + a + b ) &
+        / ( 2.0e+00_real64 * i_r8 + a + b )
     end do
 
-    beta(2) = 4.0_dp * ( a + 1.0_dp ) * ( b + 1.0_dp ) &
-      / ( a + b + 2.0_dp ) ** 2 &
-      / ( a + b + 3.0_dp )
+    beta(2) = 4.0e+00_real64 * ( a + 1.0e+00_real64 ) * ( b + 1.0e+00_real64 ) &
+      / ( a + b + 2.0e+00_real64 ) ** 2 &
+      / ( a + b + 3.0e+00_real64 )
 
     do i = 3, n
-      i_r8 = real ( i, dp)
-      nab = 2.0_dp * ( i_r8 - 1.0_dp ) + a +  b
-      beta(i) = 4.0_dp * ( i_r8 - 1.0_dp + a ) * ( i_r8 - 1.0_dp + b ) &
-        * ( i_r8 - 1.0_dp ) * ( i_r8 - 1.0_dp + a + b ) &
+      i_r8 = real ( i, real64)
+      nab = 2.0e+00_real64 * ( i_r8 - 1.0e+00_real64 ) + a +  b
+      beta(i) = 4.0e+00_real64 * ( i_r8 - 1.0e+00_real64 + a ) * ( i_r8 - 1.0e+00_real64 + b ) &
+        * ( i_r8 - 1.0e+00_real64 ) * ( i_r8 - 1.0e+00_real64 + a + b ) &
         / nab ** 2 &
-        / ( nab + 1.0_dp ) &
-        / ( nab - 1.0_dp )
+        / ( nab + 1.0e+00_real64 ) &
+        / ( nab - 1.0e+00_real64 )
     end do
-  end subroutine r_jacobi
+  end
 
-  pure function r8_acos ( c ) &
-        bind(C, name="r8_acos")
+  function r8_acos ( c )
 
   !*****************************************************************************80
   !
@@ -2036,24 +2007,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) C, the argument.
+  !    Input, real(real64) C, the argument.
   !
-  !    Output, real(dp) R8_ACOS, an angle whose cosine is C.
+  !    Output, real(real64) R8_ACOS, an angle whose cosine is C.
   !
 
-    real(dp), intent(in), value :: c
-    real(dp) :: c2
-    real(dp) :: r8_acos
+    real(real64) c
+    real(real64) c2
+    real(real64) r8_acos
 
     c2 = c
-    c2 = max ( c2, -1.0_dp )
-    c2 = min ( c2, +1.0_dp )
+    c2 = max ( c2, -1.0e+00_real64 )
+    c2 = min ( c2, +1.0e+00_real64 )
 
     r8_acos = acos ( c2 )
-  end function r8_acos
+  end
 
-  pure function r8_asin ( s ) &
-        bind(C, name="r8_asin")
+  function r8_asin ( s )
 
   !*****************************************************************************80
   !
@@ -2081,24 +2051,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) S, the argument.
+  !    Input, real(real64) S, the argument.
   !
-  !    Output, real(dp) R8_ASIN, an angle whose sine is S.
+  !    Output, real(real64) R8_ASIN, an angle whose sine is S.
   !
 
-    real(dp) :: r8_asin
-    real(dp), intent(in), value :: s
-    real(dp) :: s2
+    real(real64) r8_asin
+    real(real64) s
+    real(real64) s2
 
     s2 = s
-    s2 = max ( s2, -1.0_dp )
-    s2 = min ( s2, +1.0_dp )
+    s2 = max ( s2, -1.0e+00_real64 )
+    s2 = min ( s2, +1.0e+00_real64 )
 
     r8_asin = asin ( s2 )
-  end function r8_asin
+  end
 
-  pure function r8_atan ( y, x ) &
-        bind(C, name="r8_atan")
+  function r8_atan ( y, x )
 
   !*****************************************************************************80
   !
@@ -2133,40 +2102,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Y, X, two quantities which represent the
+  !    Input, real(real64) Y, X, two quantities which represent the
   !    tangent of an angle.  If Y is not zero, then the tangent is (Y/X).
   !
-  !    Output, real(dp) R8_ATAN, an angle between 0 and 2 * PI, whose
+  !    Output, real(real64) R8_ATAN, an angle between 0 and 2 * PI, whose
   !    tangent is (Y/X), and which lies in the appropriate quadrant so that
   !    the signs of its cosine and sine match those of X and Y.
   !
 
-    real(dp) :: abs_x
-    real(dp) :: abs_y
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: r8_atan
-    real(dp) :: theta
-    real(dp) :: theta_0
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    real(real64) abs_x
+    real(real64) abs_y
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r8_atan
+    real(real64) theta
+    real(real64) theta_0
+    real(real64) x
+    real(real64) y
   !
   !  Special cases:
   !
-    if ( x == 0.0_dp ) then
+    if ( x == 0.0e+00_real64 ) then
 
-      if ( 0.0_dp < y ) then
-        theta = pi / 2.0_dp
-      else if ( y < 0.0_dp ) then
-        theta = 3.0_dp * pi / 2.0_dp
-      else if ( y == 0.0_dp ) then
-        theta = 0.0_dp
+      if ( 0.0e+00_real64 < y ) then
+        theta = pi / 2.0e+00_real64
+      else if ( y < 0.0e+00_real64 ) then
+        theta = 3.0e+00_real64 * pi / 2.0e+00_real64
+      else if ( y == 0.0e+00_real64 ) then
+        theta = 0.0e+00_real64
       end if
 
-    else if ( y == 0.0_dp ) then
+    else if ( y == 0.0e+00_real64 ) then
 
-      if ( 0.0_dp < x ) then
-        theta = 0.0_dp
-      else if ( x < 0.0_dp ) then
+      if ( 0.0e+00_real64 < x ) then
+        theta = 0.0e+00_real64
+      else if ( x < 0.0e+00_real64 ) then
         theta = pi
       end if
   !
@@ -2179,23 +2148,22 @@ contains
 
       theta_0 = atan2 ( abs_y, abs_x )
 
-      if ( 0.0_dp < x .and. 0.0_dp < y ) then
+      if ( 0.0e+00_real64 < x .and. 0.0e+00_real64 < y ) then
         theta = theta_0
-      else if ( x < 0.0_dp .and. 0.0_dp < y ) then
+      else if ( x < 0.0e+00_real64 .and. 0.0e+00_real64 < y ) then
         theta = pi - theta_0
-      else if ( x < 0.0_dp .and. y < 0.0_dp ) then
+      else if ( x < 0.0e+00_real64 .and. y < 0.0e+00_real64 ) then
         theta = pi + theta_0
-      else if ( 0.0_dp < x .and. y < 0.0_dp ) then
-        theta = 2.0_dp * pi - theta_0
+      else if ( 0.0e+00_real64 < x .and. y < 0.0e+00_real64 ) then
+        theta = 2.0e+00_real64 * pi - theta_0
       end if
 
     end if
 
     r8_atan = theta
-  end function r8_atan
+  end
 
-  pure function r8_epsilon ( ) &
-        bind(C, name="r8_epsilon")
+  function r8_epsilon ( )
 
   !*****************************************************************************80
   !
@@ -2227,16 +2195,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) R8_EPSILON, the round-off unit.
+  !    Output, real(real64) R8_EPSILON, the round-off unit.
   !
 
-    real(dp) :: r8_epsilon
+    real(real64) r8_epsilon
 
-    r8_epsilon = 2.220446049250313e-016_dp
-  end function r8_epsilon
+    r8_epsilon = 2.220446049250313e-016_real64
+  end
 
-  pure function r8_gamma ( x ) &
-        bind(C, name="r8_gamma")
+  function r8_gamma ( x )
 
   !*****************************************************************************80
   !
@@ -2283,79 +2250,79 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, the argument of the function.
+  !    Input, real(real64) X, the argument of the function.
   !
-  !    Output, real(dp) R8_GAMMA, the value of the function.
+  !    Output, real(real64) R8_GAMMA, the value of the function.
   !
 
-    real(dp), dimension ( 7 ) :: c = (/ &
-     -1.910444077728e-03_dp, &
-      8.4171387781295e-04_dp, &
-     -5.952379913043012e-04_dp, &
-      7.93650793500350248e-04_dp, &
-     -2.777777777777681622553e-03_dp, &
-      8.333333333333333331554247e-02_dp, &
-      5.7083835261e-03_dp /)
-    real(dp) :: fact
-    integer(ip) :: i
-    integer(ip) :: n
-    real(dp), dimension ( 8 ) :: p = (/ &
-      -1.71618513886549492533811e+00_dp, &
-       2.47656508055759199108314e+01_dp, &
-      -3.79804256470945635097577e+02_dp, &
-       6.29331155312818442661052e+02_dp, &
-       8.66966202790413211295064e+02_dp, &
-      -3.14512729688483675254357e+04_dp, &
-      -3.61444134186911729807069e+04_dp, &
-       6.64561438202405440627855e+04_dp /)
-    logical :: parity
-    real(dp), parameter :: pi = 3.1415926535897932384626434_dp
-    real(dp), dimension ( 8 ) :: q = (/ &
-      -3.08402300119738975254353e+01_dp, &
-       3.15350626979604161529144e+02_dp, &
-      -1.01515636749021914166146e+03_dp, &
-      -3.10777167157231109440444e+03_dp, &
-       2.25381184209801510330112e+04_dp, &
-       4.75584627752788110767815e+03_dp, &
-      -1.34659959864969306392456e+05_dp, &
-      -1.15132259675553483497211e+05_dp /)
-    real(dp) :: r8_epsilon
-    real(dp) :: r8_gamma
-    real(dp) :: res
-    real(dp), parameter :: sqrtpi = 0.9189385332046727417803297e+00_dp
-    real(dp) :: sum
-    real(dp), intent(in), value :: x
-    real(dp), parameter :: xbig = 171.624e+00_dp
-    real(dp) :: xden
-    real(dp), parameter :: xinf = 1.79e+308_dp
-    real(dp), parameter :: xminin = 2.23e-308_dp
-    real(dp) :: xnum
-    real(dp) :: y
-    real(dp) :: y1
-    real(dp) :: ysq
-    real(dp) :: z
+    real(real64), dimension ( 7 ) :: c = (/ &
+     -1.910444077728e-03_real64, &
+      8.4171387781295e-04_real64, &
+     -5.952379913043012e-04_real64, &
+      7.93650793500350248e-04_real64, &
+     -2.777777777777681622553e-03_real64, &
+      8.333333333333333331554247e-02_real64, &
+      5.7083835261e-03_real64 /)
+    real(real64) fact
+    integer(int32) i
+    integer(int32) n
+    real(real64), dimension ( 8 ) :: p = (/ &
+      -1.71618513886549492533811e+00_real64, &
+       2.47656508055759199108314e+01_real64, &
+      -3.79804256470945635097577e+02_real64, &
+       6.29331155312818442661052e+02_real64, &
+       8.66966202790413211295064e+02_real64, &
+      -3.14512729688483675254357e+04_real64, &
+      -3.61444134186911729807069e+04_real64, &
+       6.64561438202405440627855e+04_real64 /)
+    logical parity
+    real(real64), parameter :: pi = 3.1415926535897932384626434e+00_real64
+    real(real64), dimension ( 8 ) :: q = (/ &
+      -3.08402300119738975254353e+01_real64, &
+       3.15350626979604161529144e+02_real64, &
+      -1.01515636749021914166146e+03_real64, &
+      -3.10777167157231109440444e+03_real64, &
+       2.25381184209801510330112e+04_real64, &
+       4.75584627752788110767815e+03_real64, &
+      -1.34659959864969306392456e+05_real64, &
+      -1.15132259675553483497211e+05_real64 /)
+    real(real64) r8_epsilon
+    real(real64) r8_gamma
+    real(real64) res
+    real(real64), parameter :: sqrtpi = 0.9189385332046727417803297e+00_real64
+    real(real64) sum
+    real(real64) x
+    real(real64), parameter :: xbig = 171.624e+00_real64
+    real(real64) xden
+    real(real64), parameter :: xinf = 1.79e+308_real64
+    real(real64), parameter :: xminin = 2.23e-308_real64
+    real(real64) xnum
+    real(real64) y
+    real(real64) y1
+    real(real64) ysq
+    real(real64) z
 
     parity = .false.
-    fact = 1.0_dp
+    fact = 1.0e+00_real64
     n = 0
     y = x
   !
   !  Argument is negative.
   !
-    if ( y <= 0.0_dp ) then
+    if ( y <= 0.0e+00_real64 ) then
 
       y = - x
       y1 = aint ( y )
       res = y - y1
 
-      if ( res /= 0.0_dp ) then
+      if ( res /= 0.0e+00_real64 ) then
 
-        if ( y1 /= aint ( y1 * 0.5_dp ) * 2.0_dp ) then
+        if ( y1 /= aint ( y1 * 0.5e+00_real64 ) * 2.0e+00_real64 ) then
           parity = .true.
         end if
 
         fact = - pi / sin ( pi * res )
-        y = y + 1.0_dp
+        y = y + 1.0e+00_real64
 
       else
 
@@ -2372,22 +2339,22 @@ contains
   !  Argument < EPS.
   !
       if ( xminin <= y ) then
-        res = 1.0_dp / y
+        res = 1.0e+00_real64 / y
       else
         res = xinf
         r8_gamma = res
       end if
 
-    else if ( y < 12.0_dp ) then
+    else if ( y < 12.0e+00_real64 ) then
 
       y1 = y
   !
   !  0.0 < argument < 1.0.
   !
-      if ( y < 1.0_dp ) then
+      if ( y < 1.0e+00_real64 ) then
 
         z = y
-        y = y + 1.0_dp
+        y = y + 1.0e+00_real64
   !
   !  1.0 < argument < 12.0.
   !  Reduce argument if necessary.
@@ -2395,21 +2362,21 @@ contains
       else
 
         n = int ( y ) - 1
-        y = y - real ( n, dp)
-        z = y - 1.0_dp
+        y = y - real ( n, real64)
+        z = y - 1.0e+00_real64
 
       end if
   !
   !  Evaluate approximation for 1.0 < argument < 2.0.
   !
-      xnum = 0.0_dp
-      xden = 1.0_dp
+      xnum = 0.0e+00_real64
+      xden = 1.0e+00_real64
       do i = 1, 8
         xnum = ( xnum + p(i) ) * z
         xden = xden * z + q(i)
       end do
 
-      res = xnum / xden + 1.0_dp
+      res = xnum / xden + 1.0e+00_real64
   !
   !  Adjust result for case  0.0 < argument < 1.0.
   !
@@ -2423,7 +2390,7 @@ contains
 
         do i = 1, n
           res = res * y
-          y = y + 1.0_dp
+          y = y + 1.0e+00_real64
         end do
 
       end if
@@ -2440,7 +2407,7 @@ contains
           sum = sum / ysq + c(i)
         end do
         sum = sum / y - y + sqrtpi
-        sum = sum + ( y - 0.5_dp ) * log ( y )
+        sum = sum + ( y - 0.5e+00_real64 ) * log ( y )
         res = exp ( sum )
 
       else
@@ -2457,15 +2424,14 @@ contains
       res = - res
     end if
 
-    if ( fact /= 1.0_dp ) then
+    if ( fact /= 1.0e+00_real64 ) then
       res = fact / res
     end if
 
     r8_gamma = res
-  end function r8_gamma
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -2473,7 +2439,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
   !    For now, the input quantity SEED is an integer variable.
   !
@@ -2532,17 +2498,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -2559,11 +2525,10 @@ contains
       seed = seed + i4_huge
     end if
 
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  pure subroutine r8mat_uniform_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_uniform_01")
+  subroutine r8mat_uniform_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -2605,24 +2570,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns in
+  !    Input, integer(int32) M, N, the number of rows and columns in
   !    the array.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudorandom values.
+  !    Output, real(real64) R(M,N), the array of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
+    integer(int32) i
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) j
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(m,n)
 
     do j = 1, n
 
@@ -2636,14 +2601,13 @@ contains
           seed = seed + i4_huge
         end if
 
-        r(i,j) = real ( seed, dp) * 4.656612875e-10_dp
+        r(i,j) = real ( seed, real64) * 4.656612875e-10_real64
 
       end do
     end do
-  end subroutine r8mat_uniform_01
+  end
 
-  pure subroutine r8vec_linspace ( n, a, b, x ) &
-        bind(C, name="r8vec_linspace")
+  subroutine r8vec_linspace ( n, a, b, x )
 
   !*****************************************************************************80
   !
@@ -2672,37 +2636,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input, real(dp) A_FIRST, A_LAST, the first and last entries.
+  !    Input, real(real64) A_FIRST, A_LAST, the first and last entries.
   !
-  !    Output, real(dp) X(N), a vector of linearly spaced data.
+  !    Output, real(real64) X(N), a vector of linearly spaced data.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a
-    real(dp) :: b
-    integer(ip) :: i
-    real(dp), intent(out) :: x(n)
+    real(real64) a
+    real(real64) b
+    integer(int32) i
+    real(real64) x(n)
 
     if ( n == 1 ) then
 
-      x(1) = ( a + b ) / 2.0_dp
+      x(1) = ( a + b ) / 2.0e+00_real64
 
     else
 
       do i = 1, n
-        x(i) = ( real ( n - i, dp) * a   &
-               + real (     i - 1, dp) * b ) &
-               / real ( n     - 1, dp)
+        x(i) = ( real ( n - i, real64) * a   &
+               + real (     i - 1, real64) * b ) &
+               / real ( n     - 1, real64)
       end do
 
     end if
-  end subroutine r8vec_linspace
+  end
 
-  subroutine r8vec_uniform_01 ( n, seed, r ) &
-        bind(C, name="r8vec_uniform_01")
+  subroutine r8vec_uniform_01 ( n, seed, r )
 
   !*****************************************************************************80
   !
@@ -2744,20 +2707,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -2776,13 +2739,12 @@ contains
         seed = seed + 2147483647
       end if
 
-      r(i) = real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_01
+  end
 
-  pure subroutine tridisolve ( n, a, b, c, d, x ) &
-        bind(C, name="tridisolve")
+  subroutine tridisolve ( n, a, b, c, d, x )
 
   !*****************************************************************************80
   !
@@ -2815,29 +2777,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the linear system.
+  !    Input, integer(int32) N, the order of the linear system.
   !
-  !    Input, real(dp) A(N-1), B(N), C(N-1), the matrix entries.
+  !    Input, real(real64) A(N-1), B(N), C(N-1), the matrix entries.
   !
-  !    Input, real(dp) D(N), the right hand side.
+  !    Input, real(real64) D(N), the right hand side.
   !
-  !    Output, real(dp) X(N), the solution.
+  !    Output, real(real64) X(N), the solution.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n-1)
-    real(dp), intent(in) :: b(n)
-    real(dp) :: bi(n)
-    real(dp), intent(in) :: c(n-1)
-    real(dp), intent(in) :: d(n)
-    integer(ip) :: j
-    real(dp) :: mu
-    real(dp), intent(out) :: x(n)
+    real(real64) a(n-1)
+    real(real64) b(n)
+    real(real64) bi(n)
+    real(real64) c(n-1)
+    real(real64) d(n)
+    integer(int32) j
+    real(real64) mu
+    real(real64) x(n)
 
     x(1:n) = d(1:n)
 
-    bi(1:n) = 1.0_dp / b(1:n)
+    bi(1:n) = 1.0e+00_real64 / b(1:n)
 
     do j = 1, n - 1
       mu = a(j) * bi(j)
@@ -2849,6 +2811,6 @@ contains
     do j = n - 1, 1, -1
       x(j) = ( x(j) - c(j) * x(j+1) ) * bi(j)
     end do
-  end subroutine tridisolve
+  end
 
 end module circle_segment_mod

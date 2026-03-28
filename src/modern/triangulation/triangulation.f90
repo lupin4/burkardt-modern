@@ -1,16 +1,11 @@
-!> triangulation — Modern Fortran 2018
+!> triangulation â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module triangulation_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: alpha_measure, angle_rad_2d, area_measure, bandwidth, delaunay_swap_test, diaedg
   public :: element_order3_physical_to_reference, element_order3_reference_to_physical, element_order6_physical_to_reference, element_order6_reference_to_physical, i4_modp, i4_sign
@@ -34,8 +29,7 @@ module triangulation_mod
 contains
 
   subroutine alpha_measure ( n, z, element_order, element_num, element_node, &
-    alpha_min, alpha_ave, alpha_area ) &
-        bind(C, name="alpha_measure")
+    alpha_min, alpha_ave, alpha_area )
 
   !*****************************************************************************80
   !
@@ -69,62 +63,62 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Z(2,N), the points.
+  !    Input, real(real64) Z(2,N), the points.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the triangulation.
   !
-  !    Output, real(dp) ALPHA_MIN, the minimum value of ALPHA over all
+  !    Output, real(real64) ALPHA_MIN, the minimum value of ALPHA over all
   !    triangles.
   !
-  !    Output, real(dp) ALPHA_AVE, the value of ALPHA averaged over
+  !    Output, real(real64) ALPHA_AVE, the value of ALPHA averaged over
   !    all triangles.
   !
-  !    Output, real(dp) ALPHA_AREA, the value of ALPHA averaged over
+  !    Output, real(real64) ALPHA_AREA, the value of ALPHA averaged over
   !    all triangles and weighted by area.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) n
+    integer(int32) element_num
+    integer(int32) element_order
 
-    real(dp) :: a_angle
-    integer(ip) :: a_index
-    real(dp) :: a_x
-    real(dp) :: a_y
-    real(dp) :: ab_len
-    real(dp) :: alpha
-    real(dp), intent(out) :: alpha_area
-    real(dp), intent(out) :: alpha_ave
-    real(dp), intent(out) :: alpha_min
-    real(dp) :: area
-    real(dp) :: area_total
-    real(dp) :: b_angle
-    integer(ip) :: b_index
-    real(dp) :: b_x
-    real(dp) :: b_y
-    real(dp) :: bc_len
-    real(dp) :: c_angle
-    integer(ip) :: c_index
-    real(dp) :: c_x
-    real(dp) :: c_y
-    real(dp) :: ca_len
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: r8_acos
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp), intent(in) :: z(2,n)
+    real(real64) a_angle
+    integer(int32) a_index
+    real(real64) a_x
+    real(real64) a_y
+    real(real64) ab_len
+    real(real64) alpha
+    real(real64) alpha_area
+    real(real64) alpha_ave
+    real(real64) alpha_min
+    real(real64) area
+    real(real64) area_total
+    real(real64) b_angle
+    integer(int32) b_index
+    real(real64) b_x
+    real(real64) b_y
+    real(real64) bc_len
+    real(real64) c_angle
+    integer(int32) c_index
+    real(real64) c_x
+    real(real64) c_y
+    real(real64) ca_len
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r8_acos
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    real(real64) z(2,n)
 
     alpha_min = huge ( alpha )
-    alpha_ave = 0.0_dp
-    alpha_area = 0.0_dp
-    area_total = 0.0_dp
+    alpha_ave = 0.0e+00_real64
+    alpha_area = 0.0e+00_real64
+    area_total = 0.0e+00_real64
 
     do triangle = 1, element_num
 
@@ -139,7 +133,7 @@ contains
       c_x = z(1,c_index)
       c_y = z(2,c_index)
 
-      area = 0.5_dp * abs ( a_x * ( b_y - c_y ) &
+      area = 0.5e+00_real64 * abs ( a_x * ( b_y - c_y ) &
                            + b_x * ( c_y - a_y ) &
                            + c_x * ( a_y - b_y ) )
 
@@ -149,35 +143,35 @@ contains
   !
   !  Take care of a ridiculous special case.
   !
-      if ( ab_len == 0.0_dp .and. &
-           bc_len == 0.0_dp .and. &
-           ca_len == 0.0_dp ) then
+      if ( ab_len == 0.0e+00_real64 .and. &
+           bc_len == 0.0e+00_real64 .and. &
+           ca_len == 0.0e+00_real64 ) then
 
-        a_angle = 2.0_dp * pi / 3.0_dp
-        b_angle = 2.0_dp * pi / 3.0_dp
-        c_angle = 2.0_dp * pi / 3.0_dp
+        a_angle = 2.0e+00_real64 * pi / 3.0e+00_real64
+        b_angle = 2.0e+00_real64 * pi / 3.0e+00_real64
+        c_angle = 2.0e+00_real64 * pi / 3.0e+00_real64
 
       else
 
-        if ( ca_len == 0.0_dp .or. ab_len == 0.0_dp ) then
+        if ( ca_len == 0.0e+00_real64 .or. ab_len == 0.0e+00_real64 ) then
           a_angle = pi
         else
           a_angle = r8_acos ( ( ca_len**2 + ab_len**2 - bc_len**2 ) &
-            / ( 2.0_dp * ca_len * ab_len ) )
+            / ( 2.0e+00_real64 * ca_len * ab_len ) )
         end if
 
-        if ( ab_len == 0.0_dp .or. bc_len == 0.0_dp ) then
+        if ( ab_len == 0.0e+00_real64 .or. bc_len == 0.0e+00_real64 ) then
           b_angle = pi
         else
           b_angle = r8_acos ( ( ab_len**2 + bc_len**2 - ca_len**2 ) &
-            / ( 2.0_dp * ab_len * bc_len ) )
+            / ( 2.0e+00_real64 * ab_len * bc_len ) )
         end if
 
-        if ( bc_len == 0.0_dp .or. ca_len == 0.0_dp ) then
+        if ( bc_len == 0.0e+00_real64 .or. ca_len == 0.0e+00_real64 ) then
           c_angle = pi
         else
           c_angle = r8_acos ( ( bc_len**2 + ca_len**2 - ab_len**2 ) &
-            / ( 2.0_dp * bc_len * ca_len ) )
+            / ( 2.0e+00_real64 * bc_len * ca_len ) )
         end if
 
       end if
@@ -194,18 +188,17 @@ contains
 
     end do
 
-    alpha_ave = alpha_ave / real ( element_num, dp)
+    alpha_ave = alpha_ave / real ( element_num, real64)
     alpha_area = alpha_area / area_total
   !
   !  Normalize angles from [0,pi/3] degrees into qualities in [0,1].
   !
-    alpha_min = alpha_min * 3.0_dp / pi
-    alpha_ave = alpha_ave * 3.0_dp / pi
-    alpha_area = alpha_area * 3.0_dp / pi
-  end subroutine alpha_measure
+    alpha_min = alpha_min * 3.0e+00_real64 / pi
+    alpha_ave = alpha_ave * 3.0e+00_real64 / pi
+    alpha_area = alpha_area * 3.0e+00_real64 / pi
+  end
 
-  function angle_rad_2d ( p1, p2, p3 ) &
-        bind(C, name="angle_rad_2d")
+  function angle_rad_2d ( p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -238,22 +231,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), define the rays
+  !    Input, real(real64) P1(2), P2(2), P3(2), define the rays
   !    P1 - P2 and P3 - P2 which define the angle.
   !
-  !    Output, real(dp) ANGLE_RAD_2D, the angle swept out by the rays,
+  !    Output, real(real64) ANGLE_RAD_2D, the angle swept out by the rays,
   !    in radians.  0 <= ANGLE_RAD_2D < 2 * PI.  If either ray has zero
   !    length, then ANGLE_RAD_2D is set to 0.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle_rad_2d
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
+    real(real64) angle_rad_2d
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
 
     p(1) = ( p3(1) - p2(1) ) * ( p1(1) - p2(1) ) &
          + ( p3(2) - p2(2) ) * ( p1(2) - p2(2) )
@@ -262,20 +255,19 @@ contains
     p(2) = ( p3(1) - p2(1) ) * ( p1(2) - p2(2) ) &
          - ( p3(2) - p2(2) ) * ( p1(1) - p2(1) )
 
-    if ( p(1) == 0.0_dp .and. p(2) == 0.0_dp ) then
-      angle_rad_2d = 0.0_dp
+    if ( p(1) == 0.0e+00_real64 .and. p(2) == 0.0e+00_real64 ) then
+      angle_rad_2d = 0.0e+00_real64
     end if
 
     angle_rad_2d = atan2 ( p(2), p(1) )
 
-    if ( angle_rad_2d < 0.0_dp ) then
-      angle_rad_2d = angle_rad_2d + 2.0_dp * pi
+    if ( angle_rad_2d < 0.0e+00_real64 ) then
+      angle_rad_2d = angle_rad_2d + 2.0e+00_real64 * pi
     end if
-  end function angle_rad_2d
+  end
 
   subroutine area_measure ( n, z, element_order, element_num, element_node, &
-    area_min, area_max, area_ratio, area_ave, area_std ) &
-        bind(C, name="area_measure")
+    area_min, area_max, area_ratio, area_ave, area_std )
 
   !*****************************************************************************80
   !
@@ -306,49 +298,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Z(2,N), the points.
+  !    Input, real(real64) Z(2,N), the points.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the triangulation.
   !
-  !    Output, real(dp) AREA_MIN, AREA_MAX, the minimum and maximum
+  !    Output, real(real64) AREA_MIN, AREA_MAX, the minimum and maximum
   !    areas.
   !
-  !    Output, real(dp) AREA_RATIO, the ratio of the minimum to the
+  !    Output, real(real64) AREA_RATIO, the ratio of the minimum to the
   !    maximum area.
   !
-  !    Output, real(dp) AREA_AVE, the average area.
+  !    Output, real(real64) AREA_AVE, the average area.
   !
-  !    Output, real(dp) AREA_STD, the standard deviation of the areas.
+  !    Output, real(real64) AREA_STD, the standard deviation of the areas.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) n
+    integer(int32) element_num
+    integer(int32) element_order
 
-    real(dp) :: area
-    real(dp), intent(out) :: area_ave
-    real(dp), intent(out) :: area_max
-    real(dp), intent(out) :: area_min
-    real(dp), intent(out) :: area_ratio
-    real(dp), intent(out) :: area_std
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp) :: x3
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp) :: y3
-    real(dp), intent(in) :: z(2,n)
+    real(real64) area
+    real(real64) area_ave
+    real(real64) area_max
+    real(real64) area_min
+    real(real64) area_ratio
+    real(real64) area_std
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) z(2,n)
 
-    area_max = 0.0_dp
+    area_max = 0.0e+00_real64
     area_min = huge ( area_min )
     area_ave = 0.0
 
@@ -361,7 +353,7 @@ contains
       x3 = z(1,element_node(3,triangle))
       y3 = z(2,element_node(3,triangle))
 
-      area = 0.5_dp * abs ( x1 * ( y2 - y3 ) &
+      area = 0.5e+00_real64 * abs ( x1 * ( y2 - y3 ) &
                            + x2 * ( y3 - y1 ) &
                            + x3 * ( y1 - y2 ) )
 
@@ -372,9 +364,9 @@ contains
 
     end do
 
-    area_ave = area_ave / real ( element_num, dp)
+    area_ave = area_ave / real ( element_num, real64)
 
-    area_std = 0.0_dp
+    area_std = 0.0e+00_real64
     do triangle = 1, element_num
 
       x1 = z(1,element_node(1,triangle))
@@ -384,23 +376,22 @@ contains
       x3 = z(1,element_node(3,triangle))
       y3 = z(2,element_node(3,triangle))
 
-      area = 0.5_dp * abs ( x1 * ( y2 - y3 ) &
+      area = 0.5e+00_real64 * abs ( x1 * ( y2 - y3 ) &
                            + x2 * ( y3 - y1 ) &
                            + x3 * ( y1 - y2 ) )
 
       area_std = area_std + ( area - area_ave )**2
     end do
-    area_std = sqrt ( area_std / real ( element_num, dp) )
+    area_std = sqrt ( area_std / real ( element_num, real64) )
 
-    if ( 0.0_dp < area_max ) then
+    if ( 0.0e+00_real64 < area_max ) then
       area_ratio = area_min / area_max
     else
-      area_ratio = 0.0_dp
+      area_ratio = 0.0e+00_real64
     end if
-  end subroutine area_measure
+  end
 
-  subroutine bandwidth ( element_order, element_num, element_node, ml, mu, m ) &
-        bind(C, name="bandwidth")
+  subroutine bandwidth ( element_order, element_num, element_node, ml, mu, m )
 
   !*****************************************************************************80
   !
@@ -445,31 +436,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the elements.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the elements.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM);
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM);
   !    ELEMENT_NODE(I,J) is the global index of local node I in element J.
   !
-  !    Output, integer(ip) ML, MU, the lower and upper bandwidths
+  !    Output, integer(int32) ML, MU, the lower and upper bandwidths
   !    of the matrix.
   !
-  !    Output, integer(ip) M, the bandwidth of the matrix.
+  !    Output, integer(int32) M, the bandwidth of the matrix.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: global_i
-    integer(ip) :: global_j
-    integer(ip) :: local_i
-    integer(ip) :: local_j
-    integer(ip), intent(out) :: m
-    integer(ip), intent(out) :: ml
-    integer(ip), intent(out) :: mu
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) global_i
+    integer(int32) global_j
+    integer(int32) local_i
+    integer(int32) local_j
+    integer(int32) m
+    integer(int32) ml
+    integer(int32) mu
 
     ml = 0
     mu = 0
@@ -490,10 +481,9 @@ contains
     end do
 
     m = ml + 1 + mu
-  end subroutine bandwidth
+  end
 
-  subroutine delaunay_swap_test ( xy, swap ) &
-        bind(C, name="delaunay_swap_test")
+  subroutine delaunay_swap_test ( xy, swap )
 
   !*****************************************************************************80
   !
@@ -533,26 +523,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XY(2,4), the coordinates of four points.
+  !    Input, real(real64) XY(2,4), the coordinates of four points.
   !
   !    Output, logical SWAP, is TRUE if the triangles (1,2,4) and (2,3,4)
   !    are to replace triangles (1,2,3) and (1,3,4).
   !
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    logical, intent(out) ::              swap
-    real(dp) :: x13
-    real(dp) :: x14
-    real(dp) :: x23
-    real(dp) :: x24
-    real(dp), intent(in) :: xy(2,4)
-    real(dp) :: y13
-    real(dp) :: y14
-    real(dp) :: y23
-    real(dp) :: y24
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    logical              swap
+    real(real64) x13
+    real(real64) x14
+    real(real64) x23
+    real(real64) x24
+    real(real64) xy(2,4)
+    real(real64) y13
+    real(real64) y14
+    real(real64) y23
+    real(real64) y24
 
     x13 = xy(1,1) - xy(1,3)
     x14 = xy(1,1) - xy(1,4)
@@ -576,9 +566,9 @@ contains
   !  instead cause real error in common cases, they are
   !  omitted for now.
   !
-  ! if ( 0.0_dp <= a .and. 0.0_dp <= d ) then
+  ! if ( 0.0e+00_real64 <= a .and. 0.0e+00_real64 <= d ) then
   !   swap = .true.
-  ! else if ( a < d .and. d < 0.0_dp ) then
+  ! else if ( a < d .and. d < 0.0e+00_real64 ) then
   !   swap = .true.
   !  else if...
 
@@ -587,10 +577,9 @@ contains
     else
       swap = .false.
     end if
-  end subroutine delaunay_swap_test
+  end
 
-  function diaedg ( x0, y0, x1, y1, x2, y2, x3, y3 ) &
-        bind(C, name="diaedg")
+  function diaedg ( x0, y0, x1, y1, x2, y2, x3, y3 )
 
   !*****************************************************************************80
   !
@@ -626,41 +615,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X0, Y0, X1, Y1, X2, Y2, X3, Y3, the
+  !    Input, real(real64) X0, Y0, X1, Y1, X2, Y2, X3, Y3, the
   !    coordinates of the vertices of a quadrilateral, given in
   !    counterclockwise order.
   !
-  !    Output, integer(ip) DIAEDG, chooses a diagonal:
+  !    Output, integer(int32) DIAEDG, chooses a diagonal:
   !    +1, if diagonal edge 02 is chosen;
   !    -1, if diagonal edge 13 is chosen;
   !     0, if the four vertices are cocircular.
   !
 
-    real(dp) :: ca
-    real(dp) :: cb
-    integer(ip) :: diaedg
-    real(dp) :: dx10
-    real(dp) :: dx12
-    real(dp) :: dx30
-    real(dp) :: dx32
-    real(dp) :: dy10
-    real(dp) :: dy12
-    real(dp) :: dy30
-    real(dp) :: dy32
-    real(dp) :: s
-    real(dp) :: tol
-    real(dp) :: tola
-    real(dp) :: tolb
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: y0
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
+    real(real64) ca
+    real(real64) cb
+    integer(int32) diaedg
+    real(real64) dx10
+    real(real64) dx12
+    real(real64) dx30
+    real(real64) dx32
+    real(real64) dy10
+    real(real64) dy12
+    real(real64) dy30
+    real(real64) dy32
+    real(real64) s
+    real(real64) tol
+    real(real64) tola
+    real(real64) tolb
+    real(real64) x0
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y0
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     dx10 = x1 - x0
     dy10 = y1 - y0
@@ -701,10 +690,9 @@ contains
       end if
 
     end if
-  end function diaedg
+  end
 
-  subroutine element_order3_physical_to_reference ( t, n, phy, ref ) &
-        bind(C, name="element_order3_physical_to_reference")
+  subroutine element_order3_physical_to_reference ( t, n, phy, ref )
 
   !*****************************************************************************80
   !
@@ -753,24 +741,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the X and Y coordinates
+  !    Input, real(real64) T(2,3), the X and Y coordinates
   !    of the vertices.  The vertices are assumed to be the images of
   !    (0,0), (1,0) and (0,1) respectively.
   !
-  !    Input, integer(ip) N, the number of points to transform.
+  !    Input, integer(int32) N, the number of points to transform.
   !
-  !    Input, real(dp) PHY(2,N), the coordinates of physical points
+  !    Input, real(real64) PHY(2,N), the coordinates of physical points
   !    to be transformed.
   !
-  !    Output, real(dp) REF(2,N), the coordinates of the corresponding
+  !    Output, real(real64) REF(2,N), the coordinates of the corresponding
   !    points in the reference space.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: phy(2,n)
-    real(dp), intent(out) :: ref(2,n)
-    real(dp), intent(in) :: t(2,3)
+    real(real64) phy(2,n)
+    real(real64) ref(2,n)
+    real(real64) t(2,3)
 
     ref(1,1:n) = ( ( t(2,3) - t(2,1) ) * ( phy(1,1:n) - t(1,1) )   &
                  - ( t(1,3) - t(1,1) ) * ( phy(2,1:n) - t(2,1) ) ) &
@@ -781,10 +769,9 @@ contains
                  - ( t(2,2) - t(2,1) ) * ( phy(1,1:n) - t(1,1) ) ) &
                / ( ( t(2,3) - t(2,1) ) * ( t(1,2)     - t(1,1) )   &
                  - ( t(1,3) - t(1,1) ) * ( t(2,2)     - t(2,1) ) )
-  end subroutine element_order3_physical_to_reference
+  end
 
-  subroutine element_order3_reference_to_physical ( t, n, ref, phy ) &
-        bind(C, name="element_order3_reference_to_physical")
+  subroutine element_order3_reference_to_physical ( t, n, ref, phy )
 
   !*****************************************************************************80
   !
@@ -833,34 +820,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the coordinates of the vertices.
+  !    Input, real(real64) T(2,3), the coordinates of the vertices.
   !    The vertices are assumed to be the images of (0,0), (1,0) and
   !    (0,1) respectively.
   !
-  !    Input, integer(ip) N, the number of points to transform.
+  !    Input, integer(int32) N, the number of points to transform.
   !
-  !    Input, real(dp) REF(2,N), points in the reference triangle.
+  !    Input, real(real64) REF(2,N), points in the reference triangle.
   !
-  !    Output, real(dp) PHY(2,N), corresponding points in the
+  !    Output, real(real64) PHY(2,N), corresponding points in the
   !    physical triangle.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    real(dp), intent(out) :: phy(2,n)
-    real(dp), intent(in) :: ref(2,n)
-    real(dp), intent(in) :: t(2,3)
+    integer(int32) i
+    real(real64) phy(2,n)
+    real(real64) ref(2,n)
+    real(real64) t(2,3)
 
     do i = 1, 2
-      phy(i,1:n) = t(i,1) * ( 1.0_dp - ref(1,1:n) - ref(2,1:n) ) &
+      phy(i,1:n) = t(i,1) * ( 1.0e+00_real64 - ref(1,1:n) - ref(2,1:n) ) &
                  + t(i,2) *             ref(1,1:n)                &
                  + t(i,3) *                          ref(2,1:n)
     end do
-  end subroutine element_order3_reference_to_physical
+  end
 
-  subroutine element_order6_physical_to_reference ( t, n, phy, ref ) &
-        bind(C, name="element_order6_physical_to_reference")
+  subroutine element_order6_physical_to_reference ( t, n, phy, ref )
 
   !*****************************************************************************80
   !
@@ -907,59 +893,59 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,6), the coordinates of the vertices.
+  !    Input, real(real64) T(2,6), the coordinates of the vertices.
   !    The vertices are assumed to be the images of (0,0), (1,0), (0,1),
   !    (1/2,0), (1/2,1/2) and (0,1/2), in that order.
   !
-  !    Input, integer(ip) N, the number of points to transform.
+  !    Input, integer(int32) N, the number of points to transform.
   !
-  !    Input, real(dp) PHY(2,N), the coordinates of points in the
+  !    Input, real(real64) PHY(2,N), the coordinates of points in the
   !    physical space.
   !
-  !    Output, real(dp) REF(2,N), the coordinates of the corresponding
+  !    Output, real(real64) REF(2,N), the coordinates of the corresponding
   !    points in the reference space.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp) :: a(2)
-    real(dp) :: b(2)
-    real(dp) :: c(2)
-    real(dp) :: d(2)
-    real(dp) :: det
-    real(dp) :: dx(2)
-    real(dp) :: e(2)
-    real(dp) :: f(2)
-    real(dp) :: fun(2)
-    real(dp) :: fun_norm
-    integer(ip) :: i
-    integer(ip) :: it
-    integer(ip) :: j
-    real(dp) :: jac(2,2)
-    integer(ip), parameter :: it_max = 10
-    real(dp), parameter :: it_tol = 0.000001_dp
-    real(dp), intent(in) :: phy(2,n)
-    real(dp), intent(out) :: ref(2,n)
-    real(dp), intent(in) :: t(2,6)
+    real(real64) a(2)
+    real(real64) b(2)
+    real(real64) c(2)
+    real(real64) d(2)
+    real(real64) det
+    real(real64) dx(2)
+    real(real64) e(2)
+    real(real64) f(2)
+    real(real64) fun(2)
+    real(real64) fun_norm
+    integer(int32) i
+    integer(int32) it
+    integer(int32) j
+    real(real64) jac(2,2)
+    integer(int32), parameter :: it_max = 10
+    real(real64), parameter :: it_tol = 0.000001e+00_real64
+    real(real64) phy(2,n)
+    real(real64) ref(2,n)
+    real(real64) t(2,6)
   !
   !  Set iteration parameters.
   !
     do i = 1, 2
 
-      a(i) =   2.0_dp * t(i,1) + 2.0_dp * t(i,2)                    &
-             - 4.0_dp * t(i,4)
+      a(i) =   2.0e+00_real64 * t(i,1) + 2.0e+00_real64 * t(i,2)                    &
+             - 4.0e+00_real64 * t(i,4)
 
-      b(i) =   4.0_dp * t(i,1)                                       &
-             - 4.0_dp * t(i,4) + 4.0_dp * t(i,5) - 4.0_dp * t(i,6)
+      b(i) =   4.0e+00_real64 * t(i,1)                                       &
+             - 4.0e+00_real64 * t(i,4) + 4.0e+00_real64 * t(i,5) - 4.0e+00_real64 * t(i,6)
 
-      c(i) =   2.0_dp * t(i,1)                    + 2.0_dp * t(i,3) &
-                                                   - 4.0_dp * t(i,6)
+      c(i) =   2.0e+00_real64 * t(i,1)                    + 2.0e+00_real64 * t(i,3) &
+                                                   - 4.0e+00_real64 * t(i,6)
 
-      d(i) = - 3.0_dp * t(i,1) -           t(i,2)                    &
-             + 4.0_dp * t(i,4)
+      d(i) = - 3.0e+00_real64 * t(i,1) -           t(i,2)                    &
+             + 4.0e+00_real64 * t(i,4)
 
-      e(i) = - 3.0_dp * t(i,1)                    -           t(i,3) &
-                                                   + 4.0_dp * t(i,6)
+      e(i) = - 3.0e+00_real64 * t(i,1)                    -           t(i,3) &
+                                                   + 4.0e+00_real64 * t(i,6)
       f(i) =             t(i,1)
 
     end do
@@ -988,15 +974,15 @@ contains
           exit
         end if
 
-        jac(1:2,1) = 2.0_dp * a(1:2) * ref(1,j) &
+        jac(1:2,1) = 2.0e+00_real64 * a(1:2) * ref(1,j) &
                    +           b(1:2) * ref(2,j) + d(1:2)
 
         jac(1:2,2) =           b(1:2) * ref(1,j) &
-                   + 2.0_dp * c(1:2) * ref(2,j) + e(1:2)
+                   + 2.0e+00_real64 * c(1:2) * ref(2,j) + e(1:2)
 
         det = jac(1,1) * jac(2,2) - jac(1,2) * jac(2,1)
 
-        if ( det == 0.0_dp ) then
+        if ( det == 0.0e+00_real64 ) then
           write ( *, '(a)' ) ' '
           write ( *, '(a)' ) &
             'ELEMENT_ORDER6_PHYSICAL_TO_REFERENCE - Fatal error!'
@@ -1011,10 +997,9 @@ contains
       end do
 
     end do
-  end subroutine element_order6_physical_to_reference
+  end
 
-  subroutine element_order6_reference_to_physical ( t, n, ref, phy ) &
-        bind(C, name="element_order6_reference_to_physical")
+  subroutine element_order6_reference_to_physical ( t, n, ref, phy )
 
   !*****************************************************************************80
   !
@@ -1061,47 +1046,47 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,6), the coordinates of the vertices.
+  !    Input, real(real64) T(2,6), the coordinates of the vertices.
   !    The vertices are assumed to be the images of (0,0), (1,0),
   !    (0,1),(1/2,0), (1/2,1/2) and (0,1/2) respectively.
   !
-  !    Input, integer(ip) N, the number of points to transform.
+  !    Input, integer(int32) N, the number of points to transform.
   !
-  !    Input, real(dp) REF(2,N), points in the reference triangle.
+  !    Input, real(real64) REF(2,N), points in the reference triangle.
   !
-  !    Output, real(dp) PHY(2,N), corresponding points in the
+  !    Output, real(real64) PHY(2,N), corresponding points in the
   !    physical triangle.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp) :: a(2)
-    real(dp) :: b(2)
-    real(dp) :: c(2)
-    real(dp) :: d(2)
-    real(dp) :: e(2)
-    real(dp) :: f(2)
-    integer(ip) :: i
-    real(dp), intent(out) :: phy(2,n)
-    real(dp), intent(in) :: ref(2,n)
-    real(dp), intent(in) :: t(2,6)
+    real(real64) a(2)
+    real(real64) b(2)
+    real(real64) c(2)
+    real(real64) d(2)
+    real(real64) e(2)
+    real(real64) f(2)
+    integer(int32) i
+    real(real64) phy(2,n)
+    real(real64) ref(2,n)
+    real(real64) t(2,6)
 
     do i = 1, 2
 
-      a(i) =   2.0_dp * t(i,1) + 2.0_dp * t(i,2)                    &
-             - 4.0_dp * t(i,4)
+      a(i) =   2.0e+00_real64 * t(i,1) + 2.0e+00_real64 * t(i,2)                    &
+             - 4.0e+00_real64 * t(i,4)
 
-      b(i) =   4.0_dp * t(i,1)                                       &
-             - 4.0_dp * t(i,4) + 4.0_dp * t(i,5) - 4.0_dp * t(i,6)
+      b(i) =   4.0e+00_real64 * t(i,1)                                       &
+             - 4.0e+00_real64 * t(i,4) + 4.0e+00_real64 * t(i,5) - 4.0e+00_real64 * t(i,6)
 
-      c(i) =   2.0_dp * t(i,1)                    + 2.0_dp * t(i,3) &
-                                                   - 4.0_dp * t(i,6)
+      c(i) =   2.0e+00_real64 * t(i,1)                    + 2.0e+00_real64 * t(i,3) &
+                                                   - 4.0e+00_real64 * t(i,6)
 
-      d(i) = - 3.0_dp * t(i,1) -           t(i,2)                    &
-             + 4.0_dp * t(i,4)
+      d(i) = - 3.0e+00_real64 * t(i,1) -           t(i,2)                    &
+             + 4.0e+00_real64 * t(i,4)
 
-      e(i) = - 3.0_dp * t(i,1)                    -           t(i,3) &
-                                                   + 4.0_dp * t(i,6)
+      e(i) = - 3.0e+00_real64 * t(i,1)                    -           t(i,3) &
+                                                   + 4.0e+00_real64 * t(i,6)
       f(i) =             t(i,1)
 
     end do
@@ -1114,10 +1099,9 @@ contains
                  + e(i) * ref(2,1:n) &
                  + f(i)
     end do
-  end subroutine element_order6_reference_to_physical
+  end
 
-  function i4_modp ( i, j ) &
-        bind(C, name="i4_modp")
+  function i4_modp ( i, j )
 
   !*****************************************************************************80
   !
@@ -1163,17 +1147,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the number to be divided.
+  !    Input, integer(int32) I, the number to be divided.
   !
-  !    Input, integer(ip) J, the number that divides I.
+  !    Input, integer(int32) J, the number that divides I.
   !
-  !    Output, integer(ip) I4_MODP, the nonnegative remainder when I is
+  !    Output, integer(int32) I4_MODP, the nonnegative remainder when I is
   !    divided by J.
   !
 
-    integer(ip), intent(in), value :: i
-    integer(ip) :: i4_modp
-    integer(ip), intent(in), value :: j
+    integer(int32) i
+    integer(int32) i4_modp
+    integer(int32) j
 
     if ( j == 0 ) then
       write ( *, '(a)' ) ' '
@@ -1187,10 +1171,9 @@ contains
     if ( i4_modp < 0 ) then
       i4_modp = i4_modp + abs ( j )
     end if
-  end function i4_modp
+  end
 
-  function i4_sign ( x ) &
-        bind(C, name="i4_sign")
+  function i4_sign ( x )
 
   !*****************************************************************************80
   !
@@ -1198,7 +1181,7 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !  Licensing:
   !
@@ -1214,23 +1197,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) X, the number whose sign is desired.
+  !    Input, integer(int32) X, the number whose sign is desired.
   !
-  !    Output, integer(ip) I4_SIGN, the sign of X:
+  !    Output, integer(int32) I4_SIGN, the sign of X:
   !
 
-    integer(ip) :: i4_sign
-    integer(ip), intent(in), value :: x
+    integer(int32) i4_sign
+    integer(int32) x
 
     if ( x < 0 ) then
       i4_sign = -1
     else
       i4_sign = +1
     end if
-  end function i4_sign
+  end
 
-  subroutine i4_swap ( i, j ) &
-        bind(C, name="i4_swap")
+  subroutine i4_swap ( i, j )
 
   !*****************************************************************************80
   !
@@ -1250,21 +1232,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) I, J.  On output, the values of I and
+  !    Input/output, integer(int32) I, J.  On output, the values of I and
   !    J have been interchanged.
   !
 
-    integer(ip), intent(inout) :: i
-    integer(ip), intent(inout) :: j
-    integer(ip) :: k
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
 
     k = i
     i = j
     j = k
-  end subroutine i4_swap
+  end
 
-  function i4_wrap ( ival, ilo, ihi ) &
-        bind(C, name="i4_wrap")
+  function i4_wrap ( ival, ilo, ihi )
 
   !*****************************************************************************80
   !
@@ -1272,7 +1253,7 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !    There appears to be a bug in the GFORTRAN compiler which can lead to
   !    erroneous results when the first argument of I4_WRAP is an expression.
@@ -1331,22 +1312,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IVAL, a value.
+  !    Input, integer(int32) IVAL, a value.
   !
-  !    Input, integer(ip) ILO, IHI, the desired bounds.
+  !    Input, integer(int32) ILO, IHI, the desired bounds.
   !
-  !    Output, integer(ip) I4_WRAP, a "wrapped" version of the value.
+  !    Output, integer(int32) I4_WRAP, a "wrapped" version of the value.
   !
 
-    integer(ip) :: i4_modp
-    integer(ip) :: i4_wrap
-    integer(ip), intent(in), value :: ihi
-    integer(ip), intent(in), value :: ilo
-    integer(ip), intent(in), value :: ival
-    integer(ip) :: jhi
-    integer(ip) :: jlo
-    integer(ip) :: value
-    integer(ip) :: wide
+    integer(int32) i4_modp
+    integer(int32) i4_wrap
+    integer(int32) ihi
+    integer(int32) ilo
+    integer(int32) ival
+    integer(int32) jhi
+    integer(int32) jlo
+    integer(int32) value
+    integer(int32) wide
 
     jlo = min ( ilo, ihi )
     jhi = max ( ilo, ihi )
@@ -1360,10 +1341,9 @@ contains
     end if
 
     i4_wrap = value
-  end function i4_wrap
+  end
 
-  subroutine i4col_compare ( m, n, a, i, j, isgn ) &
-        bind(C, name="i4col_compare")
+  subroutine i4col_compare ( m, n, a, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -1398,28 +1378,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), an array of N columns of vectors
+  !    Input, integer(int32) A(M,N), an array of N columns of vectors
   !    of length M.
   !
-  !    Input, integer(ip) I, J, the columns to be compared.
+  !    Input, integer(int32) I, J, the columns to be compared.
   !    I and J must be between 1 and N.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, column I < column J,
   !     0, column I = column J,
   !    +1, column J < column I.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(m,n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
-    integer(ip) :: k
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) k
   !
   !  Check.
   !
@@ -1456,10 +1436,9 @@ contains
       k = k + 1
 
     end do
-  end subroutine i4col_compare
+  end
 
-  subroutine i4col_sort_a ( m, n, a ) &
-        bind(C, name="i4col_sort_a")
+  subroutine i4col_sort_a ( m, n, a )
 
   !*****************************************************************************80
   !
@@ -1491,25 +1470,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows of A, and the length of
+  !    Input, integer(int32) M, the number of rows of A, and the length of
   !    a vector of data.
   !
-  !    Input, integer(ip) N, the number of columns of A.
+  !    Input, integer(int32) N, the number of columns of A.
   !
-  !    Input/output, integer(ip) A(M,N).
+  !    Input/output, integer(int32) A(M,N).
   !    On input, the array of N columns of M-vectors.
   !    On output, the columns of A have been sorted in ascending
   !    lexicographic order.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(inout) :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
 
     if ( m <= 0 ) then
     end if
@@ -1549,10 +1528,9 @@ contains
       end if
 
     end do
-  end subroutine i4col_sort_a
+  end
 
-  subroutine i4col_sorted_unique_count ( m, n, a, unique_num ) &
-        bind(C, name="i4col_sorted_unique_count")
+  subroutine i4col_sorted_unique_count ( m, n, a, unique_num )
 
   !*****************************************************************************80
   !
@@ -1576,21 +1554,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), a sorted array, containing
+  !    Input, integer(int32) A(M,N), a sorted array, containing
   !    N columns of data.
   !
-  !    Output, integer(ip) UNIQUE_NUM, the number of unique columns.
+  !    Output, integer(int32) UNIQUE_NUM, the number of unique columns.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(m,n)
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip), intent(out) :: unique_num
+    integer(int32) a(m,n)
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) unique_num
 
     if ( n <= 0 ) then
       unique_num = 0
@@ -1607,10 +1585,9 @@ contains
       end if
 
     end do
-  end subroutine i4col_sorted_unique_count
+  end
 
-  subroutine i4col_swap ( m, n, a, i, j ) &
-        bind(C, name="i4col_swap")
+  subroutine i4col_swap ( m, n, a, i, j )
 
   !*****************************************************************************80
   !
@@ -1648,22 +1625,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns
+  !    Input, integer(int32) M, N, the number of rows and columns
   !    in the array.
   !
-  !    Input/output, integer(ip) A(M,N), an array of N columns
+  !    Input/output, integer(int32) A(M,N), an array of N columns
   !    of length M.
   !
-  !    Input, integer(ip) I, J, the columns to be swapped.
+  !    Input, integer(int32) I, J, the columns to be swapped.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(inout) :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: col(m)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(in), value :: j
+    integer(int32) a(m,n)
+    integer(int32) col(m)
+    integer(int32) i
+    integer(int32) j
 
     if ( i < 1 .or. n < i .or. j < 1 .or. n < j ) then
 
@@ -1683,10 +1660,9 @@ contains
     col(1:m) = a(1:m,i)
     a(1:m,i) = a(1:m,j)
     a(1:m,j) = col(1:m)
-  end subroutine i4col_swap
+  end
 
-  subroutine i4vec_heap_d ( n, a ) &
-        bind(C, name="i4vec_heap_d")
+  subroutine i4vec_heap_d ( n, a )
 
   !*****************************************************************************80
   !
@@ -1729,20 +1705,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the size of the input array.
+  !    Input, integer(int32) N, the size of the input array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, an unsorted array.
   !    On output, the array has been reordered into a heap.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(n)
-    integer(ip) :: i
-    integer(ip) :: ifree
-    integer(ip) :: key
-    integer(ip) :: m
+    integer(int32) a(n)
+    integer(int32) i
+    integer(int32) ifree
+    integer(int32) key
+    integer(int32) m
   !
   !  Only nodes N/2 down to 1 can be "parent" nodes.
   !
@@ -1798,10 +1774,9 @@ contains
       a(ifree) = key
 
     end do
-  end subroutine i4vec_heap_d
+  end
 
-  subroutine i4vec_indicator ( n, a ) &
-        bind(C, name="i4vec_indicator")
+  subroutine i4vec_indicator ( n, a )
 
   !*****************************************************************************80
   !
@@ -1821,23 +1796,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Output, integer(ip) A(N), the array to be initialized.
+  !    Output, integer(int32) A(N), the array to be initialized.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(out) :: a(n)
-    integer(ip) :: i
+    integer(int32) a(n)
+    integer(int32) i
 
     do i = 1, n
       a(i) = i
     end do
-  end subroutine i4vec_indicator
+  end
 
-  subroutine i4vec_min ( n, a, amin ) &
-        bind(C, name="i4vec_min")
+  subroutine i4vec_min ( n, a, amin )
 
   !*****************************************************************************80
   !
@@ -1861,23 +1835,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, integer(ip) A(N), the array.
+  !    Input, integer(int32) A(N), the array.
   !
-  !    Output, integer(ip) AMIN, the value of the smallest entry.
+  !    Output, integer(int32) AMIN, the value of the smallest entry.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(n)
-    integer(ip), intent(out) :: amin
+    integer(int32) a(n)
+    integer(int32) amin
 
     amin = minval ( a(1:n) )
-  end subroutine i4vec_min
+  end
 
-  subroutine i4vec_sort_heap_a ( n, a ) &
-        bind(C, name="i4vec_sort_heap_a")
+  subroutine i4vec_sort_heap_a ( n, a )
 
   !*****************************************************************************80
   !
@@ -1904,17 +1877,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, the array to be sorted;
   !    On output, the array has been sorted.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(n)
-    integer(ip) :: n1
+    integer(int32) a(n)
+    integer(int32) n1
 
     if ( n <= 1 ) then
     end if
@@ -1943,10 +1916,9 @@ contains
       call i4_swap ( a(1), a(n1) )
 
     end do
-  end subroutine i4vec_sort_heap_a
+  end
 
-  subroutine i4vec_sorted_unique ( n, a, unique_num ) &
-        bind(C, name="i4vec_sorted_unique")
+  subroutine i4vec_sorted_unique ( n, a, unique_num )
 
   !*****************************************************************************80
   !
@@ -1966,20 +1938,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements in A.
+  !    Input, integer(int32) N, the number of elements in A.
   !
-  !    Input/output, integer(ip) A(N).  On input, the sorted
+  !    Input/output, integer(int32) A(N).  On input, the sorted
   !    integer array.  On output, the unique elements in A.
   !
-  !    Output, integer(ip) UNIQUE_NUM, the number of unique elements
+  !    Output, integer(int32) UNIQUE_NUM, the number of unique elements
   !    in A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(n)
-    integer(ip) :: itest
-    integer(ip), intent(out) :: unique_num
+    integer(int32) a(n)
+    integer(int32) itest
+    integer(int32) unique_num
 
     unique_num = 0
 
@@ -1996,10 +1968,9 @@ contains
       end if
 
     end do
-  end subroutine i4vec_sorted_unique
+  end
 
-  subroutine i4vec2_compare ( n, a1, a2, i, j, isgn ) &
-        bind(C, name="i4vec2_compare")
+  subroutine i4vec2_compare ( n, a1, a2, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -2019,26 +1990,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of data items.
+  !    Input, integer(int32) N, the number of data items.
   !
-  !    Input, integer(ip) A1(N), A2(N), contain the two components
+  !    Input, integer(int32) A1(N), A2(N), contain the two components
   !    of each item.
   !
-  !    Input, integer(ip) I, J, the items to be compared.
+  !    Input, integer(int32) I, J, the items to be compared.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, item I < item J,
   !     0, item I = item J,
   !    +1, item J < item I.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in) :: a1(n)
-    integer(ip), intent(in) :: a2(n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
+    integer(int32) a1(n)
+    integer(int32) a2(n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
 
     isgn = 0
 
@@ -2061,10 +2032,9 @@ contains
       isgn = +1
 
     end if
-  end subroutine i4vec2_compare
+  end
 
-  subroutine i4vec2_sort_a ( n, a1, a2 ) &
-        bind(C, name="i4vec2_sort_a")
+  subroutine i4vec2_sort_a ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -2089,20 +2059,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items of data.
+  !    Input, integer(int32) N, the number of items of data.
   !
-  !    Input/output, integer(ip) A1(N), A2(N), the data to be sorted.
+  !    Input/output, integer(int32) A1(N), A2(N), the data to be sorted.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a1(n)
-    integer(ip), intent(inout) :: a2(n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
-    integer(ip) :: temp
+    integer(int32) a1(n)
+    integer(int32) a2(n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) temp
 
     if ( n <= 1 ) then
     end if
@@ -2145,10 +2115,9 @@ contains
       end if
 
     end do
-  end subroutine i4vec2_sort_a
+  end
 
-  subroutine i4vec2_sorted_unique ( n, a1, a2, unique_num ) &
-        bind(C, name="i4vec2_sorted_unique")
+  subroutine i4vec2_sorted_unique ( n, a1, a2, unique_num )
 
   !*****************************************************************************80
   !
@@ -2178,21 +2147,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items.
+  !    Input, integer(int32) N, the number of items.
   !
-  !    Input/output, integer(ip) A1(N), A2(N).
+  !    Input/output, integer(int32) A1(N), A2(N).
   !    On input, the array of N items.
   !    On output, an array of unique items.
   !
-  !    Output, integer(ip) UNIQUE_NUM, the number of unique items.
+  !    Output, integer(int32) UNIQUE_NUM, the number of unique items.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a1(n)
-    integer(ip), intent(inout) :: a2(n)
-    integer(ip) :: itest
-    integer(ip), intent(out) :: unique_num
+    integer(int32) a1(n)
+    integer(int32) a2(n)
+    integer(int32) itest
+    integer(int32) unique_num
 
     unique_num = 0
 
@@ -2213,10 +2182,9 @@ contains
       end if
 
     end do
-  end subroutine i4vec2_sorted_unique
+  end
 
-  function lrline ( xu, yu, xv1, yv1, xv2, yv2, dv ) &
-        bind(C, name="lrline")
+  function lrline ( xu, yu, xv1, yv1, xv2, yv2, dv )
 
   !*****************************************************************************80
   !
@@ -2250,39 +2218,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XU, YU, the coordinates of the point whose
+  !    Input, real(real64) XU, YU, the coordinates of the point whose
   !    position relative to the directed line is to be determined.
   !
-  !    Input, real(dp) XV1, YV1, XV2, YV2, the coordinates of two points
+  !    Input, real(real64) XV1, YV1, XV2, YV2, the coordinates of two points
   !    that determine the directed base line.
   !
-  !    Input, real(dp) DV, the signed distance of the directed line
+  !    Input, real(real64) DV, the signed distance of the directed line
   !    from the directed base line through the points (XV1,YV1) and (XV2,YV2).
   !    DV is positive for a line to the left of the base line.
   !
-  !    Output, integer(ip) LRLINE, the result:
+  !    Output, integer(int32) LRLINE, the result:
   !    +1, the point is to the right of the directed line;
   !     0, the point is on the directed line;
   !    -1, the point is to the left of the directed line.
   !
 
-    real(dp), intent(in), value :: dv
-    real(dp) :: dx
-    real(dp) :: dxu
-    real(dp) :: dy
-    real(dp) :: dyu
-    integer(ip) :: lrline
-    real(dp) :: t
-    real(dp) :: tol
-    real(dp) :: tolabs
-    real(dp), intent(in), value :: xu
-    real(dp), intent(in), value :: xv1
-    real(dp), intent(in), value :: xv2
-    real(dp), intent(in), value :: yu
-    real(dp), intent(in), value :: yv1
-    real(dp), intent(in), value :: yv2
+    real(real64) dv
+    real(real64) dx
+    real(real64) dxu
+    real(real64) dy
+    real(real64) dyu
+    integer(int32) lrline
+    real(real64) t
+    real(real64) tol
+    real(real64) tolabs
+    real(real64) xu
+    real(real64) xv1
+    real(real64) xv2
+    real(real64) yu
+    real(real64) yv1
+    real(real64) yv2
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     dx = xv2 - xv1
     dy = yv2 - yv1
@@ -2301,10 +2269,9 @@ contains
     else
       lrline = -1
     end if
-  end function lrline
+  end
 
-  subroutine lvec_print ( n, a, title ) &
-        bind(C, name="lvec_print")
+  subroutine lvec_print ( n, a, title )
 
   !*****************************************************************************80
   !
@@ -2324,17 +2291,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of components of the vector.
+  !    Input, integer(int32) N, the number of components of the vector.
   !
   !    Input, logical A(N), the vector to be printed.
   !
   !    Input, character ( len = * ) TITLE, a title.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
     logical a(n)
-    integer(ip) :: i
+    integer(int32) i
     character ( len = * ) title
 
     write ( *, '(a)' ) ' '
@@ -2343,10 +2310,9 @@ contains
     do i = 1, n
       write ( *, '(2x,i8,2x,l1)' ) i, a(i)
     end do
-  end subroutine lvec_print
+  end
 
-  subroutine mesh_base_one ( node_num, element_order, element_num, element_node ) &
-        bind(C, name="mesh_base_one")
+  subroutine mesh_base_one ( node_num, element_order, element_num, element_node )
 
   !*****************************************************************************80
   !
@@ -2386,17 +2352,17 @@ contains
   !    definitions.
   !
 
-    integer(ip), intent(inout) :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(inout) :: element_node(element_order,element_num)
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: node
-    integer(ip) :: node_max
-    integer(ip) :: node_min
-    integer(ip), intent(in), value :: node_num
-    integer(ip) :: order
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) node
+    integer(int32) node_max
+    integer(int32) node_min
+    integer(int32) node_num
+    integer(int32) order
 
     node_min = + i4_huge
     node_max = - i4_huge
@@ -2424,10 +2390,9 @@ contains
       write ( *, '(a,i8)' ) '  NODE_MAX = ', node_max
       write ( *, '(a,i8)' ) '  NODE_NUM = ', node_num
     end if
-  end subroutine mesh_base_one
+  end
 
-  subroutine mesh_base_zero ( node_num, element_order, element_num, element_node ) &
-        bind(C, name="mesh_base_zero")
+  subroutine mesh_base_zero ( node_num, element_order, element_num, element_node )
 
   !*****************************************************************************80
   !
@@ -2464,17 +2429,17 @@ contains
   !    definitions.
   !
 
-    integer(ip), intent(inout) :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(inout) :: element_node(element_order,element_num)
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: node
-    integer(ip) :: node_max
-    integer(ip) :: node_min
-    integer(ip), intent(in), value :: node_num
-    integer(ip) :: order
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) node
+    integer(int32) node_max
+    integer(int32) node_min
+    integer(int32) node_num
+    integer(int32) order
 
     node_min = + i4_huge
     node_max = - i4_huge
@@ -2502,10 +2467,9 @@ contains
       write ( *, '(a,i8)' ) '  NODE_MAX = ', node_max
       write ( *, '(a,i8)' ) '  NODE_NUM = ', node_num
     end if
-  end subroutine mesh_base_zero
+  end
 
-  subroutine node_merge ( dim_num, node_num, node_xy, tolerance, node_rep ) &
-        bind(C, name="node_merge")
+  subroutine node_merge ( dim_num, node_num, node_xy, tolerance, node_rep )
 
   !*****************************************************************************80
   !
@@ -2552,33 +2516,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(DIM_NUM,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XY(DIM_NUM,NODE_NUM), the nodes.
   !
-  !    Input, real(dp) TOLERANCE, the maximum distance between
+  !    Input, real(real64) TOLERANCE, the maximum distance between
   !    two nodes regarded as duplicate.
   !
-  !    Output, integer(ip) NODE_REP(NODE_NUM), the "representative" of
+  !    Output, integer(int32) NODE_REP(NODE_NUM), the "representative" of
   !    each node.  NODE_REP(NODE) is the index of a node which is within
   !    TOLERANCE of node NODE, or for which a chain of nodes can be found, all
   !    having the same representative, and all of which are pairwise closer
   !    than TOLERANCE.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) dim_num
+    integer(int32) node_num
 
-    real(dp) :: dist
-    integer(ip), intent(out) :: node_rep(node_num)
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    integer(ip) :: node1
-    integer(ip) :: node2
-    integer(ip) :: rep
-    real(dp) :: rep_dist(node_num)
-    real(dp), intent(in), value :: tolerance
+    real(real64) dist
+    integer(int32) node_rep(node_num)
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) node1
+    integer(int32) node2
+    integer(int32) rep
+    real(real64) rep_dist(node_num)
+    real(real64) tolerance
 
     do node1 = 1, node_num
       node_rep(node1) = node1
@@ -2586,7 +2550,7 @@ contains
 
     do node1 = 1, node_num
 
-      rep_dist(1:node_num) = huge ( 1.0_dp )
+      rep_dist(1:node_num) = huge ( 1.0e+00_real64 )
 
       do node2 = 1, node_num
 
@@ -2609,12 +2573,11 @@ contains
       end do
 
     end do
-  end subroutine node_merge
+  end
 
   subroutine ns_adj_col_set ( node_num, element_num, variable_num, &
     element_node, element_neighbor, node_u_variable, node_v_variable, &
-    node_p_variable, adj_num, adj_col ) &
-        bind(C, name="ns_adj_col_set")
+    node_p_variable, adj_num, adj_col )
 
   !*****************************************************************************80
   !
@@ -2690,71 +2653,71 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) VARIABLE_NUM, the number of variables.
+  !    Input, integer(int32) VARIABLE_NUM, the number of variables.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), lists the
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), lists the
   !    nodes that make up each triangle.  The first three nodes are the vertices,
   !    in counterclockwise order.  The fourth value is the midside
   !    node between nodes 1 and 2; the fifth and sixth values are
   !    the other midside nodes in the logical order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
-  !    Input, integer(ip) NODE_U_VARIABLE(NODE_NUM),
+  !    Input, integer(int32) NODE_U_VARIABLE(NODE_NUM),
   !    NODE_V_VARIABLE(NODE_NUM), NODE_P_VARIABLE(NODE_NUM), the index of the
   !    horizontal velocity, vertical velocity and pressure variables associated
   !    with a node, or -1 if no such variable is associated with the node.
   !
-  !    Output, integer(ip) ADJ_NUM, the number of
+  !    Output, integer(int32) ADJ_NUM, the number of
   !    Navier Stokes variable adjacencies.
   !
-  !    Output, integer(ip) ADJ_COL(VARIABLE_NUM+1).  Information about
+  !    Output, integer(int32) ADJ_COL(VARIABLE_NUM+1).  Information about
   !    variable J is stored in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
-    integer(ip), intent(in), value :: variable_num
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
+    integer(int32) variable_num
 
-    integer(ip), intent(out) :: adj_num
-    integer(ip), intent(out) :: adj_col(variable_num+1)
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: n5
-    integer(ip) :: n6
-    integer(ip) :: node
-    integer(ip) :: node_p_variable(node_num)
-    integer(ip), intent(in) :: node_u_variable(node_num)
-    integer(ip) :: node_v_variable(node_num)
-    integer(ip) :: p1
-    integer(ip) :: p2
-    integer(ip) :: p3
-    integer(ip) :: triangle
-    integer(ip) :: triangle2
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: u1
-    integer(ip) :: u2
-    integer(ip) :: u3
-    integer(ip) :: u4
-    integer(ip) :: u5
-    integer(ip) :: u6
-    integer(ip) :: v1
-    integer(ip) :: v2
-    integer(ip) :: v3
-    integer(ip) :: v4
-    integer(ip) :: v5
-    integer(ip) :: v6
-    integer(ip) :: variable
+    integer(int32) adj_num
+    integer(int32) adj_col(variable_num+1)
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) n5
+    integer(int32) n6
+    integer(int32) node
+    integer(int32) node_p_variable(node_num)
+    integer(int32) node_u_variable(node_num)
+    integer(int32) node_v_variable(node_num)
+    integer(int32) p1
+    integer(int32) p2
+    integer(int32) p3
+    integer(int32) triangle
+    integer(int32) triangle2
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) u1
+    integer(int32) u2
+    integer(int32) u3
+    integer(int32) u4
+    integer(int32) u5
+    integer(int32) u6
+    integer(int32) v1
+    integer(int32) v2
+    integer(int32) v3
+    integer(int32) v4
+    integer(int32) v5
+    integer(int32) v6
+    integer(int32) variable
 
     adj_num = 0
   !
@@ -2935,12 +2898,11 @@ contains
     end do
 
     adj_num = adj_col(variable_num+1) - 1
-  end subroutine ns_adj_col_set
+  end
 
   subroutine ns_adj_count ( node_num, element_num, variable_num, element_node, &
     element_neighbor, node_u_variable, node_v_variable, node_p_variable, &
-    adj_num ) &
-        bind(C, name="ns_adj_count")
+    adj_num )
 
   !*****************************************************************************80
   !
@@ -3015,46 +2977,46 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) VARIABLE_NUM, the number of variables.
+  !    Input, integer(int32) VARIABLE_NUM, the number of variables.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), lists the
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), lists the
   !    nodes that make up each triangle.  The first three nodes are the vertices,
   !    in counterclockwise order.  The fourth value is the midside
   !    node between nodes 1 and 2; the fifth and sixth values are
   !    the other midside nodes in the logical order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
-  !    Input, integer(ip) NODE_U_VARIABLE(NODE_NUM),
+  !    Input, integer(int32) NODE_U_VARIABLE(NODE_NUM),
   !    NODE_V_VARIABLE(NODE_NUM), NODE_P_VARIABLE(NODE_NUM), the index of the
   !    horizontal velocity, vertical velocity and pressure variables associated
   !    with a node, or -1 if no such variable is associated with the node.
   !
-  !    Output, integer(ip) ADJ_NUM, the value of ADJ_NUM, the number of
+  !    Output, integer(int32) ADJ_NUM, the value of ADJ_NUM, the number of
   !    Navier Stokes variable adjacencies.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
-    integer(ip), intent(in), value :: variable_num
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
+    integer(int32) variable_num
 
-    integer(ip), intent(out) :: adj_num
-    integer(ip) :: node
-    integer(ip) :: node_p_variable(node_num)
-    integer(ip), intent(in) :: node_u_variable(node_num)
-    integer(ip) :: node_v_variable(node_num)
-    integer(ip) :: p1
-    integer(ip) :: triangle
-    integer(ip) :: triangle2
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) adj_num
+    integer(int32) node
+    integer(int32) node_p_variable(node_num)
+    integer(int32) node_u_variable(node_num)
+    integer(int32) node_v_variable(node_num)
+    integer(int32) p1
+    integer(int32) triangle
+    integer(int32) triangle2
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     adj_num = 0
   !
@@ -3138,11 +3100,10 @@ contains
       end if
 
     end do
-  end subroutine ns_adj_count
+  end
 
   subroutine ns_adj_insert ( v1, v2, variable_num, adj_num, adj_col_free, &
-    adj_row ) &
-        bind(C, name="ns_adj_insert")
+    adj_row )
 
   !*****************************************************************************80
   !
@@ -3162,29 +3123,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) V1, V2, the indices of two items which are
+  !    Input, integer(int32) V1, V2, the indices of two items which are
   !    adjacent.
   !
-  !    Input, integer(ip) VARIABLE_NUM, the number of items.
+  !    Input, integer(int32) VARIABLE_NUM, the number of items.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of entries available
+  !    Input, integer(int32) ADJ_NUM, the number of entries available
   !    in ADJ_ROW.
   !
-  !    Input/output, integer(ip) ADJ_COL_FREE(VARIABLE_NUM), the next
+  !    Input/output, integer(int32) ADJ_COL_FREE(VARIABLE_NUM), the next
   !    free location in which an entry for a given column can be stored.  On
   !    output, two pointers have been updated.
   !
-  !    Input/output, integer(ip) ADJ_ROW(ADJ_NUM), the row indices of
+  !    Input/output, integer(int32) ADJ_ROW(ADJ_NUM), the row indices of
   !    the Navier Stokes variable adjacency matrix.  On output, two new entries
   !    have been added.
   !
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: variable_num
+    integer(int32) adj_num
+    integer(int32) variable_num
 
-    integer(ip), intent(inout) :: adj_col_free(variable_num)
-    integer(ip), intent(inout) :: adj_row(adj_num)
-    integer(ip), intent(in), value :: v1
-    integer(ip), intent(in), value :: v2
+    integer(int32) adj_col_free(variable_num)
+    integer(int32) adj_row(adj_num)
+    integer(int32) v1
+    integer(int32) v2
 
     adj_row(adj_col_free(v1)) = v2
     adj_col_free(v1) = adj_col_free(v1) + 1
@@ -3194,12 +3155,11 @@ contains
 
     adj_row(adj_col_free(v2)) = v1
     adj_col_free(v2) = adj_col_free(v2) + 1
-  end subroutine ns_adj_insert
+  end
 
   subroutine ns_adj_row_set ( node_num, element_num, variable_num, &
     element_node, element_neighbor, node_u_variable, node_v_variable, &
-    node_p_variable, adj_num, adj_col, adj_row ) &
-        bind(C, name="ns_adj_row_set")
+    node_p_variable, adj_num, adj_col, adj_row )
 
   !*****************************************************************************80
   !
@@ -3226,34 +3186,34 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) VARIABLE_NUM, the number of variables.
+  !    Input, integer(int32) VARIABLE_NUM, the number of variables.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), lists the
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), lists the
   !    nodes that make up each triangle.  The first three nodes are the vertices,
   !    in counterclockwise order.  The fourth value is the midside
   !    node between nodes 1 and 2; the fifth and sixth values are
   !    the other midside nodes in the logical order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
-  !    Input, integer(ip) NODE_U_VARIABLE(NODE_NUM),
+  !    Input, integer(int32) NODE_U_VARIABLE(NODE_NUM),
   !    NODE_V_VARIABLE(NODE_NUM), NODE_P_VARIABLE(NODE_NUM), the index of the
   !    horizontal velocity, vertical velocity and pressure variables associated
   !    with a node, or -1 if no such variable is associated with the node.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of Navier Stokes variable
+  !    Input, integer(int32) ADJ_NUM, the number of Navier Stokes variable
   !    adjacencies.
   !
-  !    Input, integer(ip) ADJ_COL(VARIABLE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_COL(VARIABLE_NUM+1).  Information about
   !    variable J  is stored in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
   !
-  !    Output, integer(ip) ADJ_ROW(ADJ_NUM), the row indices of the
+  !    Output, integer(int32) ADJ_ROW(ADJ_NUM), the row indices of the
   !    Navier Stokes variable adjacency matrix.
   !
   !  Local Parameters:
@@ -3262,48 +3222,48 @@ contains
   !    the location in ADJ_ROW which can store the next row index.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
-    integer(ip), intent(in), value :: variable_num
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
+    integer(int32) variable_num
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in) :: adj_col(variable_num+1)
-    integer(ip) :: adj_col_free(variable_num)
-    integer(ip), intent(out) :: adj_row(adj_num)
-    integer(ip) :: k1
-    integer(ip) :: k2
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: n5
-    integer(ip) :: n6
-    integer(ip) :: node
-    integer(ip) :: node_p_variable(node_num)
-    integer(ip), intent(in) :: node_u_variable(node_num)
-    integer(ip) :: node_v_variable(node_num)
-    integer(ip) :: number
-    integer(ip) :: p1
-    integer(ip) :: p2
-    integer(ip) :: p3
-    integer(ip) :: triangle
-    integer(ip) :: triangle2
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: u1
-    integer(ip) :: u2
-    integer(ip) :: u3
-    integer(ip) :: u4
-    integer(ip) :: u5
-    integer(ip) :: u6
-    integer(ip) :: v
-    integer(ip) :: v1
-    integer(ip) :: v2
-    integer(ip) :: v3
-    integer(ip) :: v4
-    integer(ip) :: v5
-    integer(ip) :: v6
+    integer(int32) adj_num
+    integer(int32) adj_col(variable_num+1)
+    integer(int32) adj_col_free(variable_num)
+    integer(int32) adj_row(adj_num)
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) n5
+    integer(int32) n6
+    integer(int32) node
+    integer(int32) node_p_variable(node_num)
+    integer(int32) node_u_variable(node_num)
+    integer(int32) node_v_variable(node_num)
+    integer(int32) number
+    integer(int32) p1
+    integer(int32) p2
+    integer(int32) p3
+    integer(int32) triangle
+    integer(int32) triangle2
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) u1
+    integer(int32) u2
+    integer(int32) u3
+    integer(int32) u4
+    integer(int32) u5
+    integer(int32) u6
+    integer(int32) v
+    integer(int32) v1
+    integer(int32) v2
+    integer(int32) v3
+    integer(int32) v4
+    integer(int32) v5
+    integer(int32) v6
 
     adj_row(1:adj_num) = -1
 
@@ -3604,10 +3564,9 @@ contains
       number = k2 + 1 - k1
       call i4vec_sort_heap_a ( number, adj_row(k1:k2) )
     end do
-  end subroutine ns_adj_row_set
+  end
 
-  subroutine perm_check2 ( n, p, base, ierror ) &
-        bind(C, name="perm_check2")
+  subroutine perm_check2 ( n, p, base, ierror )
 
   !*****************************************************************************80
   !
@@ -3635,25 +3594,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries.
+  !    Input, integer(int32) N, the number of entries.
   !
-  !    Input, integer(ip) P(N), the array to check.
+  !    Input, integer(int32) P(N), the array to check.
   !
-  !    Input, integer(ip) BASE, the index base.
+  !    Input, integer(int32) BASE, the index base.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    0, the array represents a permutation.
   !    nonzero, the array does not represent a permutation.  The smallest
   !    missing value is equal to IERROR.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in), value :: base
-    integer(ip) :: find
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(in) :: p(n)
-    integer(ip) :: seek
+    integer(int32) base
+    integer(int32) find
+    integer(int32) ierror
+    integer(int32) p(n)
+    integer(int32) seek
 
     ierror = 0
 
@@ -3677,10 +3636,9 @@ contains
       end if
 
     end do
-  end subroutine perm_check2
+  end
 
-  subroutine perm_inverse ( n, p ) &
-        bind(C, name="perm_inverse")
+  subroutine perm_inverse ( n, p )
 
   !*****************************************************************************80
   !
@@ -3708,24 +3666,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of objects being permuted.
+  !    Input, integer(int32) N, the number of objects being permuted.
   !
-  !    Input/output, integer(ip) P(N), the permutation, in standard
+  !    Input/output, integer(int32) P(N), the permutation, in standard
   !    index form.  On output, P describes the inverse permutation
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: base
-    integer(ip) :: i
-    integer(ip) :: i0
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i4_sign
-    integer(ip) :: ierror
-    integer(ip) :: is
-    integer(ip), intent(inout) :: p(n)
-    integer(ip) :: p_min
+    integer(int32) base
+    integer(int32) i
+    integer(int32) i0
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i4_sign
+    integer(int32) ierror
+    integer(int32) is
+    integer(int32) p(n)
+    integer(int32) p_min
 
     if ( n <= 0 ) then
       write ( *, '(a)' ) ' '
@@ -3799,11 +3757,10 @@ contains
   !  Reverse the shift.
   !
     p(1:n) = p(1:n) + p_min - base
-  end subroutine perm_inverse
+  end
 
   subroutine points_delaunay_naive_2d ( node_num, node_xy, maxtri, &
-    element_num, element_node ) &
-        bind(C, name="points_delaunay_naive_2d")
+    element_num, element_node )
 
   !*****************************************************************************80
   !
@@ -3847,35 +3804,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) MAXTRI, the maximum number of triangles.
+  !    Input, integer(int32) MAXTRI, the maximum number of triangles.
   !
-  !    Output, integer(ip) ELEMENT_NUM, the number of triangles in
+  !    Output, integer(int32) ELEMENT_NUM, the number of triangles in
   !    the triangulation.
   !
-  !    Output, integer(ip) ELEMENT_NODE(3,MAXTRI), the indices of
+  !    Output, integer(int32) ELEMENT_NODE(3,MAXTRI), the indices of
   !    the triangle nodes.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(out) :: maxtri
-    integer(ip), intent(in), value :: node_num
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) maxtri
+    integer(int32) node_num
 
-    logical :: flag
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: m
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    integer(ip), intent(out) :: element_node(3,maxtri)
-    integer(ip), intent(out) :: element_num
-    real(dp) :: xn
-    real(dp) :: yn
-    real(dp) :: z(node_num)
-    real(dp) :: zn
+    logical flag
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) m
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) element_node(3,maxtri)
+    integer(int32) element_num
+    real(real64) xn
+    real(real64) yn
+    real(real64) z(node_num)
+    real(real64) zn
 
     element_num = 0
 
@@ -3905,14 +3862,14 @@ contains
                - ( node_xy(1,k) - node_xy(1,i) ) &
                * ( node_xy(2,j) - node_xy(2,i) )
 
-            flag = ( zn < 0.0_dp )
+            flag = ( zn < 0.0e+00_real64 )
 
             if ( flag ) then
               do m = 1, node_num
                 flag = flag .and. &
                   ( ( node_xy(1,m) - node_xy(1,i) ) * xn &
                   + ( node_xy(2,m) - node_xy(2,i) ) * yn &
-                  + ( z(m)   - z(i) )   * zn <= 0.0_dp )
+                  + ( z(m)   - z(i) )   * zn <= 0.0e+00_real64 )
               end do
             end if
 
@@ -3928,10 +3885,9 @@ contains
         end do
       end do
     end do
-  end subroutine points_delaunay_naive_2d
+  end
 
-  subroutine points_hull_2d ( node_num, node_xy, hull_num, hull ) &
-        bind(C, name="points_hull_2d")
+  subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
 
   !*****************************************************************************80
   !
@@ -3956,34 +3912,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Output, integer(ip) HULL_NUM, the number of nodes that lie on
+  !    Output, integer(int32) HULL_NUM, the number of nodes that lie on
   !    the convex hull.
   !
-  !    Output, integer(ip) HULL(NODE_NUM).  Entries 1 through HULL_NUM
+  !    Output, integer(int32) HULL(NODE_NUM).  Entries 1 through HULL_NUM
   !    contain the indices of the nodes that form the convex hull, in order.
   !
 
-    integer(ip), intent(in), value :: node_num
+    integer(int32) node_num
 
-    real(dp) :: angle
-    real(dp) :: angle_max
-    real(dp) :: angle_rad_2d
-    real(dp) :: di
-    real(dp) :: dr
-    integer(ip) :: first
-    integer(ip), intent(out) :: hull(node_num)
-    integer(ip), intent(out) :: hull_num
-    integer(ip) :: i
-    real(dp), intent(in) :: node_xy(2,node_num)
-    real(dp) :: p_xy(2)
-    integer(ip) :: q
-    real(dp) :: q_xy(2)
-    integer(ip) :: r
-    real(dp) :: r_xy(2)
+    real(real64) angle
+    real(real64) angle_max
+    real(real64) angle_rad_2d
+    real(real64) di
+    real(real64) dr
+    integer(int32) first
+    integer(int32) hull(node_num)
+    integer(int32) hull_num
+    integer(int32) i
+    real(real64) node_xy(2,node_num)
+    real(real64) p_xy(2)
+    integer(int32) q
+    real(real64) q_xy(2)
+    integer(int32) r
+    real(real64) r_xy(2)
 
     if ( node_num < 1 ) then
       hull_num = 0
@@ -4034,7 +3990,7 @@ contains
   !  and call it "P".
   !
     p_xy(1) = q_xy(1)
-    p_xy(2) = q_xy(2) - 1.0_dp
+    p_xy(2) = q_xy(2) - 1.0e+00_real64
   !
   !  Now, having old point P, and current point Q, find the new point R
   !  so the angle PQR is maximal.
@@ -4044,7 +4000,7 @@ contains
     do
 
       r = 0
-      angle_max = 0.0_dp
+      angle_max = 0.0e+00_real64
 
       do i = 1, node_num
 
@@ -4105,10 +4061,9 @@ contains
       q_xy(1:2) = r_xy(1:2)
 
     end do
-  end subroutine points_hull_2d
+  end
 
-  subroutine points_point_near_naive_nd ( dim_num, nset, pset, p, i_min, d_min ) &
-        bind(C, name="points_point_near_naive_nd")
+  subroutine points_point_near_naive_nd ( dim_num, nset, pset, p, i_min, d_min )
 
   !*****************************************************************************80
   !
@@ -4133,31 +4088,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) NSET, the number of points in the set.
+  !    Input, integer(int32) NSET, the number of points in the set.
   !
-  !    Input, real(dp) PSET(DIM_NUM,NSET), the points in the set.
+  !    Input, real(real64) PSET(DIM_NUM,NSET), the points in the set.
   !
-  !    Input, real(dp) P(DIM_NUM), the point whose nearest neighbor
+  !    Input, real(real64) P(DIM_NUM), the point whose nearest neighbor
   !    is sought.
   !
-  !    Output, integer(ip) I_MIN, the index of the nearest point in
+  !    Output, integer(int32) I_MIN, the index of the nearest point in
   !    PSET to P.
   !
-  !    Output, real(dp) D_MIN, the distance between P(*)
+  !    Output, real(real64) D_MIN, the distance between P(*)
   !    and PSET(*,I_MIN).
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: nset
+    integer(int32) dim_num
+    integer(int32) nset
 
-    real(dp) :: d
-    real(dp), intent(out) :: d_min
-    integer(ip) :: i
-    integer(ip), intent(out) :: i_min
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pset(dim_num,nset)
+    real(real64) d
+    real(real64) d_min
+    integer(int32) i
+    integer(int32) i_min
+    real(real64) p(dim_num)
+    real(real64) pset(dim_num,nset)
 
     d_min = huge ( d_min )
     i_min = -1
@@ -4171,11 +4126,10 @@ contains
     end do
 
     d_min = sqrt ( d_min )
-  end subroutine points_point_near_naive_nd
+  end
 
   subroutine q_measure ( n, z, element_order, element_num, element_node, &
-    q_min, q_max, q_ave, q_area ) &
-        bind(C, name="q_measure")
+    q_min, q_max, q_ave, q_area )
 
   !*****************************************************************************80
   !
@@ -4242,58 +4196,58 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Z(2,N), the points.
+  !    Input, real(real64) Z(2,N), the points.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the triangulation.
   !
-  !    Output, real(dp) Q_MIN, Q_MAX, the minimum and maximum values
+  !    Output, real(real64) Q_MIN, Q_MAX, the minimum and maximum values
   !    of Q over all triangles.
   !
-  !    Output, real(dp) Q_AVE, the average value of Q.
+  !    Output, real(real64) Q_AVE, the average value of Q.
   !
-  !    Output, real(dp) Q_AREA, the average value of Q, weighted by
+  !    Output, real(real64) Q_AREA, the average value of Q, weighted by
   !    the area of each triangle.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) n
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: a_index
-    real(dp) :: ab_length
-    real(dp) :: area
-    real(dp) :: area_total
-    integer(ip) :: b_index
-    real(dp) :: bc_length
-    integer(ip) :: c_index
-    real(dp) :: ca_length
-    real(dp) :: q
-    real(dp), intent(out) :: q_area
-    real(dp), intent(out) :: q_ave
-    real(dp), intent(out) :: q_max
-    real(dp), intent(out) :: q_min
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp) :: x3
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp) :: y3
-    real(dp), intent(in) :: z(2,n)
+    integer(int32) a_index
+    real(real64) ab_length
+    real(real64) area
+    real(real64) area_total
+    integer(int32) b_index
+    real(real64) bc_length
+    integer(int32) c_index
+    real(real64) ca_length
+    real(real64) q
+    real(real64) q_area
+    real(real64) q_ave
+    real(real64) q_max
+    real(real64) q_min
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) z(2,n)
 
     q_min =   huge ( q_min )
     q_max = - huge ( q_max )
-    q_ave = 0.0_dp
-    q_area = 0.0_dp
-    area_total = 0.0_dp
+    q_ave = 0.0e+00_real64
+    q_area = 0.0e+00_real64
+    area_total = 0.0e+00_real64
 
     do triangle = 1, element_num
 
@@ -4325,7 +4279,7 @@ contains
       x3 = z(1,element_node(3,triangle))
       y3 = z(2,element_node(3,triangle))
 
-      area = 0.5_dp * abs ( x1 * ( y2 - y3 ) &
+      area = 0.5e+00_real64 * abs ( x1 * ( y2 - y3 ) &
                            + x2 * ( y3 - y1 ) &
                            + x3 * ( y1 - y2 ) )
 
@@ -4338,17 +4292,16 @@ contains
 
     end do
 
-    q_ave = q_ave / real ( element_num, dp)
+    q_ave = q_ave / real ( element_num, real64)
 
-    if ( 0.0_dp < area_total ) then
+    if ( 0.0e+00_real64 < area_total ) then
       q_area = q_area / area_total
     else
-      q_area = 0.0_dp
+      q_area = 0.0e+00_real64
     end if
-  end subroutine q_measure
+  end
 
-  subroutine quad_convex_random ( seed, xy ) &
-        bind(C, name="quad_convex_random")
+  subroutine quad_convex_random ( seed, xy )
 
   !*****************************************************************************80
   !
@@ -4373,21 +4326,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) XY(2,NODE_NUM), the coordinates of the
+  !    Output, real(real64) XY(2,NODE_NUM), the coordinates of the
   !    nodes of the quadrilateral, given in counterclockwise order.
   !
 
-    integer(ip), parameter :: node_num = 4
+    integer(int32), parameter :: node_num = 4
 
-    integer(ip) :: hull(node_num)
-    integer(ip) :: hull_num
-    integer(ip) :: j
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: xy(2,node_num)
-    real(dp) :: xy_random(2,node_num)
+    integer(int32) hull(node_num)
+    integer(int32) hull_num
+    integer(int32) j
+    integer(int32) seed
+    real(real64) xy(2,node_num)
+    real(real64) xy_random(2,node_num)
 
     do
   !
@@ -4413,10 +4366,9 @@ contains
     do j = 1, node_num
       xy(1:2,j) = xy_random(1:2,hull(j))
     end do
-  end subroutine quad_convex_random
+  end
 
-  function r8_acos ( c ) &
-        bind(C, name="r8_acos")
+  function r8_acos ( c )
 
   !*****************************************************************************80
   !
@@ -4444,24 +4396,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) C, the argument.
+  !    Input, real(real64) C, the argument.
   !
-  !    Output, real(dp) R8_ACOS, an angle whose cosine is C.
+  !    Output, real(real64) R8_ACOS, an angle whose cosine is C.
   !
 
-    real(dp), intent(in), value :: c
-    real(dp) :: c2
-    real(dp) :: r8_acos
+    real(real64) c
+    real(real64) c2
+    real(real64) r8_acos
 
     c2 = c
-    c2 = max ( c2, -1.0_dp )
-    c2 = min ( c2, +1.0_dp )
+    c2 = max ( c2, -1.0e+00_real64 )
+    c2 = min ( c2, +1.0e+00_real64 )
 
     r8_acos = acos ( c2 )
-  end function r8_acos
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -4469,9 +4420,9 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
-  !    For now, the input quantity SEED is an integer(ip) variable.
+  !    For now, the input quantity SEED is an integer(int32) variable.
   !
   !    This routine implements the recursion
   !
@@ -4528,16 +4479,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -4557,11 +4508,10 @@ contains
   !  Although SEED can be represented exactly as a 32 bit integer,
   !  it generally cannot be represented exactly as a 32 bit real number!
   !
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  subroutine r82vec_permute ( n, p, a ) &
-        bind(C, name="r82vec_permute")
+  subroutine r82vec_permute ( n, p, a )
 
   !*****************************************************************************80
   !
@@ -4605,26 +4555,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of objects.
+  !    Input, integer(int32) N, the number of objects.
   !
-  !    Input, integer(ip) P(N), the permutation.  P(I) = J means
+  !    Input, integer(int32) P(N), the permutation.  P(I) = J means
   !    that the I-th element of the output array should be the J-th
   !    element of the input array.
   !
-  !    Input/output, real(dp) A(2,N), the array to be permuted.
+  !    Input/output, real(real64) A(2,N), the array to be permuted.
   !
 
-    integer(ip), intent(inout) :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(inout) :: a(dim_num,n)
-    real(dp) :: a_temp(dim_num)
-    integer(ip), parameter :: base = 1
-    integer(ip) :: ierror
-    integer(ip) :: iget
-    integer(ip) :: iput
-    integer(ip) :: istart
-    integer(ip), intent(in) :: p(n)
+    real(real64) a(dim_num,n)
+    real(real64) a_temp(dim_num)
+    integer(int32), parameter :: base = 1
+    integer(int32) ierror
+    integer(int32) iget
+    integer(int32) iput
+    integer(int32) istart
+    integer(int32) p(n)
 
     call perm_check2 ( n, p, base, ierror )
 
@@ -4686,10 +4636,9 @@ contains
   !  Restore the signs of the entries.
   !
     p(1:n) = - p(1:n)
-  end subroutine r82vec_permute
+  end
 
-  subroutine r82vec_sort_heap_index_a ( n, a, indx ) &
-        bind(C, name="r82vec_sort_heap_index_a")
+  subroutine r82vec_sort_heap_index_a ( n, a, indx )
 
   !*****************************************************************************80
   !
@@ -4729,25 +4678,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, real(dp) A(2,N), an array to be index-sorted.
+  !    Input, real(real64) A(2,N), an array to be index-sorted.
   !
-  !    Output, integer(ip) INDX(N), the sort index.  The
+  !    Output, integer(int32) INDX(N), the sort index.  The
   !    I-th element of the sorted array is A(1:2,INDX(I)).
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in) :: a(dim_num,n)
-    real(dp) :: aval(dim_num)
-    integer(ip) :: i
-    integer(ip), intent(out) :: indx(n)
-    integer(ip) :: indxt
-    integer(ip) :: ir
-    integer(ip) :: j
-    integer(ip) :: l
+    real(real64) a(dim_num,n)
+    real(real64) aval(dim_num)
+    integer(int32) i
+    integer(int32) indx(n)
+    integer(int32) indxt
+    integer(int32) ir
+    integer(int32) j
+    integer(int32) l
 
     if ( n < 1 ) then
     end if
@@ -4812,10 +4761,9 @@ contains
       indx(i) = indxt
 
     end do
-  end subroutine r82vec_sort_heap_index_a
+  end
 
-  subroutine r8mat_uniform_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_uniform_01")
+  subroutine r8mat_uniform_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -4870,24 +4818,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns
+  !    Input, integer(int32) M, N, the number of rows and columns
   !    in the array.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudorandom values.
+  !    Output, real(real64) R(M,N), the array of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(out) :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
+    integer(int32) i
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) j
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(m,n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -4908,15 +4856,14 @@ contains
           seed = seed + i4_huge
         end if
 
-        r(i,j) = real ( seed, dp) * 4.656612875e-10_dp
+        r(i,j) = real ( seed, real64) * 4.656612875e-10_real64
 
       end do
     end do
-  end subroutine r8mat_uniform_01
+  end
 
   subroutine r8tris2 ( node_num, node_xy, element_num, element_node, &
-    element_neighbor ) &
-        bind(C, name="r8tris2")
+    element_neighbor )
 
   !*****************************************************************************80
   !
@@ -4952,21 +4899,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input/output, real(dp) NODE_XY(2,NODE_NUM), the coordinates
+  !    Input/output, real(real64) NODE_XY(2,NODE_NUM), the coordinates
   !    of the nodes.  On output, the vertices have been sorted into
   !    dictionary order.
   !
-  !    Output, integer(ip) ELEMENT_NUM, the number of triangles in the
+  !    Output, integer(int32) ELEMENT_NUM, the number of triangles in the
   !    triangulation;  ELEMENT_NUM is equal to 2*NODE_NUM - NB - 2, where NB is
   !    the number of boundary vertices.
   !
-  !    Output, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes that
+  !    Output, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes that
   !    make up each triangle.  The elements are indices of P.  The vertices of
   !    the triangles are in counter clockwise order.
   !
-  !    Output, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Output, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbor list.  Positive elements are indices of TIL; negative
   !    elements are used for links of a counter clockwise linked list of boundary
   !    edges;  LINK = -(3*I + J-1) where I, J = triangle, edge index;
@@ -4974,37 +4921,37 @@ contains
   !    to J+1 (mod 3).
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(inout) :: node_num
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
 
-    real(dp) :: cmax
-    integer(ip) :: e
-    integer(ip) :: i
-    integer(ip) :: ierr
-    integer(ip) :: indx(node_num)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: ledg
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip) :: ltri
-    integer(ip) :: m
-    integer(ip) :: m1
-    integer(ip) :: m2
-    integer(ip) :: n
-    real(dp), intent(inout) :: node_xy(dim_num,node_num)
-    integer(ip) :: redg
-    integer(ip) :: rtri
-    integer(ip) :: stack(node_num)
-    integer(ip) :: t
-    real(dp) :: tol
-    integer(ip) :: top
-    integer(ip), intent(out) :: element_neighbor(3,node_num*2)
-    integer(ip), intent(out) :: element_num
-    integer(ip), intent(out) :: element_node(3,node_num*2)
+    real(real64) cmax
+    integer(int32) e
+    integer(int32) i
+    integer(int32) ierr
+    integer(int32) indx(node_num)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) ledg
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) ltri
+    integer(int32) m
+    integer(int32) m1
+    integer(int32) m2
+    integer(int32) n
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) redg
+    integer(int32) rtri
+    integer(int32) stack(node_num)
+    integer(int32) t
+    real(real64) tol
+    integer(int32) top
+    integer(int32) element_neighbor(3,node_num*2)
+    integer(int32) element_num
+    integer(int32) element_node(3,node_num*2)
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     ierr = 0
   !
@@ -5029,7 +4976,7 @@ contains
 
         cmax = max ( abs ( node_xy(j,m) ), abs ( node_xy(j,m1) ) )
 
-        if ( tol * ( cmax + 1.0_dp ) &
+        if ( tol * ( cmax + 1.0e+00_real64 ) &
              < abs ( node_xy(j,m) - node_xy(j,m1) ) ) then
           k = j
           exit
@@ -5070,7 +5017,7 @@ contains
       m = j
 
       lr = lrline ( node_xy(1,m), node_xy(2,m), node_xy(1,m1), &
-        node_xy(2,m1), node_xy(1,m2), node_xy(2,m2), 0.0_dp )
+        node_xy(2,m1), node_xy(1,m2), node_xy(2,m2), 0.0e+00_real64 )
 
       if ( lr /= 0 ) then
         exit
@@ -5160,7 +5107,7 @@ contains
       end if
 
       lr = lrline ( node_xy(1,m), node_xy(2,m), node_xy(1,m1), &
-        node_xy(2,m1), node_xy(1,m2), node_xy(2,m2), 0.0_dp )
+        node_xy(2,m1), node_xy(1,m2), node_xy(2,m2), 0.0e+00_real64 )
 
       if ( 0 < lr ) then
         rtri = ltri
@@ -5250,10 +5197,9 @@ contains
     call perm_inverse ( node_num, indx )
 
     call r82vec_permute ( node_num, indx, node_xy )
-  end subroutine r8tris2
+  end
 
-  subroutine r8vec_bracket ( n, x, xval, left, right ) &
-        bind(C, name="r8vec_bracket")
+  subroutine r8vec_bracket ( n, x, xval, left, right )
 
   !*****************************************************************************80
   !
@@ -5279,14 +5225,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, length of input array.
+  !    Input, integer(int32) N, length of input array.
   !
-  !    Input, real(dp) X(N), an array that has been sorted into
+  !    Input, real(real64) X(N), an array that has been sorted into
   !    ascending order.
   !
-  !    Input, real(dp) XVAL, a value to be bracketed.
+  !    Input, real(real64) XVAL, a value to be bracketed.
   !
-  !    Output, integer(ip) LEFT, RIGHT, the results of the search.
+  !    Output, integer(int32) LEFT, RIGHT, the results of the search.
   !    Either:
   !      XVAL < X(1), when LEFT = 1, RIGHT = 2;
   !      X(N) < XVAL, when LEFT = N-1, RIGHT = N;
@@ -5294,13 +5240,13 @@ contains
   !      X(LEFT) <= XVAL <= X(RIGHT).
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), intent(out) :: left
-    integer(ip), intent(out) :: right
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in), value :: xval
+    integer(int32) i
+    integer(int32) left
+    integer(int32) right
+    real(real64) x(n)
+    real(real64) xval
 
     do i = 2, n - 1
 
@@ -5313,10 +5259,9 @@ contains
 
     left = n - 1
     right = n
-  end subroutine r8vec_bracket
+  end
 
-  subroutine r8vec_uniform_01 ( n, seed, r ) &
-        bind(C, name="r8vec_uniform_01")
+  subroutine r8vec_uniform_01 ( n, seed, r )
 
   !*****************************************************************************80
   !
@@ -5371,21 +5316,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
+    integer(int32) i
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -5404,13 +5349,12 @@ contains
         seed = seed + i4_huge
       end if
 
-      r(i) = real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_01
+  end
 
-  subroutine sort_heap_external ( n, indx, i, j, isgn ) &
-        bind(C, name="sort_heap_external")
+  subroutine sort_heap_external ( n, indx, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -5419,7 +5363,7 @@ contains
   !  Discussion:
   !
   !    The actual list of data is not passed to the routine.  Hence this
-  !    routine may be used to sort integers, real(dp)s, numbers, names,
+  !    routine may be used to sort integers, real(real64)s, numbers, names,
   !    dates, shoe sizes, and so on.  After each call, the routine asks
   !    the user to compare or interchange two items, until a special
   !    return value signals that the sorting is completed.
@@ -5446,9 +5390,9 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items to be sorted.
+  !    Input, integer(int32) N, the number of items to be sorted.
   !
-  !    Input/output, integer(ip) INDX, the main communication signal.
+  !    Input/output, integer(int32) INDX, the main communication signal.
   !
   !    The user must set INDX to 0 before the first call.
   !    Thereafter, the user should not change the value of INDX until
@@ -5467,27 +5411,27 @@ contains
   !
   !      equal to 0, the sorting is done.
   !
-  !    Output, integer(ip) I, J, the indices of two items.
+  !    Output, integer(int32) I, J, the indices of two items.
   !    On return with INDX positive, elements I and J should be interchanged.
   !    On return with INDX negative, elements I and J should be compared, and
   !    the result reported in ISGN on the next call.
   !
-  !    Input, integer(ip) ISGN, results of comparison of elements I
+  !    Input, integer(int32) ISGN, results of comparison of elements I
   !    and J.  (Used only when the previous call returned INDX less than 0).
   !    ISGN <= 0 means I is less than or equal to J;
   !    0 <= ISGN means I is greater than or equal to J.
   !
 
-    integer(ip), intent(out) :: i
-    integer(ip), save :: i_save = 0
-    integer(ip), intent(inout) :: indx
-    integer(ip), intent(in), value :: isgn
-    integer(ip), intent(out) :: j
-    integer(ip), save :: j_save = 0
-    integer(ip), save :: k = 0
-    integer(ip), save :: k1 = 0
-    integer(ip), intent(in), value :: n
-    integer(ip), save :: n1 = 0
+    integer(int32) i
+    integer(int32), save :: i_save = 0
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32), save :: j_save = 0
+    integer(int32), save :: k = 0
+    integer(int32), save :: k1 = 0
+    integer(int32) n
+    integer(int32), save :: n1 = 0
   !
   !  INDX = 0: This is the first call.
   !
@@ -5591,11 +5535,10 @@ contains
       i = i_save
       j = j_save
     end if
-  end subroutine sort_heap_external
+  end
 
   subroutine swapec ( i, top, btri, bedg, node_num, node_xy, element_num, &
-    element_node, element_neighbor, stack, ierr ) &
-        bind(C, name="swapec")
+    element_node, element_neighbor, stack, ierr )
 
   !*****************************************************************************80
   !
@@ -5630,25 +5573,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the index of the new vertex.
+  !    Input, integer(int32) I, the index of the new vertex.
   !
-  !    Input/output, integer(ip) TOP, the index of the top of the stack.
+  !    Input/output, integer(int32) TOP, the index of the top of the stack.
   !    On output, TOP is zero.
   !
-  !    Input/output, integer(ip) BTRI, BEDG; on input, if positive, are
+  !    Input/output, integer(int32) BTRI, BEDG; on input, if positive, are
   !    the triangle and edge indices of a boundary edge whose updated indices
   !    must be recorded.  On output, these may be updated because of swaps.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input/output, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the
+  !    Input/output, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the
   !    triangle incidence list.  May be updated on output because of swaps.
   !
-  !    Input/output, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Input/output, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbor list; negative values are used for links of the
   !    counter-clockwise linked list of boundary edges;  May be updated on output
   !    because of swaps.
@@ -5660,43 +5603,43 @@ contains
   !    put in stack; the edges opposite I should be in interior;  entries
   !    TOP+1 through MAXST are used as a stack.
   !
-  !    Output, integer(ip) IERR is set to 8 for abnormal return.
+  !    Output, integer(int32) IERR is set to 8 for abnormal return.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(inout) :: element_num
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip), intent(inout) :: bedg
-    integer(ip), intent(inout) :: btri
-    integer(ip) :: c
-    integer(ip) :: diaedg
-    integer(ip) :: e
-    integer(ip) :: ee
-    integer(ip) :: em1
-    integer(ip) :: ep1
-    integer(ip) :: f
-    integer(ip) :: fm1
-    integer(ip) :: fp1
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: ierr
-    integer(ip) :: i4_wrap
-    integer(ip) :: l
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    integer(ip) :: r
-    integer(ip) :: s
-    integer(ip) :: stack(node_num)
-    integer(ip) :: swap
-    integer(ip) :: t
-    integer(ip), intent(inout) :: top
-    integer(ip), intent(inout) :: element_node(3,element_num)
-    integer(ip), intent(inout) :: element_neighbor(3,element_num)
-    integer(ip) :: tt
-    integer(ip) :: u
-    real(dp) :: x
-    real(dp) :: y
+    integer(int32) a
+    integer(int32) b
+    integer(int32) bedg
+    integer(int32) btri
+    integer(int32) c
+    integer(int32) diaedg
+    integer(int32) e
+    integer(int32) ee
+    integer(int32) em1
+    integer(int32) ep1
+    integer(int32) f
+    integer(int32) fm1
+    integer(int32) fp1
+    integer(int32) i
+    integer(int32) ierr
+    integer(int32) i4_wrap
+    integer(int32) l
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) r
+    integer(int32) s
+    integer(int32) stack(node_num)
+    integer(int32) swap
+    integer(int32) t
+    integer(int32) top
+    integer(int32) element_node(3,element_num)
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) tt
+    integer(int32) u
+    real(real64) x
+    real(real64) y
   !
   !  Determine whether triangles in stack are Delaunay, and swap
   !  diagonal edge of convex quadrilateral if not.
@@ -5857,10 +5800,9 @@ contains
       end if
 
     end do
-  end subroutine swapec
+  end
 
-  subroutine triangle_angles_2d ( t, angle ) &
-        bind(C, name="triangle_angles_2d")
+  subroutine triangle_angles_2d ( t, angle )
 
   !*****************************************************************************80
   !
@@ -5888,21 +5830,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) ANGLE(3), the angles opposite
+  !    Output, real(real64) ANGLE(3), the angles opposite
   !    sides P1-P2, P2-P3 and P3-P1, in radians.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp), intent(out) :: angle(3)
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: r8_acos
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) angle(3)
+    real(real64) b
+    real(real64) c
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r8_acos
+    real(real64) t(dim_num,3)
   !
   !  Compute the length of each side.
   !
@@ -5912,31 +5854,30 @@ contains
   !
   !  Take care of ridiculous special cases.
   !
-    if ( a == 0.0_dp .and. b == 0.0_dp .and. c == 0.0_dp ) then
-      angle(1:3) = 2.0_dp * pi / 3.0_dp
+    if ( a == 0.0e+00_real64 .and. b == 0.0e+00_real64 .and. c == 0.0e+00_real64 ) then
+      angle(1:3) = 2.0e+00_real64 * pi / 3.0e+00_real64
     end if
 
-    if ( c == 0.0_dp .or. a == 0.0_dp ) then
+    if ( c == 0.0e+00_real64 .or. a == 0.0e+00_real64 ) then
       angle(1) = pi
     else
-      angle(1) = r8_acos ( ( c * c + a * a - b * b ) / ( 2.0_dp * c * a ) )
+      angle(1) = r8_acos ( ( c * c + a * a - b * b ) / ( 2.0e+00_real64 * c * a ) )
     end if
 
-    if ( a == 0.0_dp .or. b == 0.0_dp ) then
+    if ( a == 0.0e+00_real64 .or. b == 0.0e+00_real64 ) then
       angle(2) = pi
     else
-      angle(2) = r8_acos ( ( a * a + b * b - c * c ) / ( 2.0_dp * a * b ) )
+      angle(2) = r8_acos ( ( a * a + b * b - c * c ) / ( 2.0e+00_real64 * a * b ) )
     end if
 
-    if ( b == 0.0_dp .or. c == 0.0_dp ) then
+    if ( b == 0.0e+00_real64 .or. c == 0.0e+00_real64 ) then
       angle(3) = pi
     else
-      angle(3) = r8_acos ( ( b * b + c * c - a * a ) / ( 2.0_dp * b * c ) )
+      angle(3) = r8_acos ( ( b * b + c * c - a * a ) / ( 2.0e+00_real64 * b * c ) )
     end if
-  end subroutine triangle_angles_2d
+  end
 
-  subroutine triangle_area_2d ( t, area ) &
-        bind(C, name="triangle_area_2d")
+  subroutine triangle_area_2d ( t, area )
 
   !*****************************************************************************80
   !
@@ -5956,24 +5897,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) AREA, the absolute area of the triangle.
+  !    Output, real(real64) AREA, the absolute area of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) area
+    real(real64) t(dim_num,3)
 
-    area = 0.5_dp * abs ( &
+    area = 0.5e+00_real64 * abs ( &
         t(1,1) * ( t(2,2) - t(2,3) ) &
       + t(1,2) * ( t(2,3) - t(2,1) ) &
       + t(1,3) * ( t(2,1) - t(2,2) ) )
-  end subroutine triangle_area_2d
+  end
 
-  subroutine triangle_circumcenter_2d ( t, center ) &
-        bind(C, name="triangle_circumcenter_2d")
+  subroutine triangle_circumcenter_2d ( t, center )
 
   !*****************************************************************************80
   !
@@ -6010,19 +5950,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) CENTER(2), the circumcenter of the triangle.
+  !    Output, real(real64) CENTER(2), the circumcenter of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: asq
-    real(dp) :: bot
-    real(dp), intent(out) :: center(dim_num)
-    real(dp) :: csq
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp) :: top(dim_num)
+    real(real64) asq
+    real(real64) bot
+    real(real64) center(dim_num)
+    real(real64) csq
+    real(real64) t(dim_num,3)
+    real(real64) top(dim_num)
 
     asq = ( t(1,2) - t(1,1) )**2 + ( t(2,2) - t(2,1) )**2
     csq = ( t(1,3) - t(1,1) )**2 + ( t(2,3) - t(2,1) )**2
@@ -6033,11 +5973,10 @@ contains
     bot  =  ( t(2,2) - t(2,1) ) * ( t(1,3) - t(1,1) ) &
           - ( t(2,3) - t(2,1) ) * ( t(1,2) - t(1,1) )
 
-    center(1:2) = t(1:2,1) + 0.5_dp * top(1:2) / bot
-  end subroutine triangle_circumcenter_2d
+    center(1:2) = t(1:2,1) + 0.5e+00_real64 * top(1:2) / bot
+  end
 
-  subroutine triangle_reference_sample ( n, seed, p ) &
-        bind(C, name="triangle_reference_sample")
+  subroutine triangle_reference_sample ( n, seed, p )
 
   !*****************************************************************************80
   !
@@ -6071,24 +6010,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points to generate.
+  !    Input, integer(int32) N, the number of points to generate.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, real(dp) P(2,N), random points in the triangle.
+  !    Output, real(real64) P(2,N), random points in the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(out) :: n
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) n
 
-    real(dp) :: alpha
-    real(dp) :: beta
-    integer(ip) :: j
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp) :: r
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    real(real64) alpha
+    real(real64) beta
+    integer(int32) j
+    real(real64) p(dim_num,n)
+    real(real64) r
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     do j = 1, n
 
@@ -6108,14 +6047,13 @@ contains
   !
       beta = r8_uniform_01 ( seed )
 
-      p(1,j) = ( 1.0_dp - beta ) * alpha
+      p(1,j) = ( 1.0e+00_real64 - beta ) * alpha
       p(2,j) =             beta   * alpha
 
     end do
-  end subroutine triangle_reference_sample
+  end
 
-  subroutine triangle_sample ( t, n, seed, p ) &
-        bind(C, name="triangle_sample")
+  subroutine triangle_sample ( t, n, seed, p )
 
   !*****************************************************************************80
   !
@@ -6135,26 +6073,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, integer(ip) N, the number of points to generate.
+  !    Input, integer(int32) N, the number of points to generate.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) P(2,N), random points in the triangle.
+  !    Output, real(real64) P(2,N), random points in the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(out) :: n
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) n
 
-    real(dp) :: alpha(n)
-    integer(ip) :: dim
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp) :: p12(dim_num,n)
-    real(dp) :: p13(dim_num,n)
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) alpha(n)
+    integer(int32) dim
+    real(real64) p(dim_num,n)
+    real(real64) p12(dim_num,n)
+    real(real64) p13(dim_num,n)
+    integer(int32) seed
+    real(real64) t(dim_num,3)
   !
   !  For comparison between F90, C++ and MATLAB codes, call R8VEC_UNIFORM_01.
   !
@@ -6175,10 +6113,10 @@ contains
   !
     do dim = 1, dim_num
 
-      p12(dim,1:n) = ( 1.0_dp - alpha(1:n) ) * t(dim,1) &
+      p12(dim,1:n) = ( 1.0e+00_real64 - alpha(1:n) ) * t(dim,1) &
                                + alpha(1:n)   * t(dim,2)
 
-      p13(dim,1:n) = ( 1.0_dp - alpha(1:n) ) * t(dim,1) &
+      p13(dim,1:n) = ( 1.0e+00_real64 - alpha(1:n) ) * t(dim,1) &
                                + alpha(1:n)   * t(dim,3)
 
     end do
@@ -6189,15 +6127,14 @@ contains
 
     do dim = 1, dim_num
 
-      p(dim,1:n) = ( 1.0_dp - alpha(1:n) ) * p12(dim,1:n) &
+      p(dim,1:n) = ( 1.0e+00_real64 - alpha(1:n) ) * p12(dim,1:n) &
                              + alpha(1:n)   * p13(dim,1:n)
 
     end do
-  end subroutine triangle_sample
+  end
 
   function triangulation_area ( node_num, node_xy, element_order, &
-    element_num, element_node ) &
-        bind(C, name="triangulation_area")
+    element_num, element_node )
 
   !*****************************************************************************80
   !
@@ -6217,33 +6154,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the nodes making up each triangle.
   !
-  !    Output, real(dp) TRIANGULATION_AREA, the area.
+  !    Output, real(real64) TRIANGULATION_AREA, the area.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    real(dp) :: element_area
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp) :: element_xy(2,3)
-    real(dp), intent(in) :: node_xy(2,node_num)
-    real(dp) :: triangulation_area
-    real(dp) :: value
+    integer(int32) element
+    real(real64) element_area
+    integer(int32) element_node(element_order,element_num)
+    real(real64) element_xy(2,3)
+    real(real64) node_xy(2,node_num)
+    real(real64) triangulation_area
+    real(real64) value
 
-    value = 0.0_dp
+    value = 0.0e+00_real64
 
     do element = 1, element_num
 
@@ -6256,11 +6193,10 @@ contains
     end do
 
     triangulation_area = value
-  end function triangulation_area
+  end
 
   subroutine triangulation_areas ( node_num, node_xy, element_order, &
-    element_num, element_node, triangle_area, triangulation_area ) &
-        bind(C, name="triangulation_areas")
+    element_num, element_node, triangle_area, triangulation_area )
 
   !*****************************************************************************80
   !
@@ -6280,39 +6216,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes in the
+  !    Input, integer(int32) NODE_NUM, the number of nodes in the
   !    triangulation.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of triangles in
+  !    Input, integer(int32) ELEMENT_ORDER, the order of triangles in
   !    the triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles in
   !    the triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the nodes making up each triangle.
   !
-  !    Output, real(dp) TRIANGLE_AREA(ELEMENT_NUM), the area of
+  !    Output, real(real64) TRIANGLE_AREA(ELEMENT_NUM), the area of
   !    the triangles.
   !
-  !    Output, real(dp) TRIANGULATION_AREA, the area of
+  !    Output, real(real64) TRIANGULATION_AREA, the area of
   !    the triangulation.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32) element_order
 
-    real(dp), intent(in) :: node_xy(2,node_num)
-    integer(ip) :: triangle
-    real(dp), intent(out) :: triangle_area(element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp) :: triangle_xy(2,3)
-    real(dp), intent(out) :: triangulation_area
+    real(real64) node_xy(2,node_num)
+    integer(int32) triangle
+    real(real64) triangle_area(element_num)
+    integer(int32) element_node(element_order,element_num)
+    real(real64) triangle_xy(2,3)
+    real(real64) triangulation_area
 
-    triangulation_area = 0.0_dp
+    triangulation_area = 0.0e+00_real64
 
     do triangle = 1, element_num
 
@@ -6323,12 +6259,11 @@ contains
       triangulation_area = triangulation_area + triangle_area(triangle)
 
     end do
-  end subroutine triangulation_areas
+  end
 
   subroutine triangulation_delaunay_discrepancy_compute ( node_num, node_xy, &
     element_order, element_num, element_node, element_neighbor, &
-    angle_min, angle_min_triangle, angle_max, angle_max_triangle, value ) &
-        bind(C, name="triangulation_delaunay_discrepancy_compute")
+    angle_min, angle_min_triangle, angle_max, angle_max_triangle, value )
 
   !*****************************************************************************80
   !
@@ -6409,78 +6344,78 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles in
   !    the triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the nodes that make up each triangle.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbor list.
   !
-  !    Output, real(dp) ANGLE_MIN, the minimum angle that occurred in
+  !    Output, real(real64) ANGLE_MIN, the minimum angle that occurred in
   !    the triangulation.
   !
-  !    Output, integer(ip) ANGLE_MIN_TRIANGLE, the triangle in which
+  !    Output, integer(int32) ANGLE_MIN_TRIANGLE, the triangle in which
   !    the minimum angle occurred.
   !
-  !    Output, real(dp) ANGLE_MAX, the maximum angle that occurred in
+  !    Output, real(real64) ANGLE_MAX, the maximum angle that occurred in
   !    the triangulation.
   !
-  !    Output, integer(ip) ANGLE_MAX_TRIANGLE, the triangle in which
+  !    Output, integer(int32) ANGLE_MAX_TRIANGLE, the triangle in which
   !    the maximum angle occurred.
   !
-  !    Output, real(dp) VALUE, the minimum value of ( A(i,j) - B(i,j) ).
+  !    Output, real(real64) VALUE, the minimum value of ( A(i,j) - B(i,j) ).
   !    POSITIVE indicates the triangulation is Delaunay.
   !    VERY NEAR ZERO is a numerically ambiguous case.
   !    NEGATIVE indicates the triangulation is not Delaunay.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32) element_order
 
-    real(dp), intent(out) :: angle_max
-    integer(ip), intent(out) :: angle_max_triangle
-    real(dp), intent(out) :: angle_min
-    integer(ip), intent(out) :: angle_min_triangle
-    real(dp) :: angle_min1
-    real(dp) :: angle_min2
-    real(dp) :: angles1(3)
-    real(dp) :: angles2(3)
-    integer(int64) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip) :: i4
-    integer(ip) :: i4_wrap
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: neighbor
-    real(dp), intent(in) :: node_xy(2,node_num)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: r8_huge
-    real(dp) :: t(2,3)
-    integer(ip) :: triangle_index
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: triangle1
-    integer(ip) :: triangle2
-    real(dp), intent(out) :: value
+    real(real64) angle_max
+    integer(int32) angle_max_triangle
+    real(real64) angle_min
+    integer(int32) angle_min_triangle
+    real(real64) angle_min1
+    real(real64) angle_min2
+    real(real64) angles1(3)
+    real(real64) angles2(3)
+    integer(int64) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) i4
+    integer(int32) i4_wrap
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) neighbor
+    real(real64) node_xy(2,node_num)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r8_huge
+    real(real64) t(2,3)
+    integer(int32) triangle_index
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) triangle1
+    integer(int32) triangle2
+    real(real64) value
 
-    angle_max = 0.0_dp
+    angle_max = 0.0e+00_real64
     angle_max_triangle = - 1
     angle_min = pi
     angle_min_triangle = -1
-    value = 0.0_dp
+    value = 0.0e+00_real64
   !
   !  Consider triangle TRIANGLE1
   !
@@ -6609,14 +6544,13 @@ contains
   !
   !  Scale the results to degrees.
   !
-    value = value * 180.0_dp / pi
-    angle_max = angle_max * 180.0_dp / pi
-    angle_min = angle_min * 180.0_dp / pi
-  end subroutine triangulation_delaunay_discrepancy_compute
+    value = value * 180.0e+00_real64 / pi
+    angle_max = angle_max * 180.0e+00_real64 / pi
+    angle_min = angle_min * 180.0e+00_real64 / pi
+  end
 
   subroutine triangulation_neighbor_elements ( element_order, element_num, &
-    element_node, element_neighbor ) &
-        bind(C, name="triangulation_neighbor_elements")
+    element_node, element_neighbor )
 
   !*****************************************************************************80
   !
@@ -6709,14 +6643,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the elements.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the elements.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the nodes that make up each element.
   !
-  !    Output, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the three
+  !    Output, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the three
   !    elements that are direct neighbors of a given element.
   !    ELEMENT_NEIGHBOR(1,I) is the index of the element which touches side 1,
   !    defined by nodes 2 and 3, and so on.  ELEMENT_NEIGHBOR(1,I) is negative
@@ -6724,21 +6658,21 @@ contains
   !    element lies on a boundary of the triangulation.
   !
 
-    integer(ip), intent(out) :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: col(4,3*element_num)
-    integer(ip) :: element
-    integer(ip), intent(out) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: element1
-    integer(ip) :: element2
-    integer(ip) :: i
-    integer(ip) :: icol
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: side1
-    integer(ip) :: side2
+    integer(int32) col(4,3*element_num)
+    integer(int32) element
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element1
+    integer(int32) element2
+    integer(int32) i
+    integer(int32) icol
+    integer(int32) j
+    integer(int32) k
+    integer(int32) side1
+    integer(int32) side2
   !
   !  Step 1.
   !  From the list of nodes for element E, of the form: (I,J,K)
@@ -6818,11 +6752,10 @@ contains
       icol = icol + 2
 
     end do
-  end subroutine triangulation_neighbor_elements
+  end
 
   subroutine triangulation_node_order ( element_order, element_num, &
-    element_node, node_num, node_order ) &
-        bind(C, name="triangulation_node_order")
+    element_node, node_num, node_order )
 
   !*****************************************************************************80
   !
@@ -6847,27 +6780,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the nodes that make up the triangles.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) NODE_ORDER(NODE_NUM), the order of each node.
+  !    Output, integer(int32) NODE_ORDER(NODE_NUM), the order of each node.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: i
-    integer(ip) :: node
-    integer(ip), intent(out) :: node_order(node_num)
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) i
+    integer(int32) node
+    integer(int32) node_order(node_num)
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
 
     node_order(1:node_num) = 0
 
@@ -6884,11 +6817,10 @@ contains
         end if
       end do
     end do
-  end subroutine triangulation_node_order
+  end
 
   subroutine triangulation_order3_adj_count ( node_num, element_num, &
-    element_node, element_neighbor, adj_num, adj_col ) &
-        bind(C, name="triangulation_order3_adj_count")
+    element_node, element_neighbor, adj_num, adj_col )
 
   !*****************************************************************************80
   !
@@ -6993,37 +6925,37 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), lists the
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), lists the
   !    nodes that make up each triangle, in counterclockwise order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
-  !    Output, integer(ip) ADJ_NUM, the number of adjacencies.
+  !    Output, integer(int32) ADJ_NUM, the number of adjacencies.
   !
-  !    Output, integer(ip) ADJ_COL(NODE_NUM+1).  Information about
+  !    Output, integer(int32) ADJ_COL(NODE_NUM+1).  Information about
   !    column J is stored in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip), intent(out) :: adj_num
-    integer(ip), intent(out) :: adj_col(node_num+1)
-    integer(ip) :: i
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: triangle
-    integer(ip) :: triangle2
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) adj_num
+    integer(int32) adj_col(node_num+1)
+    integer(int32) i
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) triangle
+    integer(int32) triangle2
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     adj_num = 0
   !
@@ -7082,11 +7014,10 @@ contains
     end do
 
     adj_num = adj_col(node_num+1) - 1
-  end subroutine triangulation_order3_adj_count
+  end
 
   subroutine triangulation_order3_adj_set ( node_num, element_num, &
-    element_node, element_neighbor, adj_num, adj_col, adj ) &
-        bind(C, name="triangulation_order3_adj_set")
+    element_node, element_neighbor, adj_num, adj_col, adj )
 
   !*****************************************************************************80
   !
@@ -7194,44 +7125,44 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), lists the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), lists the nodes
   !    that make up each triangle in counterclockwise order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacencies.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacencies.
   !
-  !    Input, integer(ip) ADJ_COL(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_COL(NODE_NUM+1).  Information about
   !    column J is stored in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
   !
-  !    Output, integer(ip) ADJ(ADJ_NUM), the adjacency information.
+  !    Output, integer(int32) ADJ(ADJ_NUM), the adjacency information.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) adj_num
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip), intent(out) :: adj(adj_num)
-    integer(ip), intent(in) :: adj_col(node_num+1)
-    integer(ip) :: adj_copy(node_num)
-    integer(ip) :: k1
-    integer(ip) :: k2
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: node
-    integer(ip) :: number
-    integer(ip) :: triangle
-    integer(ip) :: triangle2
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) adj(adj_num)
+    integer(int32) adj_col(node_num+1)
+    integer(int32) adj_copy(node_num)
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) node
+    integer(int32) number
+    integer(int32) triangle
+    integer(int32) triangle2
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     adj(1:adj_num) = -1
     adj_copy(1:node_num) = adj_col(1:node_num)
@@ -7297,11 +7228,10 @@ contains
       number = k2 + 1 - k1
       call i4vec_sort_heap_a ( number, adj(k1:k2) )
     end do
-  end subroutine triangulation_order3_adj_set
+  end
 
   subroutine triangulation_order3_adj_set2 ( node_num, element_num, &
-    element_node, element_neighbor, adj_num, adj_col, ia, ja ) &
-        bind(C, name="triangulation_order3_adj_set2")
+    element_node, element_neighbor, adj_num, adj_col, ia, ja )
 
   !*****************************************************************************80
   !
@@ -7419,43 +7349,43 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), lists the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), lists the nodes
   !    that make up each triangle in counterclockwise order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacencies.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacencies.
   !
-  !    Input, integer(ip) ADJ_COL(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_COL(NODE_NUM+1).  Information about
   !    column J is stored in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
   !
-  !    Output, integer(ip) IA(ADJ_NUM), JA(ADJ_NUM), the adjacency
+  !    Output, integer(int32) IA(ADJ_NUM), JA(ADJ_NUM), the adjacency
   !    information.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) adj_num
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip), intent(in) :: adj_col(node_num+1)
-    integer(ip) :: adj_copy(node_num)
-    integer(ip), intent(out) :: ia(adj_num)
-    integer(ip), intent(out) :: ja(adj_num)
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: node
-    integer(ip) :: triangle
-    integer(ip) :: triangle2
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) adj_col(node_num+1)
+    integer(int32) adj_copy(node_num)
+    integer(int32) ia(adj_num)
+    integer(int32) ja(adj_num)
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) node
+    integer(int32) triangle
+    integer(int32) triangle2
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     ia(1:adj_num) = -1
     ja(1:adj_num) = -1
@@ -7534,11 +7464,10 @@ contains
   !  Lexically sort the IA, JA values.
   !
     call i4vec2_sort_a ( adj_num, ia, ja )
-  end subroutine triangulation_order3_adj_set2
+  end
 
   subroutine triangulation_order3_adjacency ( node_num, element_num, &
-    element_node, adj ) &
-        bind(C, name="triangulation_order3_adjacency")
+    element_node, adj )
 
   !*****************************************************************************80
   !
@@ -7558,26 +7487,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes in the
+  !    Input, integer(int32) NODE_NUM, the number of nodes in the
   !    triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles in
   !    the triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM),
   !    the nodes making up each triangle.
   !
-  !    Output, integer(ip) ADJ(NODE_NUM,NODE_NUM), the adjacency
+  !    Output, integer(int32) ADJ(NODE_NUM,NODE_NUM), the adjacency
   !    matrix.  ADJ(I,J) is 1 if nodes I and J are adjacent, that is,
   !    they are immediate neighbors on an edge of the triangulation.
   !
 
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(in), value :: element_num
+    integer(int32) node_num
+    integer(int32) element_num
 
-    integer(ip), intent(out) :: adj(node_num,node_num)
-    integer(ip) :: element
-    integer(ip), intent(in) :: element_node(3,element_num)
+    integer(int32) adj(node_num,node_num)
+    integer(int32) element
+    integer(int32) element_node(3,element_num)
 
     adj(1:node_num,1:node_num) = 0
 
@@ -7589,11 +7518,10 @@ contains
       adj ( element_node(3,element), element_node(1,element) ) = 1
       adj ( element_node(3,element), element_node(2,element) ) = 1
     end do
-  end subroutine triangulation_order3_adjacency
+  end
 
   subroutine triangulation_order3_boundary_edge_count ( element_num, &
-    element_node, boundary_edge_num ) &
-        bind(C, name="triangulation_order3_boundary_edge_count")
+    element_node, boundary_edge_num )
 
   !*****************************************************************************80
   !
@@ -7628,28 +7556,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
   !    that make up the triangles.  These should be listed in counterclockwise
   !    order.
   !
-  !    Output, integer(ip) BOUNDARY_EDGE_NUM, the number of boundary
+  !    Output, integer(int32) BOUNDARY_EDGE_NUM, the number of boundary
   !    edges.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip), intent(out) :: boundary_edge_num
-    integer(ip) :: e1(3*element_num)
-    integer(ip) :: e2(3*element_num)
-    integer(ip) :: edge(2,3*element_num)
-    integer(ip) :: interior_edge_num
-    integer(ip) :: m
-    integer(ip) :: n
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: unique_num
+    integer(int32) boundary_edge_num
+    integer(int32) e1(3*element_num)
+    integer(int32) e2(3*element_num)
+    integer(int32) edge(2,3*element_num)
+    integer(int32) interior_edge_num
+    integer(int32) m
+    integer(int32) n
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) unique_num
 
     m = 2
     n = 3 * element_num
@@ -7680,11 +7608,10 @@ contains
     interior_edge_num = 3 * element_num - unique_num
 
     boundary_edge_num = 3 * element_num - 2 * interior_edge_num
-  end subroutine triangulation_order3_boundary_edge_count
+  end
 
   subroutine triangulation_order3_boundary_edge_count_euler ( node_num, &
-    element_num, hole_num, boundary_num ) &
-        bind(C, name="triangulation_order3_boundary_edge_count_euler")
+    element_num, hole_num, boundary_num )
 
   !*****************************************************************************80
   !
@@ -7744,27 +7671,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) HOLE_NUM, the number of internal holes.
+  !    Input, integer(int32) HOLE_NUM, the number of internal holes.
   !
-  !    Output, integer(ip) BOUNDARY_NUM, the number of edges that
+  !    Output, integer(int32) BOUNDARY_NUM, the number of edges that
   !    lie on the boundary of the triangulation.
   !
 
-    integer(ip), intent(out) :: boundary_num
-    integer(ip), intent(in), value :: hole_num
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
+    integer(int32) boundary_num
+    integer(int32) hole_num
+    integer(int32) node_num
+    integer(int32) element_num
 
     boundary_num = 2 * node_num + 2 * hole_num - element_num - 2
-  end subroutine triangulation_order3_boundary_edge_count_euler
+  end
 
   subroutine triangulation_order3_boundary_node ( node_num, element_num, &
-    element_node, node_boundary ) &
-        bind(C, name="triangulation_order3_boundary_node")
+    element_node, node_boundary )
 
   !*****************************************************************************80
   !
@@ -7799,11 +7725,11 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
   !    that make up the triangles.  These should be listed in counterclockwise
   !    order.
   !
@@ -7811,18 +7737,18 @@ contains
   !    is on a boundary edge.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip) :: e1(3*element_num)
-    integer(ip) :: e2(3*element_num)
-    integer(ip) :: edge(2,3*element_num)
-    integer(ip) :: j
-    integer(ip) :: m
-    integer(ip) :: n
+    integer(int32) e1(3*element_num)
+    integer(int32) e2(3*element_num)
+    integer(int32) edge(2,3*element_num)
+    integer(int32) j
+    integer(int32) m
+    integer(int32) n
     logical              node_boundary(node_num)
-    integer(ip) :: element_node(element_order,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     m = 2
     n = 3 * element_num
@@ -7865,11 +7791,10 @@ contains
       end if
 
     end do
-  end subroutine triangulation_order3_boundary_node
+  end
 
   subroutine triangulation_order3_check ( node_num, element_num, &
-    element_node, ierror ) &
-        bind(C, name="triangulation_order3_check")
+    element_node, ierror )
 
   !*****************************************************************************80
   !
@@ -7895,29 +7820,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
   !    that make up the triangles.  These should be listed in counterclockwise
   !    order.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    0, no error occurred.
   !    nonzero, an error occurred, the triangulation is not valid.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip) :: boundary_num
-    integer(ip) :: euler
-    integer(ip) :: i
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: used(node_num)
+    integer(int32) boundary_num
+    integer(int32) euler
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) used(node_num)
 
     ierror = 0
   !
@@ -8018,11 +7943,10 @@ contains
       write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
       write ( *, '(a)' ) '  The triangulation fails Euler''s criterion!'
     end if
-  end subroutine triangulation_order3_check
+  end
 
   subroutine triangulation_order3_edge_check ( element_num, element_node, &
-    boundary_num, ierror ) &
-        bind(C, name="triangulation_order3_edge_check")
+    boundary_num, ierror )
 
   !*****************************************************************************80
   !
@@ -8047,30 +7971,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
   !    that make up each triangle.
   !
-  !    Output, integer(ip) BOUNDARY_NUM, the number of edges that
+  !    Output, integer(int32) BOUNDARY_NUM, the number of edges that
   !    lie on the boundary.
   !
-  !    Output, integer(ip) IERROR, an error flag.
+  !    Output, integer(int32) IERROR, an error flag.
   !    0, no errors were detected.
   !    nonzero, an error occurred.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip), intent(out) :: boundary_num
-    integer(ip) :: col(3,3*element_num)
-    integer(ip) :: i
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: tri
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) boundary_num
+    integer(int32) col(3,3*element_num)
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) j
+    integer(int32) k
+    integer(int32) tri
+    integer(int32) element_node(element_order,element_num)
 
     ierror = 0
   !
@@ -8154,11 +8078,10 @@ contains
       end if
 
     end do
-  end subroutine triangulation_order3_edge_check
+  end
 
   subroutine triangulation_order3_example1 ( node_num, element_num, node_xy, &
-    element_node, element_neighbor ) &
-        bind(C, name="triangulation_order3_example1")
+    element_node, element_neighbor )
 
   !*****************************************************************************80
   !
@@ -8185,44 +8108,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Output, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the
+  !    Output, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the
   !    nodes.
   !
-  !    Output, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
+  !    Output, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
   !    that make up the triangles.
   !
-  !    Output, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Output, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbors on each side.  Negative values indicate edges that
   !    lie on the exterior.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    real(dp), intent(out) :: node_xy(dim_num,node_num)
-    integer(ip), intent(out) :: element_node(element_order,element_num)
-    integer(ip), intent(out) :: element_neighbor(3,element_num)
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element_neighbor(3,element_num)
 
     node_xy = reshape ( (/ &
-         0.0_dp, 0.0_dp, &
-         2.0_dp, 2.0_dp, &
-        -1.0_dp, 3.0_dp, &
-        -2.0_dp, 2.0_dp, &
-         8.0_dp, 2.0_dp, &
-         9.0_dp, 5.0_dp, &
-         7.0_dp, 4.0_dp, &
-         5.0_dp, 6.0_dp, &
-         6.0_dp, 7.0_dp, &
-         8.0_dp, 8.0_dp, &
-        11.0_dp, 7.0_dp, &
-        10.0_dp, 4.0_dp, &
-         6.0_dp, 4.0_dp /), (/ dim_num, node_num /) )
+         0.0e+00_real64, 0.0e+00_real64, &
+         2.0e+00_real64, 2.0e+00_real64, &
+        -1.0e+00_real64, 3.0e+00_real64, &
+        -2.0e+00_real64, 2.0e+00_real64, &
+         8.0e+00_real64, 2.0e+00_real64, &
+         9.0e+00_real64, 5.0e+00_real64, &
+         7.0e+00_real64, 4.0e+00_real64, &
+         5.0e+00_real64, 6.0e+00_real64, &
+         6.0e+00_real64, 7.0e+00_real64, &
+         8.0e+00_real64, 8.0e+00_real64, &
+        11.0e+00_real64, 7.0e+00_real64, &
+        10.0e+00_real64, 4.0e+00_real64, &
+         6.0e+00_real64, 4.0e+00_real64 /), (/ dim_num, node_num /) )
 
     element_node(1:element_order,1:element_num ) = reshape ( (/ &
        3,   4,   1, &
@@ -8259,11 +8182,10 @@ contains
          11,  -47,   15, &
          16,   14,  -50, &
          13,   15,  -39 /), (/ 3, element_num /) )
-  end subroutine triangulation_order3_example1
+  end
 
   subroutine triangulation_order3_example1_size ( node_num, element_num, &
-    hole_num ) &
-        bind(C, name="triangulation_order3_example1_size")
+    hole_num )
 
   !*****************************************************************************80
   !
@@ -8283,25 +8205,24 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) NODE_NUM, the number of nodes.
+  !    Output, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Output, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Output, integer(ip) HOLE_NUM, the number of holes.
+  !    Output, integer(int32) HOLE_NUM, the number of holes.
   !
 
-    integer(ip), intent(out) :: hole_num
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: element_num
+    integer(int32) hole_num
+    integer(int32) node_num
+    integer(int32) element_num
 
     hole_num = 0
     node_num = 13
     element_num = 16
-  end subroutine triangulation_order3_example1_size
+  end
 
   subroutine triangulation_order3_example2 ( node_num, element_num, node_xy, &
-    element_node, element_neighbor ) &
-        bind(C, name="triangulation_order3_example2")
+    element_node, element_neighbor )
 
   !*****************************************************************************80
   !
@@ -8344,56 +8265,56 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Output, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the
+  !    Output, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the
   !    nodes.
   !
-  !    Output, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), lists the
+  !    Output, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), lists the
   !    nodes that make up each triangle, in counterclockwise order.
   !
-  !    Output, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for
+  !    Output, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for
   !    each side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    real(dp), intent(out) :: node_xy(dim_num,node_num)
-    integer(ip), intent(out) :: element_neighbor(3,element_num)
-    integer(ip), intent(out) :: element_node(element_order,element_num)
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     node_xy = reshape ( (/ &
-      0.0_dp, 0.0_dp, &
-      1.0_dp, 0.0_dp, &
-      2.0_dp, 0.0_dp, &
-      3.0_dp, 0.0_dp, &
-      4.0_dp, 0.0_dp, &
-      0.0_dp, 1.0_dp, &
-      1.0_dp, 1.0_dp, &
-      2.0_dp, 1.0_dp, &
-      3.0_dp, 1.0_dp, &
-      4.0_dp, 1.0_dp, &
-      0.0_dp, 2.0_dp, &
-      1.0_dp, 2.0_dp, &
-      2.0_dp, 2.0_dp, &
-      3.0_dp, 2.0_dp, &
-      4.0_dp, 2.0_dp, &
-      0.0_dp, 3.0_dp, &
-      1.0_dp, 3.0_dp, &
-      2.0_dp, 3.0_dp, &
-      3.0_dp, 3.0_dp, &
-      4.0_dp, 3.0_dp, &
-      0.0_dp, 4.0_dp, &
-      1.0_dp, 4.0_dp, &
-      2.0_dp, 4.0_dp, &
-      3.0_dp, 4.0_dp, &
-      4.0_dp, 4.0_dp  &
+      0.0e+00_real64, 0.0e+00_real64, &
+      1.0e+00_real64, 0.0e+00_real64, &
+      2.0e+00_real64, 0.0e+00_real64, &
+      3.0e+00_real64, 0.0e+00_real64, &
+      4.0e+00_real64, 0.0e+00_real64, &
+      0.0e+00_real64, 1.0e+00_real64, &
+      1.0e+00_real64, 1.0e+00_real64, &
+      2.0e+00_real64, 1.0e+00_real64, &
+      3.0e+00_real64, 1.0e+00_real64, &
+      4.0e+00_real64, 1.0e+00_real64, &
+      0.0e+00_real64, 2.0e+00_real64, &
+      1.0e+00_real64, 2.0e+00_real64, &
+      2.0e+00_real64, 2.0e+00_real64, &
+      3.0e+00_real64, 2.0e+00_real64, &
+      4.0e+00_real64, 2.0e+00_real64, &
+      0.0e+00_real64, 3.0e+00_real64, &
+      1.0e+00_real64, 3.0e+00_real64, &
+      2.0e+00_real64, 3.0e+00_real64, &
+      3.0e+00_real64, 3.0e+00_real64, &
+      4.0e+00_real64, 3.0e+00_real64, &
+      0.0e+00_real64, 4.0e+00_real64, &
+      1.0e+00_real64, 4.0e+00_real64, &
+      2.0e+00_real64, 4.0e+00_real64, &
+      3.0e+00_real64, 4.0e+00_real64, &
+      4.0e+00_real64, 4.0e+00_real64  &
     /), (/ dim_num, node_num /) )
 
     element_node(1:element_order,1:element_num) = reshape ( (/ &
@@ -8463,11 +8384,10 @@ contains
       -1, 29, 31, &
       24, 32, 30, &
       -1, 31, -1 /), (/ 3, element_num /) )
-  end subroutine triangulation_order3_example2
+  end
 
   subroutine triangulation_order3_example2_size ( node_num, element_num, &
-    hole_num ) &
-        bind(C, name="triangulation_order3_example2_size")
+    hole_num )
 
   !*****************************************************************************80
   !
@@ -8503,25 +8423,24 @@ contains
   !
   !  Parameters
   !
-  !    Output, integer(ip) NODE_NUM, the number of nodes.
+  !    Output, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Output, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Output, integer(ip) HOLE_NUM, the number of holes.
+  !    Output, integer(int32) HOLE_NUM, the number of holes.
   !
 
-    integer(ip), intent(out) :: hole_num
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: element_num
+    integer(int32) hole_num
+    integer(int32) node_num
+    integer(int32) element_num
 
     node_num = 25
     element_num = 32
     hole_num = 0
-  end subroutine triangulation_order3_example2_size
+  end
 
   subroutine triangulation_order3_neighbor ( element_num, element_node, &
-    t1, s1, t2, s2 ) &
-        bind(C, name="triangulation_order3_neighbor")
+    t1, s1, t2, s2 )
 
   !*****************************************************************************80
   !
@@ -8558,36 +8477,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
   !    that define each triangle.
   !
-  !    Input, integer(ip) T1, the index of the triangle.
+  !    Input, integer(int32) T1, the index of the triangle.
   !
-  !    Input, integer(ip) S1, the index of the triangle side.
+  !    Input, integer(int32) S1, the index of the triangle side.
   !
-  !    Output, integer(ip) T2, the index of the triangle which is
+  !    Output, integer(int32) T2, the index of the triangle which is
   !    the neighbor to T1 on side S1, or -1 if there is no such neighbor.
   !
-  !    Output, integer(ip) S2, the index of the side of triangle T2
+  !    Output, integer(int32) S2, the index of the side of triangle T2
   !    which is shared with triangle T1, or -1 if there is no such neighbor.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip) :: i4_wrap
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: s
-    integer(ip), intent(in), value :: s1
-    integer(ip), intent(out) :: s2
-    integer(ip) :: ss
-    integer(ip) :: t
-    integer(ip), intent(in), value :: t1
-    integer(ip), intent(out) :: t2
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) i4_wrap
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) s
+    integer(int32) s1
+    integer(int32) s2
+    integer(int32) ss
+    integer(int32) t
+    integer(int32) t1
+    integer(int32) t2
+    integer(int32) element_node(element_order,element_num)
 
     t2 = -1
     s2 = -1
@@ -8609,11 +8528,10 @@ contains
         end if
       end do
     end do
-  end subroutine triangulation_order3_neighbor
+  end
 
   subroutine triangulation_order3_neighbor_nodes ( node_num, element_num, &
-    nabes_max, element_node, nabes_first, nabes_num, nabes_dim, nabes ) &
-        bind(C, name="triangulation_order3_neighbor_nodes")
+    nabes_max, element_node, nabes_first, nabes_num, nabes_dim, nabes )
 
   !*****************************************************************************80
   !
@@ -8687,45 +8605,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) NABES_MAX, the maximum dimension of NABES.
+  !    Input, integer(int32) NABES_MAX, the maximum dimension of NABES.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
   !    that make up each triangle.
   !
-  !    Output, integer(ip) NABES_FIRST(NODE_NUM), the index in NABES
+  !    Output, integer(int32) NABES_FIRST(NODE_NUM), the index in NABES
   !    of the first neighbor in the list for each node.
   !
-  !    Output, integer(ip) NABES_NUM(NODE_NUM), the number of neighbors
+  !    Output, integer(int32) NABES_NUM(NODE_NUM), the number of neighbors
   !    of each node.
   !
-  !    Output, integer(ip) NABES_DIM, the dimension of NABES.
+  !    Output, integer(int32) NABES_DIM, the dimension of NABES.
   !
-  !    Output, integer(ip) NABES(NABES_DIM), a list of the neighbors
+  !    Output, integer(int32) NABES(NABES_DIM), a list of the neighbors
   !    of all the nodes.  Neighbors of node 1 are listed first, and so on.
   !
 
-    integer(ip), intent(in), value :: nabes_max
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) nabes_max
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip) :: i
-    integer(ip) :: i_current
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: nabe
-    integer(ip), intent(out) :: nabes(nabes_max)
-    integer(ip) :: nabes1(nabes_max)
-    integer(ip), intent(out) :: nabes_dim
-    integer(ip), intent(out) :: nabes_first(node_num)
-    integer(ip), intent(out) :: nabes_num(node_num)
-    integer(ip) :: tri
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: unique_num
+    integer(int32) i
+    integer(int32) i_current
+    integer(int32) j
+    integer(int32) k
+    integer(int32) nabe
+    integer(int32) nabes(nabes_max)
+    integer(int32) nabes1(nabes_max)
+    integer(int32) nabes_dim
+    integer(int32) nabes_first(node_num)
+    integer(int32) nabes_num(node_num)
+    integer(int32) tri
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) unique_num
   !
   !  Step 1.  From the triangle list (I,J,K)
   !  construct the neighbor relations: (I,J), (J,K), (K,I), (J,I), (K,J), (I,K).
@@ -8765,11 +8683,10 @@ contains
         nabes_num(i) = 1
       end if
     end do
-  end subroutine triangulation_order3_neighbor_nodes
+  end
 
   subroutine triangulation_order3_neighbor_nodes_print ( node_num, nabes_first, &
-    nabes_num, nabes_dim, nabes ) &
-        bind(C, name="triangulation_order3_neighbor_nodes_print")
+    nabes_num, nabes_dim, nabes )
 
   !*****************************************************************************80
   !
@@ -8789,27 +8706,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) NABES_FIRST(NODE_NUM), the index in NABES
+  !    Input, integer(int32) NABES_FIRST(NODE_NUM), the index in NABES
   !    of the first neighbor in the list for each node.
   !
-  !    Input, integer(ip) NABES_NUM(NODE_NUM), the number of neighbors
+  !    Input, integer(int32) NABES_NUM(NODE_NUM), the number of neighbors
   !    of each node.
   !
-  !    Input, integer(ip) NABES_DIM, the dimension of NABES.
+  !    Input, integer(int32) NABES_DIM, the dimension of NABES.
   !
-  !    Input, integer(ip) NABES(NABES_DIM), a list of the neighbors
+  !    Input, integer(int32) NABES(NABES_DIM), a list of the neighbors
   !    of all the nodes.  Neighbors of node 1 are listed first, and so on.
   !
 
-    integer(ip), intent(in), value :: nabes_dim
-    integer(ip), intent(in), value :: node_num
+    integer(int32) nabes_dim
+    integer(int32) node_num
 
-    integer(ip) :: i
-    integer(ip), intent(in) :: nabes(nabes_dim)
-    integer(ip), intent(in) :: nabes_first(node_num)
-    integer(ip), intent(in) :: nabes_num(node_num)
+    integer(int32) i
+    integer(int32) nabes(nabes_dim)
+    integer(int32) nabes_first(node_num)
+    integer(int32) nabes_num(node_num)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) '  Node based arrays:'
@@ -8826,11 +8743,10 @@ contains
     do i = 1, nabes_dim
       write ( *, '(2x,i8,2x,i8)' ) i, nabes(i)
     end do
-  end subroutine triangulation_order3_neighbor_nodes_print
+  end
 
   subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
-    element_num, element_node, node_show, element_show ) &
-        bind(C, name="triangulation_order3_plot")
+    element_num, element_node, node_show, element_show )
 
   !*****************************************************************************80
   !
@@ -8857,64 +8773,64 @@ contains
   !
   !    Input, character ( len = * ) FILE_NAME, the name of the output file.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), lists, for
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), lists, for
   !    each triangle, the indices of the nodes that form the vertices of the
   !    triangle.
   !
-  !    Input, integer(ip) NODE_SHOW,
+  !    Input, integer(int32) NODE_SHOW,
   !    0, do not show nodes;
   !    1, show nodes;
   !    2, show nodes and label them.
   !
-  !    Input, integer(ip) ELEMENT_SHOW,
+  !    Input, integer(int32) ELEMENT_SHOW,
   !    0, do not show triangles;
   !    1, show triangles;
   !    2, show triangles and label them.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    real(dp) :: ave_x
-    real(dp) :: ave_y
-    integer(ip) :: circle_size
-    integer(ip) :: delta
-    integer(ip) :: e
+    real(real64) ave_x
+    real(real64) ave_y
+    integer(int32) :: circle_size
+    integer(int32) delta
+    integer(int32) e
     character ( len = * )  file_name
-    integer(ip) :: file_unit
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: ios
-    integer(ip) :: node
-    integer(ip) :: node_show
-    real(dp) :: node_xy(2,node_num)
+    integer(int32) file_unit
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) ios
+    integer(int32) node
+    integer(int32) node_show
+    real(real64) node_xy(2,node_num)
     character ( len = 40 ) string
-    integer(ip) :: triangle
-    integer(ip) :: element_node(element_order,element_num)
-    integer(ip) :: element_show
-    real(dp) :: x_max
-    real(dp) :: x_min
-    integer(ip) :: x_ps
-    integer(ip) :: x_ps_max = 576
-    integer(ip) :: x_ps_max_clip = 594
-    integer(ip) :: x_ps_min = 36
-    integer(ip) :: x_ps_min_clip = 18
-    real(dp) :: x_scale
-    real(dp) :: y_max
-    real(dp) :: y_min
-    integer(ip) :: y_ps
-    integer(ip) :: y_ps_max = 666
-    integer(ip) :: y_ps_max_clip = 684
-    integer(ip) :: y_ps_min = 126
-    integer(ip) :: y_ps_min_clip = 108
-    real(dp) :: y_scale
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element_show
+    real(real64) x_max
+    real(real64) x_min
+    integer(int32) x_ps
+    integer(int32) :: x_ps_max = 576
+    integer(int32) :: x_ps_max_clip = 594
+    integer(int32) :: x_ps_min = 36
+    integer(int32) :: x_ps_min_clip = 18
+    real(real64) x_scale
+    real(real64) y_max
+    real(real64) y_min
+    integer(int32) y_ps
+    integer(int32) :: y_ps_max = 666
+    integer(int32) :: y_ps_max_clip = 684
+    integer(int32) :: y_ps_min = 126
+    integer(int32) :: y_ps_min_clip = 108
+    real(real64) y_scale
   !
   !  We need to do some figuring here, so that we can determine
   !  the range of the data, and hence the height and width
@@ -8924,22 +8840,22 @@ contains
     x_min = minval ( node_xy(1,1:node_num) )
     x_scale = x_max - x_min
 
-    x_max = x_max + 0.05_dp * x_scale
-    x_min = x_min - 0.05_dp * x_scale
+    x_max = x_max + 0.05e+00_real64 * x_scale
+    x_min = x_min - 0.05e+00_real64 * x_scale
     x_scale = x_max - x_min
 
     y_max = maxval ( node_xy(2,1:node_num) )
     y_min = minval ( node_xy(2,1:node_num) )
     y_scale = y_max - y_min
 
-    y_max = y_max + 0.05_dp * y_scale
-    y_min = y_min - 0.05_dp * y_scale
+    y_max = y_max + 0.05e+00_real64 * y_scale
+    y_min = y_min - 0.05e+00_real64 * y_scale
     y_scale = y_max - y_min
 
     if ( x_scale < y_scale ) then
 
-      delta = nint ( real ( x_ps_max - x_ps_min, dp) &
-        * ( y_scale - x_scale ) / ( 2.0_dp * y_scale ) )
+      delta = nint ( real ( x_ps_max - x_ps_min, real64) &
+        * ( y_scale - x_scale ) / ( 2.0e+00_real64 * y_scale ) )
 
       x_ps_max = x_ps_max - delta
       x_ps_min = x_ps_min + delta
@@ -8951,8 +8867,8 @@ contains
 
     else if ( y_scale < x_scale ) then
 
-      delta = nint ( real ( y_ps_max - y_ps_min, dp) &
-        * ( x_scale - y_scale ) / ( 2.0_dp * x_scale ) )
+      delta = nint ( real ( y_ps_max - y_ps_min, real64) &
+        * ( x_scale - y_scale ) / ( 2.0e+00_real64 * x_scale ) )
 
       y_ps_max      = y_ps_max - delta
       y_ps_min      = y_ps_min + delta
@@ -9064,13 +8980,13 @@ contains
       do node = 1, node_num
 
         x_ps = int ( &
-          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-          + (         node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+          + (         node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max                   - y_min ) )
 
         write ( file_unit, '(a,i4,2x,i4,2x,i4,2x,a)' ) 'newpath ', x_ps, y_ps, &
@@ -9098,13 +9014,13 @@ contains
       do node = 1, node_num
 
         x_ps = int ( &
-          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-          + (       + node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+          + (       + node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max                   - y_min ) )
 
         write ( string, '(i4)' ) node
@@ -9140,16 +9056,16 @@ contains
 
           x_ps = int ( &
             ( ( x_max - node_xy(1,node)         ) &
-            * real ( x_ps_min, dp)   &
+            * real ( x_ps_min, real64)   &
             + (         node_xy(1,node) - x_min ) &
-            * real ( x_ps_max, dp) ) &
+            * real ( x_ps_max, real64) ) &
             / ( x_max                   - x_min ) )
 
           y_ps = int ( &
             ( ( y_max - node_xy(2,node)         ) &
-            * real ( y_ps_min, dp)   &
+            * real ( y_ps_min, real64)   &
             + (         node_xy(2,node) - y_min ) &
-            * real ( y_ps_max, dp) ) &
+            * real ( y_ps_max, real64) ) &
             / ( y_max                   - y_min ) )
 
           if ( i == 1 ) then
@@ -9183,8 +9099,8 @@ contains
 
       do triangle = 1, element_num
 
-        ave_x = 0.0_dp
-        ave_y = 0.0_dp
+        ave_x = 0.0e+00_real64
+        ave_y = 0.0e+00_real64
 
         do i = 1, 3
 
@@ -9195,17 +9111,17 @@ contains
 
         end do
 
-        ave_x = ave_x / 3.0_dp
-        ave_y = ave_y / 3.0_dp
+        ave_x = ave_x / 3.0e+00_real64
+        ave_y = ave_y / 3.0e+00_real64
 
         x_ps = int ( &
-          ( ( x_max - ave_x         ) * real ( x_ps_min, dp)   &
-          + (       + ave_x - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - ave_x         ) * real ( x_ps_min, real64)   &
+          + (       + ave_x - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max         - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - ave_y         ) * real ( y_ps_min, dp)   &
-          + (         ave_y - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - ave_y         ) * real ( y_ps_min, real64)   &
+          + (         ave_y - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max         - y_min ) )
 
         write ( string, '(i4)' ) triangle
@@ -9226,11 +9142,10 @@ contains
     write ( file_unit, '(a)' ) '%%Trailer'
     write ( file_unit, '(a)' ) '%%EOF'
     close ( unit = file_unit )
-  end subroutine triangulation_order3_plot
+  end
 
   subroutine triangulation_order3_print ( node_num, element_num, node_xy, &
-    element_node, element_neighbor ) &
-        bind(C, name="triangulation_order3_print")
+    element_node, element_neighbor )
 
   !*****************************************************************************80
   !
@@ -9259,43 +9174,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes
   !    that make up the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbors on each side.  If there is no triangle neighbor on
   !    a particular side, the value of ELEMENT_NEIGHBOR should be negative.
   !    If the triangulation data was created by R8TRIS22, then there is more
   !    information encoded in the negative values.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    integer(ip) :: boundary_num
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: n1
-    integer(ip) :: n2
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    integer(ip) :: s
-    logical :: skip
-    integer(ip) :: sp1
-    integer(ip) :: t
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), allocatable, dimension ( : ) :: vertex_list
-    integer(ip) :: vertex_num
+    integer(int32) boundary_num
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) k
+    integer(int32) n1
+    integer(int32) n2
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) s
+    logical skip
+    integer(int32) sp1
+    integer(int32) t
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32), allocatable, dimension ( : ) :: vertex_list
+    integer(int32) vertex_num
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_PRINT'
@@ -9390,12 +9305,11 @@ contains
       end if
 
     end do
-  end subroutine triangulation_order3_print
+  end
 
   subroutine triangulation_order3_quad ( node_num, node_xy, element_order, &
     element_num, element_node, quad_fun, quad_num, quad_xy, quad_w, &
-    quad_value, region_area ) &
-        bind(C, name="triangulation_order3_quad")
+    quad_value, region_area )
 
   !*****************************************************************************80
   !
@@ -9422,8 +9336,8 @@ contains
   !
   !      subroutine quad_fun ( n, xy_vec, f_vec )
   !      integer n
-  !      real(dp) f_vec(n)
-  !      real(dp) xy_vec(2,n)
+  !      real(real64) f_vec(n)
+  !      real(real64) xy_vec(2,n)
   !
   !    and it returns in each entry F_VEC(1:N), the value of the integrand
   !    at XY_VEC(1:2,1:N).
@@ -9442,56 +9356,56 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes in the
+  !    Input, integer(int32) NODE_NUM, the number of nodes in the
   !    triangulation.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of triangles in
+  !    Input, integer(int32) ELEMENT_ORDER, the order of triangles in
   !    the triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles in
   !    the triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the nodes making up each triangle.
   !
   !    Input, external QUAD_FUN, the name of the integrand routine.
   !
-  !    Input, integer(ip) QUAD_NUM, the order of the quadrature rule.
+  !    Input, integer(int32) QUAD_NUM, the order of the quadrature rule.
   !
-  !    Input, real(dp) QUAD_XY(2,QUAD_NUM), the abscissas of the
+  !    Input, real(real64) QUAD_XY(2,QUAD_NUM), the abscissas of the
   !    quadrature rule, in the unit triangle.
   !
-  !    Input, real(dp) QUAD_W(QUAD_NUM), the weights of the
+  !    Input, real(real64) QUAD_W(QUAD_NUM), the weights of the
   !    quadrature rule.
   !
-  !    Output, real(dp) QUAD_VALUE, the estimate of the integral
+  !    Output, real(real64) QUAD_VALUE, the estimate of the integral
   !    of F(X,Y) over the region covered by the triangulation.
   !
-  !    Output, real(dp) REGION_AREA, the area of the region.
+  !    Output, real(real64) REGION_AREA, the area of the region.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: quad_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) node_num
+    integer(int32) quad_num
+    integer(int32) element_num
+    integer(int32) element_order
 
-    real(dp), intent(in) :: node_xy(2,node_num)
-    real(dp) :: quad_f(quad_num)
+    real(real64) node_xy(2,node_num)
+    real(real64) quad_f(quad_num)
     external quad_fun
-    real(dp) :: quad_value
-    real(dp) :: quad_w(quad_num)
-    real(dp) :: quad_xy(2,quad_num)
-    real(dp) :: quad2_xy(2,quad_num)
-    real(dp) :: region_area
-    integer(ip) :: triangle
-    real(dp) :: triangle_area
-    integer(ip) :: element_node(element_order,element_num)
-    real(dp) :: triangle_xy(2,3)
+    real(real64) quad_value
+    real(real64) quad_w(quad_num)
+    real(real64) quad_xy(2,quad_num)
+    real(real64) quad2_xy(2,quad_num)
+    real(real64) region_area
+    integer(int32) triangle
+    real(real64) triangle_area
+    integer(int32) element_node(element_order,element_num)
+    real(real64) triangle_xy(2,3)
 
-    quad_value = 0.0_dp
-    region_area = 0.0_dp
+    quad_value = 0.0e+00_real64
+    region_area = 0.0e+00_real64
 
     do triangle = 1, element_num
 
@@ -9510,12 +9424,11 @@ contains
       region_area = region_area + triangle_area
 
     end do
-  end subroutine triangulation_order3_quad
+  end
 
   subroutine triangulation_order3_refine_compute ( node_num1, element_num1, &
     node_xy1, element_node1, node_num2, element_num2, edge_data, node_xy2, &
-    element_node2 ) &
-        bind(C, name="triangulation_order3_refine_compute")
+    element_node2 )
 
   !*****************************************************************************80
   !
@@ -9553,50 +9466,50 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes.
+  !    Input, integer(int32) NODE_NUM1, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM1, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM1, the number of triangles.
   !
-  !    Input, real(dp) NODE_XY1(2,NODE_NUM1), the nodes.
+  !    Input, real(real64) NODE_XY1(2,NODE_NUM1), the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NODE1(3,ELEMENT_NUM1), the nodes
+  !    Input, integer(int32) ELEMENT_NODE1(3,ELEMENT_NUM1), the nodes
   !    that make up the triangles.  These should be listed in counterclockwise
   !    order.
   !
-  !    Input, integer(ip) NODE_NUM2, the number of nodes in the
+  !    Input, integer(int32) NODE_NUM2, the number of nodes in the
   !    refined mesh.
   !
-  !    Input, integer(ip) ELEMENT_NUM2, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM2, the number of triangles in
   !    the refined mesh.
   !
-  !    Input, integer(ip) EDGE_DATA(5,3*ELEMENT_NUM1), edge information
+  !    Input, integer(int32) EDGE_DATA(5,3*ELEMENT_NUM1), edge information
   !    computed by TRIANGULATION_ORDER3_REFINE_SIZE.
   !
-  !    Output, real(dp) NODE_XY2(2,NODE_NUM2), the refined nodes.
+  !    Output, real(real64) NODE_XY2(2,NODE_NUM2), the refined nodes.
   !
-  !    Output, integer(ip) ELEMENT_NODE2(3,ELEMENT_NUM2), the nodes
+  !    Output, integer(int32) ELEMENT_NODE2(3,ELEMENT_NUM2), the nodes
   !    that make up the triangles in the refined mesh.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(out) :: node_num2
-    integer(ip), intent(in), value :: element_num1
-    integer(ip), intent(out) :: element_num2
+    integer(int32) node_num1
+    integer(int32) node_num2
+    integer(int32) element_num1
+    integer(int32) element_num2
 
-    integer(ip) :: edge
-    integer(ip), intent(in) :: edge_data(5,3*element_num1)
-    integer(ip) :: n1
-    integer(ip) :: n1_old
-    integer(ip) :: n2
-    integer(ip) :: n2_old
-    integer(ip) :: node
-    real(dp), intent(in) :: node_xy1(2,node_num1)
-    real(dp), intent(out) :: node_xy2(2,node_num2)
-    integer(ip), intent(in) :: element_node1(3,element_num1)
-    integer(ip), intent(out) :: element_node2(3,element_num2)
-    integer(ip) :: triangle1
-    integer(ip) :: v1
-    integer(ip) :: v2
+    integer(int32) edge
+    integer(int32) edge_data(5,3*element_num1)
+    integer(int32) n1
+    integer(int32) n1_old
+    integer(int32) n2
+    integer(int32) n2_old
+    integer(int32) node
+    real(real64) node_xy1(2,node_num1)
+    real(real64) node_xy2(2,node_num2)
+    integer(int32) element_node1(3,element_num1)
+    integer(int32) element_node2(3,element_num2)
+    integer(int32) triangle1
+    integer(int32) v1
+    integer(int32) v2
   !
   !  Copy the old nodes.
   !
@@ -9635,7 +9548,7 @@ contains
         end if
 
         node_xy2(1:2,node) = &
-          ( node_xy2(1:2,n1) + node_xy2(1:2,n2) ) / 2.0_dp
+          ( node_xy2(1:2,n1) + node_xy2(1:2,n2) ) / 2.0e+00_real64
 
         n1_old = n1
         n2_old = n2
@@ -9669,11 +9582,10 @@ contains
       end if
 
     end do
-  end subroutine triangulation_order3_refine_compute
+  end
 
   subroutine triangulation_order3_refine_size ( node_num1, element_num1, &
-    element_node1, node_num2, element_num2, edge_data ) &
-        bind(C, name="triangulation_order3_refine_size")
+    element_node1, node_num2, element_num2, edge_data )
 
   !*****************************************************************************80
   !
@@ -9723,43 +9635,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes in the
+  !    Input, integer(int32) NODE_NUM1, the number of nodes in the
   !    original mesh.
   !
-  !    Input, integer(ip) ELEMENT_NUM1, the number of triangles in the
+  !    Input, integer(int32) ELEMENT_NUM1, the number of triangles in the
   !    original mesh.
   !
-  !    Input, integer(ip) ELEMENT_NODE1(3,ELEMENT_NUM1), the indices
+  !    Input, integer(int32) ELEMENT_NODE1(3,ELEMENT_NUM1), the indices
   !    of the nodes that form the triangles in the input mesh.
   !
-  !    Output, integer(ip) NODE_NUM2, the number of nodes in the refined
+  !    Output, integer(int32) NODE_NUM2, the number of nodes in the refined
   !    mesh.
   !
-  !    Output, integer(ip) ELEMENT_NUM2, the number of triangles in
+  !    Output, integer(int32) ELEMENT_NUM2, the number of triangles in
   !    the refined mesh.
   !
-  !    Output, integer(ip) EDGE_DATA(5,3*ELEMENT_NUM1), edge data that
+  !    Output, integer(int32) EDGE_DATA(5,3*ELEMENT_NUM1), edge data that
   !    will be needed by TRIANGULATION_ORDER3_REFINE_COMPUTE.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(in), value :: element_num1
+    integer(int32) node_num1
+    integer(int32) element_num1
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: edge
-    integer(ip), intent(out) :: edge_data(5,3*element_num1)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: n1
-    integer(ip) :: n1_old
-    integer(ip) :: n2
-    integer(ip) :: n2_old
-    integer(ip), intent(out) :: node_num2
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node1(3,element_num1)
-    integer(ip), intent(out) :: element_num2
+    integer(int32) a
+    integer(int32) b
+    integer(int32) edge
+    integer(int32) edge_data(5,3*element_num1)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) n1
+    integer(int32) n1_old
+    integer(int32) n2
+    integer(int32) n2_old
+    integer(int32) node_num2
+    integer(int32) triangle
+    integer(int32) element_node1(3,element_num1)
+    integer(int32) element_num2
   !
   !  Step 1.
   !  From the list of nodes for triangle T, of the form: (I,J,K)
@@ -9825,11 +9737,10 @@ contains
     end do
 
     element_num2 = 4 * element_num1
-  end subroutine triangulation_order3_refine_size
+  end
 
   subroutine triangulation_order3_sample ( node_num, node_xy, element_num, &
-    element_node, num_ran, seed, xd, td ) &
-        bind(C, name="triangulation_order3_sample")
+    element_node, num_ran, seed, xd, td )
 
   !*****************************************************************************80
   !
@@ -9856,55 +9767,55 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the nodes that
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the nodes that
   !    make up the triangles.
   !
-  !    Input, integer(ip) NUM_RAN, the number of points to sample.
+  !    Input, integer(int32) NUM_RAN, the number of points to sample.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !     number generator.
   !
-  !    Output, real(dp) XD(2,NUM_RAN), the sample points.
+  !    Output, real(real64) XD(2,NUM_RAN), the sample points.
   !
-  !    Output, integer(ip) TD(NUM_RAN), the triangle to which each
+  !    Output, integer(int32) TD(NUM_RAN), the triangle to which each
   !    sample point belongs.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(out) :: num_ran
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 3
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) num_ran
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 3
 
-    real(dp) :: area
-    real(dp) :: area_cum(0:element_num)
-    real(dp) :: area_total
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip) :: left
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    real(dp) :: r
-    real(dp) :: r8_uniform_01
-    integer(ip) :: right
-    integer(ip), intent(inout) :: seed
-    real(dp) :: t(dim_num,3)
-    integer(ip), intent(out) :: td(num_ran)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp), intent(out) :: xd(dim_num,num_ran)
+    real(real64) area
+    real(real64) area_cum(0:element_num)
+    real(real64) area_total
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) left
+    real(real64) node_xy(dim_num,node_num)
+    real(real64) r
+    real(real64) r8_uniform_01
+    integer(int32) right
+    integer(int32) seed
+    real(real64) t(dim_num,3)
+    integer(int32) td(num_ran)
+    integer(int32) element_node(element_order,element_num)
+    real(real64) xd(dim_num,num_ran)
   !
   !  Compute the areas of the triangles.
   !  Build a cumulative area vector.
   !  Convert it to a relative cumulative area vector.
   !
-    area_cum(0) = 0.0_dp
+    area_cum(0) = 0.0e+00_real64
 
     do i = 1, element_num
 
@@ -9953,11 +9864,10 @@ contains
       call triangle_sample ( t, 1, seed, xd(1:2,i) )
 
     end do
-  end subroutine triangulation_order3_sample
+  end
 
   subroutine triangulation_order4_plot ( file_name, node_num, node_xy, &
-    element_num, element_node, node_show, element_show ) &
-        bind(C, name="triangulation_order4_plot")
+    element_num, element_node, node_show, element_show )
 
   !*****************************************************************************80
   !
@@ -9979,63 +9889,63 @@ contains
   !
   !    Input, character ( len = * ) FILE_NAME, the name of the output file.
   !
-  !    Input, integer(ip) NODE_NUM, the number of points.
+  !    Input, integer(int32) NODE_NUM, the number of points.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(4,ELEMENT_NUM), lists,
+  !    Input, integer(int32) ELEMENT_NODE(4,ELEMENT_NUM), lists,
   !    for each triangle, the indices of the points that form the vertices
   !    and the centroid of the triangle.
   !
-  !    Input, integer(ip) NODE_SHOW,
+  !    Input, integer(int32) NODE_SHOW,
   !    0, do not show nodes;
   !    1, show nodes;
   !    2, show nodes and label them.
   !
-  !    Input, integer(ip) ELEMENT_SHOW,
+  !    Input, integer(int32) ELEMENT_SHOW,
   !    0, do not show triangles;
   !    1, show triangles;
   !    2, show triangles and label them.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
+    integer(int32) node_num
+    integer(int32) element_num
 
-    real(dp) :: ave_x
-    real(dp) :: ave_y
-    integer(ip) :: circle_size
-    integer(ip) :: delta
-    integer(ip) :: e
+    real(real64) ave_x
+    real(real64) ave_y
+    integer(int32) :: circle_size
+    integer(int32) delta
+    integer(int32) e
     character ( len = * )  file_name
-    integer(ip) :: file_unit
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: ios
-    integer(ip) :: node
-    integer(ip) :: node_show
-    real(dp) :: node_xy(2,node_num)
+    integer(int32) file_unit
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) ios
+    integer(int32) node
+    integer(int32) node_show
+    real(real64) node_xy(2,node_num)
     character ( len = 40 ) string
-    integer(ip) :: triangle
-    integer(ip) :: element_node(4,element_num)
-    integer(ip) :: element_show
-    real(dp) :: x_max
-    real(dp) :: x_min
-    integer(ip) :: x_ps
-    integer(ip) :: x_ps_max = 576
-    integer(ip) :: x_ps_max_clip = 594
-    integer(ip) :: x_ps_min = 36
-    integer(ip) :: x_ps_min_clip = 18
-    real(dp) :: x_scale
-    real(dp) :: y_max
-    real(dp) :: y_min
-    integer(ip) :: y_ps
-    integer(ip) :: y_ps_max = 666
-    integer(ip) :: y_ps_max_clip = 684
-    integer(ip) :: y_ps_min = 126
-    integer(ip) :: y_ps_min_clip = 108
-    real(dp) :: y_scale
+    integer(int32) triangle
+    integer(int32) element_node(4,element_num)
+    integer(int32) element_show
+    real(real64) x_max
+    real(real64) x_min
+    integer(int32) x_ps
+    integer(int32) :: x_ps_max = 576
+    integer(int32) :: x_ps_max_clip = 594
+    integer(int32) :: x_ps_min = 36
+    integer(int32) :: x_ps_min_clip = 18
+    real(real64) x_scale
+    real(real64) y_max
+    real(real64) y_min
+    integer(int32) y_ps
+    integer(int32) :: y_ps_max = 666
+    integer(int32) :: y_ps_max_clip = 684
+    integer(int32) :: y_ps_min = 126
+    integer(int32) :: y_ps_min_clip = 108
+    real(real64) y_scale
   !
   !  We need to do some figuring here, so that we can determine
   !  the range of the data, and hence the height and width
@@ -10045,22 +9955,22 @@ contains
     x_min = minval ( node_xy(1,1:node_num) )
     x_scale = x_max - x_min
 
-    x_max = x_max + 0.05_dp * x_scale
-    x_min = x_min - 0.05_dp * x_scale
+    x_max = x_max + 0.05e+00_real64 * x_scale
+    x_min = x_min - 0.05e+00_real64 * x_scale
     x_scale = x_max - x_min
 
     y_max = maxval ( node_xy(2,1:node_num) )
     y_min = minval ( node_xy(2,1:node_num) )
     y_scale = y_max - y_min
 
-    y_max = y_max + 0.05_dp * y_scale
-    y_min = y_min - 0.05_dp * y_scale
+    y_max = y_max + 0.05e+00_real64 * y_scale
+    y_min = y_min - 0.05e+00_real64 * y_scale
     y_scale = y_max - y_min
 
     if ( x_scale < y_scale ) then
 
-      delta = nint ( real ( x_ps_max - x_ps_min, dp) &
-        * ( y_scale - x_scale ) / ( 2.0_dp * y_scale ) )
+      delta = nint ( real ( x_ps_max - x_ps_min, real64) &
+        * ( y_scale - x_scale ) / ( 2.0e+00_real64 * y_scale ) )
 
       x_ps_max = x_ps_max - delta
       x_ps_min = x_ps_min + delta
@@ -10072,8 +9982,8 @@ contains
 
     else if ( y_scale < x_scale ) then
 
-      delta = nint ( real ( y_ps_max - y_ps_min, dp) &
-        * ( x_scale - y_scale ) / ( 2.0_dp * x_scale ) )
+      delta = nint ( real ( y_ps_max - y_ps_min, real64) &
+        * ( x_scale - y_scale ) / ( 2.0e+00_real64 * x_scale ) )
 
       y_ps_max      = y_ps_max - delta
       y_ps_min      = y_ps_min + delta
@@ -10185,13 +10095,13 @@ contains
       do node = 1, node_num
 
         x_ps = int ( &
-          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-          + (         node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+          + (         node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max                   - y_min ) )
 
         write ( file_unit, '(a,i4,2x,i4,2x,i4,2x,a)' ) 'newpath ', x_ps, y_ps, &
@@ -10219,13 +10129,13 @@ contains
       do node = 1, node_num
 
         x_ps = int ( &
-          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-          + (       + node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+          + (       + node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max                   - y_min ) )
 
         write ( string, '(i4)' ) node
@@ -10261,16 +10171,16 @@ contains
 
           x_ps = int ( &
             ( ( x_max - node_xy(1,node)         ) &
-            * real ( x_ps_min, dp)   &
+            * real ( x_ps_min, real64)   &
             + (         node_xy(1,node) - x_min ) &
-            * real ( x_ps_max, dp) ) &
+            * real ( x_ps_max, real64) ) &
             / ( x_max                   - x_min ) )
 
           y_ps = int ( &
             ( ( y_max - node_xy(2,node)         ) &
-            * real ( y_ps_min, dp)   &
+            * real ( y_ps_min, real64)   &
             + (         node_xy(2,node) - y_min ) &
-            * real ( y_ps_max, dp) ) &
+            * real ( y_ps_max, real64) ) &
             / ( y_max                   - y_min ) )
 
           if ( i == 1 ) then
@@ -10304,8 +10214,8 @@ contains
 
       do triangle = 1, element_num
 
-        ave_x = 0.0_dp
-        ave_y = 0.0_dp
+        ave_x = 0.0e+00_real64
+        ave_y = 0.0e+00_real64
 
         do i = 1, 3
 
@@ -10316,17 +10226,17 @@ contains
 
         end do
 
-        ave_x = ave_x / 3.0_dp
-        ave_y = ave_y / 3.0_dp
+        ave_x = ave_x / 3.0e+00_real64
+        ave_y = ave_y / 3.0e+00_real64
 
         x_ps = int ( &
-          ( ( x_max - ave_x         ) * real ( x_ps_min, dp)   &
-          + (       + ave_x - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - ave_x         ) * real ( x_ps_min, real64)   &
+          + (       + ave_x - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max         - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - ave_y         ) * real ( y_ps_min, dp)   &
-          + (         ave_y - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - ave_y         ) * real ( y_ps_min, real64)   &
+          + (         ave_y - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max         - y_min ) )
 
         write ( string, '(i4)' ) triangle
@@ -10347,11 +10257,10 @@ contains
     write ( file_unit, '(a)' ) '%%Trailer'
     write ( file_unit, '(a)' ) '%%EOF'
     close ( unit = file_unit )
-  end subroutine triangulation_order4_plot
+  end
 
   subroutine triangulation_order6_adj_count ( node_num, element_num, &
-    element_node, element_neighbor, adj_num, adj_col ) &
-        bind(C, name="triangulation_order6_adj_count")
+    element_node, element_neighbor, adj_num, adj_col )
 
   !*****************************************************************************80
   !
@@ -10485,43 +10394,43 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), lists the
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), lists the
   !    nodes that make up each triangle.  The first three nodes are the vertices,
   !    in counterclockwise order.  The fourth value is the midside
   !    node between nodes 1 and 2; the fifth and sixth values are
   !    the other midside nodes in the logical order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
-  !    Output, integer(ip) ADJ_NUM, the number of adjacencies.
+  !    Output, integer(int32) ADJ_NUM, the number of adjacencies.
   !
-  !    Output, integer(ip) ADJ_COL(NODE_NUM+1).  Information about
+  !    Output, integer(int32) ADJ_COL(NODE_NUM+1).  Information about
   !    column J is stored in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    integer(ip), intent(out) :: adj_num
-    integer(ip), intent(out) :: adj_col(node_num+1)
-    integer(ip) :: i
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: n5
-    integer(ip) :: n6
-    integer(ip) :: triangle
-    integer(ip) :: triangle2
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) adj_num
+    integer(int32) adj_col(node_num+1)
+    integer(int32) i
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) n5
+    integer(int32) n6
+    integer(int32) triangle
+    integer(int32) triangle2
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     adj_num = 0
   !
@@ -10627,11 +10536,10 @@ contains
     end do
 
     adj_num = adj_col(node_num+1) - 1
-  end subroutine triangulation_order6_adj_count
+  end
 
   subroutine triangulation_order6_adj_set ( node_num, element_num, &
-    element_node, element_neighbor, adj_num, adj_col, adj ) &
-        bind(C, name="triangulation_order6_adj_set")
+    element_node, element_neighbor, adj_num, adj_col, adj )
 
   !*****************************************************************************80
   !
@@ -10769,50 +10677,50 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), lists the nodes
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), lists the nodes
   !    that make up each triangle.  The first three nodes are the vertices,
   !    in counterclockwise order.  The fourth value is the midside
   !    node between nodes 1 and 2; the fifth and sixth values are
   !    the other midside nodes in the logical order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacencies.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacencies.
   !
-  !    Input, integer(ip) ADJ_COL(NODE_NUM+1).  Information about column
+  !    Input, integer(int32) ADJ_COL(NODE_NUM+1).  Information about column
   !    J is stored in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
   !
-  !    Output, integer(ip) ADJ(ADJ_NUM), the adjacency information.
+  !    Output, integer(int32) ADJ(ADJ_NUM), the adjacency information.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32) adj_num
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    integer(ip), intent(out) :: adj(adj_num)
-    integer(ip) :: adj_copy(node_num)
-    integer(ip), intent(in) :: adj_col(node_num+1)
-    integer(ip) :: k1
-    integer(ip) :: k2
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: n5
-    integer(ip) :: n6
-    integer(ip) :: node
-    integer(ip) :: number
-    integer(ip) :: triangle
-    integer(ip) :: triangle2
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) adj(adj_num)
+    integer(int32) adj_copy(node_num)
+    integer(int32) adj_col(node_num+1)
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) n5
+    integer(int32) n6
+    integer(int32) node
+    integer(int32) number
+    integer(int32) triangle
+    integer(int32) triangle2
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     adj(1:adj_num) = -1
     adj_copy(1:node_num) = adj_col(1:node_num)
@@ -10954,11 +10862,10 @@ contains
       number = k2 + 1 - k1
       call i4vec_sort_heap_a ( number, adj(k1:k2) )
     end do
-  end subroutine triangulation_order6_adj_set
+  end
 
   subroutine triangulation_order6_boundary_edge_count ( element_num, &
-    element_node, boundary_edge_num ) &
-        bind(C, name="triangulation_order6_boundary_edge_count")
+    element_node, boundary_edge_num )
 
   !*****************************************************************************80
   !
@@ -10997,27 +10904,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), the nodes that
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), the nodes that
   !    make up the triangles.  These should be listed in counterclockwise order.
   !
-  !    Output, integer(ip) BOUNDARY_EDGE_NUM, the number of boundary
+  !    Output, integer(int32) BOUNDARY_EDGE_NUM, the number of boundary
   !    edges.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    integer(ip), intent(out) :: boundary_edge_num
-    integer(ip) :: e1(3*element_num)
-    integer(ip) :: e2(3*element_num)
-    integer(ip) :: edge(2,3*element_num)
-    integer(ip) :: interior_edge_num
-    integer(ip) :: m
-    integer(ip) :: n
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: unique_num
+    integer(int32) boundary_edge_num
+    integer(int32) e1(3*element_num)
+    integer(int32) e2(3*element_num)
+    integer(int32) edge(2,3*element_num)
+    integer(int32) interior_edge_num
+    integer(int32) m
+    integer(int32) n
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) unique_num
 
     m = 2
     n = 3 * element_num
@@ -11048,11 +10955,10 @@ contains
     interior_edge_num = 3 * element_num - unique_num
 
     boundary_edge_num = 3 * element_num - 2 * interior_edge_num
-  end subroutine triangulation_order6_boundary_edge_count
+  end
 
   subroutine triangulation_order6_boundary_edge_count_euler ( node_num, &
-    element_num, hole_num, boundary_num ) &
-        bind(C, name="triangulation_order6_boundary_edge_count_euler")
+    element_num, hole_num, boundary_num )
 
   !*****************************************************************************80
   !
@@ -11098,27 +11004,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) HOLE_NUM, the number of internal nodes.
+  !    Input, integer(int32) HOLE_NUM, the number of internal nodes.
   !
-  !    Output, integer(ip) BOUNDARY_NUM, the number of edges that lie
+  !    Output, integer(int32) BOUNDARY_NUM, the number of edges that lie
   !    on the boundary of the triangulation.
   !
 
-    integer(ip), intent(out) :: boundary_num
-    integer(ip), intent(in), value :: hole_num
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
+    integer(int32) boundary_num
+    integer(int32) hole_num
+    integer(int32) node_num
+    integer(int32) element_num
 
     boundary_num = ( 2 * node_num + 2 * hole_num - 4 * element_num - 2 ) / 2
-  end subroutine triangulation_order6_boundary_edge_count_euler
+  end
 
   subroutine triangulation_order6_boundary_node ( node_num, element_num, &
-    element_node, node_boundary ) &
-        bind(C, name="triangulation_order6_boundary_node")
+    element_node, node_boundary )
 
   !*****************************************************************************80
   !
@@ -11153,29 +11058,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), the nodes
   !    that make up the triangles.
   !
   !    Output, logical NODE_BOUNDARY(NODE_NUM), is TRUE if the node
   !    is on a boundary edge.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    integer(ip) :: e1(3*element_num)
-    integer(ip) :: e2(3*element_num)
-    integer(ip) :: edge(3,3*element_num)
-    integer(ip) :: i
-    integer(ip) :: m
-    integer(ip) :: n
+    integer(int32) e1(3*element_num)
+    integer(int32) e2(3*element_num)
+    integer(int32) edge(3,3*element_num)
+    integer(int32) i
+    integer(int32) m
+    integer(int32) n
     logical              node_boundary(node_num)
-    integer(ip) :: element_node(element_order,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     m = 3
     n = 3 * element_num
@@ -11226,11 +11131,10 @@ contains
       end if
 
     end do
-  end subroutine triangulation_order6_boundary_node
+  end
 
   subroutine triangulation_order6_example1 ( node_num, element_num, node_xy, &
-    element_node, element_neighbor ) &
-        bind(C, name="triangulation_order6_example1")
+    element_node, element_neighbor )
 
   !*****************************************************************************80
   !
@@ -11257,79 +11161,79 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Output, real(dp) NODE_XY(2,NODE_NUM), the coordinates of
+  !    Output, real(real64) NODE_XY(2,NODE_NUM), the coordinates of
   !    the nodes.
   !
-  !    Output, integer(ip) ELEMENT_ORDER(6,ELEMENT_NUM), the nodes
+  !    Output, integer(int32) ELEMENT_ORDER(6,ELEMENT_NUM), the nodes
   !    that make up the triangles.
   !
-  !    Output, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Output, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbors on each side.  Negative values indicate edges that
   !    lie on the exterior.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    real(dp), intent(out) :: node_xy(dim_num,node_num)
-    integer(ip) :: element_node(element_order,element_num)
-    integer(ip), intent(out) :: element_neighbor(3,element_num)
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element_neighbor(3,element_num)
 
     node_xy = reshape ( (/ &
-         0.0_dp, 0.0_dp, &
-         1.0_dp, 0.0_dp, &
-         2.0_dp, 0.0_dp, &
-         3.0_dp, 0.0_dp, &
-         4.0_dp, 0.0_dp, &
-         5.0_dp, 0.0_dp, &
-         6.0_dp, 0.0_dp, &
-         0.0_dp, 1.0_dp, &
-         1.0_dp, 1.0_dp, &
-         2.0_dp, 1.0_dp, &
-         3.0_dp, 1.0_dp, &
-         4.0_dp, 1.0_dp, &
-         5.0_dp, 1.0_dp, &
-         6.0_dp, 1.0_dp, &
-         0.0_dp, 2.0_dp, &
-         1.0_dp, 2.0_dp, &
-         2.0_dp, 2.0_dp, &
-         3.0_dp, 2.0_dp, &
-         4.0_dp, 2.0_dp, &
-         5.0_dp, 2.0_dp, &
-         6.0_dp, 2.0_dp, &
-         0.0_dp, 3.0_dp, &
-         1.0_dp, 3.0_dp, &
-         2.0_dp, 3.0_dp, &
-         3.0_dp, 3.0_dp, &
-         5.0_dp, 3.0_dp, &
-         6.0_dp, 3.0_dp, &
-         0.0_dp, 4.0_dp, &
-         1.0_dp, 4.0_dp, &
-         2.0_dp, 4.0_dp, &
-         3.0_dp, 4.0_dp, &
-         4.0_dp, 4.0_dp, &
-         5.0_dp, 4.0_dp, &
-         6.0_dp, 4.0_dp, &
-         0.0_dp, 5.0_dp, &
-         1.0_dp, 5.0_dp, &
-         2.0_dp, 5.0_dp, &
-         3.0_dp, 5.0_dp, &
-         4.0_dp, 5.0_dp, &
-         5.0_dp, 5.0_dp, &
-         6.0_dp, 5.0_dp, &
-         0.0_dp, 6.0_dp, &
-         1.0_dp, 6.0_dp, &
-         2.0_dp, 6.0_dp, &
-         3.0_dp, 6.0_dp, &
-         4.0_dp, 6.0_dp, &
-         5.0_dp, 6.0_dp, &
-         6.0_dp, 6.0_dp /), (/ dim_num, node_num /) )
+         0.0e+00_real64, 0.0e+00_real64, &
+         1.0e+00_real64, 0.0e+00_real64, &
+         2.0e+00_real64, 0.0e+00_real64, &
+         3.0e+00_real64, 0.0e+00_real64, &
+         4.0e+00_real64, 0.0e+00_real64, &
+         5.0e+00_real64, 0.0e+00_real64, &
+         6.0e+00_real64, 0.0e+00_real64, &
+         0.0e+00_real64, 1.0e+00_real64, &
+         1.0e+00_real64, 1.0e+00_real64, &
+         2.0e+00_real64, 1.0e+00_real64, &
+         3.0e+00_real64, 1.0e+00_real64, &
+         4.0e+00_real64, 1.0e+00_real64, &
+         5.0e+00_real64, 1.0e+00_real64, &
+         6.0e+00_real64, 1.0e+00_real64, &
+         0.0e+00_real64, 2.0e+00_real64, &
+         1.0e+00_real64, 2.0e+00_real64, &
+         2.0e+00_real64, 2.0e+00_real64, &
+         3.0e+00_real64, 2.0e+00_real64, &
+         4.0e+00_real64, 2.0e+00_real64, &
+         5.0e+00_real64, 2.0e+00_real64, &
+         6.0e+00_real64, 2.0e+00_real64, &
+         0.0e+00_real64, 3.0e+00_real64, &
+         1.0e+00_real64, 3.0e+00_real64, &
+         2.0e+00_real64, 3.0e+00_real64, &
+         3.0e+00_real64, 3.0e+00_real64, &
+         5.0e+00_real64, 3.0e+00_real64, &
+         6.0e+00_real64, 3.0e+00_real64, &
+         0.0e+00_real64, 4.0e+00_real64, &
+         1.0e+00_real64, 4.0e+00_real64, &
+         2.0e+00_real64, 4.0e+00_real64, &
+         3.0e+00_real64, 4.0e+00_real64, &
+         4.0e+00_real64, 4.0e+00_real64, &
+         5.0e+00_real64, 4.0e+00_real64, &
+         6.0e+00_real64, 4.0e+00_real64, &
+         0.0e+00_real64, 5.0e+00_real64, &
+         1.0e+00_real64, 5.0e+00_real64, &
+         2.0e+00_real64, 5.0e+00_real64, &
+         3.0e+00_real64, 5.0e+00_real64, &
+         4.0e+00_real64, 5.0e+00_real64, &
+         5.0e+00_real64, 5.0e+00_real64, &
+         6.0e+00_real64, 5.0e+00_real64, &
+         0.0e+00_real64, 6.0e+00_real64, &
+         1.0e+00_real64, 6.0e+00_real64, &
+         2.0e+00_real64, 6.0e+00_real64, &
+         3.0e+00_real64, 6.0e+00_real64, &
+         4.0e+00_real64, 6.0e+00_real64, &
+         5.0e+00_real64, 6.0e+00_real64, &
+         6.0e+00_real64, 6.0e+00_real64 /), (/ dim_num, node_num /) )
 
     element_node(1:element_order,1:element_num ) = reshape ( (/ &
        1,  3, 15,  2,  9,  8, &
@@ -11366,11 +11270,10 @@ contains
       11,  13, -44, &
      -45,  16,  13, &
      -48,  15, -50 /), (/ 3, element_num /) )
-  end subroutine triangulation_order6_example1
+  end
 
   subroutine triangulation_order6_example1_size ( node_num, element_num, &
-    hole_num ) &
-        bind(C, name="triangulation_order6_example1_size")
+    hole_num )
 
   !*****************************************************************************80
   !
@@ -11390,25 +11293,24 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) NODE_NUM, the number of nodes.
+  !    Output, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Output, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Output, integer(ip) HOLE_NUM, the number of holes.
+  !    Output, integer(int32) HOLE_NUM, the number of holes.
   !
 
-    integer(ip), intent(out) :: hole_num
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: element_num
+    integer(int32) hole_num
+    integer(int32) node_num
+    integer(int32) element_num
 
     node_num = 48
     element_num = 16
     hole_num = 1
-  end subroutine triangulation_order6_example1_size
+  end
 
   subroutine triangulation_order6_example2 ( node_num, element_num, node_xy, &
-    element_node, element_neighbor ) &
-        bind(C, name="triangulation_order6_example2")
+    element_node, element_neighbor )
 
   !*****************************************************************************80
   !
@@ -11451,59 +11353,59 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Output, real(dp) NODE_XY(2,NODE_NUM), the coordinates of
+  !    Output, real(real64) NODE_XY(2,NODE_NUM), the coordinates of
   !    the nodes.
   !
-  !    Output, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), lists the
+  !    Output, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), lists the
   !    nodes that make up each triangle.  The first three nodes are the vertices,
   !    in counterclockwise order.  The fourth value is the midside
   !    node between nodes 1 and 2; the fifth and sixth values are
   !    the other midside nodes in the logical order.
   !
-  !    Output, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
+  !    Output, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), for each
   !    side of a triangle, lists the neighboring triangle, or -1 if there is
   !    no neighbor.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    real(dp), intent(out) :: node_xy(dim_num,node_num)
-    integer(ip), intent(out) :: element_neighbor(3,element_num)
-    integer(ip), intent(out) :: element_node(element_order,element_num)
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     node_xy = reshape ( (/ &
-      0.0_dp, 0.0_dp, &
-      1.0_dp, 0.0_dp, &
-      2.0_dp, 0.0_dp, &
-      3.0_dp, 0.0_dp, &
-      4.0_dp, 0.0_dp, &
-      0.0_dp, 1.0_dp, &
-      1.0_dp, 1.0_dp, &
-      2.0_dp, 1.0_dp, &
-      3.0_dp, 1.0_dp, &
-      4.0_dp, 1.0_dp, &
-      0.0_dp, 2.0_dp, &
-      1.0_dp, 2.0_dp, &
-      2.0_dp, 2.0_dp, &
-      3.0_dp, 2.0_dp, &
-      4.0_dp, 2.0_dp, &
-      0.0_dp, 3.0_dp, &
-      1.0_dp, 3.0_dp, &
-      2.0_dp, 3.0_dp, &
-      3.0_dp, 3.0_dp, &
-      4.0_dp, 3.0_dp, &
-      0.0_dp, 4.0_dp, &
-      1.0_dp, 4.0_dp, &
-      2.0_dp, 4.0_dp, &
-      3.0_dp, 4.0_dp, &
-      4.0_dp, 4.0_dp  &
+      0.0e+00_real64, 0.0e+00_real64, &
+      1.0e+00_real64, 0.0e+00_real64, &
+      2.0e+00_real64, 0.0e+00_real64, &
+      3.0e+00_real64, 0.0e+00_real64, &
+      4.0e+00_real64, 0.0e+00_real64, &
+      0.0e+00_real64, 1.0e+00_real64, &
+      1.0e+00_real64, 1.0e+00_real64, &
+      2.0e+00_real64, 1.0e+00_real64, &
+      3.0e+00_real64, 1.0e+00_real64, &
+      4.0e+00_real64, 1.0e+00_real64, &
+      0.0e+00_real64, 2.0e+00_real64, &
+      1.0e+00_real64, 2.0e+00_real64, &
+      2.0e+00_real64, 2.0e+00_real64, &
+      3.0e+00_real64, 2.0e+00_real64, &
+      4.0e+00_real64, 2.0e+00_real64, &
+      0.0e+00_real64, 3.0e+00_real64, &
+      1.0e+00_real64, 3.0e+00_real64, &
+      2.0e+00_real64, 3.0e+00_real64, &
+      3.0e+00_real64, 3.0e+00_real64, &
+      4.0e+00_real64, 3.0e+00_real64, &
+      0.0e+00_real64, 4.0e+00_real64, &
+      1.0e+00_real64, 4.0e+00_real64, &
+      2.0e+00_real64, 4.0e+00_real64, &
+      3.0e+00_real64, 4.0e+00_real64, &
+      4.0e+00_real64, 4.0e+00_real64  &
     /), (/ dim_num, node_num /) )
 
     element_node(1:element_order,1:element_num) = reshape ( (/ &
@@ -11525,11 +11427,10 @@ contains
       -1,  5,  7, &
        4,  8,  6, &
       -1,  7, -1 /), (/ 3, element_num /) )
-  end subroutine triangulation_order6_example2
+  end
 
   subroutine triangulation_order6_example2_size ( node_num, element_num, &
-    hole_num ) &
-        bind(C, name="triangulation_order6_example2_size")
+    hole_num )
 
   !*****************************************************************************80
   !
@@ -11565,25 +11466,24 @@ contains
   !
   !  Parameters
   !
-  !    Output, integer(ip) NODE_NUM, the number of nodes.
+  !    Output, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Output, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Output, integer(ip) HOLE_NUM, the number of holes.
+  !    Output, integer(int32) HOLE_NUM, the number of holes.
   !
 
-    integer(ip), intent(out) :: hole_num
-    integer(ip), intent(out) :: node_num
-    integer(ip), intent(out) :: element_num
+    integer(int32) hole_num
+    integer(int32) node_num
+    integer(int32) element_num
 
     node_num = 25
     element_num = 8
     hole_num = 0
-  end subroutine triangulation_order6_example2_size
+  end
 
   subroutine triangulation_order6_neighbor ( element_num, element_node, &
-    t1, s1, t2, s2 ) &
-        bind(C, name="triangulation_order6_neighbor")
+    t1, s1, t2, s2 )
 
   !*****************************************************************************80
   !
@@ -11622,36 +11522,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_ORDER(6,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_ORDER(6,ELEMENT_NUM), the nodes
   !    that define each triangle.
   !
-  !    Input, integer(ip) T1, the index of the triangle.
+  !    Input, integer(int32) T1, the index of the triangle.
   !
-  !    Input, integer(ip) S1, the index of the triangle side.
+  !    Input, integer(int32) S1, the index of the triangle side.
   !
-  !    Output, integer(ip) T2, the index of the triangle which is the
+  !    Output, integer(int32) T2, the index of the triangle which is the
   !    neighbor to T1 on side S1, or -1 if there is no such neighbor.
   !
-  !    Output, integer(ip) S2, the index of the side of triangle T2 which
+  !    Output, integer(int32) S2, the index of the side of triangle T2 which
   !    is shared with triangle T1, or -1 if there is no such neighbor.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    integer(ip) :: i4_wrap
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: s
-    integer(ip), intent(in), value :: s1
-    integer(ip), intent(out) :: s2
-    integer(ip) :: ss
-    integer(ip) :: t
-    integer(ip), intent(in), value :: t1
-    integer(ip), intent(out) :: t2
-    integer(ip) :: element_node(element_order,element_num)
+    integer(int32) i4_wrap
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) s
+    integer(int32) s1
+    integer(int32) s2
+    integer(int32) ss
+    integer(int32) t
+    integer(int32) t1
+    integer(int32) t2
+    integer(int32) element_node(element_order,element_num)
 
     t2 = -1
     s2 = -1
@@ -11673,11 +11573,10 @@ contains
         end if
       end do
     end do
-  end subroutine triangulation_order6_neighbor
+  end
 
   subroutine triangulation_order6_plot ( file_name, node_num, node_xy, &
-    element_num, element_node, node_show, element_show ) &
-        bind(C, name="triangulation_order6_plot")
+    element_num, element_node, node_show, element_show )
 
   !*****************************************************************************80
   !
@@ -11708,62 +11607,62 @@ contains
   !
   !    Input, character ( len = * ) FILE_NAME, the name of the output file.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), lists, for
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), lists, for
   !    each triangle, the indices of the nodes that form the vertices of the
   !    triangle.
   !
-  !    Input, integer(ip) NODE_SHOW,
+  !    Input, integer(int32) NODE_SHOW,
   !    0, do not show nodes;
   !    1, show nodes;
   !    2, show nodes and label them.
   !
-  !    Input, integer(ip) ELEMENT_SHOW,
+  !    Input, integer(int32) ELEMENT_SHOW,
   !    0, do not show triangles;
   !    1, show triangles;
   !    2, show triangles and label them.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    real(dp) :: ave_x
-    real(dp) :: ave_y
-    integer(ip) :: circle_size
-    integer(ip) :: delta
+    real(real64) ave_x
+    real(real64) ave_y
+    integer(int32) :: circle_size
+    integer(int32) delta
     character ( len = * )  file_name
-    integer(ip) :: file_unit
-    integer(ip) :: i
-    integer(ip) :: ios
-    integer(ip) :: node
-    integer(ip) :: node_show
-    real(dp) :: node_xy(2,node_num)
+    integer(int32) file_unit
+    integer(int32) i
+    integer(int32) ios
+    integer(int32) node
+    integer(int32) node_show
+    real(real64) node_xy(2,node_num)
     character ( len = 40 ) string
-    integer(ip) :: triangle
-    integer(ip) :: element_node(element_order,element_num)
-    integer(ip) :: element_show
-    real(dp) :: x_max
-    real(dp) :: x_min
-    integer(ip) :: x_ps
-    integer(ip) :: x_ps_max = 576
-    integer(ip) :: x_ps_max_clip = 594
-    integer(ip) :: x_ps_min = 36
-    integer(ip) :: x_ps_min_clip = 18
-    real(dp) :: x_scale
-    real(dp) :: y_max
-    real(dp) :: y_min
-    integer(ip) :: y_ps
-    integer(ip) :: y_ps_max = 666
-    integer(ip) :: y_ps_max_clip = 684
-    integer(ip) :: y_ps_min = 126
-    integer(ip) :: y_ps_min_clip = 108
-    real(dp) :: y_scale
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element_show
+    real(real64) x_max
+    real(real64) x_min
+    integer(int32) x_ps
+    integer(int32) :: x_ps_max = 576
+    integer(int32) :: x_ps_max_clip = 594
+    integer(int32) :: x_ps_min = 36
+    integer(int32) :: x_ps_min_clip = 18
+    real(real64) x_scale
+    real(real64) y_max
+    real(real64) y_min
+    integer(int32) y_ps
+    integer(int32) :: y_ps_max = 666
+    integer(int32) :: y_ps_max_clip = 684
+    integer(int32) :: y_ps_min = 126
+    integer(int32) :: y_ps_min_clip = 108
+    real(real64) y_scale
   !
   !  We need to do some figuring here, so that we can determine
   !  the range of the data, and hence the height and width
@@ -11773,22 +11672,22 @@ contains
     x_min = minval ( node_xy(1,1:node_num) )
     x_scale = x_max - x_min
 
-    x_max = x_max + 0.05_dp * x_scale
-    x_min = x_min - 0.05_dp * x_scale
+    x_max = x_max + 0.05e+00_real64 * x_scale
+    x_min = x_min - 0.05e+00_real64 * x_scale
     x_scale = x_max - x_min
 
     y_max = maxval ( node_xy(2,1:node_num) )
     y_min = minval ( node_xy(2,1:node_num) )
     y_scale = y_max - y_min
 
-    y_max = y_max + 0.05_dp * y_scale
-    y_min = y_min - 0.05_dp * y_scale
+    y_max = y_max + 0.05e+00_real64 * y_scale
+    y_min = y_min - 0.05e+00_real64 * y_scale
     y_scale = y_max - y_min
 
     if ( x_scale < y_scale ) then
 
-      delta = nint ( real ( x_ps_max - x_ps_min, dp) &
-        * ( y_scale - x_scale ) / ( 2.0_dp * y_scale ) )
+      delta = nint ( real ( x_ps_max - x_ps_min, real64) &
+        * ( y_scale - x_scale ) / ( 2.0e+00_real64 * y_scale ) )
 
       x_ps_max = x_ps_max - delta
       x_ps_min = x_ps_min + delta
@@ -11800,8 +11699,8 @@ contains
 
     else if ( y_scale < x_scale ) then
 
-      delta = nint ( real ( y_ps_max - y_ps_min, dp) &
-        * ( x_scale - y_scale ) / ( 2.0_dp * x_scale ) )
+      delta = nint ( real ( y_ps_max - y_ps_min, real64) &
+        * ( x_scale - y_scale ) / ( 2.0e+00_real64 * x_scale ) )
 
       y_ps_max      = y_ps_max - delta
       y_ps_min      = y_ps_min + delta
@@ -11917,13 +11816,13 @@ contains
       do node = 1, node_num
 
         x_ps = int ( &
-          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-          + (         node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+          + (         node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max                   - y_min ) )
 
         write ( file_unit, '(a,i4,2x,i4,2x,i4,2x,a)' ) 'newpath ', x_ps, y_ps, &
@@ -11950,13 +11849,13 @@ contains
       do node = 1, node_num
 
         x_ps = int ( &
-          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-          + (       + node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+          + (       + node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max                   - y_min ) )
 
         write ( string, '(i4)' ) node
@@ -11987,13 +11886,13 @@ contains
         node = element_node(6,triangle)
 
         x_ps = int ( &
-          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-          + (         node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+          + (         node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max                   - y_min ) )
 
         write ( file_unit, '(i3,2x,i3,2x,a)' ) x_ps, y_ps, ' moveto'
@@ -12004,16 +11903,16 @@ contains
 
           x_ps = int ( &
             ( ( x_max - node_xy(1,node)         ) &
-            * real ( x_ps_min, dp)   &
+            * real ( x_ps_min, real64)   &
             + (         node_xy(1,node) - x_min ) &
-            * real ( x_ps_max, dp) ) &
+            * real ( x_ps_max, real64) ) &
             / ( x_max                   - x_min ) )
 
           y_ps = int ( &
             ( ( y_max - node_xy(2,node)         ) &
-            * real ( y_ps_min, dp)   &
+            * real ( y_ps_min, real64)   &
             + (         node_xy(2,node) - y_min ) &
-            * real ( y_ps_max, dp) ) &
+            * real ( y_ps_max, real64) ) &
             / ( y_max                   - y_min ) )
 
           write ( file_unit, '(i3,2x,i3,2x,a)' ) x_ps, y_ps, ' lineto'
@@ -12022,16 +11921,16 @@ contains
 
           x_ps = int ( &
             ( ( x_max - node_xy(1,node)         ) &
-            * real ( x_ps_min, dp)   &
+            * real ( x_ps_min, real64)   &
             + (         node_xy(1,node) - x_min ) &
-            * real ( x_ps_max, dp) ) &
+            * real ( x_ps_max, real64) ) &
             / ( x_max                   - x_min ) )
 
           y_ps = int ( &
             ( ( y_max - node_xy(2,node)         ) &
-            * real ( y_ps_min, dp)   &
+            * real ( y_ps_min, real64)   &
             + (         node_xy(2,node) - y_min ) &
-            * real ( y_ps_max, dp) ) &
+            * real ( y_ps_max, real64) ) &
             / ( y_max                   - y_min ) )
 
           write ( file_unit, '(i3,2x,i3,2x,a)' ) x_ps, y_ps, ' lineto'
@@ -12060,8 +11959,8 @@ contains
 
       do triangle = 1, element_num
 
-        ave_x = 0.0_dp
-        ave_y = 0.0_dp
+        ave_x = 0.0e+00_real64
+        ave_y = 0.0e+00_real64
 
         do i = 1, 6
 
@@ -12072,17 +11971,17 @@ contains
 
         end do
 
-        ave_x = ave_x / 6.0_dp
-        ave_y = ave_y / 6.0_dp
+        ave_x = ave_x / 6.0e+00_real64
+        ave_y = ave_y / 6.0e+00_real64
 
         x_ps = int ( &
-          ( ( x_max - ave_x         ) * real ( x_ps_min, dp)   &
-          + (       + ave_x - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - ave_x         ) * real ( x_ps_min, real64)   &
+          + (       + ave_x - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max         - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - ave_y         ) * real ( y_ps_min, dp)   &
-          + (         ave_y - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - ave_y         ) * real ( y_ps_min, real64)   &
+          + (         ave_y - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max         - y_min ) )
 
         write ( string, '(i4)' ) triangle
@@ -12103,11 +12002,10 @@ contains
     write ( file_unit, '(a)' ) '%%Trailer'
     write ( file_unit, '(a)' ) '%%EOF'
     close ( unit = file_unit )
-  end subroutine triangulation_order6_plot
+  end
 
   subroutine triangulation_order6_print ( node_num, element_num, node_xy, &
-    element_node, element_neighbor ) &
-        bind(C, name="triangulation_order6_print")
+    element_node, element_neighbor )
 
   !*****************************************************************************80
   !
@@ -12136,44 +12034,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), the nodes
   !    that make up the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbors on each side.  If there is no triangle neighbor on
   !    a particular side, the value of ELEMENT_NEIGHBOR should be negative.
   !    If the triangulation data was created by R8TRIS2, then there is more
   !    information encoded in the negative values.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    integer(ip) :: boundary_num
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    integer(ip) :: s
-    logical ::              skip
-    integer(ip) :: sp1
-    integer(ip) :: t
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    integer(ip), allocatable, dimension ( : ) :: vertex_list
-    integer(ip) :: vertex_num
+    integer(int32) boundary_num
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) k
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    real(real64) node_xy(dim_num,node_num)
+    integer(int32) s
+    logical              skip
+    integer(int32) sp1
+    integer(int32) t
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element_neighbor(3,element_num)
+    integer(int32), allocatable, dimension ( : ) :: vertex_list
+    integer(int32) vertex_num
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER6_PRINT'
@@ -12270,12 +12168,11 @@ contains
       end if
 
     end do
-  end subroutine triangulation_order6_print
+  end
 
   subroutine triangulation_order6_refine_compute ( node_num1, element_num1, &
     node_xy1, element_node1, node_num2, element_num2, edge_data, &
-    node_xy2, element_node2 ) &
-        bind(C, name="triangulation_order6_refine_compute")
+    node_xy2, element_node2 )
 
   !*****************************************************************************80
   !
@@ -12320,60 +12217,60 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes.
+  !    Input, integer(int32) NODE_NUM1, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM1, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM1, the number of triangles.
   !
-  !    Input, real(dp) NODE_XY1(2,NODE_NUM1), the nodes.
+  !    Input, real(real64) NODE_XY1(2,NODE_NUM1), the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NODE1(6,ELEMENT_NUM1), the nodes
+  !    Input, integer(int32) ELEMENT_NODE1(6,ELEMENT_NUM1), the nodes
   !    that make up the triangles.  These should be listed in counterclockwise
   !    order.
   !
-  !    Input, integer(ip) NODE_NUM2, the number of nodes in the refined
+  !    Input, integer(int32) NODE_NUM2, the number of nodes in the refined
   !    mesh.
   !
-  !    Input, integer(ip) ELEMENT_NUM2, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM2, the number of triangles in
   !    the refined mesh.
   !
-  !    Input, integer(ip) EDGE_DATA(5,3*ELEMENT_NUM1), edge data.
+  !    Input, integer(int32) EDGE_DATA(5,3*ELEMENT_NUM1), edge data.
   !
-  !    Output, real(dp) NODE_XY2(2,NODE_NUM2), the refined nodes.
+  !    Output, real(real64) NODE_XY2(2,NODE_NUM2), the refined nodes.
   !
-  !    Output, integer(ip) ELEMENT_NODE2(6,ELEMENT_NUM2), the nodes
+  !    Output, integer(int32) ELEMENT_NODE2(6,ELEMENT_NUM2), the nodes
   !    that make up the triangles in the refined mesh.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(out) :: node_num2
-    integer(ip), intent(in), value :: element_num1
-    integer(ip), intent(out) :: element_num2
+    integer(int32) node_num1
+    integer(int32) node_num2
+    integer(int32) element_num1
+    integer(int32) element_num2
 
-    integer(ip) :: edge
-    integer(ip), intent(in) :: edge_data(5,3*element_num1)
-    integer(ip) :: l1
-    integer(ip) :: l2
-    integer(ip) :: l3
-    integer(ip) :: n1
-    integer(ip) :: n1_old
-    integer(ip) :: n2
-    integer(ip) :: n2_old
-    integer(ip) :: node
-    real(dp), intent(in) :: node_xy1(2,node_num1)
-    real(dp), intent(out) :: node_xy2(2,node_num2)
-    integer(ip) :: t1
-    integer(ip) :: t2
-    integer(ip) :: t3
-    integer(ip) :: t4
-    integer(ip), intent(in) :: element_node1(6,element_num1)
-    integer(ip), intent(out) :: element_node2(6,element_num2)
-    integer(ip) :: triangle1
-    integer(ip) :: v1
-    integer(ip) :: v2
-    integer(ip) :: v3
-    integer(ip) :: v4
-    integer(ip) :: v5
-    integer(ip) :: v6
+    integer(int32) edge
+    integer(int32) edge_data(5,3*element_num1)
+    integer(int32) l1
+    integer(int32) l2
+    integer(int32) l3
+    integer(int32) n1
+    integer(int32) n1_old
+    integer(int32) n2
+    integer(int32) n2_old
+    integer(int32) node
+    real(real64) node_xy1(2,node_num1)
+    real(real64) node_xy2(2,node_num2)
+    integer(int32) t1
+    integer(int32) t2
+    integer(int32) t3
+    integer(int32) t4
+    integer(int32) element_node1(6,element_num1)
+    integer(int32) element_node2(6,element_num2)
+    integer(int32) triangle1
+    integer(int32) v1
+    integer(int32) v2
+    integer(int32) v3
+    integer(int32) v4
+    integer(int32) v5
+    integer(int32) v6
   !
   !  Step 1:
   !  Copy old nodes.
@@ -12451,11 +12348,11 @@ contains
 
         node = node + 1
         v4 = node
-        node_xy2(1:2,node) = 0.5_dp * ( node_xy1(1:2,v1) + node_xy1(1:2,v2) )
+        node_xy2(1:2,node) = 0.5e+00_real64 * ( node_xy1(1:2,v1) + node_xy1(1:2,v2) )
 
         node = node + 1
         v5 = node
-        node_xy2(1:2,node) = 0.5_dp * ( node_xy1(1:2,v2) + node_xy1(1:2,v3) )
+        node_xy2(1:2,node) = 0.5e+00_real64 * ( node_xy1(1:2,v2) + node_xy1(1:2,v3) )
 
       end if
 
@@ -12513,26 +12410,25 @@ contains
       t4 = ( triangle1 - 1 ) * 4 + 4
 
       node = node + 1
-      node_xy2(1:2,node) = 0.5_dp * ( node_xy1(1:2,v5) + node_xy1(1:2,v6) )
+      node_xy2(1:2,node) = 0.5e+00_real64 * ( node_xy1(1:2,v5) + node_xy1(1:2,v6) )
       element_node2(4,t4) = node
       element_node2(4,t3) = node
 
       node = node + 1
-      node_xy2(1:2,node) = 0.5_dp * ( node_xy1(1:2,v6) + node_xy1(1:2,v4) )
+      node_xy2(1:2,node) = 0.5e+00_real64 * ( node_xy1(1:2,v6) + node_xy1(1:2,v4) )
       element_node2(5,t4) = node
       element_node2(5,t1) = node
 
       node = node + 1
-      node_xy2(1:2,node) = 0.5_dp * ( node_xy1(1:2,v4) + node_xy1(1:2,v5) )
+      node_xy2(1:2,node) = 0.5e+00_real64 * ( node_xy1(1:2,v4) + node_xy1(1:2,v5) )
       element_node2(6,t4) = node
       element_node2(6,t2) = node
 
     end do
-  end subroutine triangulation_order6_refine_compute
+  end
 
   subroutine triangulation_order6_refine_size ( node_num1, element_num1, &
-    element_node1, node_num2, element_num2, edge_data ) &
-        bind(C, name="triangulation_order6_refine_size")
+    element_node1, node_num2, element_num2, edge_data )
 
   !*****************************************************************************80
   !
@@ -12580,42 +12476,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM1, the number of nodes.
+  !    Input, integer(int32) NODE_NUM1, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM1, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM1, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE1(6,ELEMENT_NUM1), the nodes
+  !    Input, integer(int32) ELEMENT_NODE1(6,ELEMENT_NUM1), the nodes
   !    that make up the triangles.  These should be listed in counterclockwise
   !    order.
   !
-  !    Input, integer(ip) NODE_NUM2, the number of nodes in the refined
+  !    Input, integer(int32) NODE_NUM2, the number of nodes in the refined
   !    mesh.
   !
-  !    Input, integer(ip) ELEMENT_NUM2, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM2, the number of triangles in
   !    the refined mesh.
   !
-  !    Output, integer(ip) EDGE_DATA(5,3*ELEMENT_NUM1), edge data
+  !    Output, integer(int32) EDGE_DATA(5,3*ELEMENT_NUM1), edge data
   !    needed by TRIANGULATION_ORDER6_REFINE_COMPUTE.
   !
 
-    integer(ip), intent(in), value :: node_num1
-    integer(ip), intent(in), value :: element_num1
+    integer(int32) node_num1
+    integer(int32) element_num1
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: edge
-    integer(ip), intent(out) :: edge_data(5,3*element_num1)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: n1
-    integer(ip) :: n1_old
-    integer(ip) :: n2
-    integer(ip) :: n2_old
-    integer(ip), intent(in), value :: node_num2
-    integer(ip), intent(in), value :: element_num2
-    integer(ip), intent(in) :: element_node1(6,element_num1)
-    integer(ip) :: triangle1
+    integer(int32) a
+    integer(int32) b
+    integer(int32) edge
+    integer(int32) edge_data(5,3*element_num1)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) n1
+    integer(int32) n1_old
+    integer(int32) n2
+    integer(int32) n2_old
+    integer(int32) node_num2
+    integer(int32) element_num2
+    integer(int32) element_node1(6,element_num1)
+    integer(int32) triangle1
   !
   !  Step 1:
   !  From the list of vertices for triangle T, of the form: (I,J,K),
@@ -12677,11 +12573,10 @@ contains
     node_num2 = node_num2 + 3 * element_num1
 
     element_num2 = 4 * element_num1
-  end subroutine triangulation_order6_refine_size
+  end
 
   subroutine triangulation_order6_to_order3 ( element_num1, element_node1, &
-    element_num2, element_node2 ) &
-        bind(C, name="triangulation_order6_to_order3")
+    element_num2, element_node2 )
 
   !*****************************************************************************80
   !
@@ -12725,34 +12620,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_NUM1, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM1, the number of triangles in
   !    the quadratic triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NODE1(6,ELEMENT_NUM1), the quadratic
+  !    Input, integer(int32) ELEMENT_NODE1(6,ELEMENT_NUM1), the quadratic
   !    triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NUM2, the number of triangles in the
+  !    Input, integer(int32) ELEMENT_NUM2, the number of triangles in the
   !    linear triangulation.  ELEMENT_NUM2 = 4 * ELEMENT_NUM1.
   !
-  !    Output, integer(ip) ELEMENT_NODE2(3,ELEMENT_NUM2), the linear
+  !    Output, integer(int32) ELEMENT_NODE2(3,ELEMENT_NUM2), the linear
   !    triangulation.
   !
 
-    integer(ip), intent(in), value :: element_num1
-    integer(ip), intent(out) :: element_num2
-    integer(ip), parameter :: element_order1 = 6
-    integer(ip), parameter :: element_order2 = 3
+    integer(int32) element_num1
+    integer(int32) element_num2
+    integer(int32), parameter :: element_order1 = 6
+    integer(int32), parameter :: element_order2 = 3
 
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: n5
-    integer(ip) :: n6
-    integer(ip) :: tri1
-    integer(ip) :: tri2
-    integer(ip), intent(in) :: element_node1(element_order1,element_num1)
-    integer(ip), intent(out) :: element_node2(element_order2,element_num2)
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) n5
+    integer(int32) n6
+    integer(int32) tri1
+    integer(int32) tri2
+    integer(int32) element_node1(element_order1,element_num1)
+    integer(int32) element_node2(element_order2,element_num2)
 
     tri2 = 0
 
@@ -12775,11 +12670,10 @@ contains
       element_node2(1:3,tri2) = (/ n4, n5, n6 /)
 
     end do
-  end subroutine triangulation_order6_to_order3
+  end
 
   subroutine triangulation_order6_vertex_count ( node_num, element_num, &
-    element_node, vertex_num, midside_num ) &
-        bind(C, name="triangulation_order6_vertex_count")
+    element_node, vertex_num, midside_num )
 
   !*****************************************************************************80
   !
@@ -12842,32 +12736,32 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(6,ELEMENT_NUM), lists the
+  !    Input, integer(int32) ELEMENT_NODE(6,ELEMENT_NUM), lists the
   !    nodes that make up each triangle.  The first three nodes are the vertices,
   !    in counterclockwise order.  The fourth value is the midside
   !    node between nodes 1 and 2; the fifth and sixth values are
   !    the other midside nodes in the logical order.
   !
-  !    Output, integer(ip) VERTEX_NUM, the number of nodes which are
+  !    Output, integer(int32) VERTEX_NUM, the number of nodes which are
   !    vertices.
   !
-  !    Output, integer(ip) MIDSIDE_NUM, the number of nodes which are
+  !    Output, integer(int32) MIDSIDE_NUM, the number of nodes which are
   !    midsides.  This value is inferred from NODE_NUM - VERTEX_NUM, so the value
   !    of NODE_NUM needs to be correct on input!
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 6
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 6
 
-    integer(ip), intent(out) :: midside_num
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip), intent(out) :: vertex_num
-    integer(ip) :: vertices(3*element_num)
+    integer(int32) midside_num
+    integer(int32) node_num
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) vertex_num
+    integer(int32) vertices(3*element_num)
 
     vertices(               1:  element_num) = element_node(1,1:element_num)
     vertices(  element_num+1:2*element_num) = element_node(2,1:element_num)
@@ -12878,12 +12772,11 @@ contains
     call i4vec_sorted_unique ( 3*element_num, vertices, vertex_num )
 
     midside_num = node_num - vertex_num
-  end subroutine triangulation_order6_vertex_count
+  end
 
   subroutine triangulation_search_delaunay ( node_num, node_xy, element_order, &
     element_num, element_node, element_neighbor, p, triangle_index, alpha, &
-    beta, gamma, edge, step_num ) &
-        bind(C, name="triangulation_search_delaunay")
+    beta, gamma, edge, step_num )
 
   !*****************************************************************************80
   !
@@ -12937,64 +12830,64 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the nodes that make up each triangle.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbor list.
   !
-  !    Input, real(dp) P(2), the coordinates of a point.
+  !    Input, real(real64) P(2), the coordinates of a point.
   !
-  !    Output, integer(ip) TRIANGLE_INDEX, the index of the triangle
+  !    Output, integer(int32) TRIANGLE_INDEX, the index of the triangle
   !    where the search ended.  If a cycle occurred, then TRIANGLE_INDEX = -1.
   !
-  !    Output, real(dp) ALPHA, BETA, GAMMA, the barycentric
+  !    Output, real(real64) ALPHA, BETA, GAMMA, the barycentric
   !    coordinates of the point relative to triangle TRIANGLE_INDEX.
   !
-  !    Output, integer(ip) EDGE, indicates the position of the point P in
+  !    Output, integer(int32) EDGE, indicates the position of the point P in
   !    triangle TRIANGLE_INDEX:
   !    0, the interior or boundary of the triangle;
   !    -1, outside the convex hull of the triangulation, past edge 1;
   !    -2, outside the convex hull of the triangulation, past edge 2;
   !    -3, outside the convex hull of the triangulation, past edge 3.
   !
-  !    Output, integer(ip) STEP_NUM, the number of steps.
+  !    Output, integer(int32) STEP_NUM, the number of steps.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: a
-    real(dp), intent(out) :: alpha
-    integer(ip) :: b
-    real(dp), intent(out) :: beta
-    integer(ip) :: c
-    real(dp) :: det
-    real(dp) :: dxp
-    real(dp) :: dxa
-    real(dp) :: dxb
-    real(dp) :: dyp
-    real(dp) :: dya
-    real(dp) :: dyb
-    integer(ip), intent(out) :: edge
-    real(dp), intent(out) :: gamma
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    real(dp), intent(in) :: p(dim_num)
-    integer(ip), intent(out) :: step_num
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip), intent(out) :: triangle_index
-    integer(ip), save :: triangle_index_save = -1
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
+    integer(int32) a
+    real(real64) alpha
+    integer(int32) b
+    real(real64) beta
+    integer(int32) c
+    real(real64) det
+    real(real64) dxp
+    real(real64) dxa
+    real(real64) dxb
+    real(real64) dyp
+    real(real64) dya
+    real(real64) dyb
+    integer(int32) edge
+    real(real64) gamma
+    real(real64) node_xy(dim_num,node_num)
+    real(real64) p(dim_num)
+    integer(int32) step_num
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) triangle_index
+    integer(int32), save :: triangle_index_save = -1
+    integer(int32) element_neighbor(3,element_num)
   !
   !  If possible, start with the previous successful value of TRIANGLE_INDEX.
   !
@@ -13045,14 +12938,14 @@ contains
   !
       alpha = ( dxp * dyb - dyp * dxb ) / det
       beta =  ( dxa * dyp - dya * dxp ) / det
-      gamma = 1.0_dp - alpha - beta
+      gamma = 1.0e+00_real64 - alpha - beta
   !
   !  If the barycentric coordinates are all positive, then the point
   !  is inside the triangle and we're done.
   !
-      if ( 0.0_dp <= alpha .and. &
-           0.0_dp <= beta  .and. &
-           0.0_dp <= gamma ) then
+      if ( 0.0e+00_real64 <= alpha .and. &
+           0.0e+00_real64 <= beta  .and. &
+           0.0e+00_real64 <= gamma ) then
         exit
       end if
   !
@@ -13065,14 +12958,14 @@ contains
   !  most negative one, or the most negative one normalized by the actual
   !  distance it represents).
   !
-      if ( alpha < 0.0_dp .and. 0 < element_neighbor(2,triangle_index) ) then
+      if ( alpha < 0.0e+00_real64 .and. 0 < element_neighbor(2,triangle_index) ) then
         triangle_index = element_neighbor(2,triangle_index)
         cycle
-      else if ( beta < 0.0_dp .and. &
+      else if ( beta < 0.0e+00_real64 .and. &
         0 < element_neighbor(3,triangle_index) ) then
         triangle_index = element_neighbor(3,triangle_index)
         cycle
-      else if ( gamma < 0.0_dp .and. &
+      else if ( gamma < 0.0e+00_real64 .and. &
         0 < element_neighbor(1,triangle_index) ) then
         triangle_index = element_neighbor(1,triangle_index)
         cycle
@@ -13083,13 +12976,13 @@ contains
   !
   !  Note the edge and exit.
   !
-      if ( alpha < 0.0_dp ) then
+      if ( alpha < 0.0e+00_real64 ) then
         edge = -2
         exit
-      else if ( beta < 0.0_dp ) then
+      else if ( beta < 0.0e+00_real64 ) then
         edge = -3
         exit
-      else if ( gamma < 0.0_dp ) then
+      else if ( gamma < 0.0e+00_real64 ) then
         edge = -1
         exit
       end if
@@ -13097,11 +12990,10 @@ contains
     end do
 
     triangle_index_save = triangle_index
-  end subroutine triangulation_search_delaunay
+  end
 
   subroutine triangulation_search_naive ( node_num, node_xy, &
-    element_order, element_num, element_node, p, triangle_index ) &
-        bind(C, name="triangulation_search_naive")
+    element_order, element_num, element_node, p, triangle_index )
 
   !*****************************************************************************80
   !
@@ -13127,48 +13019,48 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles in
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles in
   !    the triangulation.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
   !    the nodes that make up each triangle.
   !
-  !    Input, real(dp) P(2), the coordinates of a point.
+  !    Input, real(real64) P(2), the coordinates of a point.
   !
-  !    Output, integer(ip) TRIANGLE_INDEX, the index of the triangle
+  !    Output, integer(int32) TRIANGLE_INDEX, the index of the triangle
   !    where the search ended, or -1 if no triangle was found containing
   !    the point.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: a
-    real(dp) :: alpha
-    integer(ip) :: b
-    real(dp) :: beta
-    integer(ip) :: c
-    real(dp) :: det
-    real(dp) :: dxa
-    real(dp) :: dxb
-    real(dp) :: dxp
-    real(dp) :: dya
-    real(dp) :: dyb
-    real(dp) :: dyp
-    real(dp) :: gamma
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    real(dp), intent(in) :: p(dim_num)
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip), intent(out) :: triangle_index
+    integer(int32) a
+    real(real64) alpha
+    integer(int32) b
+    real(real64) beta
+    integer(int32) c
+    real(real64) det
+    real(real64) dxa
+    real(real64) dxb
+    real(real64) dxp
+    real(real64) dya
+    real(real64) dyb
+    real(real64) dyp
+    real(real64) gamma
+    real(real64) node_xy(dim_num,node_num)
+    real(real64) p(dim_num)
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) triangle_index
 
     triangle_index = -1
 
@@ -13199,23 +13091,22 @@ contains
   !
       alpha = ( dxp * dyb - dyp * dxb ) / det
       beta  = ( dxa * dyp - dya * dxp ) / det
-      gamma = 1.0_dp - alpha - beta
+      gamma = 1.0e+00_real64 - alpha - beta
   !
   !  If the barycentric coordinates are all positive, then the point
   !  is inside the triangle and we're done.
   !
-      if ( 0.0_dp <= alpha .and. &
-           0.0_dp <= beta  .and. &
-           0.0_dp <= gamma ) then
+      if ( 0.0e+00_real64 <= alpha .and. &
+           0.0e+00_real64 <= beta  .and. &
+           0.0e+00_real64 <= gamma ) then
         triangle_index = triangle
       end if
 
     end do
-  end subroutine triangulation_search_naive
+  end
 
   subroutine vbedg ( x, y, node_num, node_xy, element_num, element_node, &
-    element_neighbor, ltri, ledg, rtri, redg ) &
-        bind(C, name="vbedg")
+    element_neighbor, ltri, ledg, rtri, redg )
 
   !*****************************************************************************80
   !
@@ -13249,60 +13140,60 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, Y, the coordinates of a point outside the
+  !    Input, real(real64) X, Y, the coordinates of a point outside the
   !    convex hull of the current triangulation.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) ELEMENT_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(3,ELEMENT_NUM), the triangle
+  !    Input, integer(int32) ELEMENT_NODE(3,ELEMENT_NUM), the triangle
   !    incidence list.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(3,ELEMENT_NUM), the
   !    triangle neighbor list; negative values are used for links of a
   !    counter clockwise linked list of boundary edges;
   !      LINK = -(3*I + J-1) where I, J = triangle, edge index.
   !
-  !    Input/output, integer(ip) LTRI, LEDG.  If LTRI /= 0 then these
+  !    Input/output, integer(int32) LTRI, LEDG.  If LTRI /= 0 then these
   !    values are assumed to be already computed and are not changed, else they
   !    are updated.  On output, LTRI is the index of boundary triangle to the
   !    left of the leftmost boundary triangle visible from (X,Y), and LEDG is
   !    the boundary edge of triangle LTRI to the left of the leftmost boundary
   !    edge visible from (X,Y).  1 <= LEDG <= 3.
   !
-  !    Input/output, integer(ip) RTRI.  On input, the index of the
+  !    Input/output, integer(int32) RTRI.  On input, the index of the
   !    boundary triangle to begin the search at.  On output, the index of the
   !    rightmost boundary triangle visible from (X,Y).
   !
-  !    Input/output, integer(ip) REDG, the edge of triangle RTRI that
+  !    Input/output, integer(int32) REDG, the edge of triangle RTRI that
   !    is visible from (X,Y).  1 <= REDG <= 3.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) node_num
+    integer(int32) element_num
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: e
-    integer(ip) :: i4_wrap
-    integer(ip) :: l
-    logical ::              ldone
-    integer(ip), intent(inout) :: ledg
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip), intent(inout) :: ltri
-    real(dp), intent(in) :: node_xy(2,node_num)
-    integer(ip), intent(inout) :: redg
-    integer(ip), intent(inout) :: rtri
-    integer(ip) :: t
-    integer(ip), intent(in) :: element_node(3,element_num)
-    integer(ip), intent(in) :: element_neighbor(3,element_num)
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    integer(int32) a
+    integer(int32) b
+    integer(int32) e
+    integer(int32) i4_wrap
+    integer(int32) l
+    logical              ldone
+    integer(int32) ledg
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) ltri
+    real(real64) node_xy(2,node_num)
+    integer(int32) redg
+    integer(int32) rtri
+    integer(int32) t
+    integer(int32) element_node(3,element_num)
+    integer(int32) element_neighbor(3,element_num)
+    real(real64) x
+    real(real64) y
   !
   !  Find the rightmost visible boundary edge using links, then possibly
   !  leftmost visible boundary edge using triangle neighbor information.
@@ -13329,7 +13220,7 @@ contains
       end if
 
       lr = lrline ( x, y, node_xy(1,a), node_xy(2,a), node_xy(1,b), &
-        node_xy(2,b), 0.0_dp )
+        node_xy(2,b), 0.0e+00_real64 )
 
       if ( lr <= 0 ) then
         exit
@@ -13369,7 +13260,7 @@ contains
       a = element_node(e,t)
 
       lr = lrline ( x, y, node_xy(1,a), node_xy(2,a), node_xy(1,b), &
-        node_xy(2,b), 0.0_dp )
+        node_xy(2,b), 0.0e+00_real64 )
 
       if ( lr <= 0 ) then
         exit
@@ -13379,11 +13270,10 @@ contains
 
     ltri = t
     ledg = e
-  end subroutine vbedg
+  end
 
   subroutine voronoi_polygon_area ( node, neighbor_num, neighbor_index, &
-    node_num, node_xy, area ) &
-        bind(C, name="voronoi_polygon_area")
+    node_num, node_xy, area )
 
   !*****************************************************************************80
   !
@@ -13438,44 +13328,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE, the index of the node whose Voronoi
+  !    Input, integer(int32) NODE, the index of the node whose Voronoi
   !    polygon is to be measured.  1 <= NODE <= NODE_NUM.
   !
-  !    Input, integer(ip) NEIGHBOR_NUM, the number of neighbor nodes of
+  !    Input, integer(int32) NEIGHBOR_NUM, the number of neighbor nodes of
   !    the given node.
   !
-  !    Input, integer(ip) NEIGHBOR_INDEX(NEIGHBOR_NUM), the indices
+  !    Input, integer(int32) NEIGHBOR_INDEX(NEIGHBOR_NUM), the indices
   !    of the neighbor nodes (used to access X and Y).  The neighbor
   !    nodes should be listed in the (counter-clockwise) order in
   !    which they occur as one circles the center node.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Output, real(dp) AREA, the area of the Voronoi polygon.
+  !    Output, real(real64) AREA, the area of the Voronoi polygon.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: neighbor_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) neighbor_num
+    integer(int32) node_num
 
-    real(dp) :: a
-    real(dp), intent(out) :: area
-    real(dp) :: b
-    real(dp) :: c
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in) :: neighbor_index(neighbor_num)
-    integer(ip), intent(in), value :: node
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    real(dp) :: pc(dim_num)
-    real(dp) :: pi(dim_num)
-    real(dp) :: pj(dim_num)
-    real(dp) :: ui(dim_num)
-    real(dp) :: uj(dim_num)
+    real(real64) a
+    real(real64) area
+    real(real64) b
+    real(real64) c
+    integer(int32) i
+    integer(int32) j
+    integer(int32) neighbor_index(neighbor_num)
+    integer(int32) node
+    real(real64) node_xy(dim_num,node_num)
+    real(real64) pc(dim_num)
+    real(real64) pi(dim_num)
+    real(real64) pj(dim_num)
+    real(real64) ui(dim_num)
+    real(real64) uj(dim_num)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     if ( node < 1 .or. node_num < node ) then
       write ( *, '(a)' ) ' '
@@ -13497,7 +13387,7 @@ contains
 
     a = ( pi(1)**2 + pi(2)**2 - pc(1)**2 - pc(2)**2 )
     b = ( pj(1)**2 + pj(2)**2 - pc(1)**2 - pc(2)**2 )
-    c = 2.0_dp * ( ( pi(1) - pc(1) ) * ( pj(2) - pc(2) ) &
+    c = 2.0e+00_real64 * ( ( pi(1) - pc(1) ) * ( pj(2) - pc(2) ) &
                   - ( pj(1) - pc(1) ) * ( pi(2) - pc(2) ) )
     uj(1) = ( a * ( pj(2) - pc(2) ) - b * ( pi(2) - pc(2) )  ) / c
     uj(2) = ( a * ( pj(1) - pc(1) ) - b * ( pi(1) - pc(1) )  ) / c
@@ -13519,7 +13409,7 @@ contains
 
       a = ( pi(1)**2 + pi(2)**2 - pc(1)**2 - pc(2)**2 )
       b = ( pj(1)**2 + pj(2)**2 - pc(1)**2 - pc(2)**2 )
-      c = 2.0_dp * ( ( pi(1) - pc(1) ) * ( pj(2) - pc(2) ) &
+      c = 2.0e+00_real64 * ( ( pi(1) - pc(1) ) * ( pj(2) - pc(2) ) &
                     - ( pj(1) - pc(1) ) * ( pi(2) - pc(2) ) )
       uj(1) = ( a * ( pj(2) - pc(2) ) - b * ( pi(2) - pc(2) )  ) / c
       uj(2) = ( a * ( pj(1) - pc(1) ) - b * ( pi(1) - pc(1) )  ) / c
@@ -13528,12 +13418,11 @@ contains
 
     end do
 
-    area = 0.5_dp * area
-  end subroutine voronoi_polygon_area
+    area = 0.5e+00_real64 * area
+  end
 
   subroutine voronoi_polygon_centroid ( node, neighbor_num, neighbor_index, &
-    node_num, node_xy, centroid ) &
-        bind(C, name="voronoi_polygon_centroid")
+    node_num, node_xy, centroid )
 
   !*****************************************************************************80
   !
@@ -13588,47 +13477,47 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE, the index of the node whose Voronoi
+  !    Input, integer(int32) NODE, the index of the node whose Voronoi
   !    polygon is to be analyzed.  1 <= NODE <= NODE_NUM.
   !
-  !    Input, integer(ip) NEIGHBOR_NUM, the number of neighbor nodes of
+  !    Input, integer(int32) NEIGHBOR_NUM, the number of neighbor nodes of
   !    the given node.
   !
-  !    Input, integer(ip) NEIGHBOR_INDEX(NEIGHBOR_NUM), the indices
+  !    Input, integer(int32) NEIGHBOR_INDEX(NEIGHBOR_NUM), the indices
   !    of the neighbor nodes.  These indices are used to access the
   !    X and Y arrays.  The neighbor nodes should be listed in the
   !    (counter-clockwise) order in which they occur as one circles
   !    the center node.
   !
-  !    Input, integer(ip) NODE_NUM, the total number of nodes.
+  !    Input, integer(int32) NODE_NUM, the total number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Output, real(dp) CENTROID(2), the coordinates of the centroid
+  !    Output, real(real64) CENTROID(2), the coordinates of the centroid
   !    of the Voronoi polygon of node NODE.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: neighbor_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) neighbor_num
+    integer(int32) node_num
 
-    real(dp) :: a
-    real(dp) :: area
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), intent(out) :: centroid(dim_num)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in) :: neighbor_index(neighbor_num)
-    integer(ip), intent(in), value :: node
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    real(dp) :: pc(dim_num)
-    real(dp) :: pi(dim_num)
-    real(dp) :: pj(dim_num)
-    real(dp) :: ui(dim_num)
-    real(dp) :: uj(dim_num)
+    real(real64) a
+    real(real64) area
+    real(real64) b
+    real(real64) c
+    real(real64) centroid(dim_num)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) neighbor_index(neighbor_num)
+    integer(int32) node
+    real(real64) node_xy(dim_num,node_num)
+    real(real64) pc(dim_num)
+    real(real64) pi(dim_num)
+    real(real64) pj(dim_num)
+    real(real64) ui(dim_num)
+    real(real64) uj(dim_num)
 
-    centroid(1:dim_num) = 0.0_dp
+    centroid(1:dim_num) = 0.0e+00_real64
 
     if ( node < 1 .or. node_num < node ) then
       write ( *, '(a)' ) ' '
@@ -13651,7 +13540,7 @@ contains
 
     a = ( pi(1) * pi(1) + pi(2) * pi(2) - pc(1) * pc(1) - pc(2) * pc(2) )
     b = ( pj(1) * pj(1) + pj(2) * pj(2) - pc(1) * pc(1) - pc(2) * pc(2) )
-    c = 2.0_dp * ( ( pi(1) - pc(1) ) * ( pj(2) - pc(2) ) &
+    c = 2.0e+00_real64 * ( ( pi(1) - pc(1) ) * ( pj(2) - pc(2) ) &
                   - ( pj(1) - pc(1) ) * ( pi(2) - pc(2) ) )
     uj(1) = ( a * ( pj(2) - pc(2) ) - b * ( pi(2) - pc(2) )  ) / c
     uj(2) = ( a * ( pj(1) - pc(1) ) - b * ( pi(1) - pc(1) )  ) / c
@@ -13670,7 +13559,7 @@ contains
 
       a = ( pi(1) * pi(1) + pi(2) * pi(2) - pc(1) * pc(1) - pc(2) * pc(2) )
       b = ( pj(1) * pj(1) + pj(2) * pj(2) - pc(1) * pc(1) - pc(2) * pc(2) )
-      c = 2.0_dp * ( ( pi(1) - pc(1) ) * ( pj(2) - pc(2) ) &
+      c = 2.0e+00_real64 * ( ( pi(1) - pc(1) ) * ( pj(2) - pc(2) ) &
                     - ( pj(1) - pc(1) ) * ( pi(2) - pc(2) ) )
       uj(1) = ( a * ( pj(2) - pc(2) ) - b * ( pi(2) - pc(2) )  ) / c
       uj(2) = ( a * ( pj(1) - pc(1) ) - b * ( pi(1) - pc(1) )  ) / c
@@ -13685,12 +13574,11 @@ contains
     call voronoi_polygon_area ( node, neighbor_num, neighbor_index, &
       node_num, node_xy, area )
 
-    centroid(1:dim_num) = centroid(1:dim_num) / ( 6.0_dp * area )
-  end subroutine voronoi_polygon_centroid
+    centroid(1:dim_num) = centroid(1:dim_num) / ( 6.0e+00_real64 * area )
+  end
 
   subroutine voronoi_polygon_vertices ( node, neighbor_num, neighbor_index, &
-    node_num, node_xy, v ) &
-        bind(C, name="voronoi_polygon_vertices")
+    node_num, node_xy, v )
 
   !*****************************************************************************80
   !
@@ -13736,37 +13624,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE, the index of the node whose Voronoi
+  !    Input, integer(int32) NODE, the index of the node whose Voronoi
   !    polygon is to be analyzed.  1 <= NODE <= NODE_NUM.
   !
-  !    Input, integer(ip) NEIGHBOR_NUM, the number of neighbor nodes of
+  !    Input, integer(int32) NEIGHBOR_NUM, the number of neighbor nodes of
   !    the given node.
   !
-  !    Input, integer(ip) NEIGHBOR_INDEX(NEIGHBOR_NUM), the indices
+  !    Input, integer(int32) NEIGHBOR_INDEX(NEIGHBOR_NUM), the indices
   !    of the neighbor nodes.  These indices are used to access the
   !    X and Y arrays.  The neighbor nodes should be listed in the
   !    (counter-clockwise) order in which they occur as one circles
   !    the center node.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Output, real(dp) V(2,NEIGHBOR_NUM), the coordinates of
+  !    Output, real(real64) V(2,NEIGHBOR_NUM), the coordinates of
   !    the vertices of the Voronoi polygon around node NODE.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(out) :: neighbor_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) neighbor_num
+    integer(int32) node_num
 
-    integer(ip) :: i
-    integer(ip) :: ip1
-    integer(ip), intent(in) :: neighbor_index(neighbor_num)
-    integer(ip), intent(in), value :: node
-    real(dp), intent(in) :: node_xy(dim_num,node_num)
-    real(dp) :: t(dim_num,3)
-    real(dp), intent(out) :: v(dim_num,neighbor_num)
+    integer(int32) i
+    integer(int32) ip1
+    integer(int32) neighbor_index(neighbor_num)
+    integer(int32) node
+    real(real64) node_xy(dim_num,node_num)
+    real(real64) t(dim_num,3)
+    real(real64) v(dim_num,neighbor_num)
 
     if ( node < 1 .or. node_num < node ) then
       write ( *, '(a)' ) ' '
@@ -13795,6 +13683,6 @@ contains
       call triangle_circumcenter_2d ( t, v(1:dim_num,i) )
 
     end do
-  end subroutine voronoi_polygon_vertices
+  end
 
 end module triangulation_mod

@@ -1,24 +1,18 @@
-!> simplex_grid -- Modern Fortran 2018
+!> simplex_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module simplex_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: comp_next_grlex, comp_random, i4_uniform_ab, ksub_random, simplex_grid_index_all, simplex_grid_index_next
   public :: simplex_grid_index_sample, simplex_grid_index_to_point, simplex_grid_size
 
 contains
 
-  subroutine comp_next_grlex ( kc, xc ) &
-        bind(C, name="comp_next_grlex")
+  subroutine comp_next_grlex ( kc, xc )
 
   !*****************************************************************************80
   !
@@ -70,21 +64,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) KC, the number of parts of the composition.
+  !    Input, integer(int32) KC, the number of parts of the composition.
   !    1 <= KC.
   !
-  !    Input/output, integer(ip) XC(KC), the current composition.
+  !    Input/output, integer(int32) XC(KC), the current composition.
   !    Each entry of XC must be nonnegative.
   !    On return, XC has been replaced by the next composition in the
   !    grlex order.
   !
 
-    integer(ip), intent(in), value :: kc
-    integer(ip), intent(inout) :: xc(kc)
-    integer(ip) :: i
-    integer(ip) :: im1
-    integer(ip) :: j
-    integer(ip) :: t
+    integer(int32) kc
+
+    integer(int32) i
+    integer(int32) im1
+    integer(int32) j
+    integer(int32) t
+    integer(int32) xc(kc)
   !
   !  Ensure that 1 <= KC.
   !
@@ -135,10 +130,9 @@ contains
     xc(i) = 0
     xc(im1) = xc(im1) + 1
     xc(kc) = xc(kc) + t - 1
-  end subroutine comp_next_grlex
+  end
 
-  subroutine comp_random ( n, k, seed, a ) &
-        bind(C, name="comp_random")
+  subroutine comp_random ( n, k, seed, a )
 
   !*****************************************************************************80
   !
@@ -168,23 +162,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the integer to be decomposed.
+  !    Input, integer(int32) N, the integer to be decomposed.
   !
-  !    Input, integer(ip) K, the number of parts in the composition.
+  !    Input, integer(int32) K, the number of parts in the composition.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, integer(ip) A(K), the parts of the composition.
+  !    Output, integer(int32) A(K), the parts of the composition.
   !
 
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(out) :: a(k)
-    integer(ip) :: i
-    integer(ip) :: l
-    integer(ip) :: m
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
+    integer(int32) k
+
+    integer(int32) a(k)
+    integer(int32) i
+    integer(int32) l
+    integer(int32) m
+    integer(int32) n
+    integer(int32) seed
 
     call ksub_random ( n + k - 1, k - 1, seed, a )
 
@@ -196,10 +191,9 @@ contains
       a(i) = a(i) - l - 1
       l = m
     end do
-  end subroutine comp_random
+  end
 
-  function i4_uniform_ab ( a, b, seed ) &
-        bind(C, name="i4_uniform_ab")
+  function i4_uniform_ab ( a, b, seed )
 
   !*****************************************************************************80
   !
@@ -207,14 +201,14 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !    The pseudorandom number will be scaled to be uniformly distributed
   !    between A and B.
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -255,22 +249,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) A, B, the limits of the interval.
+  !    Input, integer(int32) A, B, the limits of the interval.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, integer(ip) I4_UNIFORM_AB, a number between A and B.
+  !    Output, integer(int32) I4_UNIFORM_AB, a number between A and B.
   !
 
-    integer(ip), intent(in), value :: a
-    integer(ip), intent(in), value :: b
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: i4_uniform_ab
-    integer(ip) :: k
-    real(sp) :: r
-    integer(ip), intent(inout) :: seed
-    integer(ip) :: value
+    integer(int32) a
+    integer(int32) b
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) i4_uniform_ab
+    integer(int32) k
+    real(real32) r
+    integer(int32) seed
+    integer(int32) value
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -287,25 +281,24 @@ contains
       seed = seed + i4_huge
     end if
 
-    r = real ( seed, sp) * 4.656612875E-10
+    r = real ( seed, real32) * 4.656612875E-10
   !
   !  Scale R to lie between A-0.5 and B+0.5.
   !
-    r = ( 1.0E+00 - r ) * ( real ( min ( a, b ), sp) - 0.5E+00 ) &
-      +             r   * ( real ( max ( a, b ), sp) + 0.5E+00 )
+    r = ( 1.0E+00 - r ) * ( real ( min ( a, b ), real32) - 0.5E+00 ) & 
+      +             r   * ( real ( max ( a, b ), real32) + 0.5E+00 )
   !
   !  Use rounding to convert R to an integer between A and B.
   !
-    value = nint ( r, sp)
+    value = nint ( r, real32)
 
     value = max ( value, min ( a, b ) )
     value = min ( value, max ( a, b ) )
 
     i4_uniform_ab = value
-  end function i4_uniform_ab
+  end
 
-  subroutine ksub_random ( n, k, seed, a ) &
-        bind(C, name="ksub_random")
+  subroutine ksub_random ( n, k, seed, a )
 
   !*****************************************************************************80
   !
@@ -335,35 +328,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the size of the set from which subsets
+  !    Input, integer(int32) N, the size of the set from which subsets
   !    are drawn.
   !
-  !    Input, integer(ip) K, number of elements in desired subsets.
+  !    Input, integer(int32) K, number of elements in desired subsets.
   !    K must be between 0 and N.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, integer(ip) A(K).  A(I) is the I-th element of the
+  !    Output, integer(int32) A(K).  A(I) is the I-th element of the
   !    output set.  The elements of A are in order.
   !
 
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(out) :: a(k)
-    integer(ip) :: i
-    integer(ip) :: i4_uniform_ab
-    integer(ip) :: ids
-    integer(ip) :: ihi
-    integer(ip) :: ip
-    integer(ip) :: ir
-    integer(ip) :: is
-    integer(ip) :: ix
-    integer(ip) :: l
-    integer(ip) :: ll
-    integer(ip) :: m
-    integer(ip) :: m0
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
+    integer(int32) k
+
+    integer(int32) a(k)
+    integer(int32) i
+    integer(int32) i4_uniform_ab
+    integer(int32) ids
+    integer(int32) ihi
+    integer(int32) ip
+    integer(int32) ir
+    integer(int32) is
+    integer(int32) ix
+    integer(int32) l
+    integer(int32) ll
+    integer(int32) m
+    integer(int32) m0
+    integer(int32) n
+    integer(int32) seed
 
     if ( k < 0 ) then
       write ( *, '(a)' ) ' '
@@ -461,10 +455,9 @@ contains
       m = m - 1
 
     end do
-  end subroutine ksub_random
+  end
 
-  subroutine simplex_grid_index_all ( m, n, ng, grid ) &
-        bind(C, name="simplex_grid_index_all")
+  subroutine simplex_grid_index_all ( m, n, ng, grid )
 
   !*****************************************************************************80
   !
@@ -472,7 +465,7 @@ contains
   !
   !  Discussion:
   !
-  !    The number of grid indices can be determined by calling
+  !    The number of grid indices can be determined by calling 
   !      ng = simplex_grid_size ( m, n )
   !
   !  Licensing:
@@ -489,23 +482,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, integer(ip) NG, the number of values in the grid.
+  !    Input, integer(int32) NG, the number of values in the grid.
   !
-  !    Output, integer(ip) GRID(M+1,NG), the current, and then the next,
+  !    Output, integer(int32) GRID(M+1,NG), the current, and then the next,
   !    grid index.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: ng
-    integer(ip), intent(out) :: grid(m+1,ng)
-    integer(ip) :: g(m+1)
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) ng
+
+    integer(int32) g(m+1)
+    integer(int32) grid(m+1,ng)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) n
 
     do i = 1, m
       g(i) = 0
@@ -520,10 +514,9 @@ contains
       k = k + 1
       grid(1:m+1,k) = g(1:m+1)
     end do
-  end subroutine simplex_grid_index_all
+  end
 
-  subroutine simplex_grid_index_next ( m, n, g ) &
-        bind(C, name="simplex_grid_index_next")
+  subroutine simplex_grid_index_next ( m, n, g )
 
   !*****************************************************************************80
   !
@@ -537,7 +530,7 @@ contains
   !    first M coordinates.
   !
   !    Each time the function is called, it is given a current grid index, and
-  !    computes the next one.  The very first index is all zero except for a
+  !    computes the next one.  The very first index is all zero except for a 
   !    final value of N, and the very last index has all zero except for an'
   !    intial value of N.
   !
@@ -578,23 +571,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input/output, integer(ip) G(M+1), the current, and then the next,
+  !    Input/output, integer(int32) G(M+1), the current, and then the next,
   !    grid index.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(inout) :: g(m+1)
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+
+    integer(int32) g(m+1)
+    integer(int32) n
 
     call comp_next_grlex ( m + 1, g )
-  end subroutine simplex_grid_index_next
+  end
 
-  subroutine simplex_grid_index_sample ( m, n, seed, g ) &
-        bind(C, name="simplex_grid_index_sample")
+  subroutine simplex_grid_index_sample ( m, n, seed, g )
 
   !*****************************************************************************80
   !
@@ -614,29 +607,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of subintervals in
+  !    Input, integer(int32) N, the number of subintervals in
   !    each dimension.
   !
-  !    Input, integer(ip) SEED, a seed for the random number generator.
+  !    Input, integer(int32) SEED, a seed for the random number generator.
   !
-  !    Output, integer(ip) G(M+1), a randomly selected index in the
+  !    Output, integer(int32) G(M+1), a randomly selected index in the 
   !    simplex grid.
   !
-  !    Output, integer(ip) SEED, the updated random number seed.
+  !    Output, integer(int32) SEED, the updated random number seed.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(out) :: g(m+1)
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
+    integer(int32) m
+
+    integer(int32) g(m+1)
+    integer(int32) n
+    integer(int32) seed
 
     call comp_random ( n, m + 1, seed, g )
-  end subroutine simplex_grid_index_sample
+  end
 
-  pure subroutine simplex_grid_index_to_point ( m, n, ng, g, v, x ) &
-        bind(C, name="simplex_grid_index_to_point")
+  subroutine simplex_grid_index_to_point ( m, n, ng, g, v, x )
 
   !*****************************************************************************80
   !
@@ -648,7 +641,7 @@ contains
   !
   !    Given a regular grid that uses N subintervals along the edge between
   !    each pair of vertices, a simplex grid index G is a set of M+1 values
-  !    each between 0 and N, and summing to N.
+  !    each between 0 and N, and summing to N. 
   !
   !    This function determines the coordinates X of the point corresponding
   !    to the index G.
@@ -667,44 +660,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, integer(ip) NG, the number of grid indices to be converted.
+  !    Input, integer(int32) NG, the number of grid indices to be converted.
   !
-  !    Input, integer(ip) G(M+1,NG), the grid indices of 1
+  !    Input, integer(int32) G(M+1,NG), the grid indices of 1 
   !    or more points.
   !
-  !    Input, real(dp) V(M,M+1), the coordinates of the vertices
+  !    Input, real(real64) V(M,M+1), the coordinates of the vertices 
   !    of the simplex.
   !
-  !    Output, real(dp) X(M,NG), the coordinates of one or more points.
+  !    Output, real(real64) X(M,NG), the coordinates of one or more points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: ng
-    integer(ip), intent(in) :: g(m+1,ng)
-    real(dp), intent(in) :: v(m,m+1)
-    real(dp), intent(out) :: x(m,ng)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
+    integer(int32) m
+    integer(int32) n
+    integer(int32) ng
+
+    integer(int32) g(m+1,ng)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    real(real64) v(m,m+1)
+    real(real64) x(m,ng)
 
     do j = 1, ng
       do i = 1, m
-        x(i,j) = 0.0_dp
+        x(i,j) = 0.0e+00_real64
         do k = 1, m + 1
-          x(i,j) = x(i,j) + v(i,k) * real ( g(k,j), dp)
+          x(i,j) = x(i,j) + v(i,k) * real ( g(k,j), real64)
         end do
-        x(i,j) = x(i,j) / real ( n, dp)
+        x(i,j) = x(i,j) / real ( n, real64)
       end do
     end do
-  end subroutine simplex_grid_index_to_point
+  end
 
-  pure subroutine simplex_grid_size ( m, n, ng ) &
-        bind(C, name="simplex_grid_size")
+  subroutine simplex_grid_size ( m, n, ng )
 
   !*****************************************************************************80
   !
@@ -728,23 +721,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Output, integer(ip) NG, the number of grid points.
+  !    Output, integer(int32) NG, the number of grid points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ng
-    integer(ip) :: i
+    integer(int32) i
+    integer(int32) m
+    integer(int32) n
+    integer(int32) ng
 
     ng = 1
 
     do i = 1, m
       ng = ( ng * ( n + i ) ) / i
     end do
-  end subroutine simplex_grid_size
+  end
 
 end module simplex_grid_mod

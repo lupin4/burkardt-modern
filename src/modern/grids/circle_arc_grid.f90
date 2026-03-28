@@ -1,23 +1,17 @@
-!> circle_arc_grid -- Modern Fortran 2018
+!> circle_arc_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module circle_arc_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: circle_arc_grid, r82vec_print_part
 
 contains
 
-  pure subroutine circle_arc_grid ( r, c, a, n, xy ) &
-        bind(C, name="circle_arc_grid")
+  subroutine circle_arc_grid ( r, c, a, n, xy )
 
   !*****************************************************************************80
   !
@@ -25,7 +19,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -37,41 +31,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) C(2), the coordinates of the center.
+  !    Input, real(real64) C(2), the coordinates of the center.
   !
-  !    Input, real(dp) A(2), the angle of the first and last
+  !    Input, real(real64) A(2), the angle of the first and last
   !    points, in DEGREES.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Output, real(dp) XY(2,N), the grid points.
+  !    Output, real(real64) XY(2,N), the grid points.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a(2)
-    real(dp) :: aj
-    real(dp), intent(in) :: c(2)
-    integer(ip) :: j
-    real(dp), parameter :: pi = 3.141592653589793e+00_dp
-    real(dp), intent(in), value :: r
-    real(dp), intent(out) :: xy(2,n)
+    integer(int32) n
+
+    real(real64) a(2)
+    real(real64) aj
+    real(real64) c(2)
+    integer(int32) j
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) xy(2,n)
 
     do j = 1, n
 
-      aj = ( real ( n - j, dp) * a(1)   &
-           + real (     j - 1, dp) * a(2) ) &
-           / real ( n     - 1, dp)
+      aj = ( real ( n - j, real64) * a(1)   &
+           + real (     j - 1, real64) * a(2) ) &
+           / real ( n     - 1, real64)
 
-      xy(1,j) = c(1) + r * cos ( aj * pi / 180.0_dp )
-      xy(2,j) = c(2) + r * sin ( aj * pi / 180.0_dp )
+      xy(1,j) = c(1) + r * cos ( aj * pi / 180.0e+00_real64 )
+      xy(2,j) = c(2) + r * sin ( aj * pi / 180.0e+00_real64 )
 
     end do
-  end subroutine circle_arc_grid
+  end
 
-  subroutine r82vec_print_part ( n, a, max_print, title ) &
-        bind(C, name="r82vec_print_part")
+  subroutine r82vec_print_part ( n, a, max_print, title )
 
   !*****************************************************************************80
   !
@@ -102,21 +96,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries of the vector.
+  !    Input, integer(int32) N, the number of entries of the vector.
   !
-  !    Input, real(dp) A(2,N), the vector to be printed.
+  !    Input, real(real64) A(2,N), the vector to be printed.
   !
-  !    Input, integer(ip) MAX_PRINT, the maximum number of lines
+  !    Input, integer(int32) MAX_PRINT, the maximum number of lines
   !    to print.
   !
   !    Input, character ( len = * ) TITLE, a title.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a(2,n)
-    integer(ip) :: i
-    integer(ip), intent(in), value :: max_print
-    character ( len = * ), intent(in) :: title
+    integer(int32) n
+
+    real(real64) a(2,n)
+    integer(int32) i
+    integer(int32) max_print
+    character ( len = * ) title
 
     if ( max_print <= 0 ) then
     end if
@@ -153,6 +148,6 @@ contains
         '...more entries...'
 
     end if
-  end subroutine r82vec_print_part
+  end
 
 end module circle_arc_grid_mod

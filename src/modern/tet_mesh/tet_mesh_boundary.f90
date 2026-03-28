@@ -1,24 +1,18 @@
-!> tet_mesh_boundary — Modern Fortran 2018
+!> tet_mesh_boundary â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module tet_mesh_boundary_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: i4col_compare, i4col_sort_a, i4col_swap, i4i4i4_sort_a, i4vec_cum, mesh_base_one
   public :: sort_heap_external, tet_mesh_boundary_count, tet_mesh_boundary_set
 
 contains
 
-  subroutine i4col_compare ( m, n, a, i, j, isgn ) &
-        bind(C, name="i4col_compare")
+  subroutine i4col_compare ( m, n, a, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -53,28 +47,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), an array of N columns of vectors 
+  !    Input, integer(int32) A(M,N), an array of N columns of vectors 
   !    of length M.
   !
-  !    Input, integer(ip) I, J, the columns to be compared.
+  !    Input, integer(int32) I, J, the columns to be compared.
   !    I and J must be between 1 and N.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, column I < column J,
   !     0, column I = column J,
   !    +1, column J < column I.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(m,n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
-    integer(ip) :: k
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) k
   !
   !  Check.
   !
@@ -125,10 +119,9 @@ contains
       k = k + 1
 
     end do
-  end subroutine i4col_compare
+  end
 
-  subroutine i4col_sort_a ( m, n, a ) &
-        bind(C, name="i4col_sort_a")
+  subroutine i4col_sort_a ( m, n, a )
 
   !*****************************************************************************80
   !
@@ -160,25 +153,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows of A, and the length of
+  !    Input, integer(int32) M, the number of rows of A, and the length of
   !    a vector of data.
   !
-  !    Input, integer(ip) N, the number of columns of A.
+  !    Input, integer(int32) N, the number of columns of A.
   !
-  !    Input/output, integer(ip) A(M,N).
+  !    Input/output, integer(int32) A(M,N).
   !    On input, the array of N columns of M-vectors.
   !    On output, the columns of A have been sorted in ascending
   !    lexicographic order.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
 
     if ( m <= 0 ) then
     end if
@@ -218,10 +211,9 @@ contains
       end if
 
     end do
-  end subroutine i4col_sort_a
+  end
 
-  subroutine i4col_swap ( m, n, a, j1, j2 ) &
-        bind(C, name="i4col_swap")
+  subroutine i4col_swap ( m, n, a, j1, j2 )
 
   !*****************************************************************************80
   !
@@ -259,22 +251,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns 
+  !    Input, integer(int32) M, N, the number of rows and columns 
   !    in the array.
   !
-  !    Input/output, integer(ip) A(M,N), an array of N columns of 
+  !    Input/output, integer(int32) A(M,N), an array of N columns of 
   !    length M.
   !
-  !    Input, integer(ip) J1, J2, the columns to be swapped.
+  !    Input, integer(int32) J1, J2, the columns to be swapped.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: col(m)
-    integer(ip), intent(in), value :: j1
-    integer(ip), intent(in), value :: j2
+    integer(int32) a(m,n)
+    integer(int32) col(m)
+    integer(int32) j1
+    integer(int32) j2
 
     if ( j1 < 1 .or. n < j1 .or. j2 < 1 .or. n < j2 ) then
 
@@ -294,10 +286,9 @@ contains
     col(1:m)  = a(1:m,j1)
     a(1:m,j1) = a(1:m,j2)
     a(1:m,j2) = col(1:m)
-  end subroutine i4col_swap
+  end
 
-  pure subroutine i4i4i4_sort_a ( i1, i2, i3, j1, j2, j3 ) &
-        bind(C, name="i4i4i4_sort_a")
+  subroutine i4i4i4_sort_a ( i1, i2, i3, j1, j2, j3 )
 
   !*****************************************************************************80
   !
@@ -325,20 +316,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I1, I2, I3, the values to sort.
+  !    Input, integer(int32) I1, I2, I3, the values to sort.
   !
-  !    Output, integer(ip) J1, J2, J3, the sorted values.
+  !    Output, integer(int32) J1, J2, J3, the sorted values.
   !
 
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip), intent(in), value :: i3
-    integer(ip), intent(out) :: j1
-    integer(ip), intent(out) :: j2
-    integer(ip), intent(out) :: j3
-    integer(ip) :: k1
-    integer(ip) :: k2
-    integer(ip) :: k3
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) j3
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) k3
   !
   !  Copy arguments, so that the user can make "reasonable" calls like:
   !
@@ -352,10 +343,9 @@ contains
     j2 = min ( max ( k1, k2 ), &
          min ( max ( k2, k3 ), max ( k3, k1 ) ) )
     j3 = max ( max ( k1, k2 ), max ( k2, k3 ) )
-  end subroutine i4i4i4_sort_a
+  end
 
-  pure subroutine i4vec_cum ( n, a, a_cum ) &
-        bind(C, name="i4vec_cum")
+  subroutine i4vec_cum ( n, a, a_cum )
 
   !*****************************************************************************80
   !
@@ -389,29 +379,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input, integer(ip) A(N), the vector to be summed.
+  !    Input, integer(int32) A(N), the vector to be summed.
   !
-  !    Output, integer(ip) A_CUM(N), the cumulative sum of the
+  !    Output, integer(int32) A_CUM(N), the cumulative sum of the
   !    entries of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(n)
-    integer(ip), intent(out) :: a_cum(1:n)
-    integer(ip) :: i
+    integer(int32) a(n)
+    integer(int32) a_cum(1:n)
+    integer(int32) i
 
     a_cum(1) = a(1)
 
     do i = 2, n
       a_cum(i) = a_cum(i-1) + a(i)
     end do
-  end subroutine i4vec_cum
+  end
 
-  subroutine mesh_base_one ( node_num, element_order, element_num, element_node ) &
-        bind(C, name="mesh_base_one")
+  subroutine mesh_base_one ( node_num, element_order, element_num, element_node )
 
   !*****************************************************************************80
   !
@@ -451,16 +440,16 @@ contains
   !    definitions.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(inout) :: element_node(element_order,element_num)
-    integer(ip) :: node
-    integer(ip) :: node_max
-    integer(ip) :: node_min
-    integer(ip), intent(in), value :: node_num
-    integer(ip) :: order
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) node
+    integer(int32) node_max
+    integer(int32) node_min
+    integer(int32) node_num
+    integer(int32) order
 
     node_min = node_num + 1
     node_max = -1
@@ -485,10 +474,9 @@ contains
       write ( *, '(a)' )'MESH_BASE_ONE - Warning!'
       write ( *, '(a)' )' The element indexing is not of a recognized type.'
     end if
-  end subroutine mesh_base_one
+  end
 
-  subroutine sort_heap_external ( n, indx, i, j, isgn ) &
-        bind(C, name="sort_heap_external")
+  subroutine sort_heap_external ( n, indx, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -524,9 +512,9 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items to be sorted.
+  !    Input, integer(int32) N, the number of items to be sorted.
   !
-  !    Input/output, integer(ip) INDX, the main communication signal.
+  !    Input/output, integer(int32) INDX, the main communication signal.
   !
   !    The user must set INDX to 0 before the first call.
   !    Thereafter, the user should not change the value of INDX until
@@ -545,28 +533,28 @@ contains
   !
   !      equal to 0, the sorting is done.
   !
-  !    Output, integer(ip) I, J, the indices of two items.
+  !    Output, integer(int32) I, J, the indices of two items.
   !    On return with INDX positive, elements I and J should be interchanged.
   !    On return with INDX negative, elements I and J should be compared, and
   !    the result reported in ISGN on the next call.
   !
-  !    Input, integer(ip) ISGN, results of comparison of elements I 
+  !    Input, integer(int32) ISGN, results of comparison of elements I 
   !    and J.
   !    (Used only when the previous call returned INDX less than 0).
   !    ISGN <= 0 means I is less than or equal to J;
   !    0 <= ISGN means I is greater than or equal to J.
   !
 
-    integer(ip), intent(out) :: i
-    integer(ip), save :: i_save = 0
-    integer(ip), intent(inout) :: indx
-    integer(ip), intent(in), value :: isgn
-    integer(ip), intent(out) :: j
-    integer(ip), save :: j_save = 0
-    integer(ip), save :: k = 0
-    integer(ip), save :: k1 = 0
-    integer(ip), intent(in), value :: n
-    integer(ip), save :: n1 = 0
+    integer(int32) i
+    integer(int32), save :: i_save = 0
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32), save :: j_save = 0
+    integer(int32), save :: k = 0
+    integer(int32), save :: k1 = 0
+    integer(int32) n
+    integer(int32), save :: n1 = 0
   !
   !  INDX = 0: This is the first call.
   !
@@ -670,11 +658,10 @@ contains
       i = i_save
       j = j_save
     end if
-  end subroutine sort_heap_external
+  end
 
   subroutine tet_mesh_boundary_count ( element_order, element_num, element_node, &
-    node_num, boundary_node_num, boundary_element_num, boundary_node_mask ) &
-        bind(C, name="tet_mesh_boundary_count")
+    node_num, boundary_node_num, boundary_element_num, boundary_node_mask )
 
   !*****************************************************************************80
   !
@@ -694,48 +681,48 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the elements.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the elements.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM), the
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM), the
   !    nodes that make up each element.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) BOUNDARY_NODE_NUM, the number of 
+  !    Output, integer(int32) BOUNDARY_NODE_NUM, the number of 
   !    boundary nodes.
   !
-  !    Output, integer(ip) BOUNDARY_ELEMENT_NUM, the number of 
+  !    Output, integer(int32) BOUNDARY_ELEMENT_NUM, the number of 
   !    boundary faces.
   !
-  !    Output, integer(ip) BOUNDARY_NODE_MASK(NODE_NUM), is 0 for
+  !    Output, integer(int32) BOUNDARY_NODE_MASK(NODE_NUM), is 0 for
   !    interior nodes, 1 for boundary nodes.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
-    integer(ip), intent(in), value :: node_num
+    integer(int32) element_num
+    integer(int32) element_order
+    integer(int32) node_num
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip), intent(out) :: boundary_element_num
-    integer(ip), intent(out) :: boundary_node_mask(node_num)
-    integer(ip), intent(out) :: boundary_node_num
-    integer(ip) :: c
-    integer(ip) :: element
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: element1
-    integer(ip) :: element2
-    integer(ip) :: f
-    integer(ip) :: face
-    integer(ip) :: face1
-    integer(ip) :: face2
-    integer(ip), allocatable, dimension ( :, : ) :: faces
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
+    integer(int32) a
+    integer(int32) b
+    integer(int32) boundary_element_num
+    integer(int32) boundary_node_mask(node_num)
+    integer(int32) boundary_node_num
+    integer(int32) c
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element1
+    integer(int32) element2
+    integer(int32) f
+    integer(int32) face
+    integer(int32) face1
+    integer(int32) face2
+    integer(int32), allocatable, dimension ( :, : ) :: faces
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
 
     if ( element_order /= 4 .and. element_order /= 10 ) then
       write ( *, '(a)' ) ' '
@@ -872,11 +859,10 @@ contains
     boundary_node_num = sum ( boundary_node_mask(1:node_num) )
 
     deallocate ( faces )
-  end subroutine tet_mesh_boundary_count
+  end
 
   subroutine tet_mesh_boundary_set ( element_order, element_num, element_node, &
-    boundary_element_order, boundary_element_num, boundary_element_node ) &
-        bind(C, name="tet_mesh_boundary_set")
+    boundary_element_order, boundary_element_num, boundary_element_node )
 
   !*****************************************************************************80
   !
@@ -896,48 +882,48 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the elements.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the elements.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM), the
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM), the
   !    nodes that make up each element.
   !
-  !    Input, integer(ip) BOUNDARY_ELEMENT_ORDER, the order of the
+  !    Input, integer(int32) BOUNDARY_ELEMENT_ORDER, the order of the
   !    boundary faces.
   !
-  !    Input, integer(ip) BOUNDARY_ELEMENT_NUM, the number of 
+  !    Input, integer(int32) BOUNDARY_ELEMENT_NUM, the number of 
   !    boundary faces.
   !
-  !    Output, integer(ip)
+  !    Output, integer(int32)
   !    BOUNDARY_ELEMENT_NODE(BOUNDARY_ELEMENT_ORDER,BOUNDARY_ELEMENT_NUM),
   !    the nodes that make up each boundary face.
   !
 
-    integer(ip), intent(in), value :: boundary_element_num
-    integer(ip), intent(in), value :: boundary_element_order
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) boundary_element_num
+    integer(int32) boundary_element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: boundary_element
-    integer(ip), intent(out) :: boundary_element_node(boundary_element_order,&
+    integer(int32) a
+    integer(int32) b
+    integer(int32) boundary_element
+    integer(int32) boundary_element_node(boundary_element_order,&
       boundary_element_num)
-    integer(ip) :: c
-    integer(ip) :: element
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: element1
-    integer(ip) :: element2
-    integer(ip) :: f
-    integer(ip) :: face
-    integer(ip) :: face1
-    integer(ip) :: face2
-    integer(ip), allocatable, dimension ( :, : ) :: faces
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
+    integer(int32) c
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element1
+    integer(int32) element2
+    integer(int32) f
+    integer(int32) face
+    integer(int32) face1
+    integer(int32) face2
+    integer(int32), allocatable, dimension ( :, : ) :: faces
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
 
     if ( element_order /= 4 .and. element_order /= 10 ) then
       write ( *, '(a)' ) ' '
@@ -1081,6 +1067,6 @@ contains
     end do
 
     deallocate ( faces )
-  end subroutine tet_mesh_boundary_set
+  end
 
 end module tet_mesh_boundary_mod

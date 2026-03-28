@@ -1,16 +1,11 @@
-!> tetrahedron_properties � Modern Fortran 2018
+!> tetrahedron_properties — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module tetrahedron_properties_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: r8_acos, r8_swap, r8mat_det_4d, r8mat_solve, r8vec_angle_3d, r8vec_cross_3d
   public :: r8vec_length, tetrahedron_centroid, tetrahedron_circumsphere, tetrahedron_dihedral_angles, tetrahedron_edges, tetrahedron_edge_length
@@ -19,8 +14,7 @@ module tetrahedron_properties_mod
 
 contains
 
-  pure function r8_acos ( c ) &
-        bind(C, name="r8_acos")
+  function r8_acos ( c )
 
   !*****************************************************************************80
   !
@@ -48,24 +42,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) C, the argument.
+  !    Input, real(real64) C, the argument.
   !
-  !    Output, real(dp) R8_ACOS, an angle whose cosine is C.
+  !    Output, real(real64) R8_ACOS, an angle whose cosine is C.
   !
 
-    real(dp), intent(in), value :: c
-    real(dp) :: c2
-    real(dp) :: r8_acos
+    real(real64) c
+    real(real64) c2
+    real(real64) r8_acos
 
     c2 = c
-    c2 = max ( c2, -1.0_dp )
-    c2 = min ( c2, +1.0_dp )
+    c2 = max ( c2, -1.0e+00_real64 )
+    c2 = min ( c2, +1.0e+00_real64 )
 
     r8_acos = acos ( c2 )
-  end function r8_acos
+  end
 
-  pure subroutine r8_swap ( x, y ) &
-        bind(C, name="r8_swap")
+  subroutine r8_swap ( x, y )
 
   !*****************************************************************************80
   !
@@ -85,21 +78,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, real(dp) X, Y.  On output, the values of X and
+  !    Input/output, real(real64) X, Y.  On output, the values of X and
   !    Y have been interchanged.
   !
 
-    real(dp), intent(inout) :: x
-    real(dp), intent(inout) :: y
-    real(dp) :: z
+    real(real64) x
+    real(real64) y
+    real(real64) z
 
     z = x
     x = y
     y = z
-  end subroutine r8_swap
+  end
 
-  pure function r8mat_det_4d ( a ) &
-        bind(C, name="r8mat_det_4d")
+  function r8mat_det_4d ( a )
 
   !*****************************************************************************80
   !
@@ -119,13 +111,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the matrix whose determinant is desired.
+  !    Input, real(real64) A(4,4), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) R8MAT_DET_4D, the determinant of the matrix.
+  !    Output, real(real64) R8MAT_DET_4D, the determinant of the matrix.
   !
 
-    real(dp), intent(in) :: a(4,4)
-    real(dp) :: r8mat_det_4d
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
 
     r8mat_det_4d = &
         a(1,1) * ( &
@@ -144,10 +136,9 @@ contains
           a(2,1) * ( a(3,2) * a(4,3) - a(3,3) * a(4,2) ) &
         - a(2,2) * ( a(3,1) * a(4,3) - a(3,3) * a(4,1) ) &
         + a(2,3) * ( a(3,1) * a(4,2) - a(3,2) * a(4,1) ) )
-  end function r8mat_det_4d
+  end
 
-  subroutine r8mat_solve ( n, rhs_num, a, info ) &
-        bind(C, name="r8mat_solve")
+  subroutine r8mat_solve ( n, rhs_num, a, info )
 
   !*****************************************************************************80
   !
@@ -167,33 +158,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !
-  !    Input, integer(ip) RHS_NUM, the number of right hand sides.
+  !    Input, integer(int32) RHS_NUM, the number of right hand sides.
   !    RHS_NUM must be at least 0.
   !
-  !    Input/output, real(dp) A(N,N+rhs_num), contains in rows and
+  !    Input/output, real(real64) A(N,N+rhs_num), contains in rows and
   !    columns 1 to N the coefficient matrix, and in columns N+1 through
   !    N+rhs_num, the right hand sides.  On output, the coefficient matrix
   !    area has been destroyed, while the right hand sides have
   !    been overwritten with the corresponding solutions.
   !
-  !    Output, integer(ip) INFO, singularity flag.
+  !    Output, integer(int32) INFO, singularity flag.
   !    0, the matrix was not singular, the solutions were computed;
   !    J, factorization failed on step J, and the solutions could not
   !    be computed.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: rhs_num
+    integer(int32) n
+    integer(int32) rhs_num
 
-    real(dp), intent(inout) :: a(n,n+rhs_num)
-    real(dp) :: apivot
-    real(dp) :: factor
-    integer(ip) :: i
-    integer(ip), intent(out) :: info
-    integer(ip) :: ipivot
-    integer(ip) :: j
+    real(real64) a(n,n+rhs_num)
+    real(real64) apivot
+    real(real64) factor
+    integer(int32) i
+    integer(int32) info
+    integer(int32) ipivot
+    integer(int32) j
 
     info = 0
 
@@ -211,7 +202,7 @@ contains
         end if
       end do
 
-      if ( apivot == 0.0_dp ) then
+      if ( apivot == 0.0e+00_real64 ) then
         info = j
       end if
   !
@@ -223,7 +214,7 @@ contains
   !
   !  A(J,J) becomes 1.
   !
-      a(j,j) = 1.0_dp
+      a(j,j) = 1.0e+00_real64
       a(j,j+1:n+rhs_num) = a(j,j+1:n+rhs_num) / apivot
   !
   !  A(I,J) becomes 0.
@@ -233,7 +224,7 @@ contains
         if ( i /= j ) then
 
           factor = a(i,j)
-          a(i,j) = 0.0_dp
+          a(i,j) = 0.0e+00_real64
           a(i,j+1:n+rhs_num) = a(i,j+1:n+rhs_num) - factor * a(j,j+1:n+rhs_num)
 
         end if
@@ -241,10 +232,9 @@ contains
       end do
 
     end do
-  end subroutine r8mat_solve
+  end
 
-  pure subroutine r8vec_angle_3d ( u, v, angle ) &
-        bind(C, name="r8vec_angle_3d")
+  subroutine r8vec_angle_3d ( u, v, angle )
 
   !*****************************************************************************80
   !
@@ -264,19 +254,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) U(3), V(3), the vectors.
+  !    Input, real(real64) U(3), V(3), the vectors.
   !
-  !    Output, real(dp) ANGLE, the angle between the two vectors.
+  !    Output, real(real64) ANGLE, the angle between the two vectors.
   !
 
-    real(dp), intent(out) :: angle
-    real(dp) :: angle_cos
-    real(dp) :: r8_acos
-    real(dp), intent(in) :: u(3)
-    real(dp) :: u_norm
-    real(dp) :: uv_dot
-    real(dp), intent(in) :: v(3)
-    real(dp) :: v_norm
+    real(real64) angle
+    real(real64) angle_cos
+    real(real64) r8_acos
+    real(real64) u(3)
+    real(real64) u_norm
+    real(real64) uv_dot
+    real(real64) v(3)
+    real(real64) v_norm
 
     uv_dot = dot_product ( u(1:3), v(1:3) )
 
@@ -287,10 +277,9 @@ contains
     angle_cos = uv_dot / u_norm / v_norm
 
     angle = r8_acos ( angle_cos )
-  end subroutine r8vec_angle_3d
+  end
 
-  pure subroutine r8vec_cross_3d ( v1, v2, v3 ) &
-        bind(C, name="r8vec_cross_3d")
+  subroutine r8vec_cross_3d ( v1, v2, v3 )
 
   !*****************************************************************************80
   !
@@ -323,22 +312,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), the two vectors.
+  !    Input, real(real64) V1(3), V2(3), the two vectors.
   !
-  !    Output, real(dp) V3(3), the cross product vector.
+  !    Output, real(real64) V3(3), the cross product vector.
   !
 
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(out) :: v3(3)
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     v3(1) = v1(2) * v2(3) - v1(3) * v2(2)
     v3(2) = v1(3) * v2(1) - v1(1) * v2(3)
     v3(3) = v1(1) * v2(2) - v1(2) * v2(1)
-  end subroutine r8vec_cross_3d
+  end
 
-  pure function r8vec_length ( dim_num, x ) &
-        bind(C, name="r8vec_length")
+  function r8vec_length ( dim_num, x )
 
   !*****************************************************************************80
   !
@@ -358,23 +346,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) X(DIM_NUM), the vector.
+  !    Input, real(real64) X(DIM_NUM), the vector.
   !
-  !    Output, real(dp) R8VEC_LENGTH, the Euclidean length of the vector.
+  !    Output, real(real64) R8VEC_LENGTH, the Euclidean length of the vector.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: r8vec_length
-    real(dp), intent(in) :: x(dim_num)
+    real(real64) r8vec_length
+    real(real64) x(dim_num)
 
     r8vec_length = sqrt ( sum ( ( x(1:dim_num) )**2 ) )
-  end function r8vec_length
+  end
 
-  pure subroutine tetrahedron_centroid ( tetra, centroid ) &
-        bind(C, name="tetrahedron_centroid")
+  subroutine tetrahedron_centroid ( tetra, centroid )
 
   !*****************************************************************************80
   !
@@ -394,22 +381,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) CENTROID(3), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(3), the coordinates of the centroid.
   !
 
-    real(dp), intent(out) :: centroid(3)
-    integer(ip) :: i
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) centroid(3)
+    integer(int32) i
+    real(real64) tetra(3,4)
 
     do i = 1, 3
-      centroid(i) = sum ( tetra(i,1:4) ) / 4.0_dp
+      centroid(i) = sum ( tetra(i,1:4) ) / 4.0e+00_real64
     end do
-  end subroutine tetrahedron_centroid
+  end
 
-  subroutine tetrahedron_circumsphere ( tetra, r, pc ) &
-        bind(C, name="tetrahedron_circumsphere")
+  subroutine tetrahedron_circumsphere ( tetra, r, pc )
 
   !*****************************************************************************80
   !
@@ -450,20 +436,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) R, PC(3), the center of the
+  !    Output, real(real64) R, PC(3), the center of the
   !    circumscribed sphere, and its radius.  If the linear system is
   !    singular, then R = -1, PC(1:3) = 0.
   !
 
-    real(dp) :: a(3,4)
-    integer(ip) :: i
-    integer(ip) :: info
-    integer(ip) :: j
-    real(dp), intent(out) :: pc(3)
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) a(3,4)
+    integer(int32) i
+    integer(int32) info
+    integer(int32) j
+    real(real64) pc(3)
+    real(real64) r
+    real(real64) tetra(3,4)
   !
   !  Set up the linear system.
   !
@@ -484,19 +470,18 @@ contains
   !  If the system was singular, return a consolation prize.
   !
     if ( info /= 0 ) then
-      r = -1.0_dp
-      pc(1:3) = 0.0_dp
+      r = -1.0e+00_real64
+      pc(1:3) = 0.0e+00_real64
     end if
   !
   !  Compute the radius and center.
   !
-    r = 0.5_dp * sqrt ( sum ( a(1:3,4)**2 ) )
+    r = 0.5e+00_real64 * sqrt ( sum ( a(1:3,4)**2 ) )
 
-    pc(1:3) = tetra(1:3,1) + 0.5_dp * a(1:3,4)
-  end subroutine tetrahedron_circumsphere
+    pc(1:3) = tetra(1:3,1) + 0.5e+00_real64 * a(1:3,4)
+  end
 
-  subroutine tetrahedron_dihedral_angles ( tetra, angle ) &
-        bind(C, name="tetrahedron_dihedral_angles")
+  subroutine tetrahedron_dihedral_angles ( tetra, angle )
 
   !*****************************************************************************80
   !
@@ -516,25 +501,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) ANGLE(6), the dihedral angles along the
+  !    Output, real(real64) ANGLE(6), the dihedral angles along the
   !    axes AB, AC, AD, BC, BD and CD, respectively.
   !
 
-    real(dp) :: ab(3)
-    real(dp) :: abc_normal(3)
-    real(dp) :: abd_normal(3)
-    real(dp) :: ac(3)
-    real(dp) :: acd_normal(3)
-    real(dp) :: ad(3)
-    real(dp), intent(out) :: angle(6)
-    real(dp) :: bc(3)
-    real(dp) :: bcd_normal(3)
-    real(dp) :: bd(3)
-    real(dp) :: cd(3)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) ab(3)
+    real(real64) abc_normal(3)
+    real(real64) abd_normal(3)
+    real(real64) ac(3)
+    real(real64) acd_normal(3)
+    real(real64) ad(3)
+    real(real64) angle(6)
+    real(real64) bc(3)
+    real(real64) bcd_normal(3)
+    real(real64) bd(3)
+    real(real64) cd(3)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) tetra(3,4)
 
     call tetrahedron_edges ( tetra, ab, ac, ad, bc, bd, cd )
 
@@ -551,10 +536,9 @@ contains
     call r8vec_angle_3d ( acd_normal, bcd_normal, angle(6) )
 
     angle(1:6) = r8_pi - angle(1:6)
-  end subroutine tetrahedron_dihedral_angles
+  end
 
-  pure subroutine tetrahedron_edges ( tetra, ab, ac, ad, bc, bd, cd ) &
-        bind(C, name="tetrahedron_edges")
+  subroutine tetrahedron_edges ( tetra, ab, ac, ad, bc, bd, cd )
 
   !*****************************************************************************80
   !
@@ -578,19 +562,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) AB(3), AC(3), AD(3), BC(3), BD(3), CD(3), 
+  !    Output, real(real64) AB(3), AC(3), AD(3), BC(3), BD(3), CD(3), 
   !    vectors that represent the edges of the tetrahedron.
   !
 
-    real(dp), intent(out) :: ab(3)
-    real(dp), intent(out) :: ac(3)
-    real(dp), intent(out) :: ad(3)
-    real(dp), intent(out) :: bc(3)
-    real(dp), intent(out) :: bd(3)
-    real(dp), intent(out) :: cd(3)
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) ab(3)
+    real(real64) ac(3)
+    real(real64) ad(3)
+    real(real64) bc(3)
+    real(real64) bd(3)
+    real(real64) cd(3)
+    real(real64) tetra(3,4)
 
     ab(1:3) = tetra(1:3,2) - tetra(1:3,1)
     ac(1:3) = tetra(1:3,3) - tetra(1:3,1)
@@ -598,10 +582,9 @@ contains
     bc(1:3) = tetra(1:3,3) - tetra(1:3,2)
     bd(1:3) = tetra(1:3,4) - tetra(1:3,2)
     cd(1:3) = tetra(1:3,4) - tetra(1:3,3)
-  end subroutine tetrahedron_edges
+  end
 
-  pure subroutine tetrahedron_edge_length ( tetra, edge_length ) &
-        bind(C, name="tetrahedron_edge_length")
+  subroutine tetrahedron_edge_length ( tetra, edge_length )
 
   !*****************************************************************************80
   !
@@ -621,17 +604,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) EDGE_LENGTH(6), the length of the edges.
+  !    Output, real(real64) EDGE_LENGTH(6), the length of the edges.
   !
 
-    real(dp) :: r8vec_length
-    real(dp), intent(out) :: edge_length(6)
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip) :: k
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) r8vec_length
+    real(real64) edge_length(6)
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) k
+    real(real64) tetra(3,4)
 
     k = 0
     do j1 = 1, 3
@@ -640,10 +623,9 @@ contains
         edge_length(k) = r8vec_length ( 3, tetra(1:3,j2) - tetra(1:3,j1) )
        end do
     end do
-  end subroutine tetrahedron_edge_length
+  end
 
-  subroutine tetrahedron_face_angles ( tetra, angles ) &
-        bind(C, name="tetrahedron_face_angles")
+  subroutine tetrahedron_face_angles ( tetra, angles )
 
   !*****************************************************************************80
   !
@@ -668,14 +650,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) ANGLES(3,4), the face angles.
+  !    Output, real(real64) ANGLES(3,4), the face angles.
   !
 
-    real(dp), intent(out) :: angles(3,4)
-    real(dp) :: tri(3,3)
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) angles(3,4)
+    real(real64) tri(3,3)
+    real(real64) tetra(3,4)
   !
   !  Face 123
   !
@@ -698,10 +680,9 @@ contains
   !
     tri(1:3,1:3) = tetra(1:3,2:4)
     call triangle_angles_3d ( tri, angles(1:3,4) )
-  end subroutine tetrahedron_face_angles
+  end
 
-  subroutine tetrahedron_face_areas ( tetra, areas ) &
-        bind(C, name="tetrahedron_face_areas")
+  subroutine tetrahedron_face_areas ( tetra, areas )
 
   !*****************************************************************************80
   !
@@ -726,14 +707,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) AREAS(4), the face areas.
+  !    Output, real(real64) AREAS(4), the face areas.
   !
 
-    real(dp), intent(out) :: areas(4)
-    real(dp) :: tri(3,3)
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) areas(4)
+    real(real64) tri(3,3)
+    real(real64) tetra(3,4)
   !
   !  Face 123
   !
@@ -756,10 +737,9 @@ contains
   !
     tri(1:3,1:3) = tetra(1:3,2:4)
     call triangle_area_3d ( tri, areas(4) )
-  end subroutine tetrahedron_face_areas
+  end
 
-  subroutine tetrahedron_insphere ( tetra, r, pc ) &
-        bind(C, name="tetrahedron_insphere")
+  subroutine tetrahedron_insphere ( tetra, r, pc )
 
   !*****************************************************************************80
   !
@@ -799,33 +779,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) R, PC(3), the radius and the center
+  !    Output, real(real64) R, PC(3), the radius and the center
   !    of the sphere.
   !
 
-    real(dp) :: b(4,4)
-    real(dp) :: r8mat_det_4d
-    real(dp) :: r8vec_length
-    real(dp) :: gamma
-    real(dp) :: l123
-    real(dp) :: l124
-    real(dp) :: l134
-    real(dp) :: l234
-    real(dp) :: n123(1:3)
-    real(dp) :: n124(1:3)
-    real(dp) :: n134(1:3)
-    real(dp) :: n234(1:3)
-    real(dp), intent(out) :: pc(1:3)
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: tetra(1:3,4)
-    real(dp) :: v21(1:3)
-    real(dp) :: v31(1:3)
-    real(dp) :: v41(1:3)
-    real(dp) :: v32(1:3)
-    real(dp) :: v42(1:3)
-    real(dp) :: v43(1:3)
+    real(real64) b(4,4)
+    real(real64) r8mat_det_4d
+    real(real64) r8vec_length
+    real(real64) gamma
+    real(real64) l123
+    real(real64) l124
+    real(real64) l134
+    real(real64) l234
+    real(real64) n123(1:3)
+    real(real64) n124(1:3)
+    real(real64) n134(1:3)
+    real(real64) n234(1:3)
+    real(real64) pc(1:3)
+    real(real64) r
+    real(real64) tetra(1:3,4)
+    real(real64) v21(1:3)
+    real(real64) v31(1:3)
+    real(real64) v41(1:3)
+    real(real64) v32(1:3)
+    real(real64) v42(1:3)
+    real(real64) v43(1:3)
 
     call tetrahedron_edges ( tetra, v21, v31, v41, v32, v42, v43 )
 
@@ -846,15 +826,14 @@ contains
               / ( l234 + l134 + l124 + l123 )
 
     b(1:3,1:4) = tetra(1:3,1:4)
-    b(4,1:4) = 1.0_dp
+    b(4,1:4) = 1.0e+00_real64
 
     gamma = abs ( r8mat_det_4d ( b ) )
 
     r = gamma / ( l234 + l134 + l124 + l123 )
-  end subroutine tetrahedron_insphere
+  end
 
-  subroutine tetrahedron_quality1 ( tetra, quality ) &
-        bind(C, name="tetrahedron_quality1")
+  subroutine tetrahedron_quality1 ( tetra, quality )
 
   !*****************************************************************************80
   !
@@ -881,26 +860,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) QUALITY, the quality of the tetrahedron.
+  !    Output, real(real64) QUALITY, the quality of the tetrahedron.
   !
 
-    real(dp) :: pc(3)
-    real(dp), intent(out) :: quality
-    real(dp) :: r_in
-    real(dp) :: r_out
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) pc(3)
+    real(real64) quality
+    real(real64) r_in
+    real(real64) r_out
+    real(real64) tetra(3,4)
 
     call tetrahedron_circumsphere ( tetra, r_out, pc )
 
     call tetrahedron_insphere ( tetra, r_in, pc )
 
-    quality = 3.0_dp * r_in / r_out
-  end subroutine tetrahedron_quality1
+    quality = 3.0e+00_real64 * r_in / r_out
+  end
 
-  subroutine tetrahedron_quality2 ( tetra, quality2 ) &
-        bind(C, name="tetrahedron_quality2")
+  subroutine tetrahedron_quality2 ( tetra, quality2 )
 
   !*****************************************************************************80
   !
@@ -941,17 +919,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) QUALITY2, the quality of the tetrahedron.
+  !    Output, real(real64) QUALITY2, the quality of the tetrahedron.
   !
 
-    real(dp) :: edge_length(6)
-    real(dp) :: l_max
-    real(dp) :: pc(3)
-    real(dp), intent(out) :: quality2
-    real(dp) :: r_in
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) edge_length(6)
+    real(real64) l_max
+    real(real64) pc(3)
+    real(real64) quality2
+    real(real64) r_in
+    real(real64) tetra(3,4)
 
     call tetrahedron_edge_length ( tetra, edge_length )
 
@@ -959,11 +937,10 @@ contains
 
     call tetrahedron_insphere ( tetra, r_in, pc )
 
-    quality2 = 2.0_dp * sqrt ( 6.0_dp ) * r_in / l_max
-  end subroutine tetrahedron_quality2
+    quality2 = 2.0e+00_real64 * sqrt ( 6.0e+00_real64 ) * r_in / l_max
+  end
 
-  subroutine tetrahedron_quality3 ( tetra, quality3 ) &
-        bind(C, name="tetrahedron_quality3")
+  subroutine tetrahedron_quality3 ( tetra, quality3 )
 
   !*****************************************************************************80
   !
@@ -1005,27 +982,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) QUALITY3, the mean ratio of the tetrahedron.
+  !    Output, real(real64) QUALITY3, the mean ratio of the tetrahedron.
   !
 
-    real(dp) :: ab(3)
-    real(dp) :: ac(3)
-    real(dp) :: ad(3)
-    real(dp) :: bc(3)
-    real(dp) :: bd(3)
-    real(dp) :: cd(3)
-    real(dp) :: denom
-    real(dp) :: lab
-    real(dp) :: lac
-    real(dp) :: lad
-    real(dp) :: lbc
-    real(dp) :: lbd
-    real(dp) :: lcd
-    real(dp), intent(out) :: quality3
-    real(dp), intent(in) :: tetra(3,4)
-    real(dp) :: volume
+    real(real64) ab(3)
+    real(real64) ac(3)
+    real(real64) ad(3)
+    real(real64) bc(3)
+    real(real64) bd(3)
+    real(real64) cd(3)
+    real(real64) denom
+    real(real64) lab
+    real(real64) lac
+    real(real64) lad
+    real(real64) lbc
+    real(real64) lbd
+    real(real64) lcd
+    real(real64) quality3
+    real(real64) tetra(3,4)
+    real(real64) volume
   !
   !  Compute the vectors representing the sides of the tetrahedron.
   !
@@ -1045,19 +1022,18 @@ contains
     volume = abs ( &
         ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
       + ab(2) * ( ac(3) * ad(1) - ac(1) * ad(3) ) &
-      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0_dp
+      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0e+00_real64
 
     denom = lab + lac + lad + lbc + lbd + lcd
 
-    if ( denom == 0.0_dp ) then
-      quality3 = 0.0_dp
+    if ( denom == 0.0e+00_real64 ) then
+      quality3 = 0.0e+00_real64
     else
-      quality3 = 12.0_dp * ( 3.0_dp * volume )**( 2.0_dp / 3.0_dp ) / denom
+      quality3 = 12.0e+00_real64 * ( 3.0e+00_real64 * volume )**( 2.0e+00_real64 / 3.0e+00_real64 ) / denom
     end if
-  end subroutine tetrahedron_quality3
+  end
 
-  subroutine tetrahedron_quality4 ( tetra, quality4 ) &
-        bind(C, name="tetrahedron_quality4")
+  subroutine tetrahedron_quality4 ( tetra, quality4 )
 
   !*****************************************************************************80
   !
@@ -1094,30 +1070,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) QUALITY4, the value of the quality measure.
+  !    Output, real(real64) QUALITY4, the value of the quality measure.
   !
 
-    real(dp) :: ab(3)
-    real(dp) :: ac(3)
-    real(dp) :: ad(3)
-    real(dp) :: bc(3)
-    real(dp) :: bd(3)
-    real(dp) :: cd(3)
-    real(dp) :: denom
-    real(dp) :: l1
-    real(dp) :: l2
-    real(dp) :: l3
-    real(dp) :: lab
-    real(dp) :: lac
-    real(dp) :: lad
-    real(dp) :: lbc
-    real(dp) :: lbd
-    real(dp) :: lcd
-    real(dp), intent(out) :: quality4
-    real(dp), intent(in) :: tetra(3,4)
-    real(dp) :: volume
+    real(real64) ab(3)
+    real(real64) ac(3)
+    real(real64) ad(3)
+    real(real64) bc(3)
+    real(real64) bd(3)
+    real(real64) cd(3)
+    real(real64) denom
+    real(real64) l1
+    real(real64) l2
+    real(real64) l3
+    real(real64) lab
+    real(real64) lac
+    real(real64) lad
+    real(real64) lbc
+    real(real64) lbd
+    real(real64) lcd
+    real(real64) quality4
+    real(real64) tetra(3,4)
+    real(real64) volume
   !
   !  Compute the vectors that represent the sides.
   !
@@ -1137,9 +1113,9 @@ contains
     volume = abs ( &
         ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
       + ab(2) * ( ac(3) * ad(1) - ac(1) * ad(3) ) &
-      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0_dp
+      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0e+00_real64
 
-    quality4 = 1.0_dp
+    quality4 = 1.0e+00_real64
 
     l1 = lab + lac
     l2 = lab + lad
@@ -1149,10 +1125,10 @@ contains
           * ( l2 + lbd ) * ( l2 - lbd ) &
           * ( l3 + lcd ) * ( l3 - lcd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lab + lbc
@@ -1163,10 +1139,10 @@ contains
           * ( l2 + lad ) * ( l2 - lad ) &
           * ( l3 + lcd ) * ( l3 - lcd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lac + lbc
@@ -1177,10 +1153,10 @@ contains
           * ( l2 + lad ) * ( l2 - lad ) &
           * ( l3 + lbd ) * ( l3 - lbd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lad + lbd
@@ -1191,17 +1167,16 @@ contains
           * ( l2 + lac ) * ( l2 - lac ) &
           * ( l3 + lbc ) * ( l3 - lbc )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
-    quality4 = quality4 * 1.5_dp * sqrt ( 6.0_dp )
-  end subroutine tetrahedron_quality4
+    quality4 = quality4 * 1.5e+00_real64 * sqrt ( 6.0e+00_real64 )
+  end
 
-  subroutine tetrahedron_solid_angles ( tetra, angle ) &
-        bind(C, name="tetrahedron_solid_angles")
+  subroutine tetrahedron_solid_angles ( tetra, angle )
 
   !*****************************************************************************80
   !
@@ -1221,15 +1196,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) ANGLE(4), the solid angles.
+  !    Output, real(real64) ANGLE(4), the solid angles.
   !
 
-    real(dp), intent(out) :: angle(4)
-    real(dp) :: dihedral_angles(6)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) angle(4)
+    real(real64) dihedral_angles(6)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) tetra(3,4)
 
     call tetrahedron_dihedral_angles ( tetra, dihedral_angles )
 
@@ -1248,10 +1223,9 @@ contains
     angle(4) = dihedral_angles(3) &
              + dihedral_angles(5) &
              + dihedral_angles(6) - r8_pi
-  end subroutine tetrahedron_solid_angles
+  end
 
-  pure subroutine tetrahedron_volume ( tetra, volume ) &
-        bind(C, name="tetrahedron_volume")
+  subroutine tetrahedron_volume ( tetra, volume )
 
   !*****************************************************************************80
   !
@@ -1271,24 +1245,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) VOLUME, the volume of the tetrahedron.
+  !    Output, real(real64) VOLUME, the volume of the tetrahedron.
   !
 
-    real(dp) :: a(4,4)
-    real(dp) :: r8mat_det_4d
-    real(dp), intent(in) :: tetra(3,4)
-    real(dp), intent(out) :: volume
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
+    real(real64) tetra(3,4)
+    real(real64) volume
 
     a(1:3,1:4) = tetra(1:3,1:4)
-    a(4,1:4) = 1.0_dp
+    a(4,1:4) = 1.0e+00_real64
 
-    volume = abs ( r8mat_det_4d ( a ) ) / 6.0_dp
-  end subroutine tetrahedron_volume
+    volume = abs ( r8mat_det_4d ( a ) ) / 6.0e+00_real64
+  end
 
-  pure subroutine triangle_angles_3d ( t, angle ) &
-        bind(C, name="triangle_angles_3d")
+  subroutine triangle_angles_3d ( t, angle )
 
   !*****************************************************************************80
   !
@@ -1316,19 +1289,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Output, real(dp) ANGLE(3), the angles opposite
+  !    Output, real(real64) ANGLE(3), the angles opposite
   !    sides P1-P2, P2-P3 and P3-P1, in radians.
   !
 
-    real(dp) :: a
-    real(dp), intent(out) :: angle(3)
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: r8_acos
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in) :: t(3,3)
+    real(real64) a
+    real(real64) angle(3)
+    real(real64) b
+    real(real64) c
+    real(real64) r8_acos
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) t(3,3)
   !
   !  Compute the length of each side.
   !
@@ -1338,31 +1311,30 @@ contains
   !
   !  Take care of a ridiculous special case.
   !
-    if ( a == 0.0_dp .and. b == 0.0_dp .and. c == 0.0_dp ) then
-      angle(1:3) = 2.0_dp * r8_pi / 3.0_dp
+    if ( a == 0.0e+00_real64 .and. b == 0.0e+00_real64 .and. c == 0.0e+00_real64 ) then
+      angle(1:3) = 2.0e+00_real64 * r8_pi / 3.0e+00_real64
     end if
 
-    if ( c == 0.0_dp .or. a == 0.0_dp ) then
+    if ( c == 0.0e+00_real64 .or. a == 0.0e+00_real64 ) then
       angle(1) = r8_pi
     else
-      angle(1) = r8_acos ( ( c * c + a * a - b * b ) / ( 2.0_dp * c * a ) )
+      angle(1) = r8_acos ( ( c * c + a * a - b * b ) / ( 2.0e+00_real64 * c * a ) )
     end if
 
-    if ( a == 0.0_dp .or. b == 0.0_dp ) then
+    if ( a == 0.0e+00_real64 .or. b == 0.0e+00_real64 ) then
       angle(2) = r8_pi
     else
-      angle(2) = r8_acos ( ( a * a + b * b - c * c ) / ( 2.0_dp * a * b ) )
+      angle(2) = r8_acos ( ( a * a + b * b - c * c ) / ( 2.0e+00_real64 * a * b ) )
     end if
 
-    if ( b == 0.0_dp .or. c == 0.0_dp ) then
+    if ( b == 0.0e+00_real64 .or. c == 0.0e+00_real64 ) then
       angle(3) = r8_pi
     else
-      angle(3) = r8_acos ( ( b * b + c * c - a * a ) / ( 2.0_dp * b * c ) )
+      angle(3) = r8_acos ( ( b * b + c * c - a * a ) / ( 2.0e+00_real64 * b * c ) )
     end if
-  end subroutine triangle_angles_3d
+  end
 
-  pure subroutine triangle_area_3d ( t, area ) &
-        bind(C, name="triangle_area_3d")
+  subroutine triangle_area_3d ( t, area )
 
   !*****************************************************************************80
   !
@@ -1395,14 +1367,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Output, real(dp) AREA, the area of the triangle.
+  !    Output, real(real64) AREA, the area of the triangle.
   !
 
-    real(dp), intent(out) :: area
-    real(dp) :: cross(3)
-    real(dp), intent(in) :: t(3,3)
+    real(real64) area
+    real(real64) cross(3)
+    real(real64) t(3,3)
   !
   !  Compute the cross product vector.
   !
@@ -1415,7 +1387,7 @@ contains
     cross(3) = ( t(1,2) - t(1,1) ) * ( t(2,3) - t(2,1) ) &
              - ( t(2,2) - t(2,1) ) * ( t(1,3) - t(1,1) )
 
-    area = 0.5_dp * sqrt ( sum ( cross(1:3)**2 ) )
-  end subroutine triangle_area_3d
+    area = 0.5e+00_real64 * sqrt ( sum ( cross(1:3)**2 ) )
+  end
 
 end module tetrahedron_properties_mod

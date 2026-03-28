@@ -4,21 +4,15 @@
 
 module polygon_triangulate_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: angle_degree, between, collinear, diagonal, diagonalie, in_cone
   public :: intersect, intersect_prop, l4_xor, polygon_area, polygon_triangulate, triangle_area
 
 contains
 
-  pure function angle_degree ( x1, y1, x2, y2, x3, y3 ) &
-        bind(C, name="angle_degree")
+  function angle_degree ( x1, y1, x2, y2, x3, y3 )
 
   !*****************************************************************************80
   !
@@ -55,43 +49,42 @@ contains
   !    then VALUE is set to 0.
   !
 
-    real(dp) :: angle_degree
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: value
-    real(dp) :: x
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp) :: y
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
+    real(real64) angle_degree
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) value
+    real(real64) x
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
 
     x = ( x3 - x2 ) * ( x1 - x2 ) + ( y3 - y2 ) * ( y1 - y2 )
 
     y = ( x3 - x2 ) * ( y1 - y2 ) - ( y3 - y2 ) * ( x1 - x2 )
 
-    if ( x == 0.0_dp .and. y == 0.0_dp ) then
+    if ( x == 0.0e+00_real64 .and. y == 0.0e+00_real64 ) then
 
-      value = 0.0_dp
+      value = 0.0e+00_real64
 
     else
 
       value = atan2 ( y, x )
 
-      if ( value < 0.0_dp ) then
-        value = value + 2.0_dp * r8_pi
+      if ( value < 0.0e+00_real64 ) then
+        value = value + 2.0e+00_real64 * r8_pi
       end if
 
-      value = 180.0_dp * value / r8_pi
+      value = 180.0e+00_real64 * value / r8_pi
 
     end if
 
     angle_degree = value
-  end function angle_degree
+  end
 
-  function between ( xa, ya, xb, yb, xc, yc ) &
-        bind(C, name="between")
+  function between ( xa, ya, xb, yb, xc, yc )
 
   !*****************************************************************************80
   !
@@ -123,28 +116,29 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, the coordinates of
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, the coordinates of 
   !    the vertices.
   !
   !    Output, logical BETWEEN, is TRUE if C is between A and B.
   !
 
-    logical :: between
-    logical :: value
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp) :: xmax
-    real(dp) :: xmin
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
-    real(dp) :: ymax
-    real(dp) :: ymin
+    logical between
+    logical collinear
+    logical value
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) xmax
+    real(real64) xmin
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
+    real(real64) ymax
+    real(real64) ymin
 
     if ( .not. collinear ( xa, ya, xb, yb, xc, yc ) ) then
       value = .false.
@@ -159,10 +153,9 @@ contains
     end if
 
     between = value
-  end function between
+  end
 
-  function collinear ( xa, ya, xb, yb, xc, yc ) &
-        bind(C, name="collinear")
+  function collinear ( xa, ya, xb, yb, xc, yc )
 
   !*****************************************************************************80
   !
@@ -198,31 +191,32 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, the coordinates of
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, the coordinates of 
   !    the vertices.
   !
-  !    Output, logical COLLINEAR, is TRUE if the points are judged
+  !    Output, logical COLLINEAR, is TRUE if the points are judged 
   !    to be collinear.
   !
 
-    real(dp) :: area
-    logical :: collinear
-    real(dp), parameter :: r8_eps = 2.220446049250313e-016_dp
-    real(dp) :: side_ab_sq
-    real(dp) :: side_bc_sq
-    real(dp) :: side_ca_sq
-    real(dp) :: side_max_sq
-    logical :: value
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
+    real(real64) area
+    logical collinear
+    real(real64), parameter :: r8_eps = 2.220446049250313e-016_real64
+    real(real64) side_ab_sq
+    real(real64) side_bc_sq
+    real(real64) side_ca_sq
+    real(real64) side_max_sq
+    real(real64) triangle_area
+    logical value
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
 
     area = triangle_area ( xa, ya, xb, yb, xc, yc )
 
@@ -234,17 +228,16 @@ contains
 
     if ( side_max_sq <= r8_eps ) then
       value = .true.
-    else if ( 2.0_dp * abs ( area ) <= r8_eps * side_max_sq ) then
+    else if ( 2.0e+00_real64 * abs ( area ) <= r8_eps * side_max_sq ) then
       value = .true.
     else
       value = .false.
     end if
 
     collinear = value
-  end function collinear
+  end
 
-  function diagonal ( im1, ip1, n, prev_node, next_node, x, y ) &
-        bind(C, name="diagonal")
+  function diagonal ( im1, ip1, n, prev_node, next_node, x, y )
 
   !*****************************************************************************80
   !
@@ -269,46 +262,47 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IM1, IP1, the indices of two vertices.
+  !    Input, integer(int32) IM1, IP1, the indices of two vertices.
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, integer(ip) PREV_NODE(N), the previous neighbor of
+  !    Input, integer(int32) PREV_NODE(N), the previous neighbor of 
   !    each vertex.
   !
-  !    Input, integer(ip) NEXT_NODE(N), the next neighbor of each vertex.
+  !    Input, integer(int32) NEXT_NODE(N), the next neighbor of each vertex.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of each vertex.
+  !    Input, real(real64) X(N), Y(N), the coordinates of each vertex.
   !
   !    Output, logical DIAGONAL, the value of the test.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    logical :: diagonal
-    integer(ip), intent(in), value :: im1
-    integer(ip), intent(in), value :: ip1
-    integer(ip), intent(in) :: next_node(n)
-    integer(ip), intent(in) :: prev_node(n)
-    logical :: value1
-    logical :: value2
-    logical :: value3
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    logical diagonal
+    logical diagonalie
+    integer(int32) im1
+    logical in_cone
+    integer(int32) ip1
+    integer(int32) next_node(n)
+    integer(int32) prev_node(n)
+    logical value1
+    logical value2
+    logical value3
+    real(real64) x(n)
+    real(real64) y(n)
 
     value1 = in_cone ( im1, ip1, n, prev_node, next_node, x, y )
     value2 = in_cone ( ip1, im1, n, prev_node, next_node, x, y )
     value3 = diagonalie ( im1, ip1, n, next_node, x, y )
 
     diagonal = ( value1 .and. value2 .and. value3 )
-  end function diagonal
+  end
 
-  function diagonalie ( im1, ip1, n, next_node, x, y ) &
-        bind(C, name="diagonalie")
+  function diagonalie ( im1, ip1, n, next_node, x, y )
 
   !*****************************************************************************80
   !
@@ -333,34 +327,35 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IM1, IP1, the indices of two vertices.
+  !    Input, integer(int32) IM1, IP1, the indices of two vertices.
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, integer(ip) NEXT_NODE(N), the next neighbor of each vertex.
+  !    Input, integer(int32) NEXT_NODE(N), the next neighbor of each vertex.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of each vertex.
+  !    Input, real(real64) X(N), Y(N), the coordinates of each vertex.
   !
   !    Output, logical DIAGONALIE, the value of the test.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    logical :: diagonalie
-    integer(ip) :: first
-    integer(ip), intent(in), value :: im1
-    integer(ip), intent(in), value :: ip1
-    integer(ip) :: j
-    integer(ip) :: jp1
-    integer(ip), intent(in) :: next_node(n)
-    logical :: value
-    logical :: value2
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    logical diagonalie
+    integer(int32) first
+    integer(int32) im1
+    logical intersect
+    integer(int32) ip1
+    integer(int32) j
+    integer(int32) jp1
+    integer(int32) next_node(n)
+    logical value
+    logical value2
+    real(real64) x(n)
+    real(real64) y(n)
 
     first = im1
     j = first
@@ -398,10 +393,9 @@ contains
     end do
 
     diagonalie = value
-  end function diagonalie
+  end
 
-  function in_cone ( im1, ip1, n, prev_node, next_node, x, y ) &
-        bind(C, name="in_cone")
+  function in_cone ( im1, ip1, n, prev_node, next_node, x, y )
 
   !*****************************************************************************80
   !
@@ -426,66 +420,66 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IM1, IP1, the indices of two vertices.
+  !    Input, integer(int32) IM1, IP1, the indices of two vertices.
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, integer(ip) PREV_NODE(N), the previous neighbor of
+  !    Input, integer(int32) PREV_NODE(N), the previous neighbor of 
   !    each vertex.
   !
-  !    Input, integer(ip) NEXT_NODE(N), the next neighbor of each vertex.
+  !    Input, integer(int32) NEXT_NODE(N), the next neighbor of each vertex.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of each vertex.
+  !    Input, real(real64) X(N), Y(N), the coordinates of each vertex.
   !
   !    Output, logical IN_CONE, the value of the test.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), intent(in), value :: im1
-    integer(ip) :: im2
-    logical :: in_cone
-    integer(ip), intent(in), value :: ip1
-    integer(ip), intent(in) :: next_node(n)
-    integer(ip), intent(in) :: prev_node(n)
-    real(dp) :: t1
-    real(dp) :: t2
-    real(dp) :: t3
-    real(dp) :: t4
-    real(dp) :: t5
-    logical :: value
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    integer(int32) i
+    integer(int32) im1
+    integer(int32) im2
+    logical in_cone
+    integer(int32) ip1
+    integer(int32) next_node(n)
+    integer(int32) prev_node(n)
+    real(real64) t1
+    real(real64) t2
+    real(real64) t3
+    real(real64) t4
+    real(real64) t5
+    real(real64) triangle_area
+    logical value
+    real(real64) x(n)
+    real(real64) y(n)
 
     im2 = prev_node(im1)
     i = next_node(im1)
 
     t1 = triangle_area ( x(im1), y(im1), x(i), y(i), x(im2), y(im2) )
 
-    if ( 0.0_dp <= t1 ) then
+    if ( 0.0e+00_real64 <= t1 ) then
 
       t2 = triangle_area ( x(im1), y(im1), x(ip1), y(ip1), x(im2), y(im2) )
       t3 = triangle_area ( x(ip1), y(ip1), x(im1), y(im1), x(i), y(i) )
-      value = ( ( 0.0_dp < t2 ) .and. ( 0.0_dp < t3 ) )
+      value = ( ( 0.0e+00_real64 < t2 ) .and. ( 0.0e+00_real64 < t3 ) )
 
     else
 
       t4 = triangle_area ( x(im1), y(im1), x(ip1), y(ip1), x(i), y(i) )
       t5 = triangle_area ( x(ip1), y(ip1), x(im1), y(im1), x(im2), y(im2) )
-      value = .not. ( ( 0.0_dp <= t4 ) .and. ( 0.0_dp <= t5 ) )
+      value = .not. ( ( 0.0e+00_real64 <= t4 ) .and. ( 0.0e+00_real64 <= t5 ) )
 
     end if
 
     in_cone = value
-  end function in_cone
+  end
 
-  function intersect ( xa, ya, xb, yb, xc, yc, xd, yd ) &
-        bind(C, name="intersect")
+  function intersect ( xa, ya, xb, yb, xc, yc, xd, yd )
 
   !*****************************************************************************80
   !
@@ -515,26 +509,28 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, XD, YD, the X and Y
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, XD, YD, the X and Y 
   !    coordinates of the four vertices.
   !
   !    Output, logical VALUE, the value of the test.
   !
 
-    logical :: intersect
-    logical :: value
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: xd
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
-    real(dp), intent(in), value :: yd
+    logical between
+    logical intersect
+    logical intersect_prop
+    logical value
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) xd
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
+    real(real64) yd
 
     if ( intersect_prop ( xa, ya, xb, yb, xc, yc, xd, yd ) ) then
       value = .true.
@@ -551,10 +547,9 @@ contains
     end if
 
     intersect = value
-  end function intersect
+  end
 
-  function intersect_prop ( xa, ya, xb, yb, xc, yc, xd, yd ) &
-        bind(C, name="intersect_prop")
+  function intersect_prop ( xa, ya, xb, yb, xc, yc, xd, yd )
 
   !*****************************************************************************80
   !
@@ -579,34 +574,37 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, XD, YD, the X and Y
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, XD, YD, the X and Y 
   !    coordinates of the four vertices.
   !
   !    Output, logical INTERSECT_PROP, the result of the test.
   !
 
-    logical :: intersect_prop
-    real(dp) :: t1
-    real(dp) :: t2
-    real(dp) :: t3
-    real(dp) :: t4
-    logical :: value
-    logical :: value1
-    logical :: value2
-    logical :: value3
-    logical :: value4
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: xd
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
-    real(dp), intent(in), value :: yd
+    logical collinear
+    logical intersect_prop
+    logical l4_xor
+    real(real64) t1
+    real(real64) t2
+    real(real64) t3
+    real(real64) t4
+    real(real64) triangle_area
+    logical value
+    logical value1
+    logical value2
+    logical value3
+    logical value4
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) xd
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
+    real(real64) yd
 
     if ( collinear ( xa, ya, xb, yb, xc, yc ) ) then
       value = .false.
@@ -623,20 +621,19 @@ contains
       t3 = triangle_area ( xc, yc, xd, yd, xa, ya )
       t4 = triangle_area ( xc, yc, xd, yd, xb, yb )
 
-      value1 = ( 0.0_dp < t1 )
-      value2 = ( 0.0_dp < t2 )
-      value3 = ( 0.0_dp < t3 )
-      value4 = ( 0.0_dp < t4 )
+      value1 = ( 0.0e+00_real64 < t1 )
+      value2 = ( 0.0e+00_real64 < t2 )
+      value3 = ( 0.0e+00_real64 < t3 )
+      value4 = ( 0.0e+00_real64 < t4 )
 
       value = ( l4_xor ( value1, value2 ) ) .and. ( l4_xor ( value3, value4 ) )
 
     end if
 
     intersect_prop = value
-  end function intersect_prop
+  end
 
-  pure function l4_xor ( l1, l2 ) &
-        bind(C, name="l4_xor")
+  function l4_xor ( l1, l2 )
 
   !*****************************************************************************80
   !
@@ -660,26 +657,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, logical L1, L2, two values whose exclusive OR
+  !    Input, logical L1, L2, two values whose exclusive OR 
   !    is needed.
   !
   !    Output, logical L4_XOR, the exclusive OR of L1 and L2.
   !
 
-    logical, intent(in), value :: l1
-    logical, intent(in), value :: l2
-    logical :: l4_xor
-    logical :: value1
-    logical :: value2
+    logical l1
+    logical l2
+    logical l4_xor
+    logical value1
+    logical value2
 
     value1 = (         l1   .and. ( .not. l2 ) )
     value2 = ( ( .not. l1 ) .and.         l2   )
 
     l4_xor = ( value1 .or. value2 )
-  end function l4_xor
+  end
 
-  pure function polygon_area ( n, x, y ) &
-        bind(C, name="polygon_area")
+  function polygon_area ( n, x, y )
 
   !*****************************************************************************80
   !
@@ -704,23 +700,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) X(N), Y(N), the vertex coordinates.
+  !    Input, real(real64) X(N), Y(N), the vertex coordinates.
   !
-  !    Output, real(dp) POLYGON_AREA, the area of the polygon.
+  !    Output, real(real64) POLYGON_AREA, the area of the polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: area
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp) :: polygon_area
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    real(real64) area
+    integer(int32) i
+    integer(int32) im1
+    real(real64) polygon_area
+    real(real64) x(n)
+    real(real64) y(n)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
     im1 = n
 
     do i = 1, n
@@ -728,13 +724,12 @@ contains
       im1 = i
     end do
 
-    area = 0.5_dp * area
+    area = 0.5e+00_real64 * area
 
     polygon_area = area
-  end function polygon_area
+  end
 
-  subroutine polygon_triangulate ( n, x, y, triangles ) &
-        bind(C, name="polygon_triangulate")
+  subroutine polygon_triangulate ( n, x, y, triangles )
 
   !*****************************************************************************80
   !
@@ -750,7 +745,7 @@ contains
   !    Thanks to Gene Dial for pointing out a mistake in the area calculation,
   !    10 September 2016.
   !
-  !    Gene Dial requested an angle tolerance of about 1 millionth radian or
+  !    Gene Dial requested an angle tolerance of about 1 millionth radian or 
   !    5.7E-05 degrees, 26 June 2018.
   !
   !  Licensing:
@@ -772,41 +767,45 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of each vertex.
+  !    Input, real(real64) X(N), Y(N), the coordinates of each vertex.
   !
-  !    Output, integer(ip) TRIANGLES(3,N-2), the triangles of the
+  !    Output, integer(int32) TRIANGLES(3,N-2), the triangles of the 
   !    triangulation.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: angle
-    real(dp), parameter :: angle_tol = 5.7e-05_dp
-    real(dp) :: area
-    logical :: ear(n)
-    integer(ip) :: i
-    integer(ip) :: i0
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip) :: i4
-    integer(ip) :: next_node(n)
-    integer(ip) :: node
-    integer(ip) :: node_m1
-    integer(ip) :: node1
-    integer(ip) :: node2
-    integer(ip) :: node3
-    integer(ip) :: prev_node(n)
-    integer(ip) :: triangle_num
-    integer(ip), intent(out) :: triangles(3,n-2)
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    real(real64) angle
+    real(real64) angle_degree
+    real(real64), parameter :: angle_tol = 5.7e-05_real64
+    real(real64) area
+    logical diagonal
+    logical ear(n)
+    integer(int32) first
+    integer(int32) i
+    integer(int32) i0
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) i4
+    integer(int32) next_node(n)
+    integer(int32) node
+    integer(int32) node_m1
+    integer(int32) node1
+    integer(int32) node2
+    integer(int32) node3
+    real(real64) polygon_area
+    integer(int32) prev_node(n)
+    integer(int32) triangle_num
+    integer(int32) triangles(3,n-2)
+    real(real64) x(n)
+    real(real64) y(n)
   !
   !  We must have at least 3 vertices.
   !
@@ -830,7 +829,7 @@ contains
       node_m1 = node
     end do
   !
-  !  No node can be the vertex of an angle less than 1 degree
+  !  No node can be the vertex of an angle less than 1 degree 
   !  in absolute value.
   !
     node1 = n
@@ -860,7 +859,7 @@ contains
   !
     area = polygon_area ( n, x, y )
 
-    if ( area <= 0.0_dp ) then
+    if ( area <= 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'POLYGON_TRIANGULATE - Fatal error!'
       write ( *, '(a)' ) '  Polygon has zero or negative area.'
@@ -940,10 +939,9 @@ contains
     triangles(1,triangle_num) = i3
     triangles(2,triangle_num) = i1
     triangles(3,triangle_num) = i2
-  end subroutine polygon_triangulate
+  end
 
-  pure function triangle_area ( xa, ya, xb, yb, xc, yc ) &
-        bind(C, name="triangle_area")
+  function triangle_area ( xa, ya, xb, yb, xc, yc )
 
   !*****************************************************************************80
   !
@@ -963,26 +961,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, the coordinates of
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, the coordinates of
   !    the vertices of the triangle, given in counterclockwise order.
   !
-  !    Output, real(dp) TRIANGLE_AREA, the signed area of the triangle.
+  !    Output, real(real64) TRIANGLE_AREA, the signed area of the triangle.
   !
 
-    real(dp) :: triangle_area
-    real(dp) :: value
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
+    real(real64) triangle_area
+    real(real64) value
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
 
-    value = 0.5_dp * ( &
+    value = 0.5e+00_real64 * ( &
         ( xb - xa ) * ( yc - ya ) &
       - ( xc - xa ) * ( yb - ya ) )
 
     triangle_area = value
-  end function triangle_area
+  end
 
 end module polygon_triangulate_mod

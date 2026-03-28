@@ -1,16 +1,11 @@
-!> stripack — Modern Fortran 2018
+!> stripack â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module stripack_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: addnod, arc_cosine, areas, bdyadd, bnodes, circum
   public :: covsph, crlist, delarc, delnb, delnod, edge
@@ -22,8 +17,7 @@ module stripack_mod
 
 contains
 
-  subroutine addnod ( nst, k, x, y, z, list, lptr, lend, lnew, ier ) &
-        bind(C, name="addnod")
+  subroutine addnod ( nst, k, x, y, z, list, lptr, lend, lnew, ier )
 
   !*****************************************************************************80
   !
@@ -63,22 +57,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NST, the index of a node at which TRFIND 
+  !    Input, integer(int32) NST, the index of a node at which TRFIND 
   !    begins its search.  Search time depends on the proximity of this node to 
   !    K.  If NST < 1, the search is begun at node K-1.
   !
-  !    Input, integer(ip) K, the nodal index (index for X, Y, Z, and 
+  !    Input, integer(int32) K, the nodal index (index for X, Y, Z, and 
   !    LEND) of the new node to be added.  4 <= K.
   !
-  !    Input, real(dp) X(K), Y(K), Z(K), the coordinates of the nodes.
+  !    Input, real(real64) X(K), Y(K), Z(K), the coordinates of the nodes.
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(K), 
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(K), 
   !    LNEW.  On input, the data structure associated with the triangulation of 
   !    nodes 1 to K-1.  On output, the data has been updated to include node 
   !    K.  The array lengths are assumed to be large enough to add node K. 
   !    Refer to TRMESH.
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !     0 if no errors were encountered.
   !    -1 if K is outside its valid range on input.
   !    -2 if all nodes (including K) are collinear (lie on a common geodesic).
@@ -105,37 +99,37 @@ contains
   !    P =        Cartesian coordinates of node K
   !
 
-    integer(ip), intent(in), value :: k
+    integer(int32) k
 
-    real(dp) :: b1
-    real(dp) :: b2
-    real(dp) :: b3
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip), intent(out) :: ier
-    integer(ip) :: in1
-    integer(ip) :: io1
-    integer(ip) :: io2
-    integer(ip) :: ist
-    integer(ip) :: kk
-    integer(ip) :: km1
-    integer(ip) :: l
-    integer(ip), intent(inout) :: lend(k)
-    integer(ip), intent(inout) :: list(*)
-    integer(ip) :: lnew
-    integer(ip) :: lp
-    integer(ip) :: lpf
-    integer(ip) :: lpo1
-    integer(ip) :: lpo1s
-    integer(ip), intent(inout) :: lptr(*)
-    integer(ip) :: lstptr
-    integer(ip), intent(in), value :: nst
-    real(dp) :: p(3)
-    logical :: swptst
-    real(dp), intent(in) :: x(k)
-    real(dp), intent(in) :: y(k)
-    real(dp), intent(in) :: z(k)
+    real(real64) b1
+    real(real64) b2
+    real(real64) b3
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) ier
+    integer(int32) in1
+    integer(int32) io1
+    integer(int32) io2
+    integer(int32) ist
+    integer(int32) kk
+    integer(int32) km1
+    integer(int32) l
+    integer(int32) lend(k)
+    integer(int32) list(*)
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lpf
+    integer(int32) lpo1
+    integer(int32) lpo1s
+    integer(int32) lptr(*)
+    integer(int32) lstptr
+    integer(int32) nst
+    real(real64) p(3)
+    logical swptst
+    real(real64) x(k)
+    real(real64) y(k)
+    real(real64) z(k)
 
     kk = k
 
@@ -284,10 +278,9 @@ contains
       io1 = abs ( list(lpo1) )
 
     end do
-  end subroutine addnod
+  end
 
-  pure function arc_cosine ( c ) &
-        bind(C, name="arc_cosine")
+  function arc_cosine ( c )
 
   !*****************************************************************************80
   !
@@ -313,24 +306,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) C, the argument.
+  !    Input, real(real64) C, the argument.
   !
-  !    Output, real(dp) ARC_COSINE, an angle whose cosine is C.
+  !    Output, real(real64) ARC_COSINE, an angle whose cosine is C.
   !
 
-    real(dp) :: arc_cosine
-    real(dp), intent(in), value :: c
-    real(dp) :: c2
+    real(real64) arc_cosine
+    real(real64) c
+    real(real64) c2
 
     c2 = c
-    c2 = max ( c2, -1.0_dp )
-    c2 = min ( c2, +1.0_dp )
+    c2 = max ( c2, -1.0e+00_real64 )
+    c2 = min ( c2, +1.0e+00_real64 )
 
     arc_cosine = acos ( c2 )
-  end function arc_cosine
+  end
 
-  pure function areas ( v1, v2, v3 ) &
-        bind(C, name="areas")
+  function areas ( v1, v2, v3 )
 
   !*****************************************************************************80
   !
@@ -359,11 +351,11 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the Cartesian coordinates
+  !    Input, real(real64) V1(3), V2(3), V3(3), the Cartesian coordinates
   !    of unit vectors (the three triangle vertices in any order).  These 
   !    vectors, if nonzero, are implicitly scaled to have length 1.
   !
-  !    Output, real(dp) AREAS, the area of the spherical triangle 
+  !    Output, real(real64) AREAS, the area of the spherical triangle 
   !    defined by V1, V2, and V3, in the range 0 to 2*PI (the area of a
   !    hemisphere).  AREAS = 0 (or 2*PI) if and only if V1, V2, and V3 lie in (or
   !    close to) a plane containing the origin.
@@ -384,25 +376,25 @@ contains
   !                 pairs of triangle vertices.
   !
 
-    real(dp) :: a1
-    real(dp) :: a2
-    real(dp) :: a3
-    real(dp) :: areas
-    real(dp) :: ca1
-    real(dp) :: ca2
-    real(dp) :: ca3
-    real(dp) :: dv1(3)
-    real(dp) :: dv2(3)
-    real(dp) :: dv3(3)
-    real(dp) :: s12
-    real(dp) :: s23
-    real(dp) :: s31
-    real(dp) :: u12(3)
-    real(dp) :: u23(3)
-    real(dp) :: u31(3)
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) a1
+    real(real64) a2
+    real(real64) a3
+    real(real64) areas
+    real(real64) ca1
+    real(real64) ca2
+    real(real64) ca3
+    real(real64) dv1(3)
+    real(real64) dv2(3)
+    real(real64) dv3(3)
+    real(real64) s12
+    real(real64) s23
+    real(real64) s31
+    real(real64) u12(3)
+    real(real64) u23(3)
+    real(real64) u31(3)
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     dv1(1:3) = v1(1:3)
     dv2(1:3) = v2(1:3)
@@ -430,8 +422,8 @@ contains
   !
   !  Test for a degenerate triangle associated with collinear vertices.
   !
-    if ( s12 == 0.0_dp .or. s23 == 0.0_dp .or. s31 == 0.0_dp ) then
-      areas = 0.0_dp
+    if ( s12 == 0.0e+00_real64 .or. s23 == 0.0e+00_real64 .or. s31 == 0.0e+00_real64 ) then
+      areas = 0.0e+00_real64
     end if
 
     s12 = sqrt ( s12 )
@@ -451,12 +443,12 @@ contains
     ca2 = - dot_product ( u23(1:3), u12(1:3) )
     ca3 = - dot_product ( u31(1:3), u23(1:3) )
 
-    ca1 = max ( ca1, -1.0_dp )
-    ca1 = min ( ca1, +1.0_dp )
-    ca2 = max ( ca2, -1.0_dp )
-    ca2 = min ( ca2, +1.0_dp )
-    ca3 = max ( ca3, -1.0_dp )
-    ca3 = min ( ca3, +1.0_dp )
+    ca1 = max ( ca1, -1.0e+00_real64 )
+    ca1 = min ( ca1, +1.0e+00_real64 )
+    ca2 = max ( ca2, -1.0e+00_real64 )
+    ca2 = min ( ca2, +1.0e+00_real64 )
+    ca3 = max ( ca3, -1.0e+00_real64 )
+    ca3 = min ( ca3, +1.0e+00_real64 )
 
     a1 = acos ( ca1 )
     a2 = acos ( ca2 )
@@ -464,15 +456,14 @@ contains
   !
   !  Compute AREAS = A1 + A2 + A3 - PI.
   !
-    areas = a1 + a2 + a3 - acos ( -1.0_dp )
+    areas = a1 + a2 + a3 - acos ( -1.0e+00_real64 )
 
-    if ( areas < 0.0_dp ) then
-      areas = 0.0_dp
+    if ( areas < 0.0e+00_real64 ) then
+      areas = 0.0e+00_real64
     end if
-  end function areas
+  end
 
-  subroutine bdyadd ( kk, i1, i2, list, lptr, lend, lnew ) &
-        bind(C, name="bdyadd")
+  subroutine bdyadd ( kk, i1, i2, list, lptr, lend, lnew )
 
   !*****************************************************************************80
   !
@@ -506,18 +497,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) KK, the index of a node to be connected to 
+  !    Input, integer(int32) KK, the index of a node to be connected to 
   !    the sequence of all visible boundary nodes.  1 <= KK and
   !    KK must not be equal to I1 or I2.
   !
-  !    Input, integer(ip) I1, the first (rightmost as viewed from KK) 
+  !    Input, integer(int32) I1, the first (rightmost as viewed from KK) 
   !    boundary node in the triangulation that is visible from
   !    node KK (the line segment KK-I1 intersects no arcs.
   !
-  !    Input, integer(ip) I2, the last (leftmost) boundary node that 
+  !    Input, integer(int32) I2, the last (leftmost) boundary node that 
   !    is visible from node KK.  I1 and I2 may be determined by TRFIND.
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
   !    LNEW, the triangulation data structure created by TRMESH.  
   !    Nodes I1 and I2 must be included 
   !    in the triangulation.  On output, the data structure is updated with
@@ -534,20 +525,20 @@ contains
   !    NSAV =  Boundary node visible from K
   !
 
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip) :: k
-    integer(ip), intent(in), value :: kk
-    integer(ip), intent(inout) :: lend(*)
-    integer(ip), intent(inout) :: list(*)
-    integer(ip) :: lnew
-    integer(ip) :: lp
-    integer(ip), intent(inout) :: lptr(*)
-    integer(ip) :: lsav
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: next
-    integer(ip) :: nsav
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) k
+    integer(int32) kk
+    integer(int32) lend(*)
+    integer(int32) list(*)
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lptr(*)
+    integer(int32) lsav
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) next
+    integer(int32) nsav
 
     k = kk
     n1 = i1
@@ -609,10 +600,9 @@ contains
     lptr(lnew) = lsav
     lend(k) = lnew
     lnew = lnew + 1
-  end subroutine bdyadd
+  end
 
-  subroutine bnodes ( n, list, lptr, lend, nodes, nb, na, nt ) &
-        bind(C, name="bnodes")
+  subroutine bnodes ( n, list, lptr, lend, nodes, nb, na, nt )
 
   !*****************************************************************************80
   !
@@ -646,19 +636,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
   !    data structure defining the triangulation, created by TRMESH.
   !
-  !    Output, integer(ip) NODES(*), the ordered sequence of NB boundary
+  !    Output, integer(int32) NODES(*), the ordered sequence of NB boundary
   !    node indexes in the range 1 to N.  For safety, the dimension of NODES
   !    should be N.
   !
-  !    Output, integer(ip) NB, the number of boundary nodes.
+  !    Output, integer(int32) NB, the number of boundary nodes.
   !
-  !    Output, integer(ip) NA, NT, the number of arcs and triangles, 
+  !    Output, integer(int32) NA, NT, the number of arcs and triangles, 
   !    respectively, in the triangulation.
   !
   !  Local parameters:
@@ -671,21 +661,21 @@ contains
   !          the one with smallest index)
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip) :: lp
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip) :: n0
-    integer(ip), intent(out) :: na
-    integer(ip), intent(out) :: nb
-    integer(ip) :: nn
-    integer(ip), intent(out) :: nodes(*)
-    integer(ip) :: nst
-    integer(ip), intent(out) :: nt
+    integer(int32) i
+    integer(int32) k
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lp
+    integer(int32) lptr(6*(n-2))
+    integer(int32) n0
+    integer(int32) na
+    integer(int32) nb
+    integer(int32) nn
+    integer(int32) nodes(*)
+    integer(int32) nst
+    integer(int32) nt
 
     nn = n
   !
@@ -742,10 +732,9 @@ contains
     nb = k
     nt = 2 * n - nb - 2
     na = nt + n - 1
-  end subroutine bnodes
+  end
 
-  subroutine circum ( v1, v2, v3, c, ier ) &
-        bind(C, name="circum")
+  subroutine circum ( v1, v2, v3, c, ier )
 
   !*****************************************************************************80
   !
@@ -776,14 +765,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the coordinates of the 
+  !    Input, real(real64) V1(3), V2(3), V3(3), the coordinates of the 
   !    three triangle vertices (unit vectors) in counter clockwise order.
   !
-  !    Output, real(dp) C(3), the coordinates of the circumcenter unless
+  !    Output, real(real64) C(3), the coordinates of the circumcenter unless
   !    0 < IER, in which case C is not defined.  C = (V2-V1) X (V3-V1) 
   !    normalized to a unit vector.
   !
-  !    Output, integer(ip) IER = Error indicator:
+  !    Output, integer(int32) IER = Error indicator:
   !    0, if no errors were encountered.
   !    1, if V1, V2, and V3 lie on a common line:  (V2-V1) X (V3-V1) = 0.
   !
@@ -796,15 +785,15 @@ contains
   !    I =     DO-loop index
   !
 
-    real(dp), intent(out) :: c(3)
-    real(dp) :: cnorm
-    real(dp) :: cu(3)
-    real(dp) :: e1(3)
-    real(dp) :: e2(3)
-    integer(ip), intent(out) :: ier
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) c(3)
+    real(real64) cnorm
+    real(real64) cu(3)
+    real(real64) e1(3)
+    real(real64) e2(3)
+    integer(int32) ier
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     ier = 0
 
@@ -821,15 +810,14 @@ contains
   !
   !  The vertices lie on a common line if and only if CU is the zero vector.
   !
-    if ( cnorm == 0.0_dp ) then
+    if ( cnorm == 0.0e+00_real64 ) then
       ier = 1
     end if
 
     c(1:3) = cu(1:3) / cnorm
-  end subroutine circum
+  end
 
-  subroutine covsph ( kk, n0, list, lptr, lend, lnew ) &
-        bind(C, name="covsph")
+  subroutine covsph ( kk, n0, list, lptr, lend, lnew )
 
   !*****************************************************************************80
   !
@@ -862,13 +850,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) KK = Index of the node to be connected to the
+  !    Input, integer(int32) KK = Index of the node to be connected to the
   !    set of all boundary nodes.  4 <= KK.
   !
-  !    Input, integer(ip) N0 = Index of a boundary node (in the range
+  !    Input, integer(int32) N0 = Index of a boundary node (in the range
   !    1 to KK-1).  N0 may be determined by TRFIND.
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
   !    LNEW, the triangulation data structure created by TRMESH.  Node N0 must
   !    be included in the triangulation.  On output, updated with the addition 
   !    of node KK as the last entry.  The updated triangulation contains no
@@ -883,17 +871,17 @@ contains
   !    NST =   Local copy of N0
   !
 
-    integer(ip) :: k
-    integer(ip), intent(in), value :: kk
-    integer(ip), intent(inout) :: lend(*)
-    integer(ip), intent(inout) :: list(*)
-    integer(ip) :: lnew
-    integer(ip) :: lp
-    integer(ip), intent(inout) :: lptr(*)
-    integer(ip) :: lsav
-    integer(ip), intent(in), value :: n0
-    integer(ip) :: next
-    integer(ip) :: nst
+    integer(int32) k
+    integer(int32) kk
+    integer(int32) lend(*)
+    integer(int32) list(*)
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lptr(*)
+    integer(int32) lsav
+    integer(int32) n0
+    integer(int32) next
+    integer(int32) nst
 
     k = kk
     nst = n0
@@ -937,11 +925,10 @@ contains
 
     lptr(lnew-1) = lsav
     lend(k) = lnew - 1
-  end subroutine covsph
+  end
 
   subroutine crlist ( n, ncol, x, y, z, list, lend, lptr, lnew, &
-    ltri, listc, nb, xc, yc, zc, rc, ier ) &
-        bind(C, name="crlist")
+    ltri, listc, nb, xc, yc, zc, rc, ier )
 
   !*****************************************************************************80
   !
@@ -1000,40 +987,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N.  Note that, if N = 3, there are only two Voronoi vertices 
   !    separated by 180 degrees, and the Voronoi regions are not well defined.
   !
-  !    Input, integer(ip) NCOL, the number of columns reserved for LTRI.
+  !    Input, integer(int32) NCOL, the number of columns reserved for LTRI.
   !    This must be at least NB-2, where NB is the number of boundary nodes.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the coordinates of the nodes
+  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of the nodes
   !    (unit vectors).
   !
-  !    Input, integer(ip) LIST(6*(N-2)), the set of adjacency lists.  
+  !    Input, integer(int32) LIST(6*(N-2)), the set of adjacency lists.  
   !    Refer to TRMESH.
   !
-  !    Input, integer(ip) LEND(N), the set of pointers to ends of 
+  !    Input, integer(int32) LEND(N), the set of pointers to ends of 
   !    adjacency lists.  Refer to TRMESH.
   !
-  !    Input/output, integer(ip) LPTR(6*(N-2)), pointers associated 
+  !    Input/output, integer(int32) LPTR(6*(N-2)), pointers associated 
   !    with LIST.  Refer to TRMESH.  On output, pointers associated with LISTC. 
   !    Updated for the addition of pseudo-triangles if the original triangulation 
   !    contains boundary nodes (0 < NB).
   !
-  !    Input/output, integer(ip) LNEW.  On input, a pointer to the first 
+  !    Input/output, integer(int32) LNEW.  On input, a pointer to the first 
   !    empty location in LIST and LPTR (list length plus one).  On output, 
   !    pointer to the first empty location in LISTC and LPTR (list length plus 
   !    one).  LNEW is not altered if NB = 0.
   !
-  !    Output, integer(ip) LTRI(6,NCOL).  Triangle list whose first NB-2
+  !    Output, integer(int32) LTRI(6,NCOL).  Triangle list whose first NB-2
   !    columns contain the indexes of a clockwise-ordered sequence of vertices 
   !    (first three rows) followed by the LTRI column indexes of the triangles 
   !    opposite the vertices (or 0 denoting the exterior region) in the last
   !    three rows. This array is not generally of any further use outside this 
   !    routine.
   !
-  !    Output, integer(ip) LISTC(3*NT), where NT = 2*N-4 is the number 
+  !    Output, integer(int32) LISTC(3*NT), where NT = 2*N-4 is the number 
   !    of triangles in the triangulation (after extending it to cover the entire
   !    surface if necessary).  Contains the triangle indexes (indexes to XC, YC, 
   !    ZC, and RC) stored in 1-1 correspondence with LIST/LPTR entries (or entries
@@ -1045,19 +1032,19 @@ contains
   !    circumcenters in one-to-one correspondence with its adjacency
   !    list (in the extended triangulation).
   !
-  !    Output, integer(ip) NB, the number of boundary nodes unless 
+  !    Output, integer(int32) NB, the number of boundary nodes unless 
   !    IER = 1.
   !
-  !    Output, real(dp) XC(2*N-4), YC(2*N-4), ZC(2*N-4), the coordinates
+  !    Output, real(real64) XC(2*N-4), YC(2*N-4), ZC(2*N-4), the coordinates
   !    of the triangle circumcenters (Voronoi vertices).  XC(I)**2 + YC(I)**2
   !    + ZC(I)**2 = 1.  The first NB-2 entries correspond to pseudo-triangles 
   !    if 0 < NB.
   !
-  !    Output, real(dp) RC(2*N-4), the circumradii (the arc lengths or
+  !    Output, real(real64) RC(2*N-4), the circumradii (the arc lengths or
   !    angles between the circumcenters and associated triangle vertices) in 
   !    1-1 correspondence with circumcenters.
   !
-  !    Output, integer(ip) IER = Error indicator:
+  !    Output, integer(int32) IER = Error indicator:
   !    0, if no errors were encountered.
   !    1, if N < 3.
   !    2, if NCOL < NB-2.
@@ -1094,55 +1081,55 @@ contains
   !                CIRCUM
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ncol
+    integer(int32) n
+    integer(int32) ncol
 
-    real(dp) :: c(3)
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip) :: i4
-    integer(ip), intent(out) :: ier
-    integer(ip) :: ierr
-    integer(ip) :: kt
-    integer(ip) :: kt1
-    integer(ip) :: kt11
-    integer(ip) :: kt12
-    integer(ip) :: kt2
-    integer(ip) :: kt21
-    integer(ip) :: kt22
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip), intent(out) :: listc(6*(n-2))
-    integer(ip), intent(inout) :: lnew
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip) :: lpn
-    integer(ip), intent(inout) :: lptr(6*(n-2))
-    integer(ip) :: lstptr
-    integer(ip) :: ltri(6,ncol)
-    integer(ip) :: n0
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip), intent(out) :: nb
-    integer(ip) :: nm2
-    integer(ip) :: nn
-    integer(ip) :: nt
-    real(dp), intent(out) :: rc(2*n-4)
-    logical :: swp
-    logical :: swptst
-    real(dp) :: t
-    real(dp) :: v1(3)
-    real(dp) :: v2(3)
-    real(dp) :: v3(3)
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(out) :: xc(2*n-4)
-    real(dp), intent(in) :: y(n)
-    real(dp), intent(out) :: yc(2*n-4)
-    real(dp), intent(in) :: z(n)
-    real(dp), intent(out) :: zc(2*n-4)
+    real(real64) c(3)
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) i4
+    integer(int32) ier
+    integer(int32) ierr
+    integer(int32) kt
+    integer(int32) kt1
+    integer(int32) kt11
+    integer(int32) kt12
+    integer(int32) kt2
+    integer(int32) kt21
+    integer(int32) kt22
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) listc(6*(n-2))
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lpn
+    integer(int32) lptr(6*(n-2))
+    integer(int32) lstptr
+    integer(int32) ltri(6,ncol)
+    integer(int32) n0
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) nb
+    integer(int32) nm2
+    integer(int32) nn
+    integer(int32) nt
+    real(real64) rc(2*n-4)
+    logical swp
+    logical swptst
+    real(real64) t
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) x(n)
+    real(real64) xc(2*n-4)
+    real(real64) y(n)
+    real(real64) yc(2*n-4)
+    real(real64) z(n)
+    real(real64) zc(2*n-4)
 
     nn = n
     nb = 0
@@ -1374,8 +1361,8 @@ contains
         zc(kt) = c(3)
 
         t = dot_product ( v1(1:3), c(1:3) )
-        t = max ( t, -1.0_dp )
-        t = min ( t, +1.0_dp )
+        t = max ( t, -1.0e+00_real64 )
+        t = min ( t, +1.0e+00_real64 )
 
         rc(kt) = acos ( t )
 
@@ -1437,8 +1424,8 @@ contains
           zc(kt) = c(3)
 
           t = dot_product ( v1(1:3), c(1:3) )
-          t = max ( t, -1.0_dp )
-          t = min ( t, +1.0_dp )
+          t = max ( t, -1.0e+00_real64 )
+          t = min ( t, +1.0e+00_real64 )
 
           rc(kt) = acos ( t )
   !
@@ -1571,10 +1558,9 @@ contains
     end do
 
     ier = 0
-  end subroutine crlist
+  end
 
-  subroutine delarc ( n, io1, io2, list, lptr, lend, lnew, ier ) &
-        bind(C, name="delarc")
+  subroutine delarc ( n, io1, io2, list, lptr, lend, lnew, ier )
 
   !*****************************************************************************80
   !
@@ -1609,17 +1595,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    4 <= N.
   !
-  !    Input, integer(ip) IO1, IO2, indexes (in the range 1 to N) of
+  !    Input, integer(int32) IO1, IO2, indexes (in the range 1 to N) of
   !    a pair of adjacent boundary nodes defining the arc to be removed.
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
   !    LNEW, the triangulation data structure created by TRMESH.  On output, 
   !    updated with the removal of arc IO1-IO2 unless 0 < IER.
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !    0, if no errors were encountered.
   !    1, if N, IO1, or IO2 is outside its valid range, or IO1 = IO2.
   !    2, if IO1-IO2 is not a boundary arc.
@@ -1638,22 +1624,22 @@ contains
   !               is the directed boundary edge associated with IO1-IO2
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(out) :: ier
-    integer(ip), intent(in), value :: io1
-    integer(ip), intent(in), value :: io2
-    integer(ip), intent(inout) :: lend(n)
-    integer(ip), intent(inout) :: list(6*(n-2))
-    integer(ip) :: lnew
-    integer(ip) :: lp
-    integer(ip) :: lph
-    integer(ip) :: lpl
-    integer(ip), intent(inout) :: lptr(6*(n-2))
-    integer(ip) :: lstptr
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
+    integer(int32) ier
+    integer(int32) io1
+    integer(int32) io2
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lph
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) lstptr
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
 
     n1 = io1
     n2 = io2
@@ -1735,10 +1721,9 @@ contains
   !  No errors encountered.
   !
     ier = 0
-  end subroutine delarc
+  end
 
-  subroutine delnb ( n0, nb, n, list, lptr, lend, lnew, lph ) &
-        bind(C, name="delnb")
+  subroutine delnb ( n0, nb, n, list, lptr, lend, lnew, lph )
 
   !*****************************************************************************80
   !
@@ -1781,18 +1766,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N0, NB, indexes, in the range 1 to N, of a 
+  !    Input, integer(int32) N0, NB, indexes, in the range 1 to N, of a 
   !    pair of nodes such that NB is a neighbor of N0.  (N0 need not be a 
   !    neighbor of NB.)
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), LNEW, 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), LNEW, 
   !    the data structure defining the triangulation.  On output, updated with 
   !    the removal of NB from the adjacency list of N0 unless LPH < 0.
   !
-  !    Input, integer(ip) LPH, list pointer to the hole (NB as a 
+  !    Input, integer(int32) LPH, list pointer to the hole (NB as a 
   !    neighbor of N0) filled in by the values at LNEW-1 or error indicator:
   !    >  0, if no errors were encountered.
   !    = -1, if N0, NB, or N is outside its valid range.
@@ -1809,22 +1794,22 @@ contains
   !    NN =  Local copy of N
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip), intent(in), value :: lnew
-    integer(ip) :: lnw
-    integer(ip) :: lp
-    integer(ip) :: lpb
-    integer(ip), intent(in), value :: lph
-    integer(ip) :: lpl
-    integer(ip) :: lpp
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip), intent(in), value :: n0
-    integer(ip), intent(in), value :: nb
-    integer(ip) :: nn
+    integer(int32) i
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lnew
+    integer(int32) lnw
+    integer(int32) lp
+    integer(int32) lpb
+    integer(int32) lph
+    integer(int32) lpl
+    integer(int32) lpp
+    integer(int32) lptr(6*(n-2))
+    integer(int32) n0
+    integer(int32) nb
+    integer(int32) nn
 
     nn = n
   !
@@ -1923,10 +1908,9 @@ contains
   !
     lnew = lnw
     lph = lpb
-  end subroutine delnb
+  end
 
-  subroutine delnod ( k, n, x, y, z, list, lptr, lend, lnew, lwk, iwk, ier ) &
-        bind(C, name="delnod")
+  subroutine delnod ( k, n, x, y, z, list, lptr, lend, lnew, lwk, iwk, ier )
 
   !*****************************************************************************80
   !
@@ -1961,33 +1945,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) K, index (for X, Y, and Z) of the node to be
+  !    Input, integer(int32) K, index (for X, Y, and Z) of the node to be
   !    deleted.  1 <= K <= N.
   !
-  !    Input/output, integer(ip) N, the number of nodes in the 
+  !    Input/output, integer(int32) N, the number of nodes in the 
   !    triangulation.  4 <= N.  Note that N will be decremented following the 
   !    deletion.
   !
-  !    Input/output, real(dp) X(N), Y(N), Z(N), the coordinates of 
+  !    Input/output, real(real64) X(N), Y(N), Z(N), the coordinates of 
   !    the nodes in the triangulation.  On output, updated with elements
   !    K+1,...,N+1 shifted up one position, thus overwriting element K, 
   !    unless 1 <= IER <= 4.
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
   !    LNEW, the data structure defining the triangulation, created by TRMESH.  
   !    On output, updated to reflect the deletion unless 1 <= IER <= 4.  
   !    Note that the data structure may have been altered if 3 < IER.
   !
-  !    Input/output, integer(ip) LWK, the number of columns reserved for 
+  !    Input/output, integer(int32) LWK, the number of columns reserved for 
   !    IWK.  LWK must be at least NNB-3, where NNB is the number of neighbors of 
   !    node K, including an extra pseudo-node if K is a boundary node.
   !    On output, the number of IWK columns required unless IER = 1 or IER = 3.
   !
-  !    Output, integer(ip) IWK(2,LWK), indexes of the endpoints of the 
+  !    Output, integer(int32) IWK(2,LWK), indexes of the endpoints of the 
   !    new arcs added unless LWK = 0 or 1 <= IER <= 4.  (Arcs are associated with
   !    columns.)
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !    0, if no errors were encountered.
   !    1, if K or N is outside its valid range or LWK < 0 on input.
   !    2, if more space is required in IWK.  Refer to LWK.
@@ -2030,56 +2014,56 @@ contains
   !    XR,YR,ZR = Coordinates of NR
   !
 
-    integer(ip), intent(inout) :: n
+    integer(int32) n
 
-    logical :: bdry
-    integer(ip) :: i
-    integer(ip), intent(out) :: ier
-    integer(ip) :: ierr
-    integer(ip), intent(out) :: iwk(2,*)
-    integer(ip) :: iwl
-    integer(ip) :: j
-    integer(ip), intent(in), value :: k
-    logical :: left
-    integer(ip), intent(inout) :: lend(n)
-    integer(ip), intent(inout) :: list(6*(n-2))
-    integer(ip) :: lnew
-    integer(ip) :: lnw
-    integer(ip) :: lp
-    integer(ip) :: lp21
-    integer(ip) :: lpf
-    integer(ip) :: lph
-    integer(ip) :: lpl
-    integer(ip) :: lpl2
-    integer(ip) :: lpn
-    integer(ip), intent(inout) :: lptr(6*(n-2))
-    integer(ip) :: lstptr
-    integer(ip), intent(out) :: lwk
-    integer(ip) :: lwkl
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: nbcnt
-    integer(ip) :: nfrst
-    integer(ip) :: nit
-    integer(ip) :: nl
-    integer(ip) :: nn
-    integer(ip) :: nnb
-    integer(ip) :: nr
-    real(dp), intent(inout) :: x(*)
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp) :: xl
-    real(dp) :: xr
-    real(dp), intent(inout) :: y(*)
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp) :: yl
-    real(dp) :: yr
-    real(dp), intent(inout) :: z(*)
-    real(dp) :: z1
-    real(dp) :: z2
-    real(dp) :: zl
-    real(dp) :: zr
+    logical bdry
+    integer(int32) i
+    integer(int32) ier
+    integer(int32) ierr
+    integer(int32) iwk(2,*)
+    integer(int32) iwl
+    integer(int32) j
+    integer(int32) k
+    logical left
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lnew
+    integer(int32) lnw
+    integer(int32) lp
+    integer(int32) lp21
+    integer(int32) lpf
+    integer(int32) lph
+    integer(int32) lpl
+    integer(int32) lpl2
+    integer(int32) lpn
+    integer(int32) lptr(6*(n-2))
+    integer(int32) lstptr
+    integer(int32) lwk
+    integer(int32) lwkl
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) nbcnt
+    integer(int32) nfrst
+    integer(int32) nit
+    integer(int32) nl
+    integer(int32) nn
+    integer(int32) nnb
+    integer(int32) nr
+    real(real64) x(*)
+    real(real64) x1
+    real(real64) x2
+    real(real64) xl
+    real(real64) xr
+    real(real64) y(*)
+    real(real64) y1
+    real(real64) y2
+    real(real64) yl
+    real(real64) yr
+    real(real64) z(*)
+    real(real64) z1
+    real(real64) z2
+    real(real64) zl
+    real(real64) zr
   !
   !  Set N1 to K and NNB to the number of neighbors of N1 (plus
   !  one if N1 is a boundary node), and test for errors.  LPF
@@ -2458,10 +2442,9 @@ contains
     end if
 
     ier = 0
-  end subroutine delnod
+  end
 
-  subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier ) &
-        bind(C, name="edge")
+  subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier )
 
   !*****************************************************************************80
   !
@@ -2504,32 +2487,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IN1, IN2, indexes (of X, Y, and Z) in the 
+  !    Input, integer(int32) IN1, IN2, indexes (of X, Y, and Z) in the 
   !    range 1 to N defining a pair of nodes to be connected by an arc.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the coordinates of the nodes.
+  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of the nodes.
   !
-  !    Input/output, integer(ip) LWK.  On input, the number of columns 
+  !    Input/output, integer(int32) LWK.  On input, the number of columns 
   !    reserved for IWK.  This must be at least NI, the number of arcs that 
   !    intersect IN1-IN2.  (NI is bounded by N-3.)   On output, the number of 
   !    arcs which intersect IN1-IN2 (but not more than the input value of LWK) 
   !    unless IER = 1 or IER = 3.  LWK = 0 if and only if IN1 and IN2 were 
   !    adjacent (or LWK=0) on input.
   !
-  !    Output, integer(ip) IWK(2*LWK), the indexes of the endpoints of 
+  !    Output, integer(int32) IWK(2*LWK), the indexes of the endpoints of 
   !    the new arcs other than IN1-IN2 unless 0 < IER or LWK = 0.  New arcs to
   !    the left of IN1->IN2 are stored in the first K-1 columns (left portion 
   !    of IWK), column K contains zeros, and new arcs to the right of IN1->IN2
   !    occupy columns K+1,...,LWK.  (K can be determined by searching IWK 
   !    for the zeros.)
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), 
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), 
   !    the data structure defining the triangulation, created by TRMESH.  On 
   !    output, updated if necessary to reflect the presence of an arc connecting 
   !    IN1 and IN2 unless 0 < IER.  The data structure has been altered if 
   !    4 <= IER.
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !    0, if no errors were encountered.
   !    1, if IN1 < 1, IN2 < 1, IN1 = IN2, or LWK < 0 on input.
   !    2, if more space is required in IWK.  Refer to LWK.
@@ -2572,53 +2555,53 @@ contains
   !    X2,Y2,Z2 = Coordinates of IN2
   !
 
-    real(dp) :: dp12
-    real(dp) :: dp1l
-    real(dp) :: dp1r
-    real(dp) :: dp2l
-    real(dp) :: dp2r
-    integer(ip) :: i
-    integer(ip), intent(out) :: ier
-    integer(ip) :: ierr
-    integer(ip), intent(in), value :: in1
-    integer(ip), intent(in), value :: in2
-    integer(ip) :: iwc
-    integer(ip) :: iwcp1
-    integer(ip) :: iwend
-    integer(ip) :: iwf
-    integer(ip), intent(out) :: iwk(2,*)
-    integer(ip) :: iwl
-    logical :: left
-    integer(ip), intent(inout) :: lend(*)
-    integer(ip) :: lft
-    integer(ip), intent(inout) :: list(*)
-    integer(ip) :: lp
-    integer(ip) :: lp21
-    integer(ip) :: lpl
-    integer(ip), intent(inout) :: lptr(*)
-    integer(ip), intent(inout) :: lwk
-    integer(ip) :: n0
-    integer(ip) :: n1
-    integer(ip) :: n1frst
-    integer(ip) :: n1lst
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: next
-    integer(ip) :: nit
-    integer(ip) :: nl
-    integer(ip) :: nr
-    real(dp), intent(in) :: x(*)
-    real(dp) :: x0
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp), intent(in) :: y(*)
-    real(dp) :: y0
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp), intent(in) :: z(*)
-    real(dp) :: z0
-    real(dp) :: z1
-    real(dp) :: z2
+    real(real64) dp12
+    real(real64) dp1l
+    real(real64) dp1r
+    real(real64) dp2l
+    real(real64) dp2r
+    integer(int32) i
+    integer(int32) ier
+    integer(int32) ierr
+    integer(int32) in1
+    integer(int32) in2
+    integer(int32) iwc
+    integer(int32) iwcp1
+    integer(int32) iwend
+    integer(int32) iwf
+    integer(int32) iwk(2,*)
+    integer(int32) iwl
+    logical left
+    integer(int32) lend(*)
+    integer(int32) lft
+    integer(int32) list(*)
+    integer(int32) lp
+    integer(int32) lp21
+    integer(int32) lpl
+    integer(int32) lptr(*)
+    integer(int32) lwk
+    integer(int32) n0
+    integer(int32) n1
+    integer(int32) n1frst
+    integer(int32) n1lst
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) next
+    integer(int32) nit
+    integer(int32) nl
+    integer(int32) nr
+    real(real64) x(*)
+    real(real64) x0
+    real(real64) x1
+    real(real64) x2
+    real(real64) y(*)
+    real(real64) y0
+    real(real64) y1
+    real(real64) y2
+    real(real64) z(*)
+    real(real64) z0
+    real(real64) z1
+    real(real64) z2
   !
   !  Store IN1, IN2, and LWK in local variables and test for errors.
   !
@@ -2732,10 +2715,10 @@ contains
           dp1r = x1 * x(nr) + y1 * y(nr) + z1 * z(nr)
           dp2r = x2 * x(nr) + y2 * y(nr) + z2 * z(nr)
 
-          if ( ( 0.0_dp <= dp2l - dp12 * dp1l .or. &
-                 0.0_dp <= dp2r - dp12 * dp1r )  .and. &
-               ( 0.0_dp <= dp1l - dp12 * dp2l .or.  &
-                 0.0_dp <= dp1r - dp12 * dp2r ) ) then
+          if ( ( 0.0e+00_real64 <= dp2l - dp12 * dp1l .or. &
+                 0.0e+00_real64 <= dp2r - dp12 * dp1r )  .and. &
+               ( 0.0e+00_real64 <= dp1l - dp12 * dp2l .or.  &
+                 0.0e+00_real64 <= dp1r - dp12 * dp2r ) ) then
             go to 6
           end if
   !
@@ -3138,10 +3121,9 @@ contains
     if ( ier == 5 ) then
       ier = 5
     end if
-  end subroutine edge
+  end
 
-  subroutine getnp ( x, y, z, list, lptr, lend, l, npts, df, ier ) &
-        bind(C, name="getnp")
+  subroutine getnp ( x, y, z, list, lptr, lend, l, npts, df, ier )
 
   !*****************************************************************************80
   !
@@ -3181,23 +3163,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the coordinates of the nodes.
+  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of the nodes.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
   !    triangulation data structure, created by TRMESH.
   !
-  !    Input, integer(ip) L, the number of nodes in the sequence on 
+  !    Input, integer(int32) L, the number of nodes in the sequence on 
   !    output.  2 <= L <= N.
   !
-  !    Input/output, integer(ip) NPTS(L).  On input, the indexes of 
+  !    Input/output, integer(int32) NPTS(L).  On input, the indexes of 
   !    the L-1 closest nodes to NPTS(1) in the first L-1 locations.  On output,
   !    updated with the index of the L-th closest node to NPTS(1) in 
   !    position L unless IER = 1.
   !
-  !    Output, real(dp) DF, value of an increasing function (negative
+  !    Output, real(real64) DF, value of an increasing function (negative
   !    cosine) of the angular distance between NPTS(1) and NPTS(L) unless IER = 1.
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !    0, if no errors were encountered.
   !    1, if L < 2.
   !
@@ -3216,29 +3198,29 @@ contains
   !    X1,Y1,Z1 = Coordinates of N1
   !
 
-    integer(ip), intent(in), value :: l
+    integer(int32) l
 
-    real(dp), intent(out) :: df
-    real(dp) :: dnb
-    real(dp) :: dnp
-    integer(ip) :: i
-    integer(ip), intent(out) :: ier
-    integer(ip), intent(in) :: lend(*)
-    integer(ip), intent(in) :: list(*)
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip), intent(in) :: lptr(*)
-    integer(ip) :: n1
-    integer(ip) :: nb
-    integer(ip) :: ni
-    integer(ip) :: np
-    integer(ip), intent(inout) :: npts(l)
-    real(dp), intent(in) :: x(*)
-    real(dp) :: x1
-    real(dp), intent(in) :: y(*)
-    real(dp) :: y1
-    real(dp), intent(in) :: z(*)
-    real(dp) :: z1
+    real(real64) df
+    real(real64) dnb
+    real(real64) dnp
+    integer(int32) i
+    integer(int32) ier
+    integer(int32) lend(*)
+    integer(int32) list(*)
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(*)
+    integer(int32) n1
+    integer(int32) nb
+    integer(int32) ni
+    integer(int32) np
+    integer(int32) npts(l)
+    real(real64) x(*)
+    real(real64) x1
+    real(real64) y(*)
+    real(real64) y1
+    real(real64) z(*)
+    real(real64) z1
 
     if ( l < 2 ) then
       ier = 1
@@ -3262,7 +3244,7 @@ contains
   !  of nodes in NPTS.  DNP is initially greater than -cos(PI)
   !  (the maximum distance).
   !
-    dnp = 2.0_dp
+    dnp = 2.0e+00_real64
   !
   !  Loop on nodes NI in NPTS.
   !
@@ -3307,10 +3289,9 @@ contains
       ni = npts(i)
       lend(ni) = -lend(ni)
     end do
-  end subroutine getnp
+  end
 
-  subroutine insert ( k, lp, list, lptr, lnew ) &
-        bind(C, name="insert")
+  subroutine insert ( k, lp, list, lptr, lnew )
 
   !*****************************************************************************80
   !
@@ -3343,31 +3324,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) K, the index of the node to be inserted.
+  !    Input, integer(int32) K, the index of the node to be inserted.
   !
-  !    Input, integer(ip) LP, the LIST pointer of N2 as a neighbor of N1.
+  !    Input, integer(int32) LP, the LIST pointer of N2 as a neighbor of N1.
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LNEW, 
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LNEW, 
   !    the data structure defining the triangulation, created by TRMESH.
   !    On output, updated with the addition of node K.
   !
 
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(inout) :: list(*)
-    integer(ip), intent(inout) :: lnew
-    integer(ip), intent(in), value :: lp
-    integer(ip), intent(inout) :: lptr(*)
-    integer(ip) :: lsav
+    integer(int32) k
+    integer(int32) list(*)
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lptr(*)
+    integer(int32) lsav
 
     lsav = lptr(lp)
     lptr(lp) = lnew
     list(lnew) = k
     lptr(lnew) = lsav
     lnew = lnew + 1
-  end subroutine insert
+  end
 
-  function inside ( p, lv, xv, yv, zv, nv, listv, ier ) &
-        bind(C, name="inside")
+  function inside ( p, lv, xv, yv, zv, nv, listv, ier )
 
   !*****************************************************************************80
   !
@@ -3421,18 +3401,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P(3), the coordinates of the point (unit vector)
+  !    Input, real(real64) P(3), the coordinates of the point (unit vector)
   !    to be located.
   !
-  !    Input, integer(ip) LV, the length of arrays XV, YV, and ZV.
+  !    Input, integer(int32) LV, the length of arrays XV, YV, and ZV.
   !
-  !    Input, real(dp) XV(LV), YV(LV), ZV(LV), the coordinates of unit
+  !    Input, real(real64) XV(LV), YV(LV), ZV(LV), the coordinates of unit
   !    vectors (points on the unit sphere).  
   !
-  !    Input, integer(ip) NV, the number of vertices in the polygon. 
+  !    Input, integer(int32) NV, the number of vertices in the polygon. 
   !    3 <= NV <= LV.
   !
-  !    Input, integer(ip) LISTV(NV), the indexes (for XV, YV, and ZV) 
+  !    Input, integer(int32) LISTV(NV), the indexes (for XV, YV, and ZV) 
   !    of a cyclically-ordered (and CCW-ordered) sequence of vertices that
   !    define R.  The last vertex (indexed by LISTV(NV)) is followed by the 
   !    first (indexed by LISTV(1)).  LISTV entries must be in the range 1 to LV.
@@ -3440,7 +3420,7 @@ contains
   !    Output, logical INSIDE, TRUE if and only if P lies inside R unless
   !    IER /= 0, in which case the value is not altered.
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !    0, if no errors were encountered.
   !    1, if LV or NV is outside its valid range.
   !    2, if a LISTV entry is outside its valid range.
@@ -3507,43 +3487,43 @@ contains
   !    VNRM =      Euclidean norm of VN
   !
 
-    integer(ip), intent(in), value :: lv
-    integer(ip), intent(in), value :: nv
+    integer(int32) lv
+    integer(int32) nv
 
-    real(dp) :: b(3)
-    real(dp) :: bp
-    real(dp) :: bq
-    real(dp) :: cn(3)
-    real(dp) :: d
-    real(dp), parameter :: eps = 0.001_dp
-    logical :: even
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip), intent(out) :: ier
-    integer(ip) :: ierr
-    integer(ip) :: imx
-    logical :: inside
-    integer(ip) :: k
-    integer(ip) :: k0
-    logical :: lft1
-    logical :: lft2
-    integer(ip), intent(in) :: listv(nv)
-    integer(ip) :: n
-    integer(ip) :: ni
-    real(dp), intent(in) :: p(3)
-    logical :: pinr
-    real(dp) :: pn(3)
-    real(dp) :: q(3)
-    logical :: qinr
-    real(dp) :: qn(3)
-    real(dp) :: qnrm
-    real(dp) :: v1(3)
-    real(dp) :: v2(3)
-    real(dp) :: vn(3)
-    real(dp) :: vnrm
-    real(dp), intent(in) :: xv(lv)
-    real(dp), intent(in) :: yv(lv)
-    real(dp), intent(in) :: zv(lv)
+    real(real64) b(3)
+    real(real64) bp
+    real(real64) bq
+    real(real64) cn(3)
+    real(real64) d
+    real(real64), parameter :: eps = 0.001e+00_real64
+    logical even
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) ier
+    integer(int32) ierr
+    integer(int32) imx
+    logical inside
+    integer(int32) k
+    integer(int32) k0
+    logical lft1
+    logical lft2
+    integer(int32) listv(nv)
+    integer(int32) n
+    integer(int32) ni
+    real(real64) p(3)
+    logical pinr
+    real(real64) pn(3)
+    real(real64) q(3)
+    logical qinr
+    real(real64) qn(3)
+    real(real64) qnrm
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) vn(3)
+    real(real64) vnrm
+    real(real64) xv(lv)
+    real(real64) yv(lv)
+    real(real64) zv(lv)
   !
   !  Store local parameters.
   !
@@ -3594,7 +3574,7 @@ contains
     vn(3) = xv(i1) * yv(i2) - yv(i1) * xv(i2)
     vnrm = sqrt ( sum ( vn(1:3)**2 ) )
 
-    if ( vnrm == 0.0_dp ) then
+    if ( vnrm == 0.0e+00_real64 ) then
       go to 1
     end if
 
@@ -3614,7 +3594,7 @@ contains
     cn(2) = q(3) * p(1) - q(1) * p(3)
     cn(3) = q(1) * p(2) - q(2) * p(1)
 
-    if ( cn(1) == 0.0_dp .and. cn(2) == 0.0_dp  .and. cn(3) == 0.0_dp ) then
+    if ( cn(1) == 0.0e+00_real64 .and. cn(2) == 0.0e+00_real64  .and. cn(3) == 0.0e+00_real64 ) then
       go to 1
     end if
 
@@ -3629,8 +3609,8 @@ contains
   !
     ni = 0
     even = .true.
-    bp = -2.0_dp
-    bq = -2.0_dp
+    bp = -2.0e+00_real64
+    bq = -2.0e+00_real64
     pinr = .true.
     qinr = .true.
     i2 = listv(n)
@@ -3639,7 +3619,7 @@ contains
       ier = 2
     end if
 
-    lft2 = 0.0_dp < cn(1) * xv(i2) + cn(2) * yv(i2) + cn(3) * zv(i2) 
+    lft2 = 0.0e+00_real64 < cn(1) * xv(i2) + cn(2) * yv(i2) + cn(3) * zv(i2) 
   !
   !  Loop on boundary arcs I1->I2.
   !
@@ -3653,7 +3633,7 @@ contains
         ier = 2
       end if
 
-      lft2 = ( 0.0_dp < cn(1) * xv(i2) + cn(2) * yv(i2) + cn(3) * zv(i2) )
+      lft2 = ( 0.0e+00_real64 < cn(1) * xv(i2) + cn(2) * yv(i2) + cn(3) * zv(i2) )
 
       if ( lft1 .eqv. lft2 ) then
         cycle
@@ -3676,8 +3656,8 @@ contains
   !  B Forward Q->P and B Forward P->Q       iff
   !  <B,QN> > 0 and 0 < <B,PN>.
   !
-      if ( 0.0_dp < dot_product ( b(1:3), qn(1:3) ) .and. &
-           0.0_dp < dot_product ( b(1:3), pn(1:3) ) ) then
+      if ( 0.0e+00_real64 < dot_product ( b(1:3), qn(1:3) ) .and. &
+           0.0e+00_real64 < dot_product ( b(1:3), pn(1:3) ) ) then
   !
   !  Update EVEN, BQ, QINR, BP, and PINR.
   !
@@ -3714,10 +3694,9 @@ contains
 
     ier = 0
     inside = even
-  end function inside
+  end
 
-  subroutine intadd ( kk, i1, i2, i3, list, lptr, lend, lnew ) &
-        bind(C, name="intadd")
+  subroutine intadd ( kk, i1, i2, i3, list, lptr, lend, lnew )
 
   !*****************************************************************************80
   !
@@ -3751,14 +3730,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) KK, the index of the node to be inserted. 
+  !    Input, integer(int32) KK, the index of the node to be inserted. 
   !    1 <= KK and KK must not be equal to I1, I2, or I3.
   !
-  !    Input, integer(ip) I1, I2, I3, indexes of the 
+  !    Input, integer(int32) I1, I2, I3, indexes of the 
   !    counterclockwise-ordered sequence of vertices of a triangle which contains 
   !    node KK.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), LNEW, 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), LNEW, 
   !    the data structure defining the triangulation, created by TRMESH.  Triangle
   !    (I1,I2,I3) must be included in the triangulation.
   !    On output, updated with the addition of node KK.  KK
@@ -3771,20 +3750,20 @@ contains
   !    N1,N2,N3 = Local copies of I1, I2, and I3
   !
 
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip), intent(in), value :: i3
-    integer(ip) :: k
-    integer(ip), intent(in), value :: kk
-    integer(ip), intent(in) :: lend(*)
-    integer(ip), intent(in) :: list(*)
-    integer(ip), intent(in), value :: lnew
-    integer(ip) :: lp
-    integer(ip), intent(in) :: lptr(*)
-    integer(ip) :: lstptr
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) k
+    integer(int32) kk
+    integer(int32) lend(*)
+    integer(int32) list(*)
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lptr(*)
+    integer(int32) lstptr
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
 
     k = kk
   !
@@ -3815,10 +3794,9 @@ contains
     lptr(lnew+2) = lnew
     lend(k) = lnew + 2
     lnew = lnew + 3
-  end subroutine intadd
+  end
 
-  subroutine intrsc ( p1, p2, cn, p, ier ) &
-        bind(C, name="intrsc")
+  subroutine intrsc ( p1, p2, cn, p, ier )
 
   !*****************************************************************************80
   !
@@ -3852,17 +3830,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the coordinates of unit vectors.
+  !    Input, real(real64) P1(3), P2(3), the coordinates of unit vectors.
   !
-  !    Input, real(dp) CN(3), the coordinates of a nonzero vector 
+  !    Input, real(real64) CN(3), the coordinates of a nonzero vector 
   !    which defines C as the intersection of the plane whose normal is CN 
   !    with the unit sphere.  Thus, if C is to be the great circle defined
   !    by P and Q, CN should be P X Q.
   !
-  !    Output, real(dp) P(3), point of intersection defined above 
+  !    Output, real(real64) P(3), point of intersection defined above 
   !    unless IER is not 0, in which case P is not altered.
   !
-  !    Output, integer(ip) IER, error indicator.
+  !    Output, integer(int32) IER, error indicator.
   !    0, if no errors were encountered.
   !    1, if <CN,P1> = <CN,P2>.  This occurs iff P1 = P2 or CN = 0 or there are
   !      two intersection points at the same distance from A.
@@ -3880,17 +3858,17 @@ contains
   !          in the plane of C
   !
 
-    real(dp), intent(in) :: cn(3)
-    real(dp) :: d1
-    real(dp) :: d2
-    integer(ip) :: i
-    integer(ip), intent(out) :: ier
-    real(dp), intent(out) :: p(3)
-    real(dp), intent(in) :: p1(3)
-    real(dp), intent(in) :: p2(3)
-    real(dp) :: pp(3)
-    real(dp) :: ppn
-    real(dp) :: t
+    real(real64) cn(3)
+    real(real64) d1
+    real(real64) d2
+    integer(int32) i
+    integer(int32) ier
+    real(real64) p(3)
+    real(real64) p1(3)
+    real(real64) p2(3)
+    real(real64) pp(3)
+    real(real64) ppn
+    real(real64) t
 
     d1 = dot_product ( cn(1:3), p1(1:3) )
     d2 = dot_product ( cn(1:3), p2(1:3) )
@@ -3909,7 +3887,7 @@ contains
   !
   !  PPN = 0 iff PP = 0 iff P2 = -P1 (and T = .5).
   !
-    if ( ppn == 0.0_dp ) then
+    if ( ppn == 0.0e+00_real64 ) then
       ier = 2
     end if
 
@@ -3920,10 +3898,9 @@ contains
     p(1:3) = pp(1:3) / ppn
 
     ier = 0
-  end subroutine intrsc
+  end
 
-  function jrand ( n, ix, iy, iz ) &
-        bind(C, name="jrand")
+  function jrand ( n, ix, iy, iz )
 
   !*****************************************************************************80
   !
@@ -3951,14 +3928,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the maximum value to be returned.
+  !    Input, integer(int32) N, the maximum value to be returned.
   !
-  !    Input/output, integer(ip) IX, IY, IZ = seeds initialized to 
+  !    Input/output, integer(int32) IX, IY, IZ = seeds initialized to 
   !    values in the range 1 to 30,000 before the first call to JRAND, and 
   !    not altered between subsequent calls (unless a sequence of random 
   !    numbers is to be repeated by reinitializing the seeds).
   !
-  !    Output, integer(ip) JRAND, a random integer in the range 1 to N.
+  !    Output, integer(int32) JRAND, a random integer in the range 1 to N.
   !
   !  Local parameters:
   !
@@ -3966,28 +3943,27 @@ contains
   !    X = Pseudo-random number in the range 0 to 3 whose fractional part is U.
   !
 
-    integer(ip), intent(inout) :: ix
-    integer(ip), intent(inout) :: iy
-    integer(ip), intent(inout) :: iz
-    integer(ip) :: jrand
-    integer(ip), intent(in), value :: n
-    real(dp) :: u
-    real(dp) :: x
+    integer(int32) ix
+    integer(int32) iy
+    integer(int32) iz
+    integer(int32) jrand
+    integer(int32) n
+    real(real64) u
+    real(real64) x
 
     ix = mod ( 171 * ix, 30269 )
     iy = mod ( 172 * iy, 30307 )
     iz = mod ( 170 * iz, 30323 )
 
-    x = ( real ( ix, dp) / 30269.0_dp ) &
-      + ( real ( iy, dp) / 30307.0_dp ) &
-      + ( real ( iz, dp) / 30323.0_dp )
+    x = ( real ( ix, real64) / 30269.0e+00_real64 ) &
+      + ( real ( iy, real64) / 30307.0e+00_real64 ) &
+      + ( real ( iz, real64) / 30323.0e+00_real64 )
 
     u = x - int ( x )
-    jrand = real ( n, dp) * u + 1.0_dp
-  end function jrand
+    jrand = real ( n, real64) * u + 1.0e+00_real64
+  end
 
-  pure function left ( x1, y1, z1, x2, y2, z2, x0, y0, z0 ) &
-        bind(C, name="left")
+  function left ( x1, y1, z1, x2, y2, z2, x0, y0, z0 )
 
   !*****************************************************************************80
   !
@@ -4018,36 +3994,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, Z1 = Coordinates of N1.
+  !    Input, real(real64) X1, Y1, Z1 = Coordinates of N1.
   !
-  !    Input, real(dp) X2, Y2, Z2 = Coordinates of N2.
+  !    Input, real(real64) X2, Y2, Z2 = Coordinates of N2.
   !
-  !    Input, real(dp) X0, Y0, Z0 = Coordinates of N0.
+  !    Input, real(real64) X0, Y0, Z0 = Coordinates of N0.
   !
   !    Output, logical LEFT = TRUE if and only if N0 is in the closed
   !    left hemisphere.
   !
 
-    logical              :: left
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: y0
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: z0
-    real(dp), intent(in), value :: z1
-    real(dp), intent(in), value :: z2
+    logical              left
+    real(real64) x0
+    real(real64) x1
+    real(real64) x2
+    real(real64) y0
+    real(real64) y1
+    real(real64) y2
+    real(real64) z0
+    real(real64) z1
+    real(real64) z2
   !
   !  LEFT = TRUE iff <N0,N1 X N2> = det(N0,N1,N2) >= 0.
   !
     left = x0 * ( y1 * z2 - y2 * z1 ) &
          - y0 * ( x1 * z2 - x2 * z1 ) &
-         + z0 * ( x1 * y2 - x2 * y1 ) >= 0.0_dp
-  end function left
+         + z0 * ( x1 * y2 - x2 * y1 ) >= 0.0e+00_real64
+  end
 
-  pure function lstptr ( lpl, nb, list, lptr ) &
-        bind(C, name="lstptr")
+  function lstptr ( lpl, nb, list, lptr )
 
   !*****************************************************************************80
   !
@@ -4078,15 +4053,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LPL, is LEND(N0).
+  !    Input, integer(int32) LPL, is LEND(N0).
   !
-  !    Input, integer(ip) NB, index of the node whose pointer is to 
+  !    Input, integer(int32) NB, index of the node whose pointer is to 
   !    be returned.  NB must be connected to N0.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), the data 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), the data 
   !    structure defining the triangulation, created by TRMESH.
   !
-  !    Output, integer(ip) LSTPTR, pointer such that LIST(LSTPTR) = NB or
+  !    Output, integer(int32) LSTPTR, pointer such that LIST(LSTPTR) = NB or
   !    LIST(LSTPTR) = -NB, unless NB is not a neighbor of N0, in which 
   !    case LSTPTR = LPL.
   !
@@ -4096,13 +4071,13 @@ contains
   !    ND = Nodal index
   !
 
-    integer(ip), intent(in) :: list(*)
-    integer(ip) :: lp
-    integer(ip), intent(in), value :: lpl
-    integer(ip), intent(in) :: lptr(*)
-    integer(ip) :: lstptr
-    integer(ip), intent(in), value :: nb
-    integer(ip) :: nd
+    integer(int32) list(*)
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(*)
+    integer(int32) lstptr
+    integer(int32) nb
+    integer(int32) nd
 
     lp = lptr(lpl)
 
@@ -4123,10 +4098,9 @@ contains
     end do
 
     lstptr = lp
-  end function lstptr
+  end
 
-  pure function nbcnt ( lpl, lptr ) &
-        bind(C, name="nbcnt")
+  function nbcnt ( lpl, lptr )
 
   !*****************************************************************************80
   !
@@ -4161,12 +4135,12 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LPL = LIST pointer to the last neighbor of N0;
+  !    Input, integer(int32) LPL = LIST pointer to the last neighbor of N0;
   !    LPL = LEND(N0).
   !
-  !    Input, integer(ip) LPTR(6*(N-2)), pointers associated with LIST.
+  !    Input, integer(int32) LPTR(6*(N-2)), pointers associated with LIST.
   !
-  !    Output, integer(ip) NBCNT, the number of neighbors of N0.
+  !    Output, integer(int32) NBCNT, the number of neighbors of N0.
   !
   !  Local parameters:
   !
@@ -4175,11 +4149,11 @@ contains
   !    LP = LIST pointer
   !
 
-    integer(ip) :: k
-    integer(ip) :: lp
-    integer(ip), intent(in), value :: lpl
-    integer(ip), intent(in) :: lptr(*)
-    integer(ip) :: nbcnt
+    integer(int32) k
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(*)
+    integer(int32) nbcnt
 
     lp = lpl
     k = 1
@@ -4197,10 +4171,9 @@ contains
     end do
 
     nbcnt = k
-  end function nbcnt
+  end
 
-  function nearnd ( p, ist, n, x, y, z, list, lptr, lend, al ) &
-        bind(C, name="nearnd")
+  function nearnd ( p, ist, n, x, y, z, list, lptr, lend, al )
 
   !*****************************************************************************80
   !
@@ -4243,30 +4216,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P(3), the Cartesian coordinates of the point P to 
+  !    Input, real(real64) P(3), the Cartesian coordinates of the point P to 
   !    be located relative to the triangulation.  It is assumed 
   !    that P(1)**2 + P(2)**2 + P(3)**2 = 1, that is, that the
   !    point lies on the unit sphere.
   !
-  !    Input, integer(ip) IST, the index of the node at which the search
+  !    Input, integer(int32) IST, the index of the node at which the search
   !    is to begin.  The search time depends on the proximity of this 
   !    node to P.  If no good candidate is known, any value between
   !    1 and N will do.
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    N must be at least 3.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the Cartesian coordinates of
+  !    Input, real(real64) X(N), Y(N), Z(N), the Cartesian coordinates of
   !    the nodes.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), 
   !    the data structure defining the triangulation, created by TRMESH.
   !
-  !    Output, real(dp) AL, the arc length between P and node NEARND.
+  !    Output, real(real64) AL, the arc length between P and node NEARND.
   !    Because both points are on the unit sphere, this is also
   !    the angular separation in radians.
   !
-  !    Output, integer(ip) NEARND, the index of the nearest node to P.
+  !    Output, integer(int32) NEARND, the index of the nearest node to P.
   !    NEARND will be 0 if N < 3 or the triangulation data structure 
   !    is invalid.
   !
@@ -4294,53 +4267,53 @@ contains
   !    NST =       Index of the node at which TRFIND begins the search
   !
 
-    integer(ip), parameter :: lmax = 25
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: lmax = 25
+    integer(int32) n
 
-    real(dp), intent(out) :: al
-    real(dp) :: b1
-    real(dp) :: b2
-    real(dp) :: b3
-    real(dp) :: ds1
-    real(dp) :: dsr
-    real(dp) :: dx1
-    real(dp) :: dx2
-    real(dp) :: dx3
-    real(dp) :: dy1
-    real(dp) :: dy2
-    real(dp) :: dy3
-    real(dp) :: dz1
-    real(dp) :: dz2
-    real(dp) :: dz3
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip), intent(in), value :: ist
-    integer(ip) :: l
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip) :: listp(lmax)
-    integer(ip) :: lp
-    integer(ip) :: lp1
-    integer(ip) :: lp2
-    integer(ip) :: lpl
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip) :: lptrp(lmax)
-    integer(ip) :: lstptr
-    integer(ip) :: nearnd
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: nn
-    integer(ip) :: nr
-    integer(ip) :: nst
-    real(dp), intent(in) :: p(3)
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
-    real(dp), intent(in) :: z(n)
+    real(real64) al
+    real(real64) b1
+    real(real64) b2
+    real(real64) b3
+    real(real64) ds1
+    real(real64) dsr
+    real(real64) dx1
+    real(real64) dx2
+    real(real64) dx3
+    real(real64) dy1
+    real(real64) dy2
+    real(real64) dy3
+    real(real64) dz1
+    real(real64) dz2
+    real(real64) dz3
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) ist
+    integer(int32) l
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) listp(lmax)
+    integer(int32) lp
+    integer(int32) lp1
+    integer(int32) lp2
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) lptrp(lmax)
+    integer(int32) lstptr
+    integer(int32) nearnd
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) nn
+    integer(int32) nr
+    integer(int32) nst
+    real(real64) p(3)
+    real(real64) x(n)
+    real(real64) y(n)
+    real(real64) z(n)
 
     nearnd = 0
-    al = 0.0_dp
+    al = 0.0e+00_real64
   !
   !  Store local parameters and test for N invalid.
   !
@@ -4457,7 +4430,7 @@ contains
   !
         if ( dx3 * ( dy2 * dz1 - dy1 * dz2 ) - &
              dy3 * ( dx2 * dz1 - dx1 * dz2 ) + &
-             dz3 * ( dx2 * dy1 - dx1 * dy2 ) > 0.0_dp ) then
+             dz3 * ( dx2 * dy1 - dx1 * dy2 ) > 0.0e+00_real64 ) then
 
           l = l+1
           lptrp(lp2) = l
@@ -4514,14 +4487,13 @@ contains
     end do
 
     dsr = -dsr
-    dsr = min ( dsr, 1.0_dp )
+    dsr = min ( dsr, 1.0e+00_real64 )
 
     al = acos ( dsr )
     nearnd = nr
-  end function nearnd
+  end
 
-  subroutine optim ( x, y, z, na, list, lptr, lend, nit, iwk, ier ) &
-        bind(C, name="optim")
+  subroutine optim ( x, y, z, na, list, lptr, lend, nit, iwk, ier )
 
   !*****************************************************************************80
   !
@@ -4562,23 +4534,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X(*), Y(*), Z(*), the nodal coordinates.
+  !    Input, real(real64) X(*), Y(*), Z(*), the nodal coordinates.
   !
-  !    Input, integer(ip) NA, the number of arcs in the set.  NA >= 0.
+  !    Input, integer(int32) NA, the number of arcs in the set.  NA >= 0.
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
   !    the data structure defining the triangulation, created by TRMESH.
   !    On output, updated to reflect the swaps.
   !
-  !    Input/output, integer(ip) NIT.  On input, the maximum number of
+  !    Input/output, integer(int32) NIT.  On input, the maximum number of
   !    iterations to be performed.  NIT = 4*NA should be sufficient.  NIT >= 1.
   !    On output, the number of iterations performed.
   !
-  !    Input/output, integer(ip) IWK(2,NA), the nodal indexes of the arc
+  !    Input/output, integer(int32) IWK(2,NA), the nodal indexes of the arc
   !    endpoints (pairs of endpoints are stored in columns).  On output, endpoint 
   !    indexes of the new set of arcs reflecting the swaps.
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !    0, if no errors were encountered.
   !    1, if a swap occurred on the last of MAXIT iterations, where MAXIT is the
   !      value of NIT on input.  The new set of arcs is not necessarily optimal
@@ -4603,31 +4575,31 @@ contains
   !    SWP =     Flag set to TRUE iff a swap occurs in the optimization loop
   !
 
-    integer(ip), intent(inout) :: na
+    integer(int32) na
 
-    integer(ip) :: i
-    integer(ip), intent(out) :: ier
-    integer(ip) :: io1
-    integer(ip) :: io2
-    integer(ip) :: iter
-    integer(ip), intent(inout) :: iwk(2,na)
-    integer(ip), intent(inout) :: lend(*)
-    integer(ip), intent(inout) :: list(*)
-    integer(ip) :: lp
-    integer(ip) :: lp21
-    integer(ip) :: lpl
-    integer(ip) :: lpp
-    integer(ip), intent(inout) :: lptr(*)
-    integer(ip) :: maxit
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip), intent(inout) :: nit
-    integer(ip) :: nna
-    logical              :: swp
-    logical              :: swptst
-    real(dp), intent(in) :: x(*)
-    real(dp), intent(in) :: y(*)
-    real(dp), intent(in) :: z(*)
+    integer(int32) i
+    integer(int32) ier
+    integer(int32) io1
+    integer(int32) io2
+    integer(int32) iter
+    integer(int32) iwk(2,na)
+    integer(int32) lend(*)
+    integer(int32) list(*)
+    integer(int32) lp
+    integer(int32) lp21
+    integer(int32) lpl
+    integer(int32) lpp
+    integer(int32) lptr(*)
+    integer(int32) maxit
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) nit
+    integer(int32) nna
+    logical              swp
+    logical              swptst
+    real(real64) x(*)
+    real(real64) y(*)
+    real(real64) z(*)
 
     nna = na
     maxit = nit
@@ -4747,10 +4719,9 @@ contains
 
     nit = iter
     ier = 0
-  end subroutine optim
+  end
 
-  subroutine r83vec_normalize ( n, x, y, z ) &
-        bind(C, name="r83vec_normalize")
+  subroutine r83vec_normalize ( n, x, y, z )
 
   !*****************************************************************************80
   !
@@ -4770,35 +4741,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vectors.
+  !    Input, integer(int32) N, the number of vectors.
   !
-  !    Input/output, real(dp) X(N), Y(N), Z(N), the components of
+  !    Input/output, real(real64) X(N), Y(N), Z(N), the components of
   !    the vectors.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    real(dp) :: norm
-    real(dp), intent(inout) :: x(n)
-    real(dp), intent(inout) :: y(n)
-    real(dp), intent(inout) :: z(n)
+    integer(int32) i
+    real(real64) norm
+    real(real64) x(n)
+    real(real64) y(n)
+    real(real64) z(n)
 
     do i = 1, n
 
       norm = sqrt ( x(i)**2 + y(i)**2 + z(i)**2 )
 
-      if ( norm /= 0.0_dp ) then
+      if ( norm /= 0.0e+00_real64 ) then
         x(i) = x(i) / norm
         y(i) = y(i) / norm
         z(i) = z(i) / norm
       end if
 
     end do
-  end subroutine r83vec_normalize
+  end
 
-  pure subroutine scoord ( px, py, pz, plat, plon, pnrm ) &
-        bind(C, name="scoord")
+  subroutine scoord ( px, py, pz, plat, plon, pnrm )
 
   !*****************************************************************************80
   !
@@ -4827,41 +4797,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PX, PY, PZ, the coordinates of P.
+  !    Input, real(real64) PX, PY, PZ, the coordinates of P.
   !
-  !    Output, real(dp) PLAT, the latitude of P in the range -PI/2 
+  !    Output, real(real64) PLAT, the latitude of P in the range -PI/2 
   !    to PI/2, or 0 if PNRM = 0.
   !
-  !    Output, real(dp) PLON, the longitude of P in the range -PI to PI,
+  !    Output, real(real64) PLON, the longitude of P in the range -PI to PI,
   !    or 0 if P lies on the Z-axis.  
   !
-  !    Output, real(dp) PNRM, the magnitude (Euclidean norm) of P.
+  !    Output, real(real64) PNRM, the magnitude (Euclidean norm) of P.
   !
 
-    real(dp), intent(out) :: plat
-    real(dp), intent(out) :: plon
-    real(dp), intent(out) :: pnrm
-    real(dp), intent(in), value :: px
-    real(dp), intent(in), value :: py
-    real(dp), intent(in), value :: pz
+    real(real64) plat
+    real(real64) plon
+    real(real64) pnrm
+    real(real64) px
+    real(real64) py
+    real(real64) pz
 
     pnrm = sqrt ( px * px + py * py + pz * pz )
 
-    if ( px /= 0.0_dp .or. py /= 0.0_dp ) then
+    if ( px /= 0.0e+00_real64 .or. py /= 0.0e+00_real64 ) then
       plon = atan2 ( py, px )
     else
-      plon = 0.0_dp
+      plon = 0.0e+00_real64
     end if
 
-    if ( pnrm /= 0.0_dp ) then
+    if ( pnrm /= 0.0e+00_real64 ) then
       plat = asin ( pz / pnrm )
     else
-      plat = 0.0_dp
+      plat = 0.0e+00_real64
     end if
-  end subroutine scoord
+  end
 
-  function store ( x ) &
-        bind(C, name="store")
+  function store ( x )
 
   !*****************************************************************************80
   !
@@ -4893,24 +4862,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, the value to be stored.
+  !    Input, real(real64) X, the value to be stored.
   !
-  !    Output, real(dp) STORE, the value of X after it has been stored
+  !    Output, real(real64) STORE, the value of X after it has been stored
   !    and possibly truncated or rounded to the single precision word length.
   !
 
-    real(dp) :: store
-    real(dp), intent(in), value :: x
-    real(dp) :: y
+    real(real64) store
+    real(real64) x
+    real(real64) y
 
     common /stcom/ y
 
     y = x
     store = y
-  end function store
+  end
 
-  pure subroutine swap ( in1, in2, io1, io2, list, lptr, lend, lp21 ) &
-        bind(C, name="swap")
+  subroutine swap ( in1, in2, io1, io2, list, lptr, lend, lp21 )
 
   !*****************************************************************************80
   !
@@ -4943,16 +4911,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IN1, IN2, IO1, IO2, nodal indexes of the 
+  !    Input, integer(int32) IN1, IN2, IO1, IO2, nodal indexes of the 
   !    vertices of the quadrilateral.  IO1-IO2 is replaced by IN1-IN2.  
   !    (IO1,IO2,IN1) and (IO2,IO1,IN2) must be triangles on input.
   !
-  !    Input/output, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
+  !    Input/output, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
   !    the data structure defining the triangulation, created by TRMESH.  
   !    On output, updated with the swap; triangles (IO1,IO2,IN1) an (IO2,IO1,IN2) 
   !    are replaced by (IN1,IN2,IO2) and (IN2,IN1,IO1) unless LP21 = 0.
   !
-  !    Output, integer(ip) LP21, index of IN1 as a neighbor of IN2 after
+  !    Output, integer(int32) LP21, index of IN1 as a neighbor of IN2 after
   !    the swap is performed unless IN1 and IN2 are adjacent on input, in which 
   !    case LP21 = 0.
   !
@@ -4961,18 +4929,18 @@ contains
   !    LP, LPH, LPSAV = LIST pointers
   !
 
-    integer(ip), intent(in), value :: in1
-    integer(ip), intent(in), value :: in2
-    integer(ip), intent(in), value :: io1
-    integer(ip), intent(in), value :: io2
-    integer(ip), intent(inout) :: lend(*)
-    integer(ip), intent(inout) :: list(*)
-    integer(ip) :: lp
-    integer(ip), intent(out) :: lp21
-    integer(ip) :: lph
-    integer(ip) :: lpsav
-    integer(ip), intent(inout) :: lptr(*)
-    integer(ip) :: lstptr
+    integer(int32) in1
+    integer(int32) in2
+    integer(int32) io1
+    integer(int32) io2
+    integer(int32) lend(*)
+    integer(int32) list(*)
+    integer(int32) lp
+    integer(int32) lp21
+    integer(int32) lph
+    integer(int32) lpsav
+    integer(int32) lptr(*)
+    integer(int32) lstptr
   !
   !  Test for IN1 and IN2 adjacent.
   !
@@ -5022,10 +4990,9 @@ contains
     list(lph) = in1
     lptr(lph) = lpsav
     lp21 = lph
-  end subroutine swap
+  end
 
-  pure function swptst ( n1, n2, n3, n4, x, y, z ) &
-        bind(C, name="swptst")
+  function swptst ( n1, n2, n3, n4, x, y, z )
 
   !*****************************************************************************80
   !
@@ -5060,12 +5027,12 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N1, N2, N3, N4, indexes of the four nodes 
+  !    Input, integer(int32) N1, N2, N3, N4, indexes of the four nodes 
   !    defining the quadrilateral with N1 adjacent to N2, and (N1,N2,N3) in 
   !    counterclockwise order.  The arc connecting N1 to N2 should be replaced 
   !    by an arc connecting N3 to N4 if SWPTST = TRUE.  Refer to subroutine SWAP.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the coordinates of the nodes. 
+  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of the nodes. 
   !
   !    Output, logical SWPTST, TRUE if and only if the arc connecting N1
   !    and N2 should be swapped for an arc connecting N3 and N4.
@@ -5078,26 +5045,26 @@ contains
   !    X4,Y4,Z4 =    Coordinates of N4
   !
 
-    real(dp) :: dx1
-    real(dp) :: dx2
-    real(dp) :: dx3
-    real(dp) :: dy1
-    real(dp) :: dy2
-    real(dp) :: dy3
-    real(dp) :: dz1
-    real(dp) :: dz2
-    real(dp) :: dz3
-    integer(ip), intent(in), value :: n1
-    integer(ip), intent(in), value :: n2
-    integer(ip), intent(in), value :: n3
-    integer(ip), intent(in), value :: n4
-    logical              :: swptst
-    real(dp), intent(in) :: x(*)
-    real(dp) :: x4
-    real(dp), intent(in) :: y(*)
-    real(dp) :: y4
-    real(dp), intent(in) :: z(*)
-    real(dp) :: z4
+    real(real64) dx1
+    real(real64) dx2
+    real(real64) dx3
+    real(real64) dy1
+    real(real64) dy2
+    real(real64) dy3
+    real(real64) dz1
+    real(real64) dz2
+    real(real64) dz3
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    logical              swptst
+    real(real64) x(*)
+    real(real64) x4
+    real(real64) y(*)
+    real(real64) y4
+    real(real64) z(*)
+    real(real64) z4
 
     x4 = x(n4)
     y4 = y(n4)
@@ -5118,11 +5085,10 @@ contains
   !
     swptst =  dx3 * ( dy2 * dz1 - dy1 * dz2 ) &
             - dy3 * ( dx2 * dz1 - dx1 * dz2 ) &
-            + dz3 * ( dx2 * dy1 - dx1 * dy2 ) > 0.0_dp
-  end function swptst
+            + dz3 * ( dx2 * dy1 - dx1 * dy2 ) > 0.0e+00_real64
+  end
 
-  pure subroutine trans ( n, rlat, rlon, x, y, z ) &
-        bind(C, name="trans")
+  subroutine trans ( n, rlat, rlon, x, y, z )
 
   !*****************************************************************************80
   !
@@ -5153,14 +5119,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes (points on the unit 
+  !    Input, integer(int32) N, the number of nodes (points on the unit 
   !    sphere) whose coordinates are to be transformed.
   !
-  !    Input, real(dp) RLAT(N), latitudes of the nodes in radians.
+  !    Input, real(real64) RLAT(N), latitudes of the nodes in radians.
   !
-  !    Input, real(dp) RLON(N), longitudes of the nodes in radians.
+  !    Input, real(real64) RLON(N), longitudes of the nodes in radians.
   !
-  !    Output, real(dp) X(N), Y(N), Z(N), the coordinates in the 
+  !    Output, real(real64) X(N), Y(N), Z(N), the coordinates in the 
   !    range -1 to 1.  X(I)**2 + Y(I)**2 + Z(I)**2 = 1 for I = 1 to N.
   !
   !  Local parameters:
@@ -5172,18 +5138,18 @@ contains
   !    THETA =  Longitude
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: cosphi
-    integer(ip) :: i
-    integer(ip) :: nn
-    real(dp) :: phi
-    real(dp), intent(in) :: rlat(n)
-    real(dp), intent(in) :: rlon(n)
-    real(dp) :: theta
-    real(dp), intent(out) :: x(n)
-    real(dp), intent(out) :: y(n)
-    real(dp), intent(out) :: z(n)
+    real(real64) cosphi
+    integer(int32) i
+    integer(int32) nn
+    real(real64) phi
+    real(real64) rlat(n)
+    real(real64) rlon(n)
+    real(real64) theta
+    real(real64) x(n)
+    real(real64) y(n)
+    real(real64) z(n)
 
     nn = n
 
@@ -5195,11 +5161,10 @@ contains
       y(i) = cosphi * sin ( theta )
       z(i) = sin ( phi )
     end do
-  end subroutine trans
+  end
 
   subroutine trfind ( nst, p, n, x, y, z, list, lptr, lend, b1, b2, b3, i1, &
-    i2, i3 ) &
-        bind(C, name="trfind")
+    i2, i3 )
 
   !*****************************************************************************80
   !
@@ -5231,27 +5196,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NST, index of a node at which TRFIND begins
+  !    Input, integer(int32) NST, index of a node at which TRFIND begins
   !    its search.  Search time depends on the proximity of this node to P.
   !
-  !    Input, real(dp) P(3), the x, y, and z coordinates (in that order)
+  !    Input, real(real64) P(3), the x, y, and z coordinates (in that order)
   !    of the point P to be located.
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the coordinates of the
+  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of the
   !    triangulation nodes (unit vectors).
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
   !    data structure defining the triangulation, created by TRMESH.
   !
-  !    Output, real(dp) B1, B2, B3, the unnormalized barycentric
+  !    Output, real(real64) B1, B2, B3, the unnormalized barycentric
   !    coordinates of the central projection of P onto the underlying planar
   !    triangle if P is in the convex hull of the nodes.  These parameters 
   !    are not altered if I1 = 0.
   !
-  !    Output, integer(ip) I1, I2, I3, the counterclockwise-ordered 
+  !    Output, integer(int32) I1, I2, I3, the counterclockwise-ordered 
   !    vertex indexes of a triangle containing P if P is contained in a triangle.
   !    If P is not in the convex hull of the nodes, I1 and I2 are the rightmost 
   !    and leftmost (boundary) nodes that are visible from P, and I3 = 0.  (If 
@@ -5292,58 +5257,58 @@ contains
   !    X2,Y2,Z2 = Dummy arguments for DET
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: b1
-    real(dp), intent(out) :: b2
-    real(dp), intent(out) :: b3
-    real(dp) :: det
-    real(dp) :: eps
-    integer(ip), intent(out) :: i1
-    integer(ip) :: i2
-    integer(ip), intent(out) :: i3
-    integer(ip), save :: ix = 1
-    integer(ip), save :: iy = 2
-    integer(ip), save :: iz = 3
-    integer(ip) :: jrand
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip) :: lp
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip) :: lstptr
-    integer(ip) :: n0
-    integer(ip) :: n1
-    integer(ip) :: n1s
-    integer(ip) :: n2
-    integer(ip) :: n2s
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: next
-    integer(ip) :: nf
-    integer(ip) :: nl
-    integer(ip), intent(in), value :: nst
-    real(dp), intent(in) :: p(3)
-    real(dp) :: ptn1
-    real(dp) :: ptn2
-    real(dp) :: q(3)
-    real(dp) :: s12
-    real(dp) :: store
-    real(dp) :: tol
-    real(dp), intent(in) :: x(n)
-    real(dp) :: x0
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp) :: xp
-    real(dp), intent(in) :: y(n)
-    real(dp) :: y0
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp) :: yp
-    real(dp), intent(in) :: z(n)
-    real(dp) :: z0
-    real(dp) :: z1
-    real(dp) :: z2
-    real(dp) :: zp
+    real(real64) b1
+    real(real64) b2
+    real(real64) b3
+    real(real64) det
+    real(real64) eps
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32), save :: ix = 1
+    integer(int32), save :: iy = 2
+    integer(int32), save :: iz = 3
+    integer(int32) jrand
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lp
+    integer(int32) lptr(6*(n-2))
+    integer(int32) lstptr
+    integer(int32) n0
+    integer(int32) n1
+    integer(int32) n1s
+    integer(int32) n2
+    integer(int32) n2s
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) next
+    integer(int32) nf
+    integer(int32) nl
+    integer(int32) nst
+    real(real64) p(3)
+    real(real64) ptn1
+    real(real64) ptn2
+    real(real64) q(3)
+    real(real64) s12
+    real(real64) store
+    real(real64) tol
+    real(real64) x(n)
+    real(real64) x0
+    real(real64) x1
+    real(real64) x2
+    real(real64) xp
+    real(real64) y(n)
+    real(real64) y0
+    real(real64) y1
+    real(real64) y2
+    real(real64) yp
+    real(real64) z(n)
+    real(real64) z0
+    real(real64) z1
+    real(real64) z2
+    real(real64) zp
   !
   !  Statement function:
   !
@@ -5369,7 +5334,7 @@ contains
   !  Compute the relative machine precision EPS and TOL.
   !
     eps = epsilon ( eps )
-    tol = 100.0_dp * eps
+    tol = 100.0e+00_real64 * eps
   !
   !  Set NF and NL to the first and last neighbors of N0, and initialize N1 = NF.
   !
@@ -5390,7 +5355,7 @@ contains
   !
   3   continue
 
-      if ( det ( x(n0),y(n0),z(n0),x(n1),y(n1),z(n1),xp,yp,zp ) < 0.0_dp ) then
+      if ( det ( x(n0),y(n0),z(n0),x(n1),y(n1),z(n1),xp,yp,zp ) < 0.0e+00_real64 ) then
         lp = lptr(lp)
         n1 = list(lp)
         if ( n1 == nl ) then
@@ -5407,7 +5372,7 @@ contains
   !
   !  Is P to the right of the boundary edge N0->NF?
   !
-      if ( det(x(n0),y(n0),z(n0),x(nf),y(nf),z(nf), xp,yp,zp) < 0.0_dp ) then
+      if ( det(x(n0),y(n0),z(n0),x(nf),y(nf),z(nf), xp,yp,zp) < 0.0e+00_real64 ) then
         n1 = n0
         n2 = nf
         go to 9
@@ -5415,7 +5380,7 @@ contains
   !
   !  Is P to the right of the boundary edge NL->N0?
   !
-      if ( det(x(nl),y(nl),z(nl),x(n0),y(n0),z(n0),xp,yp,zp) < 0.0_dp ) then
+      if ( det(x(nl),y(nl),z(nl),x(n0),y(n0),z(n0),xp,yp,zp) < 0.0e+00_real64 ) then
         n1 = nl
         n2 = n0
         go to 9
@@ -5431,7 +5396,7 @@ contains
       lp = lptr(lp)
       n2 = abs ( list(lp) )
 
-      if ( det(x(n0),y(n0),z(n0),x(n2),y(n2),z(n2),xp,yp,zp) < 0.0_dp ) then
+      if ( det(x(n0),y(n0),z(n0),x(n2),y(n2),z(n2),xp,yp,zp) < 0.0e+00_real64 ) then
         go to 7
       end if
 
@@ -5442,7 +5407,7 @@ contains
       end if
 
     if ( det ( x(n0), y(n0), z(n0), x(nf), y(nf), z(nf), xp, yp, zp ) &
-      < 0.0_dp ) then
+      < 0.0e+00_real64 ) then
       go to 6
     end if
   !
@@ -5450,7 +5415,7 @@ contains
   !  of N0.  Test for P = +/-N0.
   !
     if ( store ( abs ( x(n0 ) * xp + y(n0) * yp + z(n0) * zp) ) &
-      < 1.0_dp - 4.0_dp * eps ) then
+      < 1.0e+00_real64 - 4.0e+00_real64 * eps ) then
   !
   !  All points are collinear iff P Left NB->N0 for all
   !  neighbors NB of N0.  Search the neighbors of N0.
@@ -5458,7 +5423,7 @@ contains
   !
       do
 
-        if ( det(x(n1),y(n1),z(n1),x(n0),y(n0),z(n0),xp,yp,zp) < 0.0_dp ) then
+        if ( det(x(n1),y(n1),z(n1),x(n0),y(n0),z(n0),xp,yp,zp) < 0.0e+00_real64 ) then
           exit
         end if
 
@@ -5502,7 +5467,7 @@ contains
 
     b3 = det ( x(n1),y(n1),z(n1),x(n2),y(n2),z(n2),xp,yp,zp )
 
-    if ( b3 < 0.0_dp ) then
+    if ( b3 < 0.0e+00_real64 ) then
   !
   !  Set N4 to the first neighbor of N2 following N1 (the
   !  node opposite N2->N1) unless N1->N2 is a boundary arc.
@@ -5518,7 +5483,7 @@ contains
   !
   !  Define a new arc N1->N2 which intersects the geodesic N0-P.
   !
-      if ( det ( x(n0),y(n0),z(n0),x(n4),y(n4),z(n4),xp,yp,zp ) < 0.0_dp ) then
+      if ( det ( x(n0),y(n0),z(n0),x(n4),y(n4),z(n4),xp,yp,zp ) < 0.0e+00_real64 ) then
         n3 = n2
         n2 = n4
         n1s = n1
@@ -5565,7 +5530,7 @@ contains
   !  B3 = 0 and thus P lies on N1->N2. Compute
   !  B1 = Det(P,N2 X N1,N2) and B2 = Det(P,N1,N2 X N1).
   !
-      b3 = 0.0_dp
+      b3 = 0.0e+00_real64
       s12 = x(n1) * x(n2) + y(n1) * y(n2) + z(n1) * z(n2)
       ptn1 = xp * x(n1) + yp * y(n1) + zp * z(n1)
       ptn2 = xp * x(n2) + yp * y(n2) + zp * z(n2)
@@ -5586,8 +5551,8 @@ contains
     i1 = n1
     i2 = n2
     i3 = n3
-    b1 = max ( b1, 0.0_dp )
-    b2 = max ( b2, 0.0_dp )
+    b1 = max ( b1, 0.0e+00_real64 )
+    b2 = max ( b2, 0.0e+00_real64 )
     return
   !
   !  P Right N1->N2, where N1->N2 is a boundary edge.
@@ -5608,7 +5573,7 @@ contains
     lp = lptr(lp)
     next = list(lp)
 
-    if ( det(x(n2),y(n2),z(n2),x(next),y(next),z(next),xp,yp,zp) >= 0.0_dp ) then
+    if ( det(x(n2),y(n2),z(n2),x(next),y(next),z(next),xp,yp,zp) >= 0.0e+00_real64 ) then
   !
   !  N2 is the rightmost visible node if P Forward N2->N1
   !  or NEXT Forward N2->N1.  Set Q to (N2 X N1) X N2.
@@ -5619,11 +5584,11 @@ contains
       q(2) = y(n1) - s12 * y(n2)
       q(3) = z(n1) - s12 * z(n2)
 
-      if ( xp * q(1) + yp * q(2) + zp * q(3) >= 0.0_dp ) then
+      if ( xp * q(1) + yp * q(2) + zp * q(3) >= 0.0e+00_real64 ) then
         go to 11
       end if
 
-      if ( x(next) * q(1) + y(next) * q(2) + z(next) * q(3) >= 0.0_dp ) then
+      if ( x(next) * q(1) + y(next) * q(2) + z(next) * q(3) >= 0.0e+00_real64 ) then
         go to 11
       end if
   !
@@ -5670,7 +5635,7 @@ contains
       lp = lend(n1)
       next = -list(lp)
 
-      if ( 0.0_dp <= &
+      if ( 0.0e+00_real64 <= &
         det ( x(next), y(next), z(next), x(n1), y(n1), z(n1), xp, yp, zp )  ) then
   !
   !  N1 is the leftmost visible node if P or NEXT is
@@ -5681,11 +5646,11 @@ contains
         q(2) = y(n2) - s12 * y(n1)
         q(3) = z(n2) - s12 * z(n1)
 
-        if ( xp * q(1) + yp * q(2) + zp * q(3) >= 0.0_dp ) then
+        if ( xp * q(1) + yp * q(2) + zp * q(3) >= 0.0e+00_real64 ) then
           go to 13
         end if
 
-        if ( x(next) * q(1) + y(next) * q(2) + z(next) * q(3) >= 0.0_dp ) then
+        if ( x(next) * q(1) + y(next) * q(2) + z(next) * q(3) >= 0.0e+00_real64 ) then
           go to 13
         end if
   !
@@ -5724,10 +5689,9 @@ contains
     i1 = nf
     i2 = nl
     i3 = 0
-  end subroutine trfind
+  end
 
-  subroutine trlist ( n, list, lptr, lend, nrow, nt, ltri, ier ) &
-        bind(C, name="trlist")
+  subroutine trlist ( n, list, lptr, lend, nrow, nt, ltri, ier )
 
   !*****************************************************************************80
   !
@@ -5756,22 +5720,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), linked
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), linked
   !    list data structure defining the triangulation.  Refer to TRMESH.
   !
-  !    Input, integer(ip) NROW, the number of rows (entries per triangle)
+  !    Input, integer(int32) NROW, the number of rows (entries per triangle)
   !    reserved for the triangle list LTRI.  The value must be 6 if only the 
   !    vertex indexes and neighboring triangle indexes are to be stored, or 9
   !    if arc indexes are also to be assigned and stored.  Refer to LTRI.
   !
-  !    Output, integer(ip) NT, the number of triangles in the 
+  !    Output, integer(int32) NT, the number of triangles in the 
   !    triangulation unless IER /=0, in which case NT = 0.  NT = 2N-NB-2 if 
   !    NB >= 3 or 2N-4 if NB = 0, where NB is the number of boundary nodes.
   !
-  !    Output, integer(ip) LTRI(NROW,*).  The second dimension of LTRI
+  !    Output, integer(int32) LTRI(NROW,*).  The second dimension of LTRI
   !    must be at least NT, where NT will be at most 2*N-4.  The J-th column 
   !    contains the vertex nodal indexes (first three rows), neighboring triangle 
   !    indexes (second three rows), and, if NROW = 9, arc indexes (last three
@@ -5786,7 +5750,7 @@ contains
   !    arc indexes from 1 to NA, where NA = 3N-NB-3 if NB >= 3 or 3N-6 if 
   !    NB = 0.  The triangles are ordered on first (smallest) vertex indexes.
   !
-  !    Output, integer(ip) IER, error indicator.
+  !    Output, integer(int32) IER, error indicator.
   !    0, if no errors were encountered.
   !    1, if N or NROW is outside its valid range on input.
   !    2, if the triangulation data structure (LIST,LPTR,LEND) is invalid.  
@@ -5811,33 +5775,33 @@ contains
   !    NM2 =      N-2
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: nrow
+    integer(int32) n
+    integer(int32) nrow
 
-    logical              :: arcs
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip), intent(out) :: ier
-    integer(ip) :: isv
-    integer(ip) :: j
-    integer(ip) :: ka
-    integer(ip) :: kn
-    integer(ip) :: kt
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip) :: lp
-    integer(ip) :: lp2
-    integer(ip) :: lpl
-    integer(ip) :: lpln1
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip), intent(out) :: ltri(nrow,*)
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: nm2
-    integer(ip), intent(out) :: nt
+    logical              arcs
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) ier
+    integer(int32) isv
+    integer(int32) j
+    integer(int32) ka
+    integer(int32) kn
+    integer(int32) kt
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lp
+    integer(int32) lp2
+    integer(int32) lpl
+    integer(int32) lpln1
+    integer(int32) lptr(6*(n-2))
+    integer(int32) ltri(nrow,*)
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) nm2
+    integer(int32) nt
   !
   !  Test for invalid input parameters.
   !
@@ -6021,10 +5985,9 @@ contains
 
     nt = kt
     ier = 0
-  end subroutine trlist
+  end
 
-  subroutine trlist2 ( n, list, lptr, lend, nt, ltri, ier ) &
-        bind(C, name="trlist2")
+  subroutine trlist2 ( n, list, lptr, lend, nt, ltri, ier )
 
   !*****************************************************************************80
   !
@@ -6056,17 +6019,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), linked
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), linked
   !    list data structure defining the triangulation.  Refer to TRMESH.
   !
-  !    Output, integer(ip) NT, the number of triangles in the 
+  !    Output, integer(int32) NT, the number of triangles in the 
   !    triangulation unless IER /=0, in which case NT = 0.  NT = 2N-NB-2 if 
   !    NB >= 3 or 2N-4 if NB = 0, where NB is the number of boundary nodes.
   !
-  !    Output, integer(ip) LTRI(3,*).  The second dimension of LTRI
+  !    Output, integer(int32) LTRI(3,*).  The second dimension of LTRI
   !    must be at least NT, where NT will be at most 2*N-4.  The J-th column 
   !    contains the vertex nodal indexes associated with triangle J for 
   !    J = 1,...,NT.  The vertices are ordered counterclockwise with the first
@@ -6074,7 +6037,7 @@ contains
   !    LTRI(3,J) are larger than LTRI(1,J) and index adjacent neighbors of node 
   !    LTRI(1,J).  The triangles are ordered on first (smallest) vertex indexes.
   !
-  !    Output, integer(ip) IER, error indicator.
+  !    Output, integer(int32) IER, error indicator.
   !    0, if no errors were encountered.
   !    1, if N is outside its valid range on input.
   !    2, if the triangulation data structure (LIST,LPTR,LEND) is invalid.  
@@ -6097,31 +6060,31 @@ contains
   !    NM2 =      N-2
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip), intent(out) :: ier
-    integer(ip) :: isv
-    integer(ip) :: j
-    integer(ip) :: ka
-    integer(ip) :: kn
-    integer(ip) :: kt
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip) :: lp
-    integer(ip) :: lp2
-    integer(ip) :: lpl
-    integer(ip) :: lpln1
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip), intent(out) :: ltri(3,*)
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: nm2
-    integer(ip), intent(out) :: nt
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) ier
+    integer(int32) isv
+    integer(int32) j
+    integer(int32) ka
+    integer(int32) kn
+    integer(int32) kt
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lp
+    integer(int32) lp2
+    integer(int32) lpl
+    integer(int32) lpln1
+    integer(int32) lptr(6*(n-2))
+    integer(int32) ltri(3,*)
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) nm2
+    integer(int32) nt
   !
   !  Test for invalid input parameters.
   !
@@ -6287,10 +6250,9 @@ contains
 
     nt = kt
     ier = 0
-  end subroutine trlist2
+  end
 
-  subroutine trlprt ( n, x, y, z, iflag, nrow, nt, ltri ) &
-        bind(C, name="trlprt")
+  subroutine trlprt ( n, x, y, z, iflag, nrow, nt, ltri )
 
   !*****************************************************************************80
   !
@@ -6321,29 +6283,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N <= 9999.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the coordinates of the nodes if 
+  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of the nodes if 
   !    IFLAG = 0, or (X and Y only) longitude and latitude, respectively, 
   !    if 0 < IFLAG, or unused dummy parameters if IFLAG < 0.
   !
-  !    Input, integer(ip) IFLAG, nodal coordinate option indicator:
+  !    Input, integer(int32) IFLAG, nodal coordinate option indicator:
   !    = 0, if X, Y, and Z (assumed to contain Cartesian coordinates) are to 
   !      be printed (to 6 decimal places).
   !    > 0, if only X and Y (assumed to contain longitude and latitude) are
   !      to be printed (to 6 decimal places).
   !    < 0, if only the adjacency lists are to be printed.
   !
-  !    Input, integer(ip) NROW, the number of rows (entries per triangle)
+  !    Input, integer(int32) NROW, the number of rows (entries per triangle)
   !    reserved for the triangle list LTRI.  The value must be 6 if only the
   !    vertex indexes and neighboring triangle indexes are stored, or 9
   !    if arc indexes are also stored.
   !
-  !    Input, integer(ip) NT, the number of triangles in the 
+  !    Input, integer(int32) NT, the number of triangles in the 
   !    triangulation.  1 <= NT <= 9999.
   !
-  !    Input, integer(ip) LTRI(NROW,NT), the J-th column contains the
+  !    Input, integer(int32) LTRI(NROW,NT), the J-th column contains the
   !    vertex nodal indexes (first three rows), neighboring triangle indexes 
   !    (second three rows), and, if NROW = 9, arc indexes (last three rows) 
   !    associated with triangle J for J = 1,...,NT.
@@ -6360,22 +6322,22 @@ contains
   !    NMAX =  Maximum value of N and NT (4-digit format)
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: nrow
-    integer(ip), intent(in), value :: nt
+    integer(int32) n
+    integer(int32) nrow
+    integer(int32) nt
 
-    integer(ip) :: i
-    integer(ip), intent(in), value :: iflag
-    integer(ip) :: k
-    integer(ip), intent(in) :: ltri(nrow,nt)
-    integer(ip) :: na
-    integer(ip) :: nb
-    integer(ip) :: nl
-    integer(ip), parameter :: nlmax = 58
-    integer(ip), parameter :: nmax = 9999
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
-    real(dp), intent(in) :: z(n)
+    integer(int32) i
+    integer(int32) iflag
+    integer(int32) k
+    integer(int32) ltri(nrow,nt)
+    integer(int32) na
+    integer(int32) nb
+    integer(int32) nl
+    integer(int32), parameter :: nlmax = 58
+    integer(int32), parameter :: nmax = 9999
+    real(real64) x(n)
+    real(real64) y(n)
+    real(real64) z(n)
   !
   !  Print a heading and test for invalid input.
   !
@@ -6491,10 +6453,9 @@ contains
     107 format (2x,i4,2x,6(3x,i4),3(2x,i5))
     110 format (//1x,10x,'Invalid parameter:  N =',i5, &
             ', nrow =',i5,', nt =',i5,' ***')
-  end subroutine trlprt
+  end
 
-  subroutine trmesh ( n, x, y, z, list, lptr, lend, lnew, near, next, dist, ier ) &
-        bind(C, name="trmesh")
+  subroutine trmesh ( n, x, y, z, list, lptr, lend, lnew, near, next, dist, ier )
 
   !*****************************************************************************80
   !
@@ -6627,16 +6588,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the coordinates of distinct
+  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of distinct
   !    nodes.  (X(K),Y(K), Z(K)) is referred to as node K, and K is referred 
   !    to as a nodal index.  It is required that X(K)**2 + Y(K)**2 + Z(K)**2 = 1
   !    for all K.  The first three nodes must not be collinear (lie on a 
   !    common great circle).
   !
-  !    Output, integer(ip) LIST(6*(N-2)), nodal indexes which, along 
+  !    Output, integer(int32) LIST(6*(N-2)), nodal indexes which, along 
   !    with LPTR, LEND, and LNEW, define the triangulation as a set of N 
   !    adjacency lists; counterclockwise-ordered sequences of neighboring nodes 
   !    such that the first and last neighbors of a boundary node are boundary 
@@ -6644,32 +6605,32 @@ contains
   !    distinguish between interior and boundary nodes, the last neighbor of 
   !    each boundary node is represented by the negative of its index.
   !
-  !    Output, integer(ip) LPTR(6*(N-2)), = Set of pointers (LIST 
+  !    Output, integer(int32) LPTR(6*(N-2)), = Set of pointers (LIST 
   !    indexes) in one-to-one correspondence with the elements of LIST.
   !    LIST(LPTR(I)) indexes the node which follows LIST(I) in cyclical
   !    counterclockwise order (the first neighbor follows the last neighbor).
   !
-  !    Output, integer(ip) LEND(N), pointers to adjacency lists.  
+  !    Output, integer(int32) LEND(N), pointers to adjacency lists.  
   !    LEND(K) points to the last neighbor of node K.  LIST(LEND(K)) < 0 if and 
   !    only if K is a boundary node.
   !
-  !    Output, integer(ip) LNEW, pointer to the first empty location 
+  !    Output, integer(int32) LNEW, pointer to the first empty location 
   !    in LIST and LPTR (list length plus one).  LIST, LPTR, LEND, and LNEW are 
   !    not altered if IER < 0, and are incomplete if 0 < IER.
   !
-  !    Workspace, integer(ip) NEAR(N), 
+  !    Workspace, integer(int32) NEAR(N), 
   !    used to efficiently determine the nearest triangulation node to each
   !    unprocessed node for use by ADDNOD.
   !
-  !    Workspace, integer(ip) NEXT(N),
+  !    Workspace, integer(int32) NEXT(N),
   !    used to efficiently determine the nearest triangulation node to each
   !    unprocessed node for use by ADDNOD.
   !
-  !    Workspace, real(dp) DIST(N), 
+  !    Workspace, real(real64) DIST(N), 
   !    used to efficiently determine the nearest triangulation node to each
   !    unprocessed node for use by ADDNOD.
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !     0, if no errors were encountered.
   !    -1, if N < 3 on input.
   !    -2, if the first three nodes are collinear.
@@ -6690,32 +6651,32 @@ contains
   !    NN =       Local copy of N
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: d
-    real(dp) :: d1
-    real(dp) :: d2
-    real(dp) :: d3
-    real(dp) :: dist(n)
-    integer(ip) :: i
-    integer(ip) :: i0
-    integer(ip), intent(out) :: ier
-    integer(ip) :: j
-    integer(ip) :: k
-    logical              :: left
-    integer(ip), intent(out) :: lend(n)
-    integer(ip), intent(out) :: list(6*(n-2))
-    integer(ip), intent(out) :: lnew
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip), intent(out) :: lptr(6*(n-2))
-    integer(ip) :: near(n)
-    integer(ip) :: next(n)
-    integer(ip) :: nexti
-    integer(ip) :: nn
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
-    real(dp), intent(in) :: z(n)
+    real(real64) d
+    real(real64) d1
+    real(real64) d2
+    real(real64) d3
+    real(real64) dist(n)
+    integer(int32) i
+    integer(int32) i0
+    integer(int32) ier
+    integer(int32) j
+    integer(int32) k
+    logical              left
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lnew
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) near(n)
+    integer(int32) next(n)
+    integer(int32) nexti
+    integer(int32) nn
+    real(real64) x(n)
+    real(real64) y(n)
+    real(real64) z(n)
 
     nn = n
 
@@ -6959,11 +6920,10 @@ contains
   6   continue
 
     end do
-  end subroutine trmesh
+  end
 
   subroutine trplot ( lun, pltsiz, elat, elon, a, n, x, y, z, list, lptr, &
-    lend, title, numbr, ier ) &
-        bind(C, name="trplot")
+    lend, title, numbr, ier )
 
   !*****************************************************************************80
   !
@@ -6999,17 +6959,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LUN, the logical unit number in the range 0
+  !    Input, integer(int32) LUN, the logical unit number in the range 0
   !    to 99.  The unit should be opened with an appropriate
   !    file name before the call to this routine.
   !
-  !    Input, real(dp) PLTSIZ, the plot size in inches.  A circular
+  !    Input, real(real64) PLTSIZ, the plot size in inches.  A circular
   !    window in the projection plane is mapped to a circular viewport with
   !    diameter equal to 0.88 * PLTSIZ (leaving room for labels outside the
   !    viewport).  The viewport is centered on the 8.5 by 11 inch page, and 
   !    its boundary is drawn.  1.0 <= PLTSIZ <= 8.5.
   !
-  !    Input, real(dp) ELAT, ELON, the latitude and longitude 
+  !    Input, real(real64) ELAT, ELON, the latitude and longitude 
   !    (in degrees) of the center of projection E (the center of the plot).
   !    The projection plane is the plane that contains the origin and has 
   !    E as unit normal.  In a rotated coordinate system for which E is 
@@ -7020,7 +6980,7 @@ contains
   !    system).  ELAT and ELON must be in the range -90 to 90 and -180 to 
   !    180, respectively.
   !
-  !    Input, real(dp) A, the angular distance in degrees from E 
+  !    Input, real(real64) A, the angular distance in degrees from E 
   !    to the boundary of a circular window against which the triangulation
   !    is clipped.  The projected window is a disk of radius R = Sin(A) 
   !    centered at the origin, and only visible nodes whose projections are 
@@ -7028,13 +6988,13 @@ contains
   !    A = 90, the plot includes the entire hemisphere centered at E.  
   !    0 < A <= 90.
   !
-  !    Input, integer(ip) N, the number of nodes in the triangulation.
+  !    Input, integer(int32) N, the number of nodes in the triangulation.
   !    3 <= N.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N). the coordinates of the 
+  !    Input, real(real64) X(N), Y(N), Z(N). the coordinates of the 
   !    nodes (unit vectors).
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
   !    data structure defining the triangulation, created by TRMESH.
   !
   !    Input, character ( len = * ) TITLE, a string to be centered above the 
@@ -7045,7 +7005,7 @@ contains
   !    Input, logical NUMBR, option indicator:  If NUMBR = TRUE, the
   !    nodal indexes are plotted next to the nodes.
   !
-  !    Output, integer(ip) IER, error indicator:
+  !    Output, integer(int32) IER, error indicator:
   !    0, if no errors were encountered.
   !    1, if LUN, PLTSIZ, or N is outside its valid range.
   !    2, if ELAT, ELON, or A is outside its valid range.
@@ -7090,56 +7050,56 @@ contains
   !                the equator (in the rotated coordinate system)
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in), value :: a
+    real(real64) a
     logical, parameter :: annot = .true.
-    real(dp) :: cf
-    real(dp) :: ct
-    real(dp), intent(in), value :: elat
-    real(dp), intent(in), value :: elon
-    real(dp) :: ex
-    real(dp) :: ey
-    real(dp) :: ez
-    real(dp), parameter :: fsizn = 10.0_dp
-    real(dp), parameter :: fsizt = 16.0_dp
-    integer(ip), intent(out) :: ier
-    integer(ip) :: ipx1
-    integer(ip) :: ipx2
-    integer(ip) :: ipy1
-    integer(ip) :: ipy2
-    integer(ip) :: ir
-    integer(ip) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip), intent(in), value :: lun
-    integer(ip) :: n0
-    integer(ip) :: n1
-    logical             , intent(in), value :: numbr
-    real(dp), intent(in), value :: pltsiz
-    real(dp) :: r11
-    real(dp) :: r12
-    real(dp) :: r21
-    real(dp) :: r22
-    real(dp) :: r23
-    real(dp) :: sf
-    real(dp) :: t
-    character ( len = * ), intent(in), value :: title
-    real(dp) :: tx
-    real(dp) :: ty
-    real(dp) :: wr
-    real(dp) :: wrs
-    real(dp), intent(in) :: x(n)
-    real(dp) :: x0
-    real(dp) :: x1
-    real(dp), intent(in) :: y(n)
-    real(dp) :: y0
-    real(dp) :: y1
-    real(dp), intent(in) :: z(n)
-    real(dp) :: z0
-    real(dp) :: z1
+    real(real64) cf
+    real(real64) ct
+    real(real64) elat
+    real(real64) elon
+    real(real64) ex
+    real(real64) ey
+    real(real64) ez
+    real(real64), parameter :: fsizn = 10.0e+00_real64
+    real(real64), parameter :: fsizt = 16.0e+00_real64
+    integer(int32) ier
+    integer(int32) ipx1
+    integer(int32) ipx2
+    integer(int32) ipy1
+    integer(int32) ipy2
+    integer(int32) ir
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) lun
+    integer(int32) n0
+    integer(int32) n1
+    logical              numbr
+    real(real64) pltsiz
+    real(real64) r11
+    real(real64) r12
+    real(real64) r21
+    real(real64) r22
+    real(real64) r23
+    real(real64) sf
+    real(real64) t
+    character ( len = * ) title
+    real(real64) tx
+    real(real64) ty
+    real(real64) wr
+    real(real64) wrs
+    real(real64) x(n)
+    real(real64) x0
+    real(real64) x1
+    real(real64) y(n)
+    real(real64) y0
+    real(real64) y1
+    real(real64) z(n)
+    real(real64) z0
+    real(real64) z1
 
     ier = 0
   !
@@ -7159,13 +7119,13 @@ contains
       write ( *, '(a)' ) '  99 < LUN!'
     end if
 
-    if ( pltsiz < 1.0_dp ) then
+    if ( pltsiz < 1.0e+00_real64 ) then
       ier = 1
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'TRPLOT - Fatal error!'
       write ( *, '(a)' ) '  PLTSIZ < 1.0!'
       return
-    else if ( 8.5_dp < pltsiz ) then
+    else if ( 8.5e+00_real64 < pltsiz ) then
       ier = 1
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'TRPLOT - Fatal error!'
@@ -7178,19 +7138,19 @@ contains
       write ( *, '(a)' ) '  N < 3!'
     end if
 
-    if ( 90.0_dp < abs ( elat ) ) then
+    if ( 90.0e+00_real64 < abs ( elat ) ) then
       ier = 2
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'TRPLOT - Fatal error!'
       write ( *, '(a)' ) '  90 < |ELAT|!'
       return
-    else if ( 180.0_dp < abs ( elon ) ) then
+    else if ( 180.0e+00_real64 < abs ( elon ) ) then
       ier = 2
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'TRPLOT - Fatal error!'
       write ( *, '(a)' ) '  180 < |ELON|!'
       return
-    else if ( 90.0_dp < a ) then
+    else if ( 90.0e+00_real64 < a ) then
       ier = 2
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'TRPLOT - Fatal error!'
@@ -7199,7 +7159,7 @@ contains
   !
   !  Compute a conversion factor CF for degrees to radians.
   !
-    cf = atan ( 1.0_dp ) / 45.0_dp
+    cf = atan ( 1.0e+00_real64 ) / 45.0e+00_real64
   !
   !  Compute the window radius WR.
   !
@@ -7215,7 +7175,7 @@ contains
   !  by 11 inch page.  The center of the page is (306,396),
   !  and IR = PLTSIZ/2 in points.
   !
-    ir = nint ( 36.0_dp * pltsiz )
+    ir = nint ( 36.0e+00_real64 * pltsiz )
     ipx1 = 306 - ir
     ipx2 = 306 + ir
     ipy1 = 396 - ir
@@ -7233,7 +7193,7 @@ contains
   !  of a viewport box obtained by shrinking the bounding box
   !  by 12% in each dimension.
   !
-    ir = nint ( 0.88_dp * real ( ir, dp) )
+    ir = nint ( 0.88e+00_real64 * real ( ir, real64) )
     ipx1 = 306 - ir
     ipx2 = 306 + ir
     ipy1 = 396 - ir
@@ -7242,7 +7202,7 @@ contains
   !  Set the line thickness to 2 points, and draw the
   !  viewport boundary.
   !
-    t = 2.0_dp
+    t = 2.0e+00_real64
     write ( lun, '(f12.6,a)' ) t, ' setlinewidth'
     write ( lun, '(a,i3,a)' ) '306 396 ', ir, ' 0 360 arc'
     write ( lun, '(a)' ) 'stroke'
@@ -7250,7 +7210,7 @@ contains
   !  Set up an affine mapping from the window box [-WR,WR] X
   !  [-WR,WR] to the viewport box.
   !
-    sf = real ( ir, dp) / wr
+    sf = real ( ir, real64) / wr
     tx = ipx1 + sf * wr
     ty = ipy1 + sf * wr
     write ( lun, '(2f12.6,a)' ) tx, ty, ' translate'
@@ -7260,7 +7220,7 @@ contains
   !  scaling which is applied to all subsequent output.
   !  Set it to 1.0 point.
   !
-    t = 1.0_dp / sf
+    t = 1.0e+00_real64 / sf
     write ( lun, '(f12.6,a)' ) t, ' setlinewidth'
   !
   !  Save the current graphics state, and set the clip path to
@@ -7287,12 +7247,12 @@ contains
     ey = ct * sin ( t )
     ez = sin ( cf * elat )
 
-    if ( ct /= 0.0_dp ) then
+    if ( ct /= 0.0e+00_real64 ) then
       r11 = -ey / ct
       r12 = ex / ct
     else
-      r11 = 0.0_dp
-      r12 = 1.0_dp
+      r11 = 0.0e+00_real64
+      r12 = 1.0e+00_real64
     end if
 
     r21 = -ez * r12
@@ -7305,7 +7265,7 @@ contains
 
       z0 = ex * x(n0) + ey * y(n0) + ez * z(n0)
 
-      if ( z0 < 0.0_dp ) then
+      if ( z0 < 0.0e+00_real64 ) then
         cycle
       end if
 
@@ -7336,7 +7296,7 @@ contains
   !  the edge is clipped properly.  Z1 is implicitly set
   !  to 0.
   !
-        if ( z1 < 0.0_dp ) then
+        if ( z1 < 0.0e+00_real64 ) then
           x1 = z0 * x1 - z1 * x0
           y1 = z0 * y1 - z1 * y0
           t = sqrt ( x1 * x1 + y1 * y1 )
@@ -7349,7 +7309,7 @@ contains
   !
   !  Add the edge to the path.
   !
-        if ( z1 < 0.0_dp .or. &
+        if ( z1 < 0.0e+00_real64 .or. &
              wrs < x1 * x1 + y1 * y1 .or. &
              n0 <= n1 ) then
 
@@ -7387,7 +7347,7 @@ contains
   !
       do n0 = 1, n
 
-        if ( ex * x(n0) + ey * y(n0) + ez * z(n0) < 0.0_dp ) then
+        if ( ex * x(n0) + ey * y(n0) + ez * z(n0) < 0.0e+00_real64 ) then
           cycle
         end if
 
@@ -7418,7 +7378,7 @@ contains
   !
   !  Display TITLE centered above the plot:
   !
-    y0 = wr + 3.0_dp * t
+    y0 = wr + 3.0e+00_real64 * t
 
     write ( lun, '(a)' ) title
     write ( lun, '(a,f12.6,a)' ) '  stringwidth pop 2 div neg ', y0, ' moveto'
@@ -7430,11 +7390,11 @@ contains
     if ( annot ) then
 
       x0 = -wr
-      y0 = -wr - 50.0_dp / sf
+      y0 = -wr - 50.0e+00_real64 / sf
       write ( lun, '(2f12.6,a)' ) x0, y0, ' moveto'
       write ( lun, '(a,f7.2,a,f8.2,a)' ) '(Window center:  Latitude = ', elat, &
         ', Longitude = ', elon , ') show'
-      y0 = y0 - 2.0_dp * t
+      y0 = y0 - 2.0e+00_real64 * t
       write ( lun, '(2f12.6,a)' ) x0, y0, ' moveto'
       write ( lun, '(a,f5.2,a)' ) '(Angular extent = ', a, ') show'
 
@@ -7448,10 +7408,9 @@ contains
     write ( lun, '(a)' ) '%%eof'
 
     ier = 0
-  end subroutine trplot
+  end
 
-  subroutine trprnt ( n, x, y, z, iflag, list, lptr, lend ) &
-        bind(C, name="trprnt")
+  subroutine trprnt ( n, x, y, z, iflag, list, lptr, lend )
 
   !*****************************************************************************80
   !
@@ -7484,22 +7443,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N = Number of nodes in the triangulation.  
+  !    Input, integer(int32) N = Number of nodes in the triangulation.  
   !    3 <= N and N <= 9999.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the Cartesian coordinates of 
+  !    Input, real(real64) X(N), Y(N), Z(N), the Cartesian coordinates of 
   !    the nodes if IFLAG = 0, or (X and Y only) containing longitude and
   !    latitude, respectively, if 0  < IFLAG, or unused dummy parameters if
   !    IFLAG < 0.
   !
-  !    Input, integer(ip) IFLAG = Nodal coordinate option indicator:
+  !    Input, integer(int32) IFLAG = Nodal coordinate option indicator:
   !    = 0 if X, Y, and Z (assumed to contain Cartesian coordinates) are to be
   !      printed (to 6 decimal places).
   !    > 0 if only X and Y (assumed to contain longitude and latitude) are
   !      to be printed (to 6 decimal places).
   !    < 0 if only the adjacency lists are to be printed.
   !
-  !    Input, integer(ip) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
+  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N), the 
   !    data structure defining the triangulation.  Refer to TRMESH.
   !
   !  Local parameters:
@@ -7523,29 +7482,29 @@ contains
   !    NT =    Number of triangles in the triangulation
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in), value :: iflag
-    integer(ip) :: inc
-    integer(ip) :: k
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: list(6*(n-2))
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip) :: na
-    integer(ip) :: nabor(400)
-    integer(ip) :: nb
-    integer(ip) :: nd
-    integer(ip) :: nl
-    integer(ip), parameter :: nlmax = 58
-    integer(ip), parameter :: nmax = 9999
-    integer(ip) :: nn
-    integer(ip) :: node
-    integer(ip) :: nt
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
-    real(dp), intent(in) :: z(n)
+    integer(int32) iflag
+    integer(int32) inc
+    integer(int32) k
+    integer(int32) lend(n)
+    integer(int32) list(6*(n-2))
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) na
+    integer(int32) nabor(400)
+    integer(int32) nb
+    integer(int32) nd
+    integer(int32) nl
+    integer(int32), parameter :: nlmax = 58
+    integer(int32), parameter :: nmax = 9999
+    integer(int32) nn
+    integer(int32) node
+    integer(int32) nt
+    real(real64) x(n)
+    real(real64) y(n)
+    real(real64) z(n)
 
     nn = n
   !
@@ -7761,10 +7720,9 @@ contains
     104 format (i5,4x,14i5/(1x,8x,14i5))
     105 format (i5,2e15.6,4x,8i5/(1x,38x,8i5))
     106 format (i5,3e15.6,4x,5i5/(1x,53x,5i5))
-  end subroutine trprnt
+  end
 
-  subroutine voronoi_poly_count ( n, lend, lptr, listc ) &
-        bind(C, name="voronoi_poly_count")
+  subroutine voronoi_poly_count ( n, lend, lptr, listc )
 
   !*****************************************************************************80
   !
@@ -7784,30 +7742,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of Voronoi polygons.
+  !    Input, integer(int32) N, the number of Voronoi polygons.
   !
-  !    Input, integer(ip) LEND(N), some kind of pointer.
+  !    Input, integer(int32) LEND(N), some kind of pointer.
   !
-  !    Input, integer(ip) LPTR(6*(N-2)), some other kind of pointer.
+  !    Input, integer(int32) LPTR(6*(N-2)), some other kind of pointer.
   !
-  !    Input, integer(ip) LISTC(6*(N-2)), some other kind of pointer.
+  !    Input, integer(int32) LISTC(6*(N-2)), some other kind of pointer.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: side_max = 20
+    integer(int32) n
+    integer(int32), parameter :: side_max = 20
 
-    integer(ip) :: count(side_max)
-    integer(ip) :: edges
-    integer(ip) :: i
-    integer(ip) :: kv
-    integer(ip), intent(in) :: lend(n)
-    integer(ip), intent(in) :: listc(6*(n-2))
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip) :: n0
-    integer(ip) :: sides
-    integer(ip) :: vertices
+    integer(int32) count(side_max)
+    integer(int32) edges
+    integer(int32) i
+    integer(int32) kv
+    integer(int32) lend(n)
+    integer(int32) listc(6*(n-2))
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) n0
+    integer(int32) sides
+    integer(int32) vertices
 
     count(1:side_max) = 0
 
@@ -7872,11 +7830,10 @@ contains
     if ( count(side_max) /= 0 ) then
       write ( *, '(2x,i8,2x,i8)' ) side_max, count(side_max)
     end if
-  end subroutine voronoi_poly_count
+  end
 
   subroutine vrplot ( lun, pltsiz, elat, elon, a, n, x, y, z, nt, listc, lptr, &
-    lend, xc, yc, zc, title, numbr, ier ) &
-        bind(C, name="vrplot")
+    lend, xc, yc, zc, title, numbr, ier )
 
   !*****************************************************************************80
   !
@@ -7913,17 +7870,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LUN, the logical unit number in the range 0
+  !    Input, integer(int32) LUN, the logical unit number in the range 0
   !    to 99.  The unit should be opened with an appropriate
   !    file name before the call to this routine.
   !
-  !    Input, real(dp) PLTSIZ, the plot size in inches.  A circular
+  !    Input, real(real64) PLTSIZ, the plot size in inches.  A circular
   !    window in the projection plane is mapped to a circular viewport with
   !    diameter equal to .88*PLTSIZ (leaving room for labels outside the
   !    viewport).  The viewport is centered on the 8.5 by 11 inch page, and its
   !    boundary is drawn.  1.0 <= PLTSIZ <= 8.5.
   !
-  !    Input, real(dp) ELAT, ELON, the latitude and longitude (in
+  !    Input, real(real64) ELAT, ELON, the latitude and longitude (in
   !    degrees) of the center of projection E (the center of the plot).  The
   !    projection plane is the plane that contains the origin and has E as unit
   !    normal.  In a rotated coordinate system for which E is the north pole, the
@@ -7933,24 +7890,24 @@ contains
   !    the z-component in the rotated coordinate system).  ELAT and ELON must 
   !    be in the range -90 to 90 and -180 to 180, respectively.
   !
-  !    Input, real(dp) A, the angular distance in degrees from E to the
+  !    Input, real(real64) A, the angular distance in degrees from E to the
   !    boundary of a circular window against which the Voronoi diagram is clipped.
   !    The projected window is a disk of radius R = Sin(A) centered at the 
   !    origin, and only visible vertices whose projections are within distance 
   !    R of the origin are included in the plot.  Thus, if A = 90, the plot
   !    includes the entire hemisphere centered at E.  0 < A <= 90.
   !
-  !    Input, integer(ip) N, the number of nodes (Voronoi centers) and
+  !    Input, integer(int32) N, the number of nodes (Voronoi centers) and
   !    Voronoi regions.  3 <= N.
   !
-  !    Input, real(dp) X(N), Y(N), Z(N), the coordinates of the nodes
+  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of the nodes
   !    (unit vectors).
   !
-  !    Input, integer(ip) NT, the number of Voronoi region vertices 
+  !    Input, integer(int32) NT, the number of Voronoi region vertices 
   !    (triangles, including those in the extended triangulation if the number 
   !    of boundary nodes NB is nonzero): NT = 2*N-4.
   !
-  !    Input, integer(ip) LISTC(3*NT), containing triangle indexes 
+  !    Input, integer(int32) LISTC(3*NT), containing triangle indexes 
   !    (indexes to XC, YC, and ZC) stored in 1-1 correspondence with LIST/LPTR 
   !    entries (or entries that would be stored in LIST for the extended 
   !    triangulation): the index of triangle (N1,N2,N3) is stored in LISTC(K),
@@ -7960,17 +7917,17 @@ contains
   !    the CCW-ordered sequence of circumcenters in one-to-one correspondence 
   !    with its adjacency list (in the extended triangulation).
   !
-  !    Input, integer(ip) LPTR(3*NT), where NT = 2*N-4, containing a
+  !    Input, integer(int32) LPTR(3*NT), where NT = 2*N-4, containing a
   !    set of pointers (LISTC indexes) in one-to-one correspondence with the 
   !    elements of LISTC.  LISTC(LPTR(I)) indexes the triangle which follows 
   !    LISTC(I) in cyclical counterclockwise order (the first neighbor follows
   !    the last neighbor).
   !
-  !    Input, integer(ip) LEND(N), a set of pointers to triangle lists.
+  !    Input, integer(int32) LEND(N), a set of pointers to triangle lists.
   !    LP = LEND(K) points to a triangle (indexed by LISTC(LP)) containing node 
   !    K for K = 1 to N.
   !
-  !    Input, real(dp) XC(NT), YC(NT), ZC(NT), the coordinates of the
+  !    Input, real(real64) XC(NT), YC(NT), ZC(NT), the coordinates of the
   !    triangle circumcenters (Voronoi vertices). 
   !    XC(I)**2 + YC(I)**2 + ZC(I)**2 = 1.
   !
@@ -7982,7 +7939,7 @@ contains
   !    Input, logical NUMBR, option indicator:  If NUMBR = TRUE, the nodal 
   !    indexes are plotted at the Voronoi region centers.
   !
-  !    Output, integer(ip) IER = Error indicator:
+  !    Output, integer(int32) IER = Error indicator:
   !    0, if no errors were encountered.
   !    1, if LUN, PLTSIZ, N, or NT is outside its valid range.
   !    2, if ELAT, ELON, or A is outside its valid range.
@@ -8029,65 +7986,65 @@ contains
   !                KV1-KV2 with the equator (in the rotated coordinate system)
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: nt
+    integer(int32) n
+    integer(int32) nt
 
-    real(dp), intent(in), value :: a
+    real(real64) a
     logical, parameter :: annot = .true.
-    real(dp) :: cf
-    real(dp) :: ct
-    real(dp), intent(in), value :: elat
-    real(dp), intent(in), value :: elon
-    real(dp) :: ex
-    real(dp) :: ey
-    real(dp) :: ez
-    real(dp), parameter :: fsizn = 10.0_dp
-    real(dp), parameter :: fsizt = 16.0_dp
-    integer(ip), intent(out) :: ier
-    logical              :: in1
-    logical              :: in2
-    integer(ip) :: ipx1
-    integer(ip) :: ipx2
-    integer(ip) :: ipy1
-    integer(ip) :: ipy2
-    integer(ip) :: ir
-    integer(ip) :: kv1
-    integer(ip) :: kv2
-    integer(ip) :: lend(n)
-    integer(ip), intent(in) :: listc(3*nt)
-    integer(ip) :: lp
-    integer(ip) :: lpl
-    integer(ip), intent(in) :: lptr(6*(n-2))
-    integer(ip), intent(in), value :: lun
-    integer(ip) :: n0
-    logical             , intent(in), value :: numbr
-    real(dp), intent(in), value :: pltsiz
-    real(dp) :: r11
-    real(dp) :: r12
-    real(dp) :: r21
-    real(dp) :: r22
-    real(dp) :: r23
-    real(dp) :: sf
-    real(dp) :: t
-    character ( len = * ), intent(in), value :: title
-    real(dp) :: tx
-    real(dp) :: ty
-    real(dp) :: wr
-    real(dp) :: wrs
-    real(dp), intent(in) :: x(n)
-    real(dp) :: x0
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp), intent(in) :: xc(nt)
-    real(dp), intent(in) :: y(n)
-    real(dp) :: y0
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp), intent(in) :: yc(nt)
-    real(dp), intent(in) :: z(n)
-    real(dp) :: z1
-    real(dp) :: z2
-    real(dp), intent(in) :: zc(nt)
+    real(real64) cf
+    real(real64) ct
+    real(real64) elat
+    real(real64) elon
+    real(real64) ex
+    real(real64) ey
+    real(real64) ez
+    real(real64), parameter :: fsizn = 10.0e+00_real64
+    real(real64), parameter :: fsizt = 16.0e+00_real64
+    integer(int32) ier
+    logical              in1
+    logical              in2
+    integer(int32) ipx1
+    integer(int32) ipx2
+    integer(int32) ipy1
+    integer(int32) ipy2
+    integer(int32) ir
+    integer(int32) kv1
+    integer(int32) kv2
+    integer(int32) lend(n)
+    integer(int32) listc(3*nt)
+    integer(int32) lp
+    integer(int32) lpl
+    integer(int32) lptr(6*(n-2))
+    integer(int32) lun
+    integer(int32) n0
+    logical              numbr
+    real(real64) pltsiz
+    real(real64) r11
+    real(real64) r12
+    real(real64) r21
+    real(real64) r22
+    real(real64) r23
+    real(real64) sf
+    real(real64) t
+    character ( len = * ) title
+    real(real64) tx
+    real(real64) ty
+    real(real64) wr
+    real(real64) wrs
+    real(real64) x(n)
+    real(real64) x0
+    real(real64) x1
+    real(real64) x2
+    real(real64) xc(nt)
+    real(real64) y(n)
+    real(real64) y0
+    real(real64) y1
+    real(real64) y2
+    real(real64) yc(nt)
+    real(real64) z(n)
+    real(real64) z1
+    real(real64) z2
+    real(real64) zc(nt)
 
     ier = 0
   !
@@ -8101,20 +8058,20 @@ contains
       ier = 1
     end if
 
-    if ( pltsiz < 1.0_dp .or. 8.5_dp < pltsiz .or. &
+    if ( pltsiz < 1.0e+00_real64 .or. 8.5e+00_real64 < pltsiz .or. &
         n < 3 .or. nt /= 2*n-4) then
       ier = 1
     end if
 
-    if ( 90.0_dp < abs ( elat ) .or. &
-         180.0_dp < abs ( elon ) .or. &
-         90.0_dp < a ) then
+    if ( 90.0e+00_real64 < abs ( elat ) .or. &
+         180.0e+00_real64 < abs ( elon ) .or. &
+         90.0e+00_real64 < a ) then
       ier = 2
     end if
   !
   !  Compute a conversion factor CF for degrees to radians.
   !
-    cf = atan ( 1.0_dp ) / 45.0_dp
+    cf = atan ( 1.0e+00_real64 ) / 45.0e+00_real64
   !
   !  Compute the window radius WR.
   !
@@ -8130,7 +8087,7 @@ contains
   !  by 11 inch page.  The center of the page is (306,396),
   !  and IR = PLTSIZ/2 in points.
   !
-    ir = nint ( 36.0_dp * pltsiz )
+    ir = nint ( 36.0e+00_real64 * pltsiz )
     ipx1 = 306 - ir
     ipx2 = 306 + ir
     ipy1 = 396 - ir
@@ -8148,7 +8105,7 @@ contains
   !  of a viewport box obtained by shrinking the bounding box
   !  by 12% in each dimension.
   !
-    ir = nint ( 0.88_dp * real ( ir, dp) )
+    ir = nint ( 0.88e+00_real64 * real ( ir, real64) )
     ipx1 = 306 - ir
     ipx2 = 306 + ir
     ipy1 = 396 - ir
@@ -8156,7 +8113,7 @@ contains
   !
   !  Set the line thickness to 2 points, and draw the viewport boundary.
   !
-    t = 2.0_dp
+    t = 2.0e+00_real64
     write ( lun, '(f12.6,a)' ) t, ' setlinewidth'
     write ( lun, '(a,i3,a)' ) '306 396 ', ir, ' 0 360 arc'
     write ( lun, '(a)' ) 'stroke'
@@ -8164,7 +8121,7 @@ contains
   !  Set up an affine mapping from the window box [-WR,WR] X
   !  [-WR,WR] to the viewport box.
   !
-    sf = real ( ir, dp) / wr
+    sf = real ( ir, real64) / wr
     tx = ipx1 + sf * wr
     ty = ipy1 + sf * wr
 
@@ -8175,7 +8132,7 @@ contains
   !  scaling which is applied to all subsequent output.
   !  Set it to 1.0 point.
   !
-    t = 1.0_dp / sf
+    t = 1.0e+00_real64 / sf
     write ( lun, '(f12.6,a)' ) t, ' setlinewidth'
   !
   !  Save the current graphics state, and set the clip path to
@@ -8202,12 +8159,12 @@ contains
     ey = ct * sin ( t )
     ez = sin ( cf * elat )
 
-    if ( ct /= 0.0_dp ) then
+    if ( ct /= 0.0e+00_real64 ) then
       r11 = -ey / ct
       r12 = ex / ct
     else
-      r11 = 0.0_dp
-      r12 = 1.0_dp
+      r11 = 0.0e+00_real64
+      r12 = 1.0e+00_real64
     end if
 
     r21 = -ez * r12
@@ -8231,7 +8188,7 @@ contains
   !
   !  IN2 = TRUE iff KV2 is in the window.
   !
-      in2 = ( 0.0_dp <= z2 ) .and. ( x2 * x2 + y2 * y2 <= wrs )
+      in2 = ( 0.0e+00_real64 <= z2 ) .and. ( x2 * x2 + y2 * y2 <= wrs )
   !
   !  Loop on neighbors N1 of N0.  For each triangulation edge
   !  N0-N1, KV1-KV2 is the corresponding Voronoi edge.
@@ -8253,7 +8210,7 @@ contains
         x2 = r11 * xc(kv2) + r12 * yc(kv2)
         y2 = r21 * xc(kv2) + r22 * yc(kv2) + r23 * zc(kv2)
         z2 = ex * xc(kv2) + ey * yc(kv2) + ez * zc(kv2)
-        in2 = 0.0_dp <= z2 .and. x2 * x2 + y2 * y2 <= wrs
+        in2 = 0.0e+00_real64 <= z2 .and. x2 * x2 + y2 * y2 <= wrs
   !
   !  Add edge KV1-KV2 to the path iff both endpoints are inside
   !  the window and KV1 < KV2, or KV1 is inside and KV2 is
@@ -8265,7 +8222,7 @@ contains
   !  intersection of edge KV1-KV2 with the equator so that
   !  the edge is clipped properly.  Z2 is implicitly set to 0.
   !
-          if ( z2 < 0.0_dp ) then
+          if ( z2 < 0.0e+00_real64 ) then
             x2 = z1 * x2 - z2 * x1
             y2 = z1 * y2 - z2 * y1
             t = sqrt ( x2 * x2 + y2 * y2 )
@@ -8306,7 +8263,7 @@ contains
   !
       do n0 = 1, n
 
-        if ( ex * x(n0) + ey * y(n0) + ez * z(n0) < 0.0_dp ) then
+        if ( ex * x(n0) + ey * y(n0) + ez * z(n0) < 0.0e+00_real64 ) then
           cycle
         end if
 
@@ -8334,7 +8291,7 @@ contains
   !
   !  Display TITLE centered above the plot:
   !
-    y0 = wr + 3.0_dp * t
+    y0 = wr + 3.0e+00_real64 * t
     write ( lun, '(a)' ) title
     write ( lun, '(a,g12.6,a)' ) '  stringwidth pop 2 div neg ', y0, ' moveto'
     write ( lun, '(a)' ) title
@@ -8345,11 +8302,11 @@ contains
     if ( annot ) then
 
       x0 = -wr
-      y0 = -wr - 50.0_dp / sf
+      y0 = -wr - 50.0e+00_real64 / sf
       write ( lun, '(2f12.6,a)' ) x0, y0, ' moveto'
       write ( lun, '(a,f7.2,a,f8.2,a)' ) '(Window center:  Latitude = ', elat, &
         ', Longitude = ', elon , ') show'
-      y0 = y0 - 2.0_dp * t
+      y0 = y0 - 2.0e+00_real64 * t
       write ( lun, '(2f12.6,a)' ) x0, y0, ' moveto'
       write ( lun, '(a,f5.2,a)' ) '(Angular extent = ', a, ') show'
 
@@ -8360,6 +8317,6 @@ contains
     write ( lun, '(a)' ) 'stroke'
     write ( lun, '(a)' ) 'showpage'
     write ( lun, '(a)' ) '%%eof'
-  end subroutine vrplot
+  end
 
 end module stripack_mod

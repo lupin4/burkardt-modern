@@ -1,16 +1,11 @@
-!> sphere_grid — Modern Fortran 2018
+!> sphere_grid â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module sphere_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: arc_cosine, arc_sine, atan4, icos_shape, icos_num, r8_uniform_01
   public :: r8vec_diff_norm, r8vec_norm, r8vec_polarize, sphere_cubed_ijk_to_xyz, sphere_cubed_line_num, sphere_cubed_points
@@ -21,8 +16,7 @@ module sphere_grid_mod
 
 contains
 
-  pure function arc_cosine ( c ) &
-        bind(C, name="arc_cosine")
+  function arc_cosine ( c )
 
   !*****************************************************************************80
   !
@@ -50,24 +44,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) C, the argument.
+  !    Input, real(real64) C, the argument.
   !
-  !    Output, real(dp) ARC_COSINE, an angle whose cosine is C.
+  !    Output, real(real64) ARC_COSINE, an angle whose cosine is C.
   !
 
-    real(dp) :: arc_cosine
-    real(dp), intent(in), value :: c
-    real(dp) :: c2
+    real(real64) arc_cosine
+    real(real64) c
+    real(real64) c2
 
     c2 = c
-    c2 = max ( c2, - 1.0_dp )
-    c2 = min ( c2, + 1.0_dp )
+    c2 = max ( c2, - 1.0e+00_real64 )
+    c2 = min ( c2, + 1.0e+00_real64 )
 
     arc_cosine = acos ( c2 )
-  end function arc_cosine
+  end
 
-  pure function arc_sine ( s ) &
-        bind(C, name="arc_sine")
+  function arc_sine ( s )
 
   !*****************************************************************************80
   !
@@ -95,24 +88,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) S, the argument.
+  !    Input, real(real64) S, the argument.
   !
-  !    Output, real(dp) ARC_SINE, an angle whose sine is S.
+  !    Output, real(real64) ARC_SINE, an angle whose sine is S.
   !
 
-    real(dp) :: arc_sine
-    real(dp), intent(in), value :: s
-    real(dp) :: s2
+    real(real64) arc_sine
+    real(real64) s
+    real(real64) s2
 
     s2 = s
-    s2 = max ( s2, - 1.0_dp )
-    s2 = min ( s2, + 1.0_dp )
+    s2 = max ( s2, - 1.0e+00_real64 )
+    s2 = min ( s2, + 1.0e+00_real64 )
 
     arc_sine = asin ( s2 )
-  end function arc_sine
+  end
 
-  function atan4 ( y, x ) &
-        bind(C, name="atan4")
+  function atan4 ( y, x )
 
   !*****************************************************************************80
   !
@@ -147,40 +139,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Y, X, two quantities which represent the 
+  !    Input, real(real64) Y, X, two quantities which represent the 
   !    tangent of an angle.  If Y is not zero, then the tangent is (Y/X).
   !
-  !    Output, real(dp) ATAN4, an angle between 0 and 2 * PI, 
+  !    Output, real(real64) ATAN4, an angle between 0 and 2 * PI, 
   !    whose tangent is (Y/X), and which lies in the appropriate quadrant so 
   !    that the signs of its cosine and sine match those of X and Y.
   !
 
-    real(dp) :: abs_x
-    real(dp) :: abs_y
-    real(dp) :: atan4
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: theta
-    real(dp) :: theta_0
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    real(real64) abs_x
+    real(real64) abs_y
+    real(real64) atan4
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) theta
+    real(real64) theta_0
+    real(real64) x
+    real(real64) y
   !
   !  Special cases:
   !
-    if ( x == 0.0_dp ) then
+    if ( x == 0.0e+00_real64 ) then
 
-      if ( 0.0_dp < y ) then
-        theta = pi / 2.0_dp
-      else if ( y < 0.0_dp ) then
-        theta = 3.0_dp * pi / 2.0_dp
-      else if ( y == 0.0_dp ) then
-        theta = 0.0_dp
+      if ( 0.0e+00_real64 < y ) then
+        theta = pi / 2.0e+00_real64
+      else if ( y < 0.0e+00_real64 ) then
+        theta = 3.0e+00_real64 * pi / 2.0e+00_real64
+      else if ( y == 0.0e+00_real64 ) then
+        theta = 0.0e+00_real64
       end if
 
-    else if ( y == 0.0_dp ) then
+    else if ( y == 0.0e+00_real64 ) then
 
-      if ( 0.0_dp < x ) then
-        theta = 0.0_dp
-      else if ( x < 0.0_dp ) then
+      if ( 0.0e+00_real64 < x ) then
+        theta = 0.0e+00_real64
+      else if ( x < 0.0e+00_real64 ) then
         theta = PI
       end if
   !
@@ -193,24 +185,23 @@ contains
 
       theta_0 = atan2 ( abs_y, abs_x )
 
-      if ( 0.0_dp < x .and. 0.0_dp < y ) then
+      if ( 0.0e+00_real64 < x .and. 0.0e+00_real64 < y ) then
         theta = theta_0
-      else if ( x < 0.0_dp .and. 0.0_dp < y ) then
+      else if ( x < 0.0e+00_real64 .and. 0.0e+00_real64 < y ) then
         theta = pi - theta_0
-      else if ( x < 0.0_dp .and. y < 0.0_dp ) then
+      else if ( x < 0.0e+00_real64 .and. y < 0.0e+00_real64 ) then
         theta = pi + theta_0
-      else if ( 0.0_dp < x .and. y < 0.0_dp ) then
-        theta = 2.0_dp * pi - theta_0
+      else if ( 0.0e+00_real64 < x .and. y < 0.0e+00_real64 ) then
+        theta = 2.0e+00_real64 * pi - theta_0
       end if
 
     end if
 
     atan4 = theta
-  end function atan4
+  end
 
   subroutine icos_shape ( point_num, edge_num, face_num, face_order_max, &
-    point_coord, edge_point, face_order, face_point ) &
-        bind(C, name="icos_shape")
+    point_coord, edge_point, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -242,24 +233,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points (12).
+  !    Input, integer(int32) POINT_NUM, the number of points (12).
   !
-  !    Input, integer(ip) EDGE_NUM, the number of edges (30).
+  !    Input, integer(int32) EDGE_NUM, the number of edges (30).
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces (20).
+  !    Input, integer(int32) FACE_NUM, the number of faces (20).
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of 
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of 
   !    vertices per face (3).
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the points.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the points.
   !
-  !    Output, integer(ip) EDGE_POINT(2,EDGE_NUM), the points that 
+  !    Output, integer(int32) EDGE_POINT(2,EDGE_NUM), the points that 
   !    make up each edge, listed in ascending order of their indexes.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    per face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) is the index of the I-th point in the J-th face.  The
   !    points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.  The nodes of each face are ordered 
@@ -267,28 +258,28 @@ contains
   !    nodes.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), parameter :: edge_order = 2
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(in), value :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32), parameter :: edge_order = 2
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
-    real(dp) :: a
-    real(dp) :: b
-    integer(ip), intent(out) :: edge_point(edge_order,edge_num)
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip), intent(out) :: face_point(face_order_max,face_num)
-    real(dp) :: phi
-    real(dp) :: point_coord(3,point_num)
-    real(dp) :: z
+    real(real64) a
+    real(real64) b
+    integer(int32) edge_point(edge_order,edge_num)
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) phi
+    real(real64) point_coord(3,point_num)
+    real(real64) z
   !
   !  Set the point coordinates.
   !
-    phi = 0.5_dp * ( sqrt ( 5.0_dp ) + 1.0_dp )
+    phi = 0.5e+00_real64 * ( sqrt ( 5.0e+00_real64 ) + 1.0e+00_real64 )
 
-    a = phi / sqrt ( 1.0_dp + phi * phi )
-    b = 1.0_dp / sqrt ( 1.0_dp + phi * phi )
-    z = 0.0_dp
+    a = phi / sqrt ( 1.0e+00_real64 + phi * phi )
+    b = 1.0e+00_real64 / sqrt ( 1.0e+00_real64 + phi * phi )
+    z = 0.0e+00_real64
   !
   !  A*A + B*B + Z*Z = 1.
   !
@@ -369,10 +360,9 @@ contains
        8, 12, 10, &
        9, 11, 12, &
       10, 12, 11 /), (/ face_order_max, face_num /) )
-  end subroutine icos_shape
+  end
 
-  pure subroutine icos_num ( point_num, edge_num, face_num, face_order_max ) &
-        bind(C, name="icos_num")
+  subroutine icos_num ( point_num, edge_num, face_num, face_order_max )
 
   !*****************************************************************************80
   !
@@ -392,28 +382,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of points.
+  !    Output, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 12
     edge_num = 30
     face_num = 20
     face_order_max = 3
-  end subroutine icos_num
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -421,7 +410,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
   !    This routine implements the recursion
   !
@@ -478,16 +467,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -507,11 +496,10 @@ contains
   !  Although SEED can be represented exactly as a 32 bit integer,
   !  it generally cannot be represented exactly as a 32 bit real number!
   !
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  pure function r8vec_diff_norm ( n, a, b ) &
-        bind(C, name="r8vec_diff_norm")
+  function r8vec_diff_norm ( n, a, b )
 
   !*****************************************************************************80
   !
@@ -539,24 +527,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in A.
+  !    Input, integer(int32) N, the number of entries in A.
   !
-  !    Input, real(dp) A(N), B(N), the vectors
+  !    Input, real(real64) A(N), B(N), the vectors
   !
-  !    Output, real(dp) R8VEC_DIFF_NORM, the L2 norm of A - B.
+  !    Output, real(real64) R8VEC_DIFF_NORM, the L2 norm of A - B.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp), intent(in) :: b(n)
-    real(dp) :: r8vec_diff_norm
+    real(real64) a(n)
+    real(real64) b(n)
+    real(real64) r8vec_diff_norm
 
     r8vec_diff_norm = sqrt ( sum ( ( a(1:n) - b(1:n) )**2 ) )
-  end function r8vec_diff_norm
+  end
 
-  pure function r8vec_norm ( n, a ) &
-        bind(C, name="r8vec_norm")
+  function r8vec_norm ( n, a )
 
   !*****************************************************************************80
   !
@@ -584,23 +571,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in A.
+  !    Input, integer(int32) N, the number of entries in A.
   !
-  !    Input, real(dp) A(N), the vector whose L2 norm is desired.
+  !    Input, real(real64) A(N), the vector whose L2 norm is desired.
   !
-  !    Output, real(dp) R8VEC_NORM, the L2 norm of A.
+  !    Output, real(real64) R8VEC_NORM, the L2 norm of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp) :: r8vec_norm
+    real(real64) a(n)
+    real(real64) r8vec_norm
 
     r8vec_norm = sqrt ( sum ( a(1:n)**2 ) )
-  end function r8vec_norm
+  end
 
-  subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel ) &
-        bind(C, name="r8vec_polarize")
+  subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel )
 
   !*****************************************************************************80
   !
@@ -633,30 +619,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, real(dp) A(N), the vector to be polarized.
+  !    Input, real(real64) A(N), the vector to be polarized.
   !
-  !    Input, real(dp) P(N), the polarizing direction.
+  !    Input, real(real64) P(N), the polarizing direction.
   !
-  !    Output, real(dp) A_NORMAL(N), A_PARALLEL(N), the normal
+  !    Output, real(real64) A_NORMAL(N), A_PARALLEL(N), the normal
   !    and parallel components of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp) :: a_dot_p
-    real(dp), intent(out) :: a_normal(n)
-    real(dp), intent(out) :: a_parallel(n)
-    real(dp), intent(in) :: p(n)
-    real(dp) :: p_norm
+    real(real64) a(n)
+    real(real64) a_dot_p
+    real(real64) a_normal(n)
+    real(real64) a_parallel(n)
+    real(real64) p(n)
+    real(real64) p_norm
 
     p_norm = sqrt ( sum ( p(1:n)**2 ) )
 
-    if ( p_norm == 0.0_dp ) then
+    if ( p_norm == 0.0e+00_real64 ) then
       a_normal(1:n) = a(1:n)
-      a_parallel(1:n) = 0.0_dp
+      a_parallel(1:n) = 0.0e+00_real64
     end if
 
     a_dot_p = dot_product ( a(1:n), p(1:n) ) / p_norm
@@ -664,10 +650,9 @@ contains
     a_parallel(1:n) = a_dot_p * p(1:n) / p_norm
 
     a_normal(1:n) = a(1:n) - a_parallel(1:n)
-  end subroutine r8vec_polarize
+  end
 
-  pure subroutine sphere_cubed_ijk_to_xyz ( n, i, j, k, xyz ) &
-        bind(C, name="sphere_cubed_ijk_to_xyz")
+  subroutine sphere_cubed_ijk_to_xyz ( n, i, j, k, xyz )
 
   !*****************************************************************************80
   !
@@ -687,51 +672,51 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sections into which each 
+  !    Input, integer(int32) N, the number of sections into which each 
   !    face of the cube is to be divided.
   !
-  !    Input, integer(ip) I, J, K, indices between 0 and N.  Normally,
+  !    Input, integer(int32) I, J, K, indices between 0 and N.  Normally,
   !    at least one of the indices should have the value 0 or N.
   !
-  !    Output, real(dp) XYZ(3), coordinates of the point.
+  !    Output, real(real64) XYZ(3), coordinates of the point.
   !
 
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(in), value :: j
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(in), value :: n
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: xc
-    real(dp), intent(out) :: xyz(3)
-    real(dp) :: xyzn
-    real(dp) :: yc
-    real(dp) :: zc
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) n
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) xc
+    real(real64) xyz(3)
+    real(real64) xyzn
+    real(real64) yc
+    real(real64) zc
 
     if ( i == 0 ) then
-      xc = -1.0_dp
+      xc = -1.0e+00_real64
     else if ( i == n ) then
-      xc = +1.0_dp
+      xc = +1.0e+00_real64
     else
-      xc = tan ( real ( 2 * i - n, dp) * 0.25_dp * pi &
-        / real ( n, dp) )
+      xc = tan ( real ( 2 * i - n, real64) * 0.25e+00_real64 * pi &
+        / real ( n, real64) )
     end if
 
     if ( j == 0 ) then
-      yc = -1.0_dp
+      yc = -1.0e+00_real64
     else if ( j == n ) then
-      yc = +1.0_dp
+      yc = +1.0e+00_real64
     else
-      yc = tan ( real ( 2 * j - n, dp) * 0.25_dp * pi &
-        / real ( n, dp) )
+      yc = tan ( real ( 2 * j - n, real64) * 0.25e+00_real64 * pi &
+        / real ( n, real64) )
     end if
 
     if ( k == 0 ) then
-      zc = -1.0_dp
+      zc = -1.0e+00_real64
     else if ( k == n ) then
-      zc = +1.0_dp
+      zc = +1.0e+00_real64
     else
-      zc = tan ( real ( 2 * k - n, dp) * 0.25_dp * pi &
-        / real ( n, dp) )
+      zc = tan ( real ( 2 * k - n, real64) * 0.25e+00_real64 * pi &
+        / real ( n, real64) )
     end if
 
     xyzn = sqrt ( xc ** 2 + yc ** 2 + zc ** 2 )
@@ -739,10 +724,9 @@ contains
     xyz(1) = xc / xyzn
     xyz(2) = yc / xyzn
     xyz(3) = zc / xyzn
-  end subroutine sphere_cubed_ijk_to_xyz
+  end
 
-  pure subroutine sphere_cubed_line_num ( n, line_num ) &
-        bind(C, name="sphere_cubed_line_num")
+  subroutine sphere_cubed_line_num ( n, line_num )
 
   !*****************************************************************************80
   !
@@ -762,14 +746,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sections into which each 
+  !    Input, integer(int32) N, the number of sections into which each 
   !    face of the cube is to be divided.
   !
-  !    Output, integer(ip) LINE_NUM, the number of lines.
+  !    Output, integer(int32) LINE_NUM, the number of lines.
   !
 
-    integer(ip), intent(out) :: line_num
-    integer(ip), intent(in), value :: n
+    integer(int32) line_num
+    integer(int32) n
 
     line_num = 0
   !
@@ -796,10 +780,9 @@ contains
     if ( 1 < n ) then
       line_num = line_num + 6 * 2 * n * ( n - 1 )
     end if
-  end subroutine sphere_cubed_line_num
+  end
 
-  subroutine sphere_cubed_points ( n, ns, xyz ) &
-        bind(C, name="sphere_cubed_points")
+  subroutine sphere_cubed_points ( n, ns, xyz )
 
   !*****************************************************************************80
   !
@@ -833,20 +816,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sections into which each 
+  !    Input, integer(int32) N, the number of sections into which each 
   !    face of the cube is to be divided.
   !
-  !    Input, integer(ip) NS, the number of points.
+  !    Input, integer(int32) NS, the number of points.
   !
-  !    Output, real(dp) XYZ(3,NS), distinct points on the unit sphere
+  !    Output, real(real64) XYZ(3,NS), distinct points on the unit sphere
   !    generated by a cubed sphere grid.
   !
 
-    integer(ip), intent(out) :: ns
+    integer(int32) ns
 
-    integer(ip), intent(in), value :: n
-    integer(ip) :: ns2
-    real(dp), intent(out) :: xyz(3,ns)
+    integer(int32) n
+    integer(int32) ns2
+    real(real64) xyz(3,ns)
 
     ns2 = 0
   !
@@ -872,10 +855,9 @@ contains
       write ( *, '(a,i8,a)' ) '  Generated ', ns2, ' points.'
       stop
     end if
-  end subroutine sphere_cubed_points
+  end
 
-  subroutine sphere_cubed_points_face ( n, i1, j1, k1, i2, j2, k2, ns, xyz ) &
-        bind(C, name="sphere_cubed_points_face")
+  subroutine sphere_cubed_points_face ( n, i1, j1, k1, i2, j2, k2, ns, xyz )
 
   !*****************************************************************************80
   !
@@ -900,74 +882,74 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sections into which each face 
+  !    Input, integer(int32) N, the number of sections into which each face 
   !    of the cube is to be divided.
   !
-  !    Input, integer(ip) I1, J1, K1, I2, J2, K2, the logical indices, 
+  !    Input, integer(int32) I1, J1, K1, I2, J2, K2, the logical indices, 
   !    between 0 and N, of two corners of the face grid.  It is guaranteed that 
   !    I1 <= I2, J1 <= J2, and K1 <= K2.  
   !
-  !    Input/output, integer(ip) NS, the number of points.
+  !    Input/output, integer(int32) NS, the number of points.
   !
   !    Input/output, real XYZ(3,NS), distinct points on the unit sphere
   !    generated by a cubed sphere grid.
   !
 
-    integer(ip) :: i
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip) :: j
-    integer(ip), intent(in), value :: j1
-    integer(ip), intent(in), value :: j2
-    integer(ip) :: k
-    integer(ip), intent(in), value :: k1
-    integer(ip), intent(in), value :: k2
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: ns
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(inout) :: xyz(3,*)
-    real(dp) :: xyzn
-    real(dp) :: xc
-    real(dp) :: yc
-    real(dp) :: zc
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) j
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) k
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) n
+    integer(int32) ns
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) xyz(3,*)
+    real(real64) xyzn
+    real(real64) xc
+    real(real64) yc
+    real(real64) zc
 
     do i = i1, i2
 
       if ( i1 < i2 ) then
-        xc = tan ( real ( 2 * i - n, dp) * 0.25_dp * pi &
-          / real ( n, dp) )
+        xc = tan ( real ( 2 * i - n, real64) * 0.25e+00_real64 * pi &
+          / real ( n, real64) )
       else if ( i1 == 0 ) then
-        xc = -1.0_dp
+        xc = -1.0e+00_real64
       else if ( i1 == n ) then
-        xc = +1.0_dp
+        xc = +1.0e+00_real64
       else
-        xc = 0.0_dp
+        xc = 0.0e+00_real64
       end if
 
       do j = j1, j2
 
         if ( j1 < j2 ) then
-          yc = tan ( real ( 2 * j - n, dp) * 0.25_dp * pi &
-            / real ( n, dp) )
+          yc = tan ( real ( 2 * j - n, real64) * 0.25e+00_real64 * pi &
+            / real ( n, real64) )
         else if ( j1 == 0 ) then
-          yc = -1.0_dp
+          yc = -1.0e+00_real64
         else if ( j1 == n ) then
-          yc = +1.0_dp
+          yc = +1.0e+00_real64
         else
-          yc = 0.0_dp
+          yc = 0.0e+00_real64
         end if
 
         do k = k1, k2
 
           if ( k1 < k2 ) then
-            zc = tan ( real ( 2 * k - n, dp) * 0.25_dp * pi &
-              / real ( n, dp) );
+            zc = tan ( real ( 2 * k - n, real64) * 0.25e+00_real64 * pi &
+              / real ( n, real64) );
           else if ( k1 == 0 ) then
-            zc = -1.0_dp
+            zc = -1.0e+00_real64
           else if ( k1 == n ) then
-            zc = +1.0_dp
+            zc = +1.0e+00_real64
           else
-            zc = 0.0_dp
+            zc = 0.0e+00_real64
           end if
 
           xyzn = sqrt ( xc ** 2 + yc ** 2 + zc ** 2 )
@@ -980,10 +962,9 @@ contains
         end do
       end do
     end do
-  end subroutine sphere_cubed_points_face
+  end
 
-  pure subroutine sphere_cubed_point_num ( n, ns ) &
-        bind(C, name="sphere_cubed_point_num")
+  subroutine sphere_cubed_point_num ( n, ns )
 
   !*****************************************************************************80
   !
@@ -1019,20 +1000,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sections into which 
+  !    Input, integer(int32) N, the number of sections into which 
   !    each face of the cube is to be divided.
   !
-  !    Output, integer(ip) NS, the number of points.
+  !    Output, integer(int32) NS, the number of points.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ns
+    integer(int32) n
+    integer(int32) ns
 
     ns = ( n + 1 ) ** 3 - ( n - 1 ) ** 3
-  end subroutine sphere_cubed_point_num
+  end
 
-  pure subroutine sphere_distance_xyz ( xyz1, xyz2, dist ) &
-        bind(C, name="sphere_distance_xyz")
+  subroutine sphere_distance_xyz ( xyz1, xyz2, dist )
 
   !*****************************************************************************80
   !
@@ -1067,27 +1047,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XYZ1(3), the coordinates of the first point.
+  !    Input, real(real64) XYZ1(3), the coordinates of the first point.
   !
-  !    Input, real(dp) XYZ2(3), the coordinates of the second point.
+  !    Input, real(real64) XYZ2(3), the coordinates of the second point.
   !
-  !    Output, real(dp) DIST, the great circle distance between
+  !    Output, real(real64) DIST, the great circle distance between
   !    the points.
   !
 
-    real(dp) :: arc_sine
-    real(dp) :: atan4
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp) :: lat1
-    real(dp) :: lat2
-    real(dp) :: lon1
-    real(dp) :: lon2
-    real(dp) :: r
-    real(dp) :: r8vec_norm
-    real(dp) :: top
-    real(dp), intent(in) :: xyz1(3)
-    real(dp), intent(in) :: xyz2(3)
+    real(real64) arc_sine
+    real(real64) atan4
+    real(real64) bot
+    real(real64) dist
+    real(real64) lat1
+    real(real64) lat2
+    real(real64) lon1
+    real(real64) lon2
+    real(real64) r
+    real(real64) r8vec_norm
+    real(real64) top
+    real(real64) xyz1(3)
+    real(real64) xyz2(3)
 
     r = r8vec_norm ( 3, xyz1 )
 
@@ -1107,10 +1087,9 @@ contains
         + cos ( lat1 ) * cos ( lat2 ) * cos ( lon1 - lon2 )
 
     dist = r * atan2 ( top, bot )
-  end subroutine sphere_distance_xyz
+  end
 
-  subroutine sphere_grid_q4 ( lat_num, long_num, rectangle_node ) &
-        bind(C, name="sphere_grid_q4")
+  subroutine sphere_grid_q4 ( lat_num, long_num, rectangle_node )
 
   !*****************************************************************************80
   !
@@ -1139,33 +1118,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, the number of "rows" of rectangles to
+  !    Input, integer(int32) LAT_NUM, the number of "rows" of rectangles to
   !    be created.  LAT_NUM must be at least 2. 
   !
-  !    Input, integer(ip) LONG_NUM, the number of "columns" of 
+  !    Input, integer(int32) LONG_NUM, the number of "columns" of 
   !    rectangles to be created.
   !
-  !    Output, integer(ip) RECTANGLE_NODE(4,LAT_NUM*LONG_NUM), 
+  !    Output, integer(int32) RECTANGLE_NODE(4,LAT_NUM*LONG_NUM), 
   !    the indices of the nodes that make up each rectangle.
   !
 
-    integer(ip), intent(out) :: lat_num
-    integer(ip), intent(in), value :: long_num
+    integer(int32) lat_num
+    integer(int32) long_num
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: n
-    integer(ip) :: n_max
-    integer(ip) :: n_min
-    integer(ip) :: ne
-    integer(ip) :: nw
-    integer(ip) :: s
-    integer(ip) :: s_max
-    integer(ip) :: s_min
-    integer(ip) :: se
-    integer(ip) :: sw
-    integer(ip), intent(out) :: rectangle_node(4,lat_num*long_num)
-    integer(ip) :: rectangle_num
+    integer(int32) i
+    integer(int32) j
+    integer(int32) n
+    integer(int32) n_max
+    integer(int32) n_min
+    integer(int32) ne
+    integer(int32) nw
+    integer(int32) s
+    integer(int32) s_max
+    integer(int32) s_min
+    integer(int32) se
+    integer(int32) sw
+    integer(int32) rectangle_node(4,lat_num*long_num)
+    integer(int32) rectangle_num
 
     rectangle_num = 0
   !
@@ -1257,10 +1236,9 @@ contains
       end if
 
     end do
-  end subroutine sphere_grid_q4
+  end
 
-  subroutine sphere_grid_t3 ( lat_num, long_num, triangle_node ) &
-        bind(C, name="sphere_grid_t3")
+  subroutine sphere_grid_t3 ( lat_num, long_num, triangle_node )
 
   !*****************************************************************************80
   !
@@ -1289,32 +1267,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude 
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude 
   !    and longitude lines to draw.  The latitudes do not include the North 
   !    and South poles, which will be included automatically, so LAT_NUM = 5, 
   !    for instance, will result in points along 7 lines of latitude.
   !
-  !    Output, integer(ip) TRIANGLE_NODE(3,2*(LAT_NUM+1)*LONG_NUM), the
+  !    Output, integer(int32) TRIANGLE_NODE(3,2*(LAT_NUM+1)*LONG_NUM), the
   !    triangle vertices.
   !
 
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(in), value :: long_num
+    integer(int32) lat_num
+    integer(int32) long_num
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: n
-    integer(ip) :: n_max
-    integer(ip) :: n_min
-    integer(ip) :: ne
-    integer(ip) :: nw
-    integer(ip) :: s
-    integer(ip) :: s_max
-    integer(ip) :: s_min
-    integer(ip) :: se
-    integer(ip) :: sw
-    integer(ip), intent(out) :: triangle_node(3,2*(lat_num+1)*long_num)
-    integer(ip) :: triangle_num
+    integer(int32) i
+    integer(int32) j
+    integer(int32) n
+    integer(int32) n_max
+    integer(int32) n_min
+    integer(int32) ne
+    integer(int32) nw
+    integer(int32) s
+    integer(int32) s_max
+    integer(int32) s_min
+    integer(int32) se
+    integer(int32) sw
+    integer(int32) triangle_node(3,2*(lat_num+1)*long_num)
+    integer(int32) triangle_num
 
     triangle_num = 0
   !
@@ -1409,10 +1387,9 @@ contains
       end if
 
     end do
-  end subroutine sphere_grid_t3
+  end
 
-  pure subroutine sphere_icos_edge_num ( factor, edge_num ) &
-        bind(C, name="sphere_icos_edge_num")
+  subroutine sphere_icos_edge_num ( factor, edge_num )
 
   !*****************************************************************************80
   !
@@ -1450,14 +1427,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(in), value :: factor
+    integer(int32) edge_num
+    integer(int32) factor
 
     if ( factor < 1 ) then
       write ( *, '(a)' ) ' '
@@ -1467,10 +1444,9 @@ contains
     end if
 
     edge_num = 30 * factor * factor
-  end subroutine sphere_icos_edge_num
+  end
 
-  pure subroutine sphere_icos_face_num ( factor, face_num ) &
-        bind(C, name="sphere_icos_face_num")
+  subroutine sphere_icos_face_num ( factor, face_num )
 
   !*****************************************************************************80
   !
@@ -1508,14 +1484,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
-  !    Output, integer(ip) FACE_NUM, the number of triangles.
+  !    Output, integer(int32) FACE_NUM, the number of triangles.
   !
 
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(in), value :: factor
+    integer(int32) face_num
+    integer(int32) factor
 
     if ( factor < 1 ) then
       write ( *, '(a)' ) ' '
@@ -1525,10 +1501,9 @@ contains
     end if
 
     face_num = 20 * factor * factor
-  end subroutine sphere_icos_face_num
+  end
 
-  pure subroutine sphere_icos_point_num ( factor, point_num ) &
-        bind(C, name="sphere_icos_point_num")
+  subroutine sphere_icos_point_num ( factor, point_num )
 
   !*****************************************************************************80
   !
@@ -1566,14 +1541,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
-  !    Output, integer(ip) POINT_NUM, the number of nodes.
+  !    Output, integer(int32) POINT_NUM, the number of nodes.
   !
 
-    integer(ip), intent(in), value :: factor
-    integer(ip), intent(out) :: point_num
+    integer(int32) factor
+    integer(int32) point_num
 
     if ( factor < 1 ) then
       write ( *, '(a)' ) ' '
@@ -1585,10 +1560,9 @@ contains
     point_num = 12                                   &
               + 10 * 3              * ( factor - 1 ) &
               + 10 * ( factor - 2 ) * ( factor - 1 )
-  end subroutine sphere_icos_point_num
+  end
 
-  subroutine sphere_icos1_points ( factor, node_num, node_xyz ) &
-        bind(C, name="sphere_icos1_points")
+  subroutine sphere_icos1_points ( factor, node_num, node_xyz )
 
   !*****************************************************************************80
   !
@@ -1637,13 +1611,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes, as reported
+  !    Input, integer(int32) NODE_NUM, the number of nodes, as reported
   !    by SPHERE_GRID_ICOS_SIZE.
   !
-  !    Output, real(dp) NODE_XYZ(3,NODE_NUM), the node coordinates.
+  !    Output, real(real64) NODE_XYZ(3,NODE_NUM), the node coordinates.
   !
   !  Local Parameters:
   !
@@ -1656,29 +1630,29 @@ contains
   !    end of the routine, it should be equal to NODE_NUM.
   !
 
-    integer(ip), intent(out) :: node_num
+    integer(int32) node_num
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: c
-    integer(ip) :: edge
-    integer(ip) :: edge_num
-    integer(ip), allocatable, dimension ( :, : ) :: edge_point
-    integer(ip) :: f
-    integer(ip) :: f1
-    integer(ip) :: f2
-    integer(ip) :: face
-    integer(ip) :: face_num
-    integer(ip), allocatable, dimension ( : ) :: face_order
-    integer(ip), allocatable, dimension ( :, : ) :: face_point
-    integer(ip) :: face_order_max
-    integer(ip), intent(in), value :: factor
-    integer(ip) :: node
-    real(dp) :: node_norm
-    real(dp), intent(out) :: node_xyz(3,node_num)
-    real(dp), allocatable, dimension ( :, : ) :: point_coord
-    integer(ip) :: point_num
-    real(dp) :: r8vec_norm
+    integer(int32) a
+    integer(int32) b
+    integer(int32) c
+    integer(int32) edge
+    integer(int32) edge_num
+    integer(int32), allocatable, dimension ( :, : ) :: edge_point
+    integer(int32) f
+    integer(int32) f1
+    integer(int32) f2
+    integer(int32) face
+    integer(int32) face_num
+    integer(int32), allocatable, dimension ( : ) :: face_order
+    integer(int32), allocatable, dimension ( :, : ) :: face_point
+    integer(int32) face_order_max
+    integer(int32) factor
+    integer(int32) node
+    real(real64) node_norm
+    real(real64) node_xyz(3,node_num)
+    real(real64), allocatable, dimension ( :, : ) :: point_coord
+    integer(int32) point_num
+    real(real64) r8vec_norm
   !
   !  Size the icosahedron.
   !
@@ -1716,9 +1690,9 @@ contains
         node = node + 1
 
         node_xyz(1:3,node) = &
-          ( real ( factor - f, dp) * point_coord(1:3,a)   &
-          + real (          f, dp) * point_coord(1:3,b) ) &
-          / real ( factor, dp)
+          ( real ( factor - f, real64) * point_coord(1:3,a)   &
+          + real (          f, real64) * point_coord(1:3,b) ) &
+          / real ( factor, real64)
 
         node_norm = r8vec_norm ( 3, node_xyz(1:3,node) )
 
@@ -1741,10 +1715,10 @@ contains
           node = node + 1
 
           node_xyz(1:3,node) = &
-            ( real ( factor - f1 - f2, dp) * point_coord(1:3,a)   &
-            + real (          f1, dp) * point_coord(1:3,b)   &
-            + real (               f2, dp) * point_coord(1:3,c) ) &
-            / real ( factor, dp)
+            ( real ( factor - f1 - f2, real64) * point_coord(1:3,a)   &
+            + real (          f1, real64) * point_coord(1:3,b)   &
+            + real (               f2, real64) * point_coord(1:3,c) ) &
+            / real ( factor, real64)
 
           node_norm = r8vec_norm ( 3, node_xyz(1:3,node) )
 
@@ -1761,10 +1735,9 @@ contains
     deallocate ( face_order )
     deallocate ( face_point )
     deallocate ( point_coord )
-  end subroutine sphere_icos1_points
+  end
 
-  subroutine sphere_icos2_points ( factor, node_num, node_xyz ) &
-        bind(C, name="sphere_icos2_points")
+  subroutine sphere_icos2_points ( factor, node_num, node_xyz )
 
   !*****************************************************************************80
   !
@@ -1802,13 +1775,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes, as reported
+  !    Input, integer(int32) NODE_NUM, the number of nodes, as reported
   !    by SPHERE_GRID_ICOS_SIZE.
   !
-  !    Output, real(dp) NODE_XYZ(3,NODE_NUM), the node coordinates.
+  !    Output, real(real64) NODE_XYZ(3,NODE_NUM), the node coordinates.
   !
   !  Local Parameters:
   !
@@ -1821,42 +1794,42 @@ contains
   !    end of the routine, it should be equal to NODE_NUM.
   !
 
-    integer(ip), intent(out) :: node_num
+    integer(int32) node_num
 
-    integer(ip) :: a
-    real(dp) :: angle
-    real(dp) :: ab(3)
-    real(dp) :: ac(3)
-    real(dp) :: acn(3)
-    real(dp) :: acp(3)
-    integer(ip) :: b
-    real(dp) :: bn(3)
-    real(dp) :: bp(3)
-    integer(ip) :: c
-    real(dp) :: cn(3)
-    real(dp) :: cp(3)
-    integer(ip) :: edge
-    integer(ip) :: edge_num
-    integer(ip), allocatable, dimension ( :, : ) :: edge_point
-    integer(ip) :: f
-    integer(ip) :: fa
-    integer(ip) :: fbc
-    integer(ip) :: face
-    integer(ip) :: face_num
-    integer(ip), allocatable, dimension ( : ) :: face_order
-    integer(ip), allocatable, dimension ( :, : ) :: face_point
-    integer(ip) :: face_order_max
-    integer(ip), intent(in), value :: factor
-    integer(ip) :: node
-    real(dp), intent(out) :: node_xyz(3,node_num)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), allocatable, dimension ( :, : ) :: point_coord
-    integer(ip) :: point_num
-    real(dp) :: r8vec_norm
-    real(dp) :: theta
-    real(dp) :: theta_ab
-    real(dp) :: theta_ac
-    real(dp) :: theta_bc
+    integer(int32) a
+    real(real64) angle
+    real(real64) ab(3)
+    real(real64) ac(3)
+    real(real64) acn(3)
+    real(real64) acp(3)
+    integer(int32) b
+    real(real64) bn(3)
+    real(real64) bp(3)
+    integer(int32) c
+    real(real64) cn(3)
+    real(real64) cp(3)
+    integer(int32) edge
+    integer(int32) edge_num
+    integer(int32), allocatable, dimension ( :, : ) :: edge_point
+    integer(int32) f
+    integer(int32) fa
+    integer(int32) fbc
+    integer(int32) face
+    integer(int32) face_num
+    integer(int32), allocatable, dimension ( : ) :: face_order
+    integer(int32), allocatable, dimension ( :, : ) :: face_point
+    integer(int32) face_order_max
+    integer(int32) factor
+    integer(int32) node
+    real(real64) node_xyz(3,node_num)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64), allocatable, dimension ( :, : ) :: point_coord
+    integer(int32) point_num
+    real(real64) r8vec_norm
+    real(real64) theta
+    real(real64) theta_ab
+    real(real64) theta_ac
+    real(real64) theta_bc
   !
   !  Size the icosahedron.
   !
@@ -1907,7 +1880,7 @@ contains
 
         node = node + 1
 
-        angle = ( real ( f, dp) * theta ) / real ( factor, dp)
+        angle = ( real ( f, real64) * theta ) / real ( factor, real64)
 
         node_xyz(1:3,node) = cos ( angle ) * point_coord(1:3,a) &
                            + sin ( angle ) * bn(1:3)
@@ -1952,10 +1925,10 @@ contains
   !  Determine points AB and AC that use cos ( FA / FACTOR ) of A 
   !  and cos ( ( FACTOR - FA ) / FACTOR ) of B or C.
   !
-        angle = ( real ( fa, dp) * theta_ab ) / real ( factor, dp)
+        angle = ( real ( fa, real64) * theta_ab ) / real ( factor, real64)
         ab(1:3) = cos ( angle ) * point_coord(1:3,a) + sin ( angle ) * bn(1:3)
 
-        angle = ( real ( fa, dp) * theta_ac ) / real ( factor, dp)
+        angle = ( real ( fa, real64) * theta_ac ) / real ( factor, real64)
         ac(1:3) = cos ( angle ) * point_coord(1:3,a) + sin ( angle ) * cn(1:3)
   !
   !  Determine the "distance" = angle between points AB and AC.
@@ -1974,8 +1947,8 @@ contains
 
           node = node + 1
 
-          angle = ( real ( fbc, dp) * theta_bc ) &
-                  / real ( fa, dp)
+          angle = ( real ( fbc, real64) * theta_bc ) &
+                  / real ( fa, real64)
 
           node_xyz(1:3,node) = cos ( angle ) * ab(1:3) &
                              + sin ( angle ) * acn(1:3)
@@ -1991,11 +1964,10 @@ contains
     deallocate ( face_order )
     deallocate ( face_point )
     deallocate ( point_coord )
-  end subroutine sphere_icos2_points
+  end
 
   subroutine sphere_line_project ( r, pc, n, p, maxpnt2, n2, pp, theta_min, &
-    theta_max ) &
-        bind(C, name="sphere_line_project")
+    theta_max )
 
   !*****************************************************************************80
   !
@@ -2031,33 +2003,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.  If R is
+  !    Input, real(real64) R, the radius of the sphere.  If R is
   !    zero, PP will be returned as the pc, and if R is
   !    negative, points will end up diametrically opposite from where
   !    you would expect them for a positive R.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, integer(ip) N, the number of points on the line that is
+  !    Input, integer(int32) N, the number of points on the line that is
   !    to be projected.
   !
-  !    Input, real(dp) P(3,N), the coordinates of
+  !    Input, real(real64) P(3,N), the coordinates of
   !    the points on the line that is to be projected.
   !
-  !    Input, integer(ip) MAXPNT2, the maximum number of points on the
+  !    Input, integer(int32) MAXPNT2, the maximum number of points on the
   !    projected line.  Even if the routine thinks that more points are needed,
   !    no more than MAXPNT2 will be generated.
   !
-  !    Output, integer(ip) N2, the number of points on the projected
+  !    Output, integer(int32) N2, the number of points on the projected
   !    line.  N2 can be zero, if the line has an angular projection of less
   !    than THETA_MIN radians.
   !
-  !    Output, real(dp) PP(3,N2), the coordinates
+  !    Output, real(real64) PP(3,N2), the coordinates
   !    of the points representing the projected line.  These points lie on the
   !    sphere.  Successive points are separated by at least THETA_MIN
   !    radians, and by no more than THETA_MAX radians.
   !
-  !    Input, real(dp) THETA_MIN, THETA_MAX, the minimum and maximum
+  !    Input, real(real64) THETA_MIN, THETA_MAX, the minimum and maximum
   !    angular projections allowed between successive projected points.
   !    If two successive points on the original line have projections
   !    separated by more than THETA_MAX radians, then intermediate points
@@ -2067,33 +2039,33 @@ contains
   !    line from the first point to the next point is considered.
   !
 
-    integer(ip), intent(in), value :: maxpnt2
-    integer(ip), intent(in), value :: n
+    integer(int32) maxpnt2
+    integer(int32) n
 
-    real(dp) :: alpha
-    real(dp) :: ang3d
-    real(dp) :: arc_cosine
-    real(dp) :: dot
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: nfill
-    integer(ip), intent(out) :: n2
-    real(dp), intent(in) :: p(3,n)
-    real(dp) :: p1(3)
-    real(dp) :: p2(3)
-    real(dp), intent(in) :: pc(3)
-    real(dp) :: pd(3)
-    real(dp), intent(out) :: pp(3,maxpnt2)
-    real(dp), intent(in), value :: r
-    real(dp) :: r8vec_diff_norm
-    real(dp) :: r8vec_norm
-    real(dp) :: theta_max
-    real(dp), intent(in), value :: theta_min
-    real(dp) :: tnorm
+    real(real64) alpha
+    real(real64) ang3d
+    real(real64) arc_cosine
+    real(real64) dot
+    integer(int32) i
+    integer(int32) j
+    integer(int32) nfill
+    integer(int32) n2
+    real(real64) p(3,n)
+    real(real64) p1(3)
+    real(real64) p2(3)
+    real(real64) pc(3)
+    real(real64) pd(3)
+    real(real64) pp(3,maxpnt2)
+    real(real64) r
+    real(real64) r8vec_diff_norm
+    real(real64) r8vec_norm
+    real(real64) theta_max
+    real(real64) theta_min
+    real(real64) tnorm
   !
   !  Check the input.
   !
-    if ( r == 0.0_dp ) then
+    if ( r == 0.0e+00_real64 ) then
       n2 = 0
     end if
 
@@ -2143,12 +2115,12 @@ contains
               do j = 1, nfill-1
 
                 pd(1:3) = &
-                  ( real ( nfill - j, dp) * ( p1(1:3) - pc(1:3) ) &
-                  + real (         j, dp) * ( p2(1:3) - pc(1:3) ) )
+                  ( real ( nfill - j, real64) * ( p1(1:3) - pc(1:3) ) &
+                  + real (         j, real64) * ( p2(1:3) - pc(1:3) ) )
 
                 tnorm = r8vec_norm ( 3, pd )
 
-                if ( tnorm /= 0.0_dp ) then
+                if ( tnorm /= 0.0e+00_real64 ) then
                   pd(1:3) = pc(1:3) + r * pd(1:3) / tnorm
                   n2 = n2 + 1
                   pp(1:3,n2) = pd(1:3)
@@ -2170,10 +2142,9 @@ contains
       end if
 
     end do
-  end subroutine sphere_line_project
+  end
 
-  subroutine sphere_ll_lines ( lat_num, long_num, line_num, line ) &
-        bind(C, name="sphere_ll_lines")
+  subroutine sphere_ll_lines ( lat_num, long_num, line_num, line )
 
   !*****************************************************************************80
   !
@@ -2198,28 +2169,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude and
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude and
   !    longitude lines to draw.  The latitudes do not include the North and South
   !    poles, which will be included automatically, so LAT_NUM = 5, for instance,
   !    will result in points along 7 lines of latitude.
   !
-  !    Input, integer(ip) LINE_NUM, the number of grid lines.
+  !    Input, integer(int32) LINE_NUM, the number of grid lines.
   !
-  !    Output, integer(ip) LINE(2,LINE_NUM), contains pairs of point 
+  !    Output, integer(int32) LINE(2,LINE_NUM), contains pairs of point 
   !    indices for line segments that make up the grid.
   !
 
-    integer(ip), intent(out) :: line_num
+    integer(int32) line_num
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in), value :: lat_num
-    integer(ip) :: l
-    integer(ip), intent(out) :: line(2,line_num)
-    integer(ip), intent(in), value :: long_num
-    integer(ip) :: new
-    integer(ip) :: newcol
-    integer(ip) :: old
+    integer(int32) i
+    integer(int32) j
+    integer(int32) lat_num
+    integer(int32) l
+    integer(int32) line(2,line_num)
+    integer(int32) long_num
+    integer(int32) new
+    integer(int32) newcol
+    integer(int32) old
 
     l = 0
   !
@@ -2295,10 +2266,9 @@ contains
       end do
 
     end do
-  end subroutine sphere_ll_lines
+  end
 
-  pure subroutine sphere_ll_line_num ( lat_num, long_num, line_num ) &
-        bind(C, name="sphere_ll_line_num")
+  subroutine sphere_ll_line_num ( lat_num, long_num, line_num )
 
   !*****************************************************************************80
   !
@@ -2322,25 +2292,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude and
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude and
   !    longitude lines to draw.  The latitudes do not include the North and South
   !    poles, which will be included automatically, so LAT_NUM = 5, for instance,
   !    will result in points along 7 lines of latitude.
   !
-  !    Output, integer(ip) LINE_NUM, the number of grid lines.
+  !    Output, integer(int32) LINE_NUM, the number of grid lines.
   !
 
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(out) :: line_num
-    integer(ip), intent(in), value :: long_num
+    integer(int32) lat_num
+    integer(int32) line_num
+    integer(int32) long_num
 
     line_num = long_num * ( lat_num + 1 ) &
              + lat_num * long_num &
              + long_num * ( lat_num - 1 )
-  end subroutine sphere_ll_line_num
+  end
 
-  subroutine sphere_ll_points ( r, pc, lat_num, long_num, point_num, p ) &
-        bind(C, name="sphere_ll_points")
+  subroutine sphere_ll_points ( r, pc, lat_num, long_num, point_num, p )
 
   !*****************************************************************************80
   !
@@ -2360,40 +2329,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude 
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude 
   !    and longitude lines to draw.  The latitudes do not include the North and 
   !    South poles, which will be included automatically, so LAT_NUM = 5, for 
   !    instance, will result in points along 7 lines of latitude.
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, real(dp) P(3,POINT_NUM), the grid points.
+  !    Output, real(real64) P(3,POINT_NUM), the grid points.
   !
 
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(in), value :: long_num
-    integer(ip), intent(out) :: point_num
+    integer(int32) lat_num
+    integer(int32) long_num
+    integer(int32) point_num
 
-    integer(ip) :: lat
-    integer(ip) :: long
-    integer(ip) :: n
-    real(dp), intent(out) :: p(3,point_num)
-    real(dp), intent(in) :: pc(3)
-    real(dp) :: phi
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
+    integer(int32) lat
+    integer(int32) long
+    integer(int32) n
+    real(real64) p(3,point_num)
+    real(real64) pc(3)
+    real(real64) phi
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) theta
 
     n = 0
   !
   !  The north pole.
   !
-    theta = 0.0_dp
-    phi = 0.0_dp
+    theta = 0.0e+00_real64
+    phi = 0.0e+00_real64
     n = n + 1
     p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
     p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
@@ -2403,15 +2372,15 @@ contains
   !
     do lat = 1, lat_num
 
-      phi = real ( lat, dp) * pi &
-          / real ( lat_num + 1, dp)
+      phi = real ( lat, real64) * pi &
+          / real ( lat_num + 1, real64)
   !
   !  Along that ring of latitude, compute points at various longitudes.
   !
       do long = 0, long_num - 1
 
-        theta = real ( long, dp) * 2.0_dp * pi &
-              / real ( long_num, dp)
+        theta = real ( long, real64) * 2.0e+00_real64 * pi &
+              / real ( long_num, real64)
 
         n = n + 1
         p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
@@ -2423,16 +2392,15 @@ contains
   !
   !  The south pole.
   !
-    theta = 0.0_dp
+    theta = 0.0e+00_real64
     phi = pi
     n = n + 1
     p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
     p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
     p(3,n) = pc(3) + r * cos ( phi )
-  end subroutine sphere_ll_points
+  end
 
-  pure subroutine sphere_ll_point_num ( lat_num, long_num, point_num ) &
-        bind(C, name="sphere_ll_point_num")
+  subroutine sphere_ll_point_num ( lat_num, long_num, point_num )
 
   !*****************************************************************************80
   !
@@ -2452,23 +2420,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude 
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude 
   !    and longitude lines to draw.  The latitudes do not include the North and 
   !    South poles, which will be included automatically, so LAT_NUM = 5, for 
   !    instance, will result in points along 7 lines of latitude.
   !
-  !    Output, integer(ip) POINT_NUM, the number of grid points.
+  !    Output, integer(int32) POINT_NUM, the number of grid points.
   !
 
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(in), value :: long_num
-    integer(ip), intent(out) :: point_num
+    integer(int32) lat_num
+    integer(int32) long_num
+    integer(int32) point_num
 
     point_num = 2 + lat_num * long_num
-  end subroutine sphere_ll_point_num
+  end
 
-  subroutine sphere_llq_lines ( lat_num, long_num, line_num, line ) &
-        bind(C, name="sphere_llq_lines")
+  subroutine sphere_llq_lines ( lat_num, long_num, line_num, line )
 
   !*****************************************************************************80
   !
@@ -2493,28 +2460,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude and
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude and
   !    longitude lines to draw.  The latitudes do not include the North and South
   !    poles, which will be included automatically, so LAT_NUM = 5, for instance,
   !    will result in points along 7 lines of latitude.
   !
-  !    Input, integer(ip) LINE_NUM, the number of grid lines.
+  !    Input, integer(int32) LINE_NUM, the number of grid lines.
   !
-  !    Output, integer(ip) LINE(2,LINE_NUM), contains pairs of point 
+  !    Output, integer(int32) LINE(2,LINE_NUM), contains pairs of point 
   !    indices for line segments that make up the grid.
   !
 
-    integer(ip), intent(out) :: line_num
+    integer(int32) line_num
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in), value :: lat_num
-    integer(ip) :: l
-    integer(ip), intent(out) :: line(2,line_num)
-    integer(ip), intent(in), value :: long_num
-    integer(ip) :: new
-    integer(ip) :: newcol
-    integer(ip) :: old
+    integer(int32) i
+    integer(int32) j
+    integer(int32) lat_num
+    integer(int32) l
+    integer(int32) line(2,line_num)
+    integer(int32) long_num
+    integer(int32) new
+    integer(int32) newcol
+    integer(int32) old
 
     l = 0
   !
@@ -2564,10 +2531,9 @@ contains
       line(1:2,l) = (/ old, new /)
 
     end do
-  end subroutine sphere_llq_lines
+  end
 
-  pure subroutine sphere_llq_line_num ( lat_num, long_num, line_num ) &
-        bind(C, name="sphere_llq_line_num")
+  subroutine sphere_llq_line_num ( lat_num, long_num, line_num )
 
   !*****************************************************************************80
   !
@@ -2591,24 +2557,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude and
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude and
   !    longitude lines to draw.  The latitudes do not include the North and South
   !    poles, which will be included automatically, so LAT_NUM = 5, for instance,
   !    will result in points along 7 lines of latitude.
   !
-  !    Output, integer(ip) LINE_NUM, the number of grid lines.
+  !    Output, integer(int32) LINE_NUM, the number of grid lines.
   !
 
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(out) :: line_num
-    integer(ip), intent(in), value :: long_num
+    integer(int32) lat_num
+    integer(int32) line_num
+    integer(int32) long_num
 
     line_num = long_num * ( lat_num + 1 ) &
              + lat_num * long_num
-  end subroutine sphere_llq_line_num
+  end
 
-  subroutine sphere_spiralpoints ( r, pc, n, p ) &
-        bind(C, name="sphere_spiralpoints")
+  subroutine sphere_spiralpoints ( r, pc, n, p )
 
   !*****************************************************************************80
   !
@@ -2643,39 +2608,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, integer(ip) N, the number of points to create.
+  !    Input, integer(int32) N, the number of points to create.
   !
-  !    Output, real(dp) P(3,N), the grid points.
+  !    Output, real(real64) P(3,N), the grid points.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp) :: cosphi
-    integer(ip) :: i
-    real(dp), intent(out) :: p(3,n)
-    real(dp), intent(in) :: pc(3)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: sinphi
-    real(dp) :: theta
+    real(real64) cosphi
+    integer(int32) i
+    real(real64) p(3,n)
+    real(real64) pc(3)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) sinphi
+    real(real64) theta
 
     do i = 1, n
 
-      cosphi = ( real ( n - i, dp) * ( -1.0_dp ) &
-               + real (     i - 1, dp) * ( +1.0_dp ) ) &
-               / real ( n     - 1, dp)
+      cosphi = ( real ( n - i, real64) * ( -1.0e+00_real64 ) &
+               + real (     i - 1, real64) * ( +1.0e+00_real64 ) ) &
+               / real ( n     - 1, real64)
 
-      sinphi = sqrt ( 1.0_dp - cosphi * cosphi )
+      sinphi = sqrt ( 1.0e+00_real64 - cosphi * cosphi )
 
       if ( i == 1 .or. i == n ) then
-        theta = 0.0_dp
+        theta = 0.0e+00_real64
       else
-        theta = theta + 3.6_dp / ( sinphi * sqrt ( real ( n, dp) ) )
-        theta = mod ( theta, 2.0_dp * pi )
+        theta = theta + 3.6e+00_real64 / ( sinphi * sqrt ( real ( n, real64) ) )
+        theta = mod ( theta, 2.0e+00_real64 * pi )
       end if
 
       p(1,i) = pc(1) + r * sinphi * cos ( theta )
@@ -2683,10 +2648,9 @@ contains
       p(3,i) = pc(3) + r * cosphi
 
     end do
-  end subroutine sphere_spiralpoints
+  end
 
-  subroutine sphere_unit_sample ( n, seed, x ) &
-        bind(C, name="sphere_unit_sample")
+  subroutine sphere_unit_sample ( n, seed, x )
 
   !*****************************************************************************80
   !
@@ -2714,23 +2678,23 @@ contains
   !
   !    Input, integer N, the number of samples.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) X(3,N), the sample points.
+  !    Output, real(real64) X(3,N), the sample points.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp) :: arc_cosine
-    integer(ip) :: j
-    real(dp) :: phi
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta
-    real(dp) :: vdot
-    real(dp), intent(out) :: x(3,n)
+    real(real64) arc_cosine
+    integer(int32) j
+    real(real64) phi
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r8_uniform_01
+    integer(int32) seed
+    real(real64) theta
+    real(real64) vdot
+    real(real64) x(3,n)
 
     do j = 1, n
   !
@@ -2742,7 +2706,7 @@ contains
   !  a patch of area uniformly.
   !
       vdot = r8_uniform_01 ( seed )
-      vdot = 2.0_dp * vdot - 1.0_dp
+      vdot = 2.0e+00_real64 * vdot - 1.0e+00_real64
 
       phi = arc_cosine ( vdot )
   !
@@ -2750,13 +2714,13 @@ contains
   !  axis of the Z vector.
   !
       theta = r8_uniform_01 ( seed )
-      theta = 2.0_dp * pi * theta
+      theta = 2.0e+00_real64 * pi * theta
 
       x(1,j) = cos ( theta ) * sin ( phi )
       x(2,j) = sin ( theta ) * sin ( phi )
       x(3,j) = cos ( phi )
 
     end  do
-  end subroutine sphere_unit_sample
+  end
 
 end module sphere_grid_mod

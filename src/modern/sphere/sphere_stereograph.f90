@@ -1,16 +1,11 @@
-!> sphere_stereograph — Modern Fortran 2018
+!> sphere_stereograph â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module sphere_stereograph_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: plane_normal_basis_3d, r8_uniform_01, r8mat_norm_fro_affine, r8mat_normal_01, r8mat_uniform_01, r8vec_any_normal
   public :: r8vec_cross_product_3d, r8vec_norm, r8vec_norm_affine, r8vec_normal_01, r8vec_uniform_01, sphere_stereograph
@@ -18,8 +13,7 @@ module sphere_stereograph_mod
 
 contains
 
-  subroutine plane_normal_basis_3d ( pp, normal, pq, pr ) &
-        bind(C, name="plane_normal_basis_3d")
+  subroutine plane_normal_basis_3d ( pp, normal, pq, pr )
 
   !*****************************************************************************80
   !
@@ -56,35 +50,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.  (Actually,
+  !    Input, real(real64) PP(3), a point on the plane.  (Actually,
   !    we never need to know these values to do the calculation!)
   !
-  !    Input, real(dp) NORMAL(3), a normal vector N to the plane.  The
+  !    Input, real(real64) NORMAL(3), a normal vector N to the plane.  The
   !    vector must not have zero length, but it is not necessary for N
   !    to have unit length.
   !
-  !    Output, real(dp) PQ(3), a vector of unit length,
+  !    Output, real(real64) PQ(3), a vector of unit length,
   !    perpendicular to the vector N and the vector PR.
   !
-  !    Output, real(dp) PR(3), a vector of unit length,
+  !    Output, real(real64) PR(3), a vector of unit length,
   !    perpendicular to the vector N and the vector PQ.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8vec_norm
-    real(dp), intent(in) :: normal(dim_num)
-    real(dp) :: normal_norm
-    real(dp), intent(in) :: pp(dim_num)
-    real(dp), intent(out) :: pq(dim_num)
-    real(dp), intent(out) :: pr(dim_num)
-    real(dp) :: pr_norm
+    real(real64) r8vec_norm
+    real(real64) normal(dim_num)
+    real(real64) normal_norm
+    real(real64) pp(dim_num)
+    real(real64) pq(dim_num)
+    real(real64) pr(dim_num)
+    real(real64) pr_norm
   !
   !  Compute the length of NORMAL.
   !
     normal_norm = r8vec_norm ( dim_num, normal )
 
-    if ( normal_norm == 0.0_dp ) then
+    if ( normal_norm == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_NORMAL_BASIS_3D - Fatal error!'
       write ( *, '(a)' ) '  The normal vector is 0.'
@@ -102,10 +96,9 @@ contains
     pr_norm = r8vec_norm ( dim_num, pr )
 
     pr(1:dim_num) = pr(1:dim_num) / pr_norm
-  end subroutine plane_normal_basis_3d
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -173,17 +166,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.
   !    On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     k = seed / 127773
 
@@ -196,11 +189,10 @@ contains
   !  Although SEED can be represented exactly as a 32 bit integer,
   !  it generally cannot be represented exactly as a 32 bit real number!
   !
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  pure function r8mat_norm_fro_affine ( m, n, a1, a2 ) &
-        bind(C, name="r8mat_norm_fro_affine")
+  function r8mat_norm_fro_affine ( m, n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -234,29 +226,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows.
+  !    Input, integer(int32) M, the number of rows.
   !
-  !    Input, integer(ip) N, the number of columns.
+  !    Input, integer(int32) N, the number of columns.
   !
-  !    Input, real(dp) A1(M,N), A2(M,N), the matrices for whose 
+  !    Input, real(real64) A1(M,N), A2(M,N), the matrices for whose 
   !    difference the Frobenius norm is desired.
   !
-  !    Output, real(dp) R8MAT_NORM_FRO_AFFINE, the Frobenius 
+  !    Output, real(real64) R8MAT_NORM_FRO_AFFINE, the Frobenius 
   !    norm of A1 - A2.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(m,n)
-    real(dp), intent(in) :: a2(m,n)
-    real(dp) :: r8mat_norm_fro_affine
+    real(real64) a1(m,n)
+    real(real64) a2(m,n)
+    real(real64) r8mat_norm_fro_affine
 
     r8mat_norm_fro_affine = sqrt ( sum ( ( a1(1:m,1:n) - a2(1:m,1:n) )**2 ) )
-  end function r8mat_norm_fro_affine
+  end
 
-  subroutine r8mat_normal_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_normal_01")
+  subroutine r8mat_normal_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -305,26 +296,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns
+  !    Input, integer(int32) M, N, the number of rows and columns
   !    in the array.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudonormal values.
+  !    Output, real(real64) R(M,N), the array of pseudonormal values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(out) :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
+    integer(int32) seed
+    real(real64) r(m,n)
 
     call r8vec_normal_01 ( m * n, seed, r )
-  end subroutine r8mat_normal_01
+  end
 
-  subroutine r8mat_uniform_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_uniform_01")
+  subroutine r8mat_uniform_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -366,24 +356,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns in
+  !    Input, integer(int32) M, N, the number of rows and columns in
   !    the array.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudorandom values.
+  !    Output, real(real64) R(M,N), the array of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(out) :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
+    integer(int32) i
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) j
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(m,n)
 
     do j = 1, n
 
@@ -397,14 +387,13 @@ contains
           seed = seed + i4_huge
         end if
 
-        r(i,j) = real ( seed, dp) * 4.656612875e-10_dp
+        r(i,j) = real ( seed, real64) * 4.656612875e-10_real64
 
       end do
     end do
-  end subroutine r8mat_uniform_01
+  end
 
-  subroutine r8vec_any_normal ( dim_num, v1, v2 ) &
-        bind(C, name="r8vec_any_normal")
+  subroutine r8vec_any_normal ( dim_num, v1, v2 )
 
   !*****************************************************************************80
   !
@@ -433,24 +422,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) V1(DIM_NUM), the vector.
+  !    Input, real(real64) V1(DIM_NUM), the vector.
   !
-  !    Output, real(dp) V2(DIM_NUM), a vector that is
+  !    Output, real(real64) V2(DIM_NUM), a vector that is
   !    normal to V2, and has unit Euclidean length.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp) :: r8vec_norm
-    real(dp), intent(in) :: v1(dim_num)
-    real(dp), intent(out) :: v2(dim_num)
-    real(dp) :: vj
-    real(dp) :: vk
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    real(real64) r8vec_norm
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
+    real(real64) vj
+    real(real64) vk
 
     if ( dim_num < 2 ) then
       write ( *, '(a)' ) ' '
@@ -459,9 +448,9 @@ contains
       stop
     end if
 
-    if ( r8vec_norm ( dim_num, v1 ) == 0.0_dp ) then
-      v2(1) = 1.0_dp
-      v2(2:dim_num) = 0.0_dp
+    if ( r8vec_norm ( dim_num, v1 ) == 0.0e+00_real64 ) then
+      v2(1) = 1.0e+00_real64
+      v2(2:dim_num) = 0.0e+00_real64
     end if
   !
   !  Seek the largest entry in V1, VJ = V1(J), and the
@@ -471,10 +460,10 @@ contains
   !  VJ, at least, is not zero.
   !
     j = - 1
-    vj = 0.0_dp
+    vj = 0.0e+00_real64
 
     k = - 1
-    vk = 0.0_dp
+    vk = 0.0e+00_real64
 
     do i = 1, dim_num
 
@@ -497,14 +486,13 @@ contains
   !  Setting V2 to zero, except that V2(J) = -VK, and V2(K) = VJ,
   !  will just about do the trick.
   !
-    v2(1:dim_num) = 0.0_dp
+    v2(1:dim_num) = 0.0e+00_real64
 
     v2(j) = - vk / sqrt ( vk * vk + vj * vj )
     v2(k) =   vj / sqrt ( vk * vk + vj * vj )
-  end subroutine r8vec_any_normal
+  end
 
-  pure subroutine r8vec_cross_product_3d ( v1, v2, v3 ) &
-        bind(C, name="r8vec_cross_product_3d")
+  subroutine r8vec_cross_product_3d ( v1, v2, v3 )
 
   !*****************************************************************************80
   !
@@ -539,22 +527,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), the two vectors.
+  !    Input, real(real64) V1(3), V2(3), the two vectors.
   !
-  !    Output, real(dp) V3(3), the cross product vector.
+  !    Output, real(real64) V3(3), the cross product vector.
   !
 
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(out) :: v3(3)
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     v3(1) = v1(2) * v2(3) - v1(3) * v2(2)
     v3(2) = v1(3) * v2(1) - v1(1) * v2(3)
     v3(3) = v1(1) * v2(2) - v1(2) * v2(1)
-  end subroutine r8vec_cross_product_3d
+  end
 
-  pure function r8vec_norm ( n, a ) &
-        bind(C, name="r8vec_norm")
+  function r8vec_norm ( n, a )
 
   !*****************************************************************************80
   !
@@ -582,23 +569,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in A.
+  !    Input, integer(int32) N, the number of entries in A.
   !
-  !    Input, real(dp) A(N), the vector whose L2 norm is desired.
+  !    Input, real(real64) A(N), the vector whose L2 norm is desired.
   !
-  !    Output, real(dp) R8VEC_NORM, the L2 norm of A.
+  !    Output, real(real64) R8VEC_NORM, the L2 norm of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp) :: r8vec_norm
+    real(real64) a(n)
+    real(real64) r8vec_norm
 
     r8vec_norm = sqrt ( sum ( a(1:n)**2 ) )
-  end function r8vec_norm
+  end
 
-  pure function r8vec_norm_affine ( n, v0, v1 ) &
-        bind(C, name="r8vec_norm_affine")
+  function r8vec_norm_affine ( n, v0, v1 )
 
   !*****************************************************************************80
   !
@@ -627,26 +613,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the vectors.
+  !    Input, integer(int32) N, the order of the vectors.
   !
-  !    Input, real(dp) V0(N), the base vector.
+  !    Input, real(real64) V0(N), the base vector.
   !
-  !    Input, real(dp) V1(N), the vector whose affine norm is desired.
+  !    Input, real(real64) V1(N), the vector whose affine norm is desired.
   !
-  !    Output, real(dp) R8VEC_NORM_AFFINE, the L2 norm of V1-V0.
+  !    Output, real(real64) R8VEC_NORM_AFFINE, the L2 norm of V1-V0.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: r8vec_norm_affine
-    real(dp), intent(in) :: v0(n)
-    real(dp), intent(in) :: v1(n)
+    real(real64) r8vec_norm_affine
+    real(real64) v0(n)
+    real(real64) v1(n)
 
     r8vec_norm_affine = sqrt ( sum ( ( v0(1:n) - v1(1:n) )**2 ) )
-  end function r8vec_norm_affine
+  end
 
-  subroutine r8vec_normal_01 ( n, seed, x ) &
-        bind(C, name="r8vec_normal_01")
+  subroutine r8vec_normal_01 ( n, seed, x )
 
   !*****************************************************************************80
   !
@@ -654,7 +639,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8VEC is an array of real(dp) real values.
+  !    An R8VEC is an array of real(real64) real values.
   !
   !    The standard normal probability distribution function (PDF) has
   !    mean 0 and standard deviation 1.
@@ -686,53 +671,53 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of values desired.  If N is
+  !    Input, integer(int32) N, the number of values desired.  If N is
   !    negative, then the code will flush its internal memory; in particular,
   !    if there is a saved value to be used on the next call, it is
   !    instead discarded.  This is useful if the user has reset the
   !    random number seed, for instance.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, real(dp) X(N), a sample of the standard normal PDF.
+  !    Output, real(real64) X(N), a sample of the standard normal PDF.
   !
   !  Local parameters:
   !
-  !    Local, integer(ip) MADE, records the number of values that have
+  !    Local, integer(int32) MADE, records the number of values that have
   !    been computed.  On input with negative N, this value overwrites
   !    the return value of N, so the user can get an accounting of
   !    how much work has been done.
   !
-  !    Local, real(dp) R(N+1), is used to store some uniform
+  !    Local, real(real64) R(N+1), is used to store some uniform
   !    random values.  Its dimension is N+1, but really it is only needed
   !    to be the smallest even number greater than or equal to N.
   !
-  !    Local, integer(ip) SAVED, is 0 or 1 depending on whether there
+  !    Local, integer(int32) SAVED, is 0 or 1 depending on whether there
   !    is a single saved value left over from the previous call.
   !
-  !    Local, integer(ip) X_LO_INDEX, X_HI_INDEX, records the range
+  !    Local, integer(int32) X_LO_INDEX, X_HI_INDEX, records the range
   !    of entries of X that we need to compute.  This starts off as 1:N, but
   !    is adjusted if we have a saved value that can be immediately stored
   !    in X(1), and so on.
   !
-  !    Local, real(dp) Y, the value saved from the previous call, if
+  !    Local, real(real64) Y, the value saved from the previous call, if
   !    SAVED is 1.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: m
-    integer(ip), save :: made = 0
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: r(n+1)
-    real(dp) :: r8_uniform_01
-    integer(ip), save :: saved = 0
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(n)
-    integer(ip) :: x_hi_index
-    integer(ip) :: x_lo_index
-    real(dp), save :: y = 0.0_dp
+    integer(int32) m
+    integer(int32), save :: made = 0
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r(n+1)
+    real(real64) r8_uniform_01
+    integer(int32), save :: saved = 0
+    integer(int32) seed
+    real(real64) x(n)
+    integer(int32) x_hi_index
+    integer(int32) x_lo_index
+    real(real64), save :: y = 0.0e+00_real64
   !
   !  I'd like to allow the user to reset the internal data.
   !  But this won't work properly if we have a saved value Y.
@@ -744,7 +729,7 @@ contains
       n = made
       made = 0
       saved = 0
-      y = 0.0_dp
+      y = 0.0e+00_real64
       return
     else if ( n == 0 ) then
     end if
@@ -772,7 +757,7 @@ contains
 
       r(1) = r8_uniform_01 ( seed )
 
-      if ( r(1) == 0.0_dp ) then
+      if ( r(1) == 0.0e+00_real64 ) then
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'R8VEC_NORMAL_01 - Fatal error!'
         write ( *, '(a)' ) '  R8_UNIFORM_01 returned a value of 0.'
@@ -782,8 +767,8 @@ contains
       r(2) = r8_uniform_01 ( seed )
 
       x(x_hi_index) = &
-               sqrt ( - 2.0_dp * log ( r(1) ) ) * cos ( 2.0_dp * pi * r(2) )
-      y =      sqrt ( - 2.0_dp * log ( r(1) ) ) * sin ( 2.0_dp * pi * r(2) )
+               sqrt ( - 2.0e+00_real64 * log ( r(1) ) ) * cos ( 2.0e+00_real64 * pi * r(2) )
+      y =      sqrt ( - 2.0e+00_real64 * log ( r(1) ) ) * sin ( 2.0e+00_real64 * pi * r(2) )
 
       saved = 1
 
@@ -798,12 +783,12 @@ contains
       call r8vec_uniform_01 ( 2*m, seed, r )
 
       x(x_lo_index:x_hi_index-1:2) = &
-        sqrt ( - 2.0_dp * log ( r(1:2*m-1:2) ) ) &
-        * cos ( 2.0_dp * pi * r(2:2*m:2) )
+        sqrt ( - 2.0e+00_real64 * log ( r(1:2*m-1:2) ) ) &
+        * cos ( 2.0e+00_real64 * pi * r(2:2*m:2) )
 
       x(x_lo_index+1:x_hi_index:2) = &
-        sqrt ( - 2.0_dp * log ( r(1:2*m-1:2) ) ) &
-        * sin ( 2.0_dp * pi * r(2:2*m:2) )
+        sqrt ( - 2.0e+00_real64 * log ( r(1:2*m-1:2) ) ) &
+        * sin ( 2.0e+00_real64 * pi * r(2:2*m:2) )
 
       made = made + x_hi_index - x_lo_index + 1
   !
@@ -820,28 +805,27 @@ contains
       call r8vec_uniform_01 ( 2*m, seed, r )
 
       x(x_lo_index:x_hi_index-1:2) = &
-        sqrt ( - 2.0_dp * log ( r(1:2*m-3:2) ) ) &
-        * cos ( 2.0_dp * pi * r(2:2*m-2:2) )
+        sqrt ( - 2.0e+00_real64 * log ( r(1:2*m-3:2) ) ) &
+        * cos ( 2.0e+00_real64 * pi * r(2:2*m-2:2) )
 
       x(x_lo_index+1:x_hi_index:2) = &
-        sqrt ( - 2.0_dp * log ( r(1:2*m-3:2) ) ) &
-        * sin ( 2.0_dp * pi * r(2:2*m-2:2) )
+        sqrt ( - 2.0e+00_real64 * log ( r(1:2*m-3:2) ) ) &
+        * sin ( 2.0e+00_real64 * pi * r(2:2*m-2:2) )
 
-      x(n) = sqrt ( - 2.0_dp * log ( r(2*m-1) ) ) &
-        * cos ( 2.0_dp * pi * r(2*m) )
+      x(n) = sqrt ( - 2.0e+00_real64 * log ( r(2*m-1) ) ) &
+        * cos ( 2.0e+00_real64 * pi * r(2*m) )
 
-      y = sqrt ( - 2.0_dp * log ( r(2*m-1) ) ) &
-        * sin ( 2.0_dp * pi * r(2*m) )
+      y = sqrt ( - 2.0e+00_real64 * log ( r(2*m-1) ) ) &
+        * sin ( 2.0e+00_real64 * pi * r(2*m) )
 
       saved = 1
 
       made = made + x_hi_index - x_lo_index + 2
 
     end if
-  end subroutine r8vec_normal_01
+  end
 
-  subroutine r8vec_uniform_01 ( n, seed, r ) &
-        bind(C, name="r8vec_uniform_01")
+  subroutine r8vec_uniform_01 ( n, seed, r )
 
   !*****************************************************************************80
   !
@@ -890,20 +874,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     do i = 1, n
 
@@ -915,13 +899,12 @@ contains
         seed = seed + 2147483647
       end if
 
-      r(i) = real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_01
+  end
 
-  pure subroutine sphere_stereograph ( m, n, p, q ) &
-        bind(C, name="sphere_stereograph")
+  subroutine sphere_stereograph ( m, n, p, q )
 
   !*****************************************************************************80
   !
@@ -964,34 +947,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) P(M,N), a set of points on the unit sphere.
+  !    Input, real(real64) P(M,N), a set of points on the unit sphere.
   !
-  !    Output, real(dp) Q(M,N), the coordinates of the
+  !    Output, real(real64) Q(M,N), the coordinates of the
   !    image points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(out) :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(in) :: p(m,n)
-    real(dp), intent(out) :: q(m,n)
+    integer(int32) i
+    integer(int32) j
+    real(real64) p(m,n)
+    real(real64) q(m,n)
 
     do j = 1, n
       do i = 1, m - 1
-        q(i,j) = 2.0_dp * p(i,j) / ( 1.0_dp + p(m,j) )
+        q(i,j) = 2.0e+00_real64 * p(i,j) / ( 1.0e+00_real64 + p(m,j) )
       end do
-      q(m,j) = 1.0_dp
+      q(m,j) = 1.0e+00_real64
     end do
-  end subroutine sphere_stereograph
+  end
 
-  pure subroutine sphere_stereograph_inverse ( m, n, q, p ) &
-        bind(C, name="sphere_stereograph_inverse")
+  subroutine sphere_stereograph_inverse ( m, n, q, p )
 
   !*****************************************************************************80
   !
@@ -1034,38 +1016,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Q(M,N), the points, which are presumed to lie
+  !    Input, real(real64) Q(M,N), the points, which are presumed to lie
   !    on the plane Z = 1.
   !
-  !    Output, real(dp) P(M,N), the stereographic
+  !    Output, real(real64) P(M,N), the stereographic
   !    inverse projections of the points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(out) :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: j
-    real(dp), intent(out) :: p(m,n)
-    real(dp), intent(in) :: q(m,n)
-    real(dp) :: qn
+    integer(int32) j
+    real(real64) p(m,n)
+    real(real64) q(m,n)
+    real(real64) qn
 
     do j = 1, n
 
       qn = sum ( q(1:m-1,j)**2 )
 
-      p(1:m-1,j) = 4.0_dp * q(1:m-1,j) / ( 4.0_dp + qn )
+      p(1:m-1,j) = 4.0e+00_real64 * q(1:m-1,j) / ( 4.0e+00_real64 + qn )
 
-      p(m,j) = ( 4.0_dp - qn ) / ( 4.0_dp + qn )
+      p(m,j) = ( 4.0e+00_real64 - qn ) / ( 4.0e+00_real64 + qn )
 
     end do
-  end subroutine sphere_stereograph_inverse
+  end
 
-  pure subroutine sphere_stereograph2 ( m, n, p, focus, center, q ) &
-        bind(C, name="sphere_stereograph2")
+  subroutine sphere_stereograph2 ( m, n, p, focus, center, q )
 
   !*****************************************************************************80
   !
@@ -1106,50 +1087,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) the number of points.
+  !    Input, integer(int32) the number of points.
   !
-  !    Input, real(dp) P[M*N], a set of points on the unit sphere.
+  !    Input, real(real64) P[M*N], a set of points on the unit sphere.
   !
-  !    Input, real(dp) FOCUS[M], the coordinates of the focus point.
+  !    Input, real(real64) FOCUS[M], the coordinates of the focus point.
   !
-  !    Input, real(dp) CENTER[M], the coordinates of the center of 
+  !    Input, real(real64) CENTER[M], the coordinates of the center of 
   !    the sphere.
   !
-  !    Output, real(dp) Q[M*N], the coordinates of the
+  !    Output, real(real64) Q[M*N], the coordinates of the
   !    image points,
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip) :: n
+    integer(int32) m
+    integer(int32) n
 
-    real(dp), intent(in) :: center(m)
-    real(dp) :: cf_dot_pf
-    real(dp) :: cf_normsq
-    real(dp), intent(in) :: focus(m)
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(in) :: p(m,n)
-    real(dp), intent(out) :: q(m,n)
-    real(dp) :: s
+    real(real64) center(m)
+    real(real64) cf_dot_pf
+    real(real64) cf_normsq
+    real(real64) focus(m)
+    integer(int32) i
+    integer(int32) j
+    real(real64) p(m,n)
+    real(real64) q(m,n)
+    real(real64) s
 
     do j = 1, n 
-      cf_normsq = 0.0_dp
-      cf_dot_pf = 0.0_dp
+      cf_normsq = 0.0e+00_real64
+      cf_dot_pf = 0.0e+00_real64
       do i = 1, m
         cf_normsq = cf_normsq + ( center(i) - focus(i) ) ** 2
         cf_dot_pf = cf_dot_pf + ( center(i) - focus(i) ) * ( p(i,j) - focus(i) )
       end do
-      s = 2.0_dp * cf_normsq / cf_dot_pf
+      s = 2.0e+00_real64 * cf_normsq / cf_dot_pf
       do i = 1, m
-        q(i,j) = s * p(i,j) + ( 1.0_dp - s ) * focus(i)
+        q(i,j) = s * p(i,j) + ( 1.0e+00_real64 - s ) * focus(i)
       end do
     end do
-  end subroutine sphere_stereograph2
+  end
 
-  pure subroutine sphere_stereograph2_inverse ( m, n, q, focus, center, p ) &
-        bind(C, name="sphere_stereograph2_inverse")
+  subroutine sphere_stereograph2_inverse ( m, n, q, focus, center, p )
 
   !*****************************************************************************80
   !
@@ -1190,54 +1170,53 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Q(M,N), the points, which are presumed to lie
+  !    Input, real(real64) Q(M,N), the points, which are presumed to lie
   !    on the plane.
   !
-  !    Input, real(dp) FOCUS(M), the coordinates of the focus point.
+  !    Input, real(real64) FOCUS(M), the coordinates of the focus point.
   !
-  !    Input, real(dp) CENTER(M), the coordinates of the center 
+  !    Input, real(real64) CENTER(M), the coordinates of the center 
   !    of the sphere.
   !
-  !    Output, real(dp) P(M,N), the stereographic
+  !    Output, real(real64) P(M,N), the stereographic
   !    inverse projections of the points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(out) :: n
+    integer(int32) m
+    integer(int32) n
 
-    real(dp), intent(in) :: center(m)
-    real(dp) :: cf_dot_qf
-    real(dp), intent(in) :: focus(m)
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(out) :: p(m,n)
-    real(dp), intent(in) :: q(m,n)
-    real(dp) :: qf_normsq
-    real(dp) :: s
+    real(real64) center(m)
+    real(real64) cf_dot_qf
+    real(real64) focus(m)
+    integer(int32) i
+    integer(int32) j
+    real(real64) p(m,n)
+    real(real64) q(m,n)
+    real(real64) qf_normsq
+    real(real64) s
 
     do j = 1, n
 
-      cf_dot_qf = 0.0_dp
-      qf_normsq = 0.0_dp
+      cf_dot_qf = 0.0e+00_real64
+      qf_normsq = 0.0e+00_real64
       do i = 1, m
         cf_dot_qf = cf_dot_qf + ( center(i) - focus(i) ) * ( q(i,j) - focus(i) )
         qf_normsq = qf_normsq + ( q(i,j) - focus(i) ) ** 2
       end do
 
-      s = 2.0_dp * cf_dot_qf / qf_normsq
+      s = 2.0e+00_real64 * cf_dot_qf / qf_normsq
       do i = 1, m
-        p(i,j) = s * q(i,j) + ( 1.0_dp - s ) * focus(i)
+        p(i,j) = s * q(i,j) + ( 1.0e+00_real64 - s ) * focus(i)
       end do
 
     end do
-  end subroutine sphere_stereograph2_inverse
+  end
 
-  subroutine uniform_on_sphere01_map ( dim_num, n, seed, x ) &
-        bind(C, name="uniform_on_sphere01_map")
+  subroutine uniform_on_sphere01_map ( dim_num, n, seed, x )
 
   !*****************************************************************************80
   !
@@ -1278,23 +1257,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the dimension of the space.
+  !    Input, integer(int32) DIM_NUM, the dimension of the space.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, real(dp) X(DIM_NUM,N), the points.
+  !    Output, real(real64) X(DIM_NUM,N), the points.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(out) :: n
+    integer(int32) dim_num
+    integer(int32) n
 
-    integer(ip) :: j
-    real(dp) :: norm
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(dim_num,n)
+    integer(int32) j
+    real(real64) norm
+    integer(int32) seed
+    real(real64) x(dim_num,n)
   !
   !  Fill a matrix with normally distributed values.
   !
@@ -1313,6 +1292,6 @@ contains
       x(1:dim_num,j) = x(1:dim_num,j) / norm
 
     end do
-  end subroutine uniform_on_sphere01_map
+  end
 
 end module sphere_stereograph_mod

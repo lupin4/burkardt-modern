@@ -1,23 +1,17 @@
-!> polygon_grid -- Modern Fortran 2018
+!> polygon_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module polygon_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: polygon_grid_count, polygon_grid_display, polygon_grid_points
 
 contains
 
-  pure subroutine polygon_grid_count ( n, nv, ng ) &
-        bind(C, name="polygon_grid_count")
+  subroutine polygon_grid_count ( n, nv, ng )
 
   !*****************************************************************************80
   !
@@ -37,23 +31,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals on a side.
+  !    Input, integer(int32) N, the number of subintervals on a side.
   !
-  !    Input, integer(ip) NV, the number of vertices.
+  !    Input, integer(int32) NV, the number of vertices.
   !    3 <= NV.
   !
-  !    Output, integer(ip) NG, the number of grid points.
+  !    Output, integer(int32) NG, the number of grid points.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ng
-    integer(ip), intent(in), value :: nv
+    integer(int32) n
+    integer(int32) ng
+    integer(int32) nv
 
     ng = 1 + nv * ( n * ( n + 1 ) ) / 2
-  end subroutine polygon_grid_count
+  end
 
-  subroutine polygon_grid_display ( n, nv, v, ng, xg, prefix ) &
-        bind(C, name="polygon_grid_display")
+  subroutine polygon_grid_display ( n, nv, v, ng, xg, prefix )
 
   !*****************************************************************************80
   !
@@ -73,39 +66,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, integer(ip) NV, the number of vertices in the polygon.
+  !    Input, integer(int32) NV, the number of vertices in the polygon.
   !
-  !    Input, real(dp) V(2,NV), the coordinates of the vertices.
+  !    Input, real(real64) V(2,NV), the coordinates of the vertices.
   !
-  !    Input, integer(ip) NG, the number of grid points.
+  !    Input, integer(int32) NG, the number of grid points.
   !
-  !    Input, real(dp) XG(2,NG), the grid points.
+  !    Input, real(real64) XG(2,NG), the grid points.
   !
   !    Input, character ( len = * ) PREFIX, a string used to name the files.
   !
 
-    integer(ip), intent(in), value :: ng
-    integer(ip), intent(in), value :: nv
-    integer(ip) :: command_unit
-    character ( len = 255 ) :: command_filename
-    integer(ip) :: grid_unit
-    character ( len = 255 ) :: grid_filename
-    integer(ip) :: j
-    integer(ip), intent(in), value :: n
-    character ( len = 255 ) :: plot_filename
-    character ( len = * ), intent(in) :: prefix
-    real(dp), intent(in) :: v(2,nv)
-    real(dp) :: vc(2)
-    integer(ip) :: vertex_unit
-    character ( len = 255 ) :: vertex_filename
-    real(dp), intent(in) :: xg(2,ng)
+    integer(int32) ng
+    integer(int32) nv
+
+    integer(int32) command_unit
+    character ( len = 255 ) command_filename
+    integer(int32) grid_unit
+    character ( len = 255 ) grid_filename
+    integer(int32) j
+    integer(int32) n
+    character ( len = 255 ) plot_filename
+    character ( len = * ) prefix
+    real(real64) v(2,nv)
+    real(real64) vc(2)
+    integer(int32) vertex_unit
+    character ( len = 255 ) vertex_filename
+    real(real64) xg(2,ng)
   !
   !  Write the vertex file.
   !
-    vc(1) = sum ( v(1,1:nv) ) / real ( nv, dp)
-    vc(2) = sum ( v(2,1:nv) ) / real ( nv, dp)
+    vc(1) = sum ( v(1,1:nv) ) / real ( nv, real64)
+    vc(2) = sum ( v(2,1:nv) ) / real ( nv, real64)
 
     call get_unit ( vertex_unit )
     vertex_filename = trim ( prefix ) // '_vertex.txt'
@@ -166,10 +160,9 @@ contains
 
     write ( *, '(a)' ) &
       '  Created command file "' // trim ( command_filename ) // '".'
-  end subroutine polygon_grid_display
+  end
 
-  pure subroutine polygon_grid_points ( n, nv, v, ng, xg ) &
-        bind(C, name="polygon_grid_points")
+  subroutine polygon_grid_points ( n, nv, v, ng, xg )
 
   !*****************************************************************************80
   !
@@ -189,35 +182,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, integer(ip) NV, the number of vertices in the polygon.
+  !    Input, integer(int32) NV, the number of vertices in the polygon.
   !
-  !    Input, real(dp) V(2,NV), the coordinates of the vertices.
+  !    Input, real(real64) V(2,NV), the coordinates of the vertices.
   !
-  !    Input, integer(ip) NG, the number of grid points.
+  !    Input, integer(int32) NG, the number of grid points.
   !
-  !    Output, real(dp) XG(2,NG), the coordinates of the grid points.
+  !    Output, real(real64) XG(2,NG), the coordinates of the grid points.
   !
 
-    integer(ip), intent(in), value :: ng
-    integer(ip), intent(in), value :: nv
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: lp1
-    integer(ip), intent(in), value :: n
-    integer(ip) :: p
-    real(dp), intent(in) :: v(2,nv)
-    real(dp) :: vc(2)
-    real(dp), intent(out) :: xg(2,ng)
+    integer(int32) ng
+    integer(int32) nv
+
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) lp1
+    integer(int32) n
+    integer(int32) p
+    real(real64) v(2,nv)
+    real(real64) vc(2)
+    real(real64) xg(2,ng)
   !
   !  Determine the centroid, and use it as the first grid point.
   !
     p = 1
-    vc(1) = sum ( v(1,1:nv) ) / real ( nv, dp)
-    vc(2) = sum ( v(2,1:nv) ) / real ( nv, dp)
+    vc(1) = sum ( v(1,1:nv) ) / real ( nv, real64)
+    vc(2) = sum ( v(2,1:nv) ) / real ( nv, real64)
     xg(1:2,p) = vc(1:2)
   !
   !  Consider each triangle formed by two consecutive vertices and the centroid,
@@ -229,13 +223,13 @@ contains
         do j = 0, n - i
           k = n - i - j
           p = p + 1
-          xg(1:2,p) = ( real ( i, dp) * v(1:2,l)   &
-                      + real ( j, dp) * v(1:2,lp1) &
-                      + real ( k, dp) * vc(1:2) )  &
-                      / real ( n, dp)
+          xg(1:2,p) = ( real ( i, real64) * v(1:2,l)   &
+                      + real ( j, real64) * v(1:2,lp1) & 
+                      + real ( k, real64) * vc(1:2) )  &
+                      / real ( n, real64)
         end do
       end do
     end do
-  end subroutine polygon_grid_points
+  end
 
 end module polygon_grid_mod

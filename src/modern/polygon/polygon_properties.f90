@@ -1,16 +1,11 @@
-!> polygon_properties � Modern Fortran 2018
+!> polygon_properties — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module polygon_properties_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: angle_half, angle_rad, between, collinear, diagonal, diagonalie
   public :: i4_modp, i4_wrap, in_cone, intersect, intersect_prop, l4_xor
@@ -23,8 +18,7 @@ module polygon_properties_mod
 
 contains
 
-  pure subroutine angle_half ( p1, p2, p3, p4 ) &
-        bind(C, name="angle_half")
+  subroutine angle_half ( p1, p2, p3, p4 )
 
   !*****************************************************************************80
   !
@@ -59,26 +53,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), points defining the angle. 
+  !    Input, real(real64) P1(2), P2(2), P3(2), points defining the angle. 
   !
-  !    Input, real(dp) P4(2), a point defining the half angle.
+  !    Input, real(real64) P4(2), a point defining the half angle.
   !    The vector P4 - P2 will have unit norm.
   !
 
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: p3(2)
-    real(dp), intent(out) :: p4(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) p3(2)
+    real(real64) p4(2)
 
-    p4(1:2) = 0.5_dp * ( &
+    p4(1:2) = 0.5e+00_real64 * ( &
         ( p1(1:2) - p2(1:2) ) / sqrt ( sum ( ( p1(1:2) - p2(1:2) )**2 ) ) &
       + ( p3(1:2) - p2(1:2) ) / sqrt ( sum ( ( p3(1:2) - p2(1:2) )**2 ) ) )
 
      p4(1:2) = p2(1:2) + p4(1:2) / sqrt ( sum ( p4(1:2)**2 ) )
-  end subroutine angle_half
+  end
 
-  pure function angle_rad ( p1, p2, p3 ) &
-        bind(C, name="angle_rad")
+  function angle_rad ( p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -111,20 +104,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), define the rays
+  !    Input, real(real64) P1(2), P2(2), P3(2), define the rays
   !    P1 - P2 and P3 - P2 which define the angle.
   !
-  !    Output, real(dp) ANGLE_RAD, the angle swept out by the rays,
+  !    Output, real(real64) ANGLE_RAD, the angle swept out by the rays,
   !    in radians.  0 <= ANGLE_RAD < 2 * PI.  If either ray has zero
   !    length, then ANGLE_RAD is set to 0.
   !
 
-    real(dp) :: angle_rad
-    real(dp) :: p(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: p3(2)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) angle_rad
+    real(real64) p(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) p3(2)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     p(1) = ( p3(1) - p2(1) ) * ( p1(1) - p2(1) ) &
          + ( p3(2) - p2(2) ) * ( p1(2) - p2(2) )
@@ -132,19 +125,18 @@ contains
     p(2) = ( p3(1) - p2(1) ) * ( p1(2) - p2(2) ) &
          - ( p3(2) - p2(2) ) * ( p1(1) - p2(1) )
 
-    if ( all ( p(1:2) == 0.0_dp)  ) then
-      angle_rad = 0.0_dp
+    if ( all ( p(1:2) == 0.0e+00_real64)  ) then
+      angle_rad = 0.0e+00_real64
     end if
 
     angle_rad = atan2 ( p(2), p(1) )
 
-    if ( angle_rad < 0.0_dp ) then
-      angle_rad = angle_rad + 2.0_dp * r8_pi
+    if ( angle_rad < 0.0e+00_real64 ) then
+      angle_rad = angle_rad + 2.0e+00_real64 * r8_pi
     end if
-  end function angle_rad
+  end
 
-  pure function between ( xa, ya, xb, yb, xc, yc ) &
-        bind(C, name="between")
+  function between ( xa, ya, xb, yb, xc, yc )
 
   !*****************************************************************************80
   !
@@ -176,29 +168,29 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, the coordinates of 
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, the coordinates of 
   !    the vertices.
   !
   !    Output, logical BETWEEN, is TRUE if C is between A and B.
   !
 
-    logical :: between
-    logical :: collinear
-    logical :: value
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp) :: xmax
-    real(dp) :: xmin
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
-    real(dp) :: ymax
-    real(dp) :: ymin
+    logical between
+    logical collinear
+    logical value
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) xmax
+    real(real64) xmin
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
+    real(real64) ymax
+    real(real64) ymin
 
     if ( .not. collinear ( xa, ya, xb, yb, xc, yc ) ) then
       value = .false.
@@ -213,10 +205,9 @@ contains
     end if
 
     between = value
-  end function between
+  end
 
-  pure function collinear ( xa, ya, xb, yb, xc, yc ) &
-        bind(C, name="collinear")
+  function collinear ( xa, ya, xb, yb, xc, yc )
 
   !*****************************************************************************80
   !
@@ -252,33 +243,33 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, the coordinates of 
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, the coordinates of 
   !    the vertices.
   !
   !    Output, logical COLLINEAR, is TRUE if the points are judged 
   !    to be collinear.
   !
 
-    real(dp) :: area
-    logical :: collinear
-    real(dp), parameter :: r8_eps = 2.220446049250313e-016_dp
-    real(dp) :: side_ab_sq
-    real(dp) :: side_bc_sq
-    real(dp) :: side_ca_sq
-    real(dp) :: side_max_sq
-    logical :: value
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
+    real(real64) area
+    logical collinear
+    real(real64), parameter :: r8_eps = 2.220446049250313e-016_real64
+    real(real64) side_ab_sq
+    real(real64) side_bc_sq
+    real(real64) side_ca_sq
+    real(real64) side_max_sq
+    logical value
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
 
-    area = 0.5_dp * ( &
+    area = 0.5e+00_real64 * ( &
         ( xb - xa ) * ( yc - ya ) &
       - ( xc - xa ) * ( yb - ya ) )
 
@@ -290,17 +281,16 @@ contains
 
     if ( side_max_sq <= r8_eps ) then
       value = .true.
-    else if ( 2.0_dp * abs ( area ) <= r8_eps * side_max_sq ) then
+    else if ( 2.0e+00_real64 * abs ( area ) <= r8_eps * side_max_sq ) then
       value = .true.
     else
       value = .false.
     end if
 
     collinear = value
-  end function collinear
+  end
 
-  pure function diagonal ( im1, ip1, n, prev, next, x, y ) &
-        bind(C, name="diagonal")
+  function diagonal ( im1, ip1, n, prev, next, x, y )
 
   !*****************************************************************************80
   !
@@ -325,47 +315,46 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IM1, IP1, the indices of two vertices.
+  !    Input, integer(int32) IM1, IP1, the indices of two vertices.
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, integer(ip) PREV(N), the previous neighbor of each vertex.
+  !    Input, integer(int32) PREV(N), the previous neighbor of each vertex.
   !
-  !    Input, integer(ip) NEXT(N), the next neighbor of each vertex.
+  !    Input, integer(int32) NEXT(N), the next neighbor of each vertex.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of each vertex.
+  !    Input, real(real64) X(N), Y(N), the coordinates of each vertex.
   !
   !    Output, logical DIAGONAL, the value of the test.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    logical :: diagonal
-    logical :: diagonalie
-    integer(ip), intent(in), value :: im1
-    logical :: in_cone
-    integer(ip), intent(in), value :: ip1
-    integer(ip), intent(in) :: next(n)
-    integer(ip), intent(in) :: prev(n)
-    logical :: value1
-    logical :: value2
-    logical :: value3
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    logical diagonal
+    logical diagonalie
+    integer(int32) im1
+    logical in_cone
+    integer(int32) ip1
+    integer(int32) next(n)
+    integer(int32) prev(n)
+    logical value1
+    logical value2
+    logical value3
+    real(real64) x(n)
+    real(real64) y(n)
 
     value1 = in_cone ( im1, ip1, n, prev, next, x, y )
     value2 = in_cone ( ip1, im1, n, prev, next, x, y )
     value3 = diagonalie ( im1, ip1, n, next, x, y )
 
     diagonal = ( value1 .and. value2 .and. value3 )
-  end function diagonal
+  end
 
-  pure function diagonalie ( im1, ip1, n, next, x, y ) &
-        bind(C, name="diagonalie")
+  function diagonalie ( im1, ip1, n, next, x, y )
 
   !*****************************************************************************80
   !
@@ -390,35 +379,35 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IM1, IP1, the indices of two vertices.
+  !    Input, integer(int32) IM1, IP1, the indices of two vertices.
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, integer(ip) NEXT(N), the next neighbor of each vertex.
+  !    Input, integer(int32) NEXT(N), the next neighbor of each vertex.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of each vertex.
+  !    Input, real(real64) X(N), Y(N), the coordinates of each vertex.
   !
   !    Output, logical DIAGONALIE, the value of the test.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    logical :: diagonalie
-    integer(ip) :: first
-    integer(ip), intent(in), value :: im1
-    logical :: intersect
-    integer(ip), intent(in), value :: ip1
-    integer(ip) :: j
-    integer(ip) :: jp1
-    integer(ip), intent(in) :: next(n)
-    logical :: value
-    logical :: value2
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    logical diagonalie
+    integer(int32) first
+    integer(int32) im1
+    logical intersect
+    integer(int32) ip1
+    integer(int32) j
+    integer(int32) jp1
+    integer(int32) next(n)
+    logical value
+    logical value2
+    real(real64) x(n)
+    real(real64) y(n)
 
     first = im1
     j = first
@@ -456,10 +445,9 @@ contains
     end do
 
     diagonalie = value
-  end function diagonalie
+  end
 
-  function i4_modp ( i, j ) &
-        bind(C, name="i4_modp")
+  function i4_modp ( i, j )
 
   !*****************************************************************************80
   !
@@ -482,7 +470,7 @@ contains
   !
   !    On the other hand, I4_MODP(A,360) is between 0 and 360, always.
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !  Example:
   !
@@ -507,18 +495,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the number to be divided.
+  !    Input, integer(int32) I, the number to be divided.
   !
-  !    Input, integer(ip) J, the number that divides I.
+  !    Input, integer(int32) J, the number that divides I.
   !
-  !    Output, integer(ip) I4_MODP, the nonnegative remainder when I is
+  !    Output, integer(int32) I4_MODP, the nonnegative remainder when I is
   !    divided by J.
   !
 
-    integer(ip), intent(in), value :: i
-    integer(ip) :: i4_modp
-    integer(ip), intent(in), value :: j
-    integer(ip) :: value
+    integer(int32) i
+    integer(int32) i4_modp
+    integer(int32) j
+    integer(int32) value
 
     if ( j == 0 ) then
       write ( *, '(a)' ) ' '
@@ -534,10 +522,9 @@ contains
     end if
 
     i4_modp = value
-  end function i4_modp
+  end
 
-  function i4_wrap ( ival, ilo, ihi ) &
-        bind(C, name="i4_wrap")
+  function i4_wrap ( ival, ilo, ihi )
 
   !*****************************************************************************80
   !
@@ -545,7 +532,7 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !    There appears to be a bug in the GFORTRAN compiler which can lead to
   !    erroneous results when the first argument of I4_WRAP is an expression.
@@ -604,22 +591,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IVAL, a value.
+  !    Input, integer(int32) IVAL, a value.
   !
-  !    Input, integer(ip) ILO, IHI, the desired bounds.
+  !    Input, integer(int32) ILO, IHI, the desired bounds.
   !
-  !    Output, integer(ip) I4_WRAP, a "wrapped" version of the value.
+  !    Output, integer(int32) I4_WRAP, a "wrapped" version of the value.
   !
 
-    integer(ip) :: i4_modp
-    integer(ip) :: i4_wrap
-    integer(ip), intent(in), value :: ihi
-    integer(ip), intent(in), value :: ilo
-    integer(ip), intent(in), value :: ival
-    integer(ip) :: jhi
-    integer(ip) :: jlo
-    integer(ip) :: value
-    integer(ip) :: wide
+    integer(int32) i4_modp
+    integer(int32) i4_wrap
+    integer(int32) ihi
+    integer(int32) ilo
+    integer(int32) ival
+    integer(int32) jhi
+    integer(int32) jlo
+    integer(int32) value
+    integer(int32) wide
 
     jlo = min ( ilo, ihi )
     jhi = max ( ilo, ihi )
@@ -633,10 +620,9 @@ contains
     end if
 
     i4_wrap = value
-  end function i4_wrap
+  end
 
-  pure function in_cone ( im1, ip1, n, prev, next, x, y ) &
-        bind(C, name="in_cone")
+  function in_cone ( im1, ip1, n, prev, next, x, y )
 
   !*****************************************************************************80
   !
@@ -661,66 +647,65 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IM1, IP1, the indices of two vertices.
+  !    Input, integer(int32) IM1, IP1, the indices of two vertices.
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, integer(ip) PREV(N), the previous neighbor of each vertex.
+  !    Input, integer(int32) PREV(N), the previous neighbor of each vertex.
   !
-  !    Input, integer(ip) NEXT(N), the next neighbor of each vertex.
+  !    Input, integer(int32) NEXT(N), the next neighbor of each vertex.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of each vertex.
+  !    Input, real(real64) X(N), Y(N), the coordinates of each vertex.
   !
   !    Output, logical IN_CONE, the value of the test.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), intent(in), value :: im1
-    integer(ip) :: im2
-    logical :: in_cone
-    integer(ip), intent(in), value :: ip1
-    integer(ip), intent(in) :: next(n)
-    integer(ip), intent(in) :: prev(n)
-    real(dp) :: t1
-    real(dp) :: t2
-    real(dp) :: t3
-    real(dp) :: t4
-    real(dp) :: t5
-    real(dp) :: triangle_area
-    logical :: value
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    integer(int32) i
+    integer(int32) im1
+    integer(int32) im2
+    logical in_cone
+    integer(int32) ip1
+    integer(int32) next(n)
+    integer(int32) prev(n)
+    real(real64) t1
+    real(real64) t2
+    real(real64) t3
+    real(real64) t4
+    real(real64) t5
+    real(real64) triangle_area
+    logical value
+    real(real64) x(n)
+    real(real64) y(n)
 
     im2 = prev(im1)
     i = next(im1)
 
     t1 = triangle_area ( x(im1), y(im1), x(i), y(i), x(im2), y(im2) )
 
-    if ( 0.0_dp <= t1 ) then
+    if ( 0.0e+00_real64 <= t1 ) then
 
       t2 = triangle_area ( x(im1), y(im1), x(ip1), y(ip1), x(im2), y(im2) )
       t3 = triangle_area ( x(ip1), y(ip1), x(im1), y(im1), x(i), y(i) )
-      value = ( ( 0.0_dp < t2 ) .and. ( 0.0_dp < t3 ) )
+      value = ( ( 0.0e+00_real64 < t2 ) .and. ( 0.0e+00_real64 < t3 ) )
 
     else
 
       t4 = triangle_area ( x(im1), y(im1), x(ip1), y(ip1), x(i), y(i) )
       t5 = triangle_area ( x(ip1), y(ip1), x(im1), y(im1), x(im2), y(im2) )
-      value = .not. ( ( 0.0_dp <= t4 ) .and. ( 0.0_dp <= t5 ) )
+      value = .not. ( ( 0.0e+00_real64 <= t4 ) .and. ( 0.0e+00_real64 <= t5 ) )
 
     end if
 
     in_cone = value
-  end function in_cone
+  end
 
-  pure function intersect ( xa, ya, xb, yb, xc, yc, xd, yd ) &
-        bind(C, name="intersect")
+  function intersect ( xa, ya, xb, yb, xc, yc, xd, yd )
 
   !*****************************************************************************80
   !
@@ -745,28 +730,28 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, XD, YD, the X and Y 
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, XD, YD, the X and Y 
   !    coordinates of the four vertices.
   !
   !    Output, logical VALUE, the value of the test.
   !
 
-    logical :: between
-    logical :: intersect
-    logical :: intersect_prop
-    logical :: value
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: xd
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
-    real(dp), intent(in), value :: yd
+    logical between
+    logical intersect
+    logical intersect_prop
+    logical value
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) xd
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
+    real(real64) yd
 
     if ( intersect_prop ( xa, ya, xb, yb, xc, yc, xc, yd ) ) then
       value = .true.
@@ -783,10 +768,9 @@ contains
     end if
 
     intersect = value
-  end function intersect
+  end
 
-  pure function intersect_prop ( xa, ya, xb, yb, xc, yc, xd, yd ) &
-        bind(C, name="intersect_prop")
+  function intersect_prop ( xa, ya, xb, yb, xc, yc, xd, yd )
 
   !*****************************************************************************80
   !
@@ -811,37 +795,37 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, XD, YD, the X and Y 
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, XD, YD, the X and Y 
   !    coordinates of the four vertices.
   !
   !    Output, logical INTERSECT_PROP, the result of the test.
   !
 
-    logical :: collinear
-    logical :: intersect_prop
-    logical :: l4_xor
-    real(dp) :: t1
-    real(dp) :: t2
-    real(dp) :: t3
-    real(dp) :: t4
-    real(dp) :: triangle_area
-    logical :: value
-    logical :: value1
-    logical :: value2
-    logical :: value3
-    logical :: value4
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: xd
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
-    real(dp), intent(in), value :: yd
+    logical collinear
+    logical intersect_prop
+    logical l4_xor
+    real(real64) t1
+    real(real64) t2
+    real(real64) t3
+    real(real64) t4
+    real(real64) triangle_area
+    logical value
+    logical value1
+    logical value2
+    logical value3
+    logical value4
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) xd
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
+    real(real64) yd
 
     if ( collinear ( xa, ya, xb, yb, xc, yc ) ) then
       value = .false.
@@ -858,20 +842,19 @@ contains
       t3 = triangle_area ( xc, yc, xd, yd, xa, ya )
       t4 = triangle_area ( xc, yc, xd, yd, xb, yb )
 
-      value1 = ( 0.0_dp < t1 )
-      value2 = ( 0.0_dp < t2 )
-      value3 = ( 0.0_dp < t3 )
-      value4 = ( 0.0_dp < t4 )
+      value1 = ( 0.0e+00_real64 < t1 )
+      value2 = ( 0.0e+00_real64 < t2 )
+      value3 = ( 0.0e+00_real64 < t3 )
+      value4 = ( 0.0e+00_real64 < t4 )
 
       value = ( l4_xor ( value1, value2 ) ) .and. ( l4_xor ( value3, value4 ) )
 
     end if
 
     intersect_prop = value
-  end function intersect_prop
+  end
 
-  pure function l4_xor ( l1, l2 ) &
-        bind(C, name="l4_xor")
+  function l4_xor ( l1, l2 )
 
   !*****************************************************************************80
   !
@@ -901,20 +884,19 @@ contains
   !    Output, logical L4_XOR, the exclusive OR of L1 and L2.
   !
 
-    logical, intent(in), value :: l1
-    logical, intent(in), value :: l2
-    logical :: l4_xor
-    logical :: value1
-    logical :: value2
+    logical l1
+    logical l2
+    logical l4_xor
+    logical value1
+    logical value2
 
     value1 = (         l1   .and. ( .not. l2 ) )
     value2 = ( ( .not. l1 ) .and.         l2   )
 
     l4_xor = ( value1 .or. value2 )
-  end function l4_xor
+  end
 
-  subroutine polygon_angles ( n, v, angle ) &
-        bind(C, name="polygon_angles")
+  subroutine polygon_angles ( n, v, angle )
 
   !*****************************************************************************80
   !
@@ -938,23 +920,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) ANGLE(N), the angles of the polygon,
+  !    Output, real(real64) ANGLE(N), the angles of the polygon,
   !    in radians.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: angle(n)
-    real(dp) :: angle_rad
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: im1
-    integer(ip) :: ip1
-    real(dp), intent(in) :: v(2,n)
+    real(real64) angle(n)
+    real(real64) angle_rad
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) im1
+    integer(int32) ip1
+    real(real64) v(2,n)
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -972,10 +954,9 @@ contains
       angle(i) = angle_rad ( v(1:2,im1), v(1:2,i), v(1:2,ip1) )
 
     end do
-  end subroutine polygon_angles
+  end
 
-  subroutine polygon_area ( n, v, area ) &
-        bind(C, name="polygon_area")
+  subroutine polygon_area ( n, v, area )
 
   !*****************************************************************************80
   !
@@ -1004,23 +985,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) AREA, the absolute area of the polygon.
+  !    Output, real(real64) AREA, the absolute area of the polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: area
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: im1
-    integer(ip) :: ip1
-    real(dp), intent(in) :: v(2,n)
+    real(real64) area
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) im1
+    integer(int32) ip1
+    real(real64) v(2,n)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     do i = 1, n
 
@@ -1031,11 +1012,10 @@ contains
 
     end do
 
-    area = 0.5_dp * area
-  end subroutine polygon_area
+    area = 0.5e+00_real64 * area
+  end
 
-  pure subroutine polygon_area_2 ( n, v, area ) &
-        bind(C, name="polygon_area_2")
+  subroutine polygon_area_2 ( n, v, area )
 
   !*****************************************************************************80
   !
@@ -1075,22 +1055,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) AREA, the absolute area of the polygon.
+  !    Output, real(real64) AREA, the absolute area of the polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: area
-    real(dp) :: area_triangle
-    integer(ip) :: i
-    real(dp) :: triangle_area
-    real(dp), intent(in) :: v(2,n)
+    real(real64) area
+    real(real64) area_triangle
+    integer(int32) i
+    real(real64) triangle_area
+    real(real64) v(2,n)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     do i = 1, n - 2
 
@@ -1102,10 +1082,9 @@ contains
       area = area + area_triangle
 
     end do
-  end subroutine polygon_area_2
+  end
 
-  pure subroutine polygon_centroid ( n, v, centroid ) &
-        bind(C, name="polygon_centroid")
+  subroutine polygon_centroid ( n, v, centroid )
 
   !*****************************************************************************80
   !
@@ -1162,24 +1141,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices.
+  !    Input, real(real64) V(2,N), the coordinates of the vertices.
   !
-  !    Output, real(dp) CENTROID(2), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(2), the coordinates of the centroid.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: area
-    real(dp), intent(out) :: centroid(2)
-    integer(ip) :: i
-    integer(ip) :: ip1
-    real(dp) :: temp
-    real(dp), intent(in) :: v(2,n)
+    real(real64) area
+    real(real64) centroid(2)
+    integer(int32) i
+    integer(int32) ip1
+    real(real64) temp
+    real(real64) v(2,n)
 
-    area = 0.0_dp
-    centroid(1:2) = 0.0_dp
+    area = 0.0e+00_real64
+    centroid(1:2) = 0.0e+00_real64
 
     do i = 1, n
 
@@ -1197,17 +1176,16 @@ contains
 
     end do
 
-    area = area / 2.0_dp
+    area = area / 2.0e+00_real64
 
-    if ( area == 0.0_dp ) then
+    if ( area == 0.0e+00_real64 ) then
       centroid(1:2) = v(1:2,1)
     else
-      centroid(1:2) = centroid(1:2) / ( 6.0_dp * area )
+      centroid(1:2) = centroid(1:2) / ( 6.0e+00_real64 * area )
     end if
-  end subroutine polygon_centroid
+  end
 
-  pure subroutine polygon_centroid_2 ( n, v, centroid ) &
-        bind(C, name="polygon_centroid_2")
+  subroutine polygon_centroid_2 ( n, v, centroid )
 
   !*****************************************************************************80
   !
@@ -1239,24 +1217,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices.
+  !    Input, real(real64) V(2,N), the coordinates of the vertices.
   !
-  !    Output, real(dp) CENTROID(2), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(2), the coordinates of the centroid.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: area_polygon
-    real(dp) :: area_triangle
-    real(dp), intent(out) :: centroid(2)
-    integer(ip) :: i
-    real(dp) :: triangle_area
-    real(dp), intent(in) :: v(2,n)
+    real(real64) area_polygon
+    real(real64) area_triangle
+    real(real64) centroid(2)
+    integer(int32) i
+    real(real64) triangle_area
+    real(real64) v(2,n)
 
-    area_polygon = 0.0_dp
-    centroid(1:2) = 0.0_dp
+    area_polygon = 0.0e+00_real64
+    centroid(1:2) = 0.0e+00_real64
 
     do i = 1, n - 2
 
@@ -1268,19 +1246,18 @@ contains
       area_polygon = area_polygon + area_triangle
 
       centroid(1:2) = centroid(1:2) + area_triangle &
-        * ( v(1:2,i) + v(1:2,i+1) + v(1:2,n) ) / 3.0_dp
+        * ( v(1:2,i) + v(1:2,i+1) + v(1:2,n) ) / 3.0e+00_real64
 
     end do
 
-    if ( area_polygon == 0.0_dp ) then
+    if ( area_polygon == 0.0e+00_real64 ) then
       centroid(1:2) = v(1:2,1)
     else
       centroid(1:2) = centroid(1:2) / area_polygon
     end if
-  end subroutine polygon_centroid_2
+  end
 
-  pure subroutine polygon_contains_point ( n, v, p, inside ) &
-        bind(C, name="polygon_contains_point")
+  subroutine polygon_contains_point ( n, v, p, inside )
 
   !*****************************************************************************80
   !
@@ -1300,35 +1277,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes or vertices in 
+  !    Input, integer(int32) N, the number of nodes or vertices in 
   !    the polygon.  N must be at least 3.
   !
-  !    Input, real(dp) V(2,N), the vertices of the polygon.
+  !    Input, real(real64) V(2,N), the vertices of the polygon.
   !
-  !    Input, real(dp) P(2), the coordinates of the point to be tested.
+  !    Input, real(real64) P(2), the coordinates of the point to be tested.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside 
   !    the polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    logical, intent(out) :: inside
-    integer(ip) :: ip1
-    real(dp), intent(in) :: p(2)
-    real(dp) :: px1
-    real(dp) :: px2
-    real(dp) :: py1
-    real(dp) :: py2
-    real(dp), intent(in) :: v(2,n)
-    real(dp) :: xints
+    integer(int32) i
+    logical inside
+    integer(int32) ip1
+    real(real64) p(2)
+    real(real64) px1
+    real(real64) px2
+    real(real64) py1
+    real(real64) py2
+    real(real64) v(2,n)
+    real(real64) xints
 
     inside = .false.
 
     px1 = v(1,1)
     py1 = v(2,1)
-    xints = p(1) - 1.0_dp
+    xints = p(1) - 1.0e+00_real64
 
     do i = 1, n
 
@@ -1352,10 +1329,9 @@ contains
       py1 = py2
 
     end do
-  end subroutine polygon_contains_point
+  end
 
-  subroutine polygon_contains_point_2 ( n, v, p, inside ) &
-        bind(C, name="polygon_contains_point_2")
+  subroutine polygon_contains_point_2 ( n, v, p, inside )
 
   !*****************************************************************************80
   !
@@ -1375,24 +1351,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes or vertices in the 
+  !    Input, integer(int32) N, the number of nodes or vertices in the 
   !    polygon.  N must be at least 3.
   !
-  !    Input, real(dp) V(2,N), the vertices of the polygon.
+  !    Input, real(real64) V(2,N), the vertices of the polygon.
   !
-  !    Input, real(dp) P(2), the coordinates of the point to be tested.
+  !    Input, real(real64) P(2), the coordinates of the point to be tested.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside
   !    the polygon or on its boundary.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(2)
-    real(dp) :: t(2,3)
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    logical inside
+    real(real64) p(2)
+    real(real64) t(2,3)
+    real(real64) v(2,n)
 
     inside = .false.
   !
@@ -1413,10 +1389,9 @@ contains
       end if
 
     end do
-  end subroutine polygon_contains_point_2
+  end
 
-  pure subroutine polygon_contains_point_3 ( n, v, p, inside ) &
-        bind(C, name="polygon_contains_point_3")
+  subroutine polygon_contains_point_3 ( n, v, p, inside )
 
   !*****************************************************************************80
   !
@@ -1449,24 +1424,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes or vertices in 
+  !    Input, integer(int32) N, the number of nodes or vertices in 
   !    the polygon.  N must be at least 3.
   !
-  !    Input, real(dp) V(2,N), the vertices of the polygon.
+  !    Input, real(real64) V(2,N), the vertices of the polygon.
   !
-  !    Input, real(dp) P(2), the coordinates of the point to be tested.
+  !    Input, real(real64) P(2), the coordinates of the point to be tested.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside 
   !    the polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    logical, intent(out) :: inside
-    integer(ip) :: ip1
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    logical inside
+    integer(int32) ip1
+    real(real64) p(2)
+    real(real64) v(2,n)
 
     inside = .false.
 
@@ -1481,16 +1456,15 @@ contains
       if ( ( v(2,i)   <  p(2) .and. p(2) <= v(2,ip1)   ) .or. &
            ( p(2) <= v(2,i)   .and. v(2,ip1)   < p(2) ) ) then
         if ( ( p(1) - v(1,i) ) - ( p(2) - v(2,i) ) &
-           * ( v(1,ip1) - v(1,i) ) / ( v(2,ip1) - v(2,i) ) < 0.0_dp ) then
+           * ( v(1,ip1) - v(1,i) ) / ( v(2,ip1) - v(2,i) ) < 0.0e+00_real64 ) then
           inside = .not. inside
         end if
       end if
 
     end do
-  end subroutine polygon_contains_point_3
+  end
 
-  pure subroutine polygon_diameter ( n, v, diameter ) &
-        bind(C, name="polygon_diameter")
+  subroutine polygon_diameter ( n, v, diameter )
 
   !*****************************************************************************80
   !
@@ -1519,21 +1493,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) DIAMETER, the diameter of the polygon.
+  !    Output, real(real64) DIAMETER, the diameter of the polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: diameter
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(in) :: v(2,n)
+    real(real64) diameter
+    integer(int32) i
+    integer(int32) j
+    real(real64) v(2,n)
 
-    diameter = 0.0_dp
+    diameter = 0.0e+00_real64
 
     do i = 1, n
 
@@ -1543,10 +1517,9 @@ contains
       end do
 
     end do
-  end subroutine polygon_diameter
+  end
 
-  subroutine polygon_expand ( n, v, h, w ) &
-        bind(C, name="polygon_expand")
+  subroutine polygon_expand ( n, v, h, w )
 
   !*****************************************************************************80
   !
@@ -1576,28 +1549,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices.
+  !    Input, real(real64) V(2,N), the coordinates of the vertices.
   !
-  !    Input, real(dp) H, the expansion amount.
+  !    Input, real(real64) H, the expansion amount.
   !
-  !    Output, real(dp) W(2,N), the "expanded" coordinates.
+  !    Output, real(real64) W(2,N), the "expanded" coordinates.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp) :: angle
-    real(dp) :: angle_rad
-    real(dp), intent(in), value :: h
-    real(dp) :: h2
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: im1
-    integer(ip) :: ip1
-    real(dp) :: p4(2)
-    real(dp), intent(in) :: v(2,n)
-    real(dp), intent(out) :: w(2,n)
+    real(real64) angle
+    real(real64) angle_rad
+    real(real64) h
+    real(real64) h2
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) im1
+    integer(int32) ip1
+    real(real64) p4(2)
+    real(real64) v(2,n)
+    real(real64) w(2,n)
   !
   !  Consider each angle, formed by the nodes P(I-1), P(I), P(I+1).
   !
@@ -1627,10 +1600,9 @@ contains
       w(1:2,i) = v(1:2,i) - h2 * ( p4(1:2) - v(1:2,i) )
 
     end do
-  end subroutine polygon_expand
+  end
 
-  subroutine polygon_inrad_data ( n, radin, area, radout, side ) &
-        bind(C, name="polygon_inrad_data")
+  subroutine polygon_inrad_data ( n, radin, area, radout, side )
 
   !*****************************************************************************80
   !
@@ -1650,29 +1622,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !    N must be at least 3.
   !
-  !    Input, real(dp) RADIN, the inner radius of the polygon, that is,
+  !    Input, real(real64) RADIN, the inner radius of the polygon, that is,
   !    the radius of the largest circle that can be inscribed within
   !    the polygon.
   !
-  !    Output, real(dp) AREA, the area of the regular polygon.
+  !    Output, real(real64) AREA, the area of the regular polygon.
   !
-  !    Output, real(dp) RADOUT, the outer radius of the polygon, that is,
+  !    Output, real(real64) RADOUT, the outer radius of the polygon, that is,
   !    the radius of the smallest circle that can be described about
   !    the polygon.
   !
-  !    Output, real(dp) SIDE, the length of one side of the polygon.
+  !    Output, real(real64) SIDE, the length of one side of the polygon.
   !
 
-    real(dp) :: angle
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: n
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: radin
-    real(dp), intent(out) :: radout
-    real(dp), intent(out) :: side
+    real(real64) angle
+    real(real64) area
+    integer(int32) n
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radin
+    real(real64) radout
+    real(real64) side
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -1682,14 +1654,13 @@ contains
       stop 1
     end if
 
-    angle = r8_pi / real ( n, dp)
-    area = real ( n, dp) * radin * radin * tan ( angle )
-    side = 2.0_dp * radin * tan ( angle )
-    radout = 0.5_dp * side / sin ( angle )
-  end subroutine polygon_inrad_data
+    angle = r8_pi / real ( n, real64)
+    area = real ( n, real64) * radin * radin * tan ( angle )
+    side = 2.0e+00_real64 * radin * tan ( angle )
+    radout = 0.5e+00_real64 * side / sin ( angle )
+  end
 
-  subroutine polygon_integral_1 ( n, v, result ) &
-        bind(C, name="polygon_integral_1")
+  subroutine polygon_integral_1 ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -1727,23 +1698,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -1761,13 +1732,12 @@ contains
         im1 = i - 1
       end if
 
-      result = result + 0.5_dp * ( v(1,i) + v(1,im1) ) * ( v(2,i) - v(2,im1) )
+      result = result + 0.5e+00_real64 * ( v(1,i) + v(1,im1) ) * ( v(2,i) - v(2,im1) )
 
     end do
-  end subroutine polygon_integral_1
+  end
 
-  subroutine polygon_integral_x ( n, v, result ) &
-        bind(C, name="polygon_integral_x")
+  subroutine polygon_integral_x ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -1803,23 +1773,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -1842,11 +1812,10 @@ contains
 
     end do
 
-    result = result / 6.0_dp
-  end subroutine polygon_integral_x
+    result = result / 6.0e+00_real64
+  end
 
-  subroutine polygon_integral_xx ( n, v, result ) &
-        bind(C, name="polygon_integral_xx")
+  subroutine polygon_integral_xx ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -1883,24 +1852,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in
   !    counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -1923,11 +1892,10 @@ contains
 
     end do
 
-    result = result / 12.0_dp
-  end subroutine polygon_integral_xx
+    result = result / 12.0e+00_real64
+  end
 
-  subroutine polygon_integral_xy ( n, v, result ) &
-        bind(C, name="polygon_integral_xy")
+  subroutine polygon_integral_xy ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -1965,24 +1933,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in
   !    counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -2001,17 +1969,16 @@ contains
       end if
 
       result = result + ( &
-        v(2,i) * ( 3.0_dp * v(1,i)**2 + 2.0_dp * v(1,i) * v(1,im1) &
-        + v(1,im1)**2 ) + v(2,im1) * ( v(1,i)**2 + 2.0_dp * v(1,i) * v(1,im1) &
-        + 3.0_dp * v(1,im1)**2 ) ) * ( v(2,i) - v(2,im1) )
+        v(2,i) * ( 3.0e+00_real64 * v(1,i)**2 + 2.0e+00_real64 * v(1,i) * v(1,im1) &
+        + v(1,im1)**2 ) + v(2,im1) * ( v(1,i)**2 + 2.0e+00_real64 * v(1,i) * v(1,im1) &
+        + 3.0e+00_real64 * v(1,im1)**2 ) ) * ( v(2,i) - v(2,im1) )
 
     end do
 
-    result = result / 24.0_dp
-  end subroutine polygon_integral_xy
+    result = result / 24.0e+00_real64
+  end
 
-  subroutine polygon_integral_y ( n, v, result ) &
-        bind(C, name="polygon_integral_y")
+  subroutine polygon_integral_y ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -2047,24 +2014,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in
   !    counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -2087,11 +2054,10 @@ contains
 
     end do
 
-    result = result / 6.0_dp
-  end subroutine polygon_integral_y
+    result = result / 6.0e+00_real64
+  end
 
-  subroutine polygon_integral_yy ( n, v, result ) &
-        bind(C, name="polygon_integral_yy")
+  subroutine polygon_integral_yy ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -2128,24 +2094,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in
   !    counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -2168,11 +2134,10 @@ contains
 
     end do
 
-    result = result / 12.0_dp
-  end subroutine polygon_integral_yy
+    result = result / 12.0e+00_real64
+  end
 
-  pure function polygon_is_convex ( n, v ) &
-        bind(C, name="polygon_is_convex")
+  function polygon_is_convex ( n, v )
 
   !*****************************************************************************80
   !
@@ -2209,42 +2174,42 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input/output, real(dp) V(2,N), the coordinates of the vertices 
+  !    Input/output, real(real64) V(2,N), the coordinates of the vertices 
   !    of the polygon.  On output, duplicate consecutive points have been 
   !    deleted, and the vertices have been reordered so that the 
   !    lexicographically least point comes first.
   !
-  !    Output, integer(ip) POLYGON_IS_CONVEX:
+  !    Output, integer(int32) POLYGON_IS_CONVEX:
   !    -1, the polygon is not convex;
   !     0, the polygon has less than 3 vertices; it is "degenerately" convex;
   !     1, the polygon is convex and counter clockwise;
   !     2, the polygon is convex and clockwise.
   !
 
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), parameter :: RAD_TO_DEG = 180.0_dp / r8_pi
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64), parameter :: RAD_TO_DEG = 180.0e+00_real64 / r8_pi
 
-    integer(ip), intent(inout) :: n
+    integer(int32) n
 
-    real(dp) :: angle
-    integer(ip), parameter :: CONVEX_CCW = 1
-    integer(ip), parameter :: CONVEX_CW = 2
-    real(dp) :: cross
-    integer(ip), parameter :: DEGENERATE_CONVEX = 0
-    real(dp) :: dot
-    real(dp) :: exterior_total
-    integer(ip) :: i
-    integer(ip) :: ip1
-    integer(ip) :: ip2
-    integer(ip), parameter :: NOT_CONVEX = -1
-    integer(ip) :: polygon_is_convex
-    real(dp) :: sense
-    real(dp), parameter :: tol = 1.0_dp
-    real(dp), intent(inout) :: v(2,n)
+    real(real64) angle
+    integer(int32), parameter :: CONVEX_CCW = 1
+    integer(int32), parameter :: CONVEX_CW = 2
+    real(real64) cross
+    integer(int32), parameter :: DEGENERATE_CONVEX = 0
+    real(real64) dot
+    real(real64) exterior_total
+    integer(int32) i
+    integer(int32) ip1
+    integer(int32) ip2
+    integer(int32), parameter :: NOT_CONVEX = -1
+    integer(int32) polygon_is_convex
+    real(real64) sense
+    real(real64), parameter :: tol = 1.0e+00_real64
+    real(real64) v(2,n)
 
-    exterior_total = 0.0_dp
+    exterior_total = 0.0e+00_real64
   !
   !  If there are not at least 3 distinct vertices, we are done.
   !
@@ -2252,7 +2217,7 @@ contains
       polygon_is_convex = DEGENERATE_CONVEX
     end if
 
-    sense = 0.0_dp
+    sense = 0.0e+00_real64
   !
   !  Consider each polygonal vertex I.
   !
@@ -2280,23 +2245,23 @@ contains
   !  the "sense" of the polygon, or if it disagrees with the previously
   !  defined sense.
   !
-      if ( sense == 0.0_dp ) then
+      if ( sense == 0.0e+00_real64 ) then
 
-        if ( angle < 0.0_dp ) then
-          sense = -1.0_dp
-        else if ( 0.0_dp < angle ) then
-          sense = +1.0_dp
+        if ( angle < 0.0e+00_real64 ) then
+          sense = -1.0e+00_real64
+        else if ( 0.0e+00_real64 < angle ) then
+          sense = +1.0e+00_real64
         end if
 
-      else if ( sense == 1.0_dp ) then
+      else if ( sense == 1.0e+00_real64 ) then
 
-        if ( angle < 0.0_dp ) then
+        if ( angle < 0.0e+00_real64 ) then
           polygon_is_convex = NOT_CONVEX
         end if
 
-      else if ( sense == -1.0_dp ) then
+      else if ( sense == -1.0e+00_real64 ) then
 
-        if ( 0.0_dp < angle ) then
+        if ( 0.0e+00_real64 < angle ) then
           polygon_is_convex = NOT_CONVEX
         end if
 
@@ -2309,21 +2274,20 @@ contains
 
       exterior_total = exterior_total + angle
 
-      if ( 360.0_dp + tol < abs ( exterior_total ) * RAD_TO_DEG ) then
+      if ( 360.0e+00_real64 + tol < abs ( exterior_total ) * RAD_TO_DEG ) then
         polygon_is_convex = NOT_CONVEX
       end if
 
     end do
 
-    if ( sense == +1.0_dp ) then
+    if ( sense == +1.0e+00_real64 ) then
       polygon_is_convex = CONVEX_CCW
-    else if ( sense == -1.0_dp ) then
+    else if ( sense == -1.0e+00_real64 ) then
       polygon_is_convex = CONVEX_CW
     end if
-  end function polygon_is_convex
+  end
 
-  pure subroutine polygon_lattice_area ( i, b, area ) &
-        bind(C, name="polygon_lattice_area")
+  subroutine polygon_lattice_area ( i, b, area )
 
   !*****************************************************************************80
   !
@@ -2368,22 +2332,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the number of interior lattice points.
+  !    Input, integer(int32) I, the number of interior lattice points.
   !
-  !    Input, integer(ip) B, the number of boundary lattice points.
+  !    Input, integer(int32) B, the number of boundary lattice points.
   !
-  !    Output, real(dp) AREA, the area of the lattice polygon.
+  !    Output, real(real64) AREA, the area of the lattice polygon.
   !
 
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: b
-    integer(ip), intent(in), value :: i
+    real(real64) area
+    integer(int32) b
+    integer(int32) i
 
-    area = real ( i, dp) + real ( b, dp) / 2.0_dp - 1.0_dp
-  end subroutine polygon_lattice_area
+    area = real ( i, real64) + real ( b, real64) / 2.0e+00_real64 - 1.0e+00_real64
+  end
 
-  subroutine polygon_outrad_data ( n, radout, area, radin, side ) &
-        bind(C, name="polygon_outrad_data")
+  subroutine polygon_outrad_data ( n, radout, area, radin, side )
 
   !*****************************************************************************80
   !
@@ -2403,29 +2366,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !    N must be at least 3.
   !
-  !    Input, real(dp) RADOUT, the outer radius of the polygon, that is,
+  !    Input, real(real64) RADOUT, the outer radius of the polygon, that is,
   !    the radius of the smallest circle that can be described
   !    around the polygon.
   !
-  !    Output, real(dp) AREA, the area of the regular polygon.
+  !    Output, real(real64) AREA, the area of the regular polygon.
   !
-  !    Output, real(dp) RADIN, the inner radius of the polygon, that is,
+  !    Output, real(real64) RADIN, the inner radius of the polygon, that is,
   !    the radius of the largest circle that can be inscribed
   !    within the polygon.
   !
-  !    Output, real(dp) SIDE, the length of one side of the polygon.
+  !    Output, real(real64) SIDE, the length of one side of the polygon.
   !
 
-    real(dp) :: angle
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: n
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: radin
-    real(dp), intent(in), value :: radout
-    real(dp), intent(out) :: side
+    real(real64) angle
+    real(real64) area
+    integer(int32) n
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radin
+    real(real64) radout
+    real(real64) side
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -2435,15 +2398,14 @@ contains
       stop 1
     end if
 
-    angle = r8_pi / real ( n, dp)
-    area = 0.5_dp * real ( n, dp) * radout * radout &
-      * sin ( 2.0_dp * angle )
-    side = 2.0_dp * radout * sin ( angle )
-    radin = 0.5_dp * side / tan ( angle )
-  end subroutine polygon_outrad_data
+    angle = r8_pi / real ( n, real64)
+    area = 0.5e+00_real64 * real ( n, real64) * radout * radout &
+      * sin ( 2.0e+00_real64 * angle )
+    side = 2.0e+00_real64 * radout * sin ( angle )
+    radin = 0.5e+00_real64 * side / tan ( angle )
+  end
 
-  pure subroutine polygon_perimeter ( n, v, perimeter ) &
-        bind(C, name="polygon_perimeter")
+  subroutine polygon_perimeter ( n, v, perimeter )
 
   !*****************************************************************************80
   !
@@ -2467,22 +2429,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) PERIMETER, the perimeter.
+  !    Output, real(real64) PERIMETER, the perimeter.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp) :: l
-    real(dp), intent(out) :: perimeter
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) l
+    real(real64) perimeter
+    real(real64) v(2,n)
 
-    perimeter = 0.0_dp
+    perimeter = 0.0e+00_real64
 
     im1 = n
 
@@ -2491,10 +2453,9 @@ contains
       perimeter = perimeter + l
       im1 = i
     end do
-  end subroutine polygon_perimeter
+  end
 
-  subroutine polygon_perimeter_quad ( n, v, hmax, f, value ) &
-        bind(C, name="polygon_perimeter_quad")
+  subroutine polygon_perimeter_quad ( n, v, hmax, f, value )
 
   !*****************************************************************************80
   !
@@ -2514,60 +2475,59 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Input, real(dp) HMAX, the maximum length of a quadrature interval.
+  !    Input, real(real64) HMAX, the maximum length of a quadrature interval.
   !
-  !    Input, real(dp), external F ( X, Y ), a function whose integral 
+  !    Input, real(real64), external F ( X, Y ), a function whose integral 
   !    over the perimeter is desired.
   !
-  !    Output, real(dp) VALUE, the estimated integral.
+  !    Output, real(real64) VALUE, the estimated integral.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: dxy
-    real(dp), external :: f
-    real(dp) :: fxy
-    real(dp), intent(in), value :: hmax
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: ip1
-    integer(ip) :: j
-    real(dp) :: l
-    integer(ip) :: m
-    real(dp), intent(in) :: v(2,n)
-    real(dp), intent(out) :: value
-    real(dp) :: x
-    real(dp) :: y
+    real(real64) dxy
+    real(real64), external :: f
+    real(real64) fxy
+    real(real64) hmax
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) ip1
+    integer(int32) j
+    real(real64) l
+    integer(int32) m
+    real(real64) v(2,n)
+    real(real64) value
+    real(real64) x
+    real(real64) y
 
-    value = 0.0_dp
+    value = 0.0e+00_real64
 
     do i = 1, n
 
       ip1 = i4_wrap ( i + 1, 1, n )
       l = sqrt ( ( v(1,ip1) - v(1,i) ) ** 2 + ( v(2,ip1) - v(2,i) ) ** 2 )
       m = ceiling ( l / hmax )
-      dxy = l / real ( m, dp)
+      dxy = l / real ( m, real64)
 
       do j = 1, 2 * m - 1, 2
-        x = ( real ( 2 * m - j, dp) * v(1,i) &
-            + real (         j, dp) * v(1,ip1) ) &
-            / real ( 2 * m, dp)
-        y = ( real ( 2 * m - j, dp) * v(2,i) &
-            + real (         j, dp) * v(2,ip1) ) &
-            / real ( 2 * m, dp)
+        x = ( real ( 2 * m - j, real64) * v(1,i) &
+            + real (         j, real64) * v(1,ip1) ) &
+            / real ( 2 * m, real64)
+        y = ( real ( 2 * m - j, real64) * v(2,i) &
+            + real (         j, real64) * v(2,ip1) ) &
+            / real ( 2 * m, real64)
         fxy = f ( x, y )
         value = value + fxy * dxy
       end do
 
     end do
-  end subroutine polygon_perimeter_quad
+  end
 
-  subroutine polygon_point_dist ( n, v, p, dist ) &
-        bind(C, name="polygon_point_dist")
+  subroutine polygon_point_dist ( n, v, p, dist )
 
   !*****************************************************************************80
   !
@@ -2587,25 +2547,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) V(2,N), the triangle vertices.
+  !    Input, real(real64) V(2,N), the triangle vertices.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(in) :: v(2,n)
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) p(2)
+    real(real64) v(2,n)
   !
   !  Find the distance to each of the line segments.
   !
@@ -2622,10 +2582,9 @@ contains
       end if
 
     end do
-  end subroutine polygon_point_dist
+  end
 
-  subroutine polygon_point_near ( n, v, p, pn, dist ) &
-        bind(C, name="polygon_point_near")
+  subroutine polygon_point_near ( n, v, p, pn, dist )
 
   !*****************************************************************************80
   !
@@ -2645,35 +2604,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V(2,N), the polygon vertices.
+  !    Input, real(real64) V(2,N), the polygon vertices.
   !
-  !    Input, real(dp) P(2), the point whose nearest polygon point
+  !    Input, real(real64) P(2), the point whose nearest polygon point
   !    is to be determined.
   !
-  !    Output, real(dp) PN(2), the nearest point to P.
+  !    Output, real(real64) PN(2), the nearest point to P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(out) :: pn(2)
-    real(dp) :: pn2(2)
-    real(dp) :: tval
-    real(dp), intent(in) :: v(2,n)
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) p(2)
+    real(real64) pn(2)
+    real(real64) pn2(2)
+    real(real64) tval
+    real(real64) v(2,n)
   !
   !  Find the distance to each of the line segments that make up the edges
   !  of the polygon.
   !
     dist = huge ( dist )
-    pn(1:2) = 0.0_dp
+    pn(1:2) = 0.0e+00_real64
 
     do j = 1, n
 
@@ -2688,10 +2647,9 @@ contains
       end if
 
     end do
-  end subroutine polygon_point_near
+  end
 
-  subroutine polygon_sample ( nv, v, n, seed, s ) &
-        bind(C, name="polygon_sample")
+  subroutine polygon_sample ( nv, v, n, seed, s )
 
   !*****************************************************************************80
   !
@@ -2711,38 +2669,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NV, the number of vertices.
+  !    Input, integer(int32) NV, the number of vertices.
   !
-  !    Input, real(dp) V(2,NV), the vertices of the polygon, listed in
+  !    Input, real(real64) V(2,NV), the vertices of the polygon, listed in
   !    counterclockwise order.
   !
-  !    Input, integer(ip) N, the number of points to create.
+  !    Input, integer(int32) N, the number of points to create.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, real(dp) S(2,N), the points.
+  !    Output, real(real64) S(2,N), the points.
   !
 
-    integer(ip), intent(out) :: n
-    integer(ip), intent(in), value :: nv
+    integer(int32) n
+    integer(int32) nv
 
-    real(dp) :: area_cumulative(nv-2)
-    real(dp) :: area_polygon
-    real(dp) :: area_relative(nv-2)
-    real(dp) :: area_triangle(nv-2)
-    real(dp) :: area_percent
-    integer(ip) :: i
-    integer(ip) :: ip1
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp) :: r(2)
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
-    real(dp) :: triangle_area
-    integer(ip) :: triangles(3,nv-2)
-    real(dp), intent(out) :: s(2,n)
-    real(dp), intent(in) :: v(2,nv)
+    real(real64) area_cumulative(nv-2)
+    real(real64) area_polygon
+    real(real64) area_relative(nv-2)
+    real(real64) area_triangle(nv-2)
+    real(real64) area_percent
+    integer(int32) i
+    integer(int32) ip1
+    integer(int32) j
+    integer(int32) k
+    real(real64) r(2)
+    real(real64) r8_uniform_01
+    integer(int32) seed
+    real(real64) triangle_area
+    integer(int32) triangles(3,nv-2)
+    real(real64) s(2,n)
+    real(real64) v(2,nv)
   !
   !  Triangulate the polygon.
   !
@@ -2789,18 +2747,17 @@ contains
   !
       call r8vec_uniform_01 ( 2, seed, r )
 
-      if ( 1.0_dp < sum ( r(1:2) ) ) then
-        r(1:2) = 1.0_dp - r(1:2)
+      if ( 1.0e+00_real64 < sum ( r(1:2) ) ) then
+        r(1:2) = 1.0e+00_real64 - r(1:2)
       end if
 
-      s(1:2,j) = ( 1.0_dp - r(1) - r(2) ) * v(1:2,triangles(1,i)) &
+      s(1:2,j) = ( 1.0e+00_real64 - r(1) - r(2) ) * v(1:2,triangles(1,i)) &
                            + r(1)          * v(1:2,triangles(2,i)) &
                                   + r(2)   * v(1:2,triangles(3,i))
     end do
-  end subroutine polygon_sample
+  end
 
-  subroutine polygon_side_data ( n, side, area, radin, radout ) &
-        bind(C, name="polygon_side_data")
+  subroutine polygon_side_data ( n, side, area, radin, radout )
 
   !*****************************************************************************80
   !
@@ -2820,29 +2777,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !    N must be at least 3.
   !
-  !    Input, real(dp) SIDE, the length of one side of the polygon.
+  !    Input, real(real64) SIDE, the length of one side of the polygon.
   !
-  !    Output, real(dp) AREA, the area of the regular polygon.
+  !    Output, real(real64) AREA, the area of the regular polygon.
   !
-  !    Output, real(dp) RADIN, the inner radius of the polygon, that is,
+  !    Output, real(real64) RADIN, the inner radius of the polygon, that is,
   !    the radius of the largest circle that can be inscribed within
   !    the polygon.
   !
-  !    Output, real(dp) RADOUT, the outer radius of the polygon, that is,
+  !    Output, real(real64) RADOUT, the outer radius of the polygon, that is,
   !    the radius of the smallest circle that can be described about
   !    the polygon.
   !
 
-    real(dp) :: angle
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: n
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: radin
-    real(dp), intent(out) :: radout
-    real(dp), intent(in), value :: side
+    real(real64) angle
+    real(real64) area
+    integer(int32) n
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radin
+    real(real64) radout
+    real(real64) side
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -2852,14 +2809,13 @@ contains
       stop 1
     end if
 
-    angle = r8_pi / real ( n, dp)
-    area = 0.25_dp * real ( n, dp) * side * side / tan ( angle )
-    radin = 0.5_dp * side / tan ( angle )
-    radout = 0.5_dp * side / sin ( angle )
-  end subroutine polygon_side_data
+    angle = r8_pi / real ( n, real64)
+    area = 0.25e+00_real64 * real ( n, real64) * side * side / tan ( angle )
+    radin = 0.5e+00_real64 * side / tan ( angle )
+    radout = 0.5e+00_real64 * side / sin ( angle )
+  end
 
-  subroutine polygon_triangulate ( n, x, y, triangles ) &
-        bind(C, name="polygon_triangulate")
+  subroutine polygon_triangulate ( n, x, y, triangles )
 
   !*****************************************************************************80
   !
@@ -2891,38 +2847,38 @@ contains
   !    Computational Geometry in C,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of each vertex.
+  !    Input, real(real64) X(N), Y(N), the coordinates of each vertex.
   !
-  !    Output, integer(ip) TRIANGLES(3,N-2), the triangles of the 
+  !    Output, integer(int32) TRIANGLES(3,N-2), the triangles of the 
   !    triangulation.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp) :: area
-    logical :: diagonal
-    logical :: ear(n)
-    integer(ip) :: first
-    integer(ip) :: i
-    integer(ip) :: i0
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip) :: i4
-    integer(ip) :: next(n)
-    integer(ip) :: node
-    integer(ip) :: node_m1
-    integer(ip) :: prev(n)
-    integer(ip) :: triangle_num
-    integer(ip), intent(out) :: triangles(3,n-2)
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
+    real(real64) area
+    logical diagonal
+    logical ear(n)
+    integer(int32) first
+    integer(int32) i
+    integer(int32) i0
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) i4
+    integer(int32) next(n)
+    integer(int32) node
+    integer(int32) node_m1
+    integer(int32) prev(n)
+    integer(int32) triangle_num
+    integer(int32) triangles(3,n-2)
+    real(real64) x(n)
+    real(real64) y(n)
   !
   !  We must have at least 3 vertices.
   !
@@ -2948,16 +2904,16 @@ contains
   !
   !  Area must be positive.
   !
-    area = 0.0_dp
+    area = 0.0e+00_real64
     do node = 1, n - 2
-      area = area + 0.5_dp * &
+      area = area + 0.5e+00_real64 * &
       ( &
           ( x(node+1) - x(node) ) * ( y(node+2) - y(node) ) &
         - ( x(node+2) - x(node) ) * ( y(node+1) - y(node) ) &
       )
     end do
 
-    if ( area <= 0.0_dp ) then
+    if ( area <= 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'POLYGON_TRIANGULATE - Fatal error!'
       write ( *, '(a)' ) '  Polygon has zero or negative area.'
@@ -3036,10 +2992,9 @@ contains
     triangles(1,triangle_num) = i3
     triangles(2,triangle_num) = i1
     triangles(3,triangle_num) = i2
-  end subroutine polygon_triangulate
+  end
 
-  pure function r8_degrees ( radians ) &
-        bind(C, name="r8_degrees")
+  function r8_degrees ( radians )
 
   !*****************************************************************************80
   !
@@ -3059,20 +3014,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) RADIANS, the angle measurement in radians.
+  !    Input, real(real64) RADIANS, the angle measurement in radians.
   !
-  !    Output, real(dp) R8_DEGREES, the angle measurement in degrees.
+  !    Output, real(real64) R8_DEGREES, the angle measurement in degrees.
   !
 
-    real(dp) :: r8_degrees
-    real(dp), parameter :: r8_pi = 3.1415926535897932384626434_dp
-    real(dp), intent(in), value :: radians
+    real(real64) r8_degrees
+    real(real64), parameter :: r8_pi = 3.1415926535897932384626434e+00_real64
+    real(real64) radians
 
-    r8_degrees = radians * 180.0_dp / r8_pi
-  end function r8_degrees
+    r8_degrees = radians * 180.0e+00_real64 / r8_pi
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -3080,7 +3034,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
   !    For now, the input quantity SEED is an integer variable.
   !
@@ -3139,17 +3093,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -3166,11 +3120,10 @@ contains
       seed = seed + i4_huge
     end if
 
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  pure subroutine r8mat_solve ( n, rhs_num, a, info ) &
-        bind(C, name="r8mat_solve")
+  subroutine r8mat_solve ( n, rhs_num, a, info )
 
   !*****************************************************************************80
   !
@@ -3194,34 +3147,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !
-  !    Input, integer(ip) RHS_NUM, the number of right hand sides.
+  !    Input, integer(int32) RHS_NUM, the number of right hand sides.
   !    RHS_NUM must be at least 0.
   !
-  !    Input/output, real(dp) A(N,N+RHS_NUM), contains in rows and
+  !    Input/output, real(real64) A(N,N+RHS_NUM), contains in rows and
   !    columns 1 to N the coefficient matrix, and in columns N+1 through
   !    N+RHS_NUM, the right hand sides.  On output, the coefficient matrix
   !    area has been destroyed, while the right hand sides have
   !    been overwritten with the corresponding solutions.
   !
-  !    Output, integer(ip) INFO, singularity flag.
+  !    Output, integer(int32) INFO, singularity flag.
   !    0, the matrix was not singular, the solutions were computed;
   !    J, factorization failed on step J, and the solutions could not
   !    be computed.
   !
 
-    integer(ip), intent(inout) :: n
-    integer(ip), intent(in), value :: rhs_num
+    integer(int32) n
+    integer(int32) rhs_num
 
-    real(dp), intent(inout) :: a(n,n+rhs_num)
-    real(dp) :: apivot
-    real(dp) :: factor
-    integer(ip) :: i
-    integer(ip), intent(out) :: info
-    integer(ip) :: ipivot
-    integer(ip) :: j
-    real(dp) :: t(n+rhs_num)
+    real(real64) a(n,n+rhs_num)
+    real(real64) apivot
+    real(real64) factor
+    integer(int32) i
+    integer(int32) info
+    integer(int32) ipivot
+    integer(int32) j
+    real(real64) t(n+rhs_num)
 
     info = 0
 
@@ -3239,7 +3192,7 @@ contains
         end if
       end do
 
-      if ( apivot == 0.0_dp ) then
+      if ( apivot == 0.0e+00_real64 ) then
         info = j
       end if
   !
@@ -3253,7 +3206,7 @@ contains
   !
   !  A(J,J) becomes 1.
   !
-      a(j,j) = 1.0_dp
+      a(j,j) = 1.0e+00_real64
       a(j,j+1:n+rhs_num) = a(j,j+1:n+rhs_num) / apivot
   !
   !  A(I,J) becomes 0.
@@ -3262,17 +3215,16 @@ contains
 
         if ( i /= j ) then
           factor = a(i,j)
-          a(i,j) = 0.0_dp
+          a(i,j) = 0.0e+00_real64
           a(i,j+1:n+rhs_num) = a(i,j+1:n+rhs_num) - factor * a(j,j+1:n+rhs_num)
         end if
 
       end do
 
     end do
-  end subroutine r8mat_solve
+  end
 
-  subroutine r8vec_uniform_01 ( n, seed, r ) &
-        bind(C, name="r8vec_uniform_01")
+  subroutine r8vec_uniform_01 ( n, seed, r )
 
   !*****************************************************************************80
   !
@@ -3314,20 +3266,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -3346,13 +3298,12 @@ contains
         seed = seed + 2147483647
       end if
 
-      r(i) = real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_01
+  end
 
-  pure subroutine segment_point_dist ( p1, p2, p, dist ) &
-        bind(C, name="segment_point_dist")
+  subroutine segment_point_dist ( p1, p2, p, dist )
 
   !*****************************************************************************80
   !
@@ -3383,28 +3334,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the line segment.
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the line segment.
   !
-  !    Input, real(dp) P(2), the point whose nearest neighbor on the line
+  !    Input, real(real64) P(2), the point whose nearest neighbor on the line
   !    segment is to be determined.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    line segment.
   !
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp) :: pn(2)
-    real(dp) :: t
+    real(real64) bot
+    real(real64) dist
+    real(real64) p(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) pn(2)
+    real(real64) t
   !
   !  If the line segment is actually a point, then the answer is easy.
   !
     if ( all ( p1(1:2) == p2(1:2) ) ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
     else
 
@@ -3413,18 +3364,17 @@ contains
       t = sum ( ( p(1:2)  - p1(1:2) ) &
               * ( p2(1:2) - p1(1:2) ) ) / bot
 
-      t = max ( t, 0.0_dp )
-      t = min ( t, 1.0_dp )
+      t = max ( t, 0.0e+00_real64 )
+      t = min ( t, 1.0e+00_real64 )
 
     end if
 
     pn(1:2) = p1(1:2) + t * ( p2(1:2) - p1(1:2) )
 
     dist = sqrt ( sum ( ( p(1:2) - pn(1:2) )**2 ) )
-  end subroutine segment_point_dist
+  end
 
-  pure subroutine segment_point_near ( p1, p2, p, pn, dist, t ) &
-        bind(C, name="segment_point_near")
+  subroutine segment_point_near ( p1, p2, p, pn, dist, t )
 
   !*****************************************************************************80
   !
@@ -3455,34 +3405,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the line segment.
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the line segment.
   !
-  !    Input, real(dp) P(2), the point whose nearest neighbor
+  !    Input, real(real64) P(2), the point whose nearest neighbor
   !    on the line segment is to be determined.
   !
-  !    Output, real(dp) PN(2), the point on the line segment which is
+  !    Output, real(real64) PN(2), the point on the line segment which is
   !    nearest the point P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the 
+  !    Output, real(real64) DIST, the distance from the point to the 
   !    nearest point on the line segment.
   !
-  !    Output, real(dp) T, the relative position of the point PN
+  !    Output, real(real64) T, the relative position of the point PN
   !    to the points P1 and P2.
   !
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(out) :: pn(2)
-    real(dp), intent(out) :: t
+    real(real64) bot
+    real(real64) dist
+    real(real64) p(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) pn(2)
+    real(real64) t
   !
   !  If the line segment is actually a point, then the answer is easy.
   !
     if ( all ( p1(1:2) == p2(1:2) ) ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
     else
 
@@ -3491,18 +3441,17 @@ contains
       t = sum ( ( p(1:2)  - p1(1:2) ) &
               * ( p2(1:2) - p1(1:2) ) ) / bot
 
-      t = max ( t, 0.0_dp )
-      t = min ( t, 1.0_dp )
+      t = max ( t, 0.0e+00_real64 )
+      t = min ( t, 1.0e+00_real64 )
 
     end if
 
     pn(1:2) = p1(1:2) + t * ( p2(1:2) - p1(1:2) )
 
     dist = sqrt ( sum ( ( p(1:2) - pn(1:2) )**2 ) )
-  end subroutine segment_point_near
+  end
 
-  pure function triangle_area ( xa, ya, xb, yb, xc, yc ) &
-        bind(C, name="triangle_area")
+  function triangle_area ( xa, ya, xb, yb, xc, yc )
 
   !*****************************************************************************80
   !
@@ -3522,30 +3471,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, the coordinates of
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, the coordinates of
   !    the vertices of the triangle, given in counterclockwise order.
   !
-  !    Output, real(dp) TRIANGLE_AREA, the signed area of the triangle.
+  !    Output, real(real64) TRIANGLE_AREA, the signed area of the triangle.
   !
 
-    real(dp) :: triangle_area
-    real(dp) :: value
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
+    real(real64) triangle_area
+    real(real64) value
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
 
-    value = 0.5_dp * ( &
+    value = 0.5e+00_real64 * ( &
         ( xb - xa ) * ( yc - ya ) &
       - ( xc - xa ) * ( yb - ya ) )
 
     triangle_area = value
-  end function triangle_area
+  end
 
-  subroutine triangle_barycentric ( t, p, xsi ) &
-        bind(C, name="triangle_barycentric")
+  subroutine triangle_barycentric ( t, p, xsi )
 
   !*****************************************************************************80
   !
@@ -3575,20 +3523,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !    The vertices should be given in counter clockwise order.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) XSI(3), the barycentric coordinates of P
+  !    Output, real(real64) XSI(3), the barycentric coordinates of P
   !    with respect to the triangle.
   !
 
-    real(dp) :: a(2,3)
-    integer(ip) :: info
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(in) :: t(2,3)
-    real(dp), intent(out) :: xsi(3)
+    real(real64) a(2,3)
+    integer(int32) info
+    real(real64) p(2)
+    real(real64) t(2,3)
+    real(real64) xsi(3)
   !
   !  Set up the linear system
   !
@@ -3619,11 +3567,10 @@ contains
 
     xsi(1) = a(1,3)
     xsi(2) = a(2,3)
-    xsi(3) = 1.0_dp - xsi(1) - xsi(2)
-  end subroutine triangle_barycentric
+    xsi(3) = 1.0e+00_real64 - xsi(1) - xsi(2)
+  end
 
-  subroutine triangle_contains_point_1 ( t, p, inside ) &
-        bind(C, name="triangle_contains_point_1")
+  subroutine triangle_contains_point_1 ( t, p, inside )
 
   !*****************************************************************************80
   !
@@ -3649,26 +3596,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is 
   !    inside the triangle.
   !
 
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(in) :: t(2,3)
-    real(dp) :: xsi(3)
+    logical inside
+    real(real64) p(2)
+    real(real64) t(2,3)
+    real(real64) xsi(3)
 
     call triangle_barycentric ( t, p, xsi )
 
-    if ( any ( xsi(1:3) < 0.0_dp ) ) then
+    if ( any ( xsi(1:3) < 0.0e+00_real64 ) ) then
       inside = .false.
     else
       inside = .true.
     end if
-  end subroutine triangle_contains_point_1
+  end
 
 end module polygon_properties_mod

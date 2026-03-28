@@ -4,13 +4,8 @@
 
 module table_delaunay_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: diaedg, dtris2, i4_modp, i4_sign, i4_wrap, i4vec_indicator
   public :: lrline, perm_check, perm_inverse, r82vec_permute, r82vec_sort_heap_index_a, swapec
@@ -18,8 +13,7 @@ module table_delaunay_mod
 
 contains
 
-  function diaedg ( x0, y0, x1, y1, x2, y2, x3, y3 ) &
-        bind(C, name="diaedg")
+  function diaedg ( x0, y0, x1, y1, x2, y2, x3, y3 )
 
   !*****************************************************************************80
   !
@@ -34,7 +28,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -49,47 +43,47 @@ contains
   !
   !    Barry Joe,
   !    GEOMPACK - a software package for the generation of meshes
-  !    using geometric algorithms,
+  !    using geometric algorithms, 
   !    Advances in Engineering Software,
   !    Volume 13, pages 325-331, 1991.
   !
   !  Parameters:
   !
-  !    Input, real(dp) X0, Y0, X1, Y1, X2, Y2, X3, Y3, the
+  !    Input, real(real64) X0, Y0, X1, Y1, X2, Y2, X3, Y3, the
   !    coordinates of the vertices of a quadrilateral, given in
   !    counter clockwise order.
   !
-  !    Output, integer(ip) DIAEDG, chooses a diagonal:
+  !    Output, integer(int32) DIAEDG, chooses a diagonal:
   !    +1, if diagonal edge 02 is chosen;
   !    -1, if diagonal edge 13 is chosen;
   !     0, if the four vertices are cocircular.
   !
 
-    real(dp) :: ca
-    real(dp) :: cb
-    integer(ip) :: diaedg
-    real(dp) :: dx10
-    real(dp) :: dx12
-    real(dp) :: dx30
-    real(dp) :: dx32
-    real(dp) :: dy10
-    real(dp) :: dy12
-    real(dp) :: dy30
-    real(dp) :: dy32
-    real(dp) :: s
-    real(dp) :: tol
-    real(dp) :: tola
-    real(dp) :: tolb
-    real(dp), intent(in), value :: x0                                    !! x-coordinate of vertex 0
-    real(dp), intent(in), value :: x1                                    !! x-coordinate of vertex 1
-    real(dp), intent(in), value :: x2                                    !! x-coordinate of vertex 2
-    real(dp), intent(in), value :: x3                                    !! x-coordinate of vertex 3
-    real(dp), intent(in), value :: y0                                    !! y-coordinate of vertex 0
-    real(dp), intent(in), value :: y1                                    !! y-coordinate of vertex 1
-    real(dp), intent(in), value :: y2                                    !! y-coordinate of vertex 2
-    real(dp), intent(in), value :: y3                                    !! y-coordinate of vertex 3
+    real(real64) ca
+    real(real64) cb
+    integer(int32) diaedg
+    real(real64) dx10
+    real(real64) dx12
+    real(real64) dx30
+    real(real64) dx32
+    real(real64) dy10
+    real(real64) dy12
+    real(real64) dy30
+    real(real64) dy32
+    real(real64) s
+    real(real64) tol
+    real(real64) tola
+    real(real64) tolb
+    real(real64) x0
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y0
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     dx10 = x1 - x0
     dy10 = y1 - y0
@@ -128,10 +122,9 @@ contains
       end if
 
     end if
-  end function diaedg
+  end
 
-  subroutine dtris2 ( point_num, point_xy, tri_num, tri_vert, tri_nabe ) &
-        bind(C, name="dtris2")
+  subroutine dtris2 ( point_num, point_xy, tri_num, tri_vert, tri_nabe )
 
   !*****************************************************************************80
   !
@@ -146,7 +139,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -161,63 +154,63 @@ contains
   !
   !    Barry Joe,
   !    GEOMPACK - a software package for the generation of meshes
-  !    using geometric algorithms,
+  !    using geometric algorithms, 
   !    Advances in Engineering Software,
   !    Volume 13, pages 325-331, 1991.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of vertices.
+  !    Input, integer(int32) POINT_NUM, the number of vertices.
   !
-  !    Input/output, real(dp) POINT_XY(2,POINT_NUM), the coordinates
-  !    of the vertices.  On output, the vertices have been sorted into
+  !    Input/output, real(real64) POINT_XY(2,POINT_NUM), the coordinates 
+  !    of the vertices.  On output, the vertices have been sorted into 
   !    dictionary order.
   !
-  !    Output, integer(ip) TRI_NUM, the number of triangles in the
-  !    triangulation; TRI_NUM is equal to 2*POINT_NUM - NB - 2, where NB is the
+  !    Output, integer(int32) TRI_NUM, the number of triangles in the 
+  !    triangulation; TRI_NUM is equal to 2*POINT_NUM - NB - 2, where NB is the 
   !    number of boundary vertices.
   !
-  !    Output, integer(ip) TRI_VERT(3,TRI_NUM), the nodes that make up
-  !    each triangle.  The elements are indices of POINT_XY.  The vertices of the
+  !    Output, integer(int32) TRI_VERT(3,TRI_NUM), the nodes that make up
+  !    each triangle.  The elements are indices of POINT_XY.  The vertices of the 
   !    triangles are in counter clockwise order.
   !
-  !    Output, integer(ip) TRI_NABE(3,TRI_NUM), the triangle neighbor
-  !    list.  Positive elements are indices of TIL; negative elements are used
-  !    for links of a counter clockwise linked list of boundary edges;
+  !    Output, integer(int32) TRI_NABE(3,TRI_NUM), the triangle neighbor 
+  !    list.  Positive elements are indices of TIL; negative elements are used 
+  !    for links of a counter clockwise linked list of boundary edges; 
   !    LINK = -(3*I + J-1) where I, J = triangle, edge index; TRI_NABE(J,I) refers
   !    to the neighbor along edge from vertex J to J+1 (mod 3).
   !
 
-    integer(ip), intent(in), value :: point_num                          !! number of vertices
+    integer(int32) point_num
 
-    real(dp) :: cmax
-    integer(ip) :: e
-    integer(ip) :: i
-    integer(ip) :: ierr
-    integer(ip) :: indx(point_num)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: ledg
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip) :: ltri
-    integer(ip) :: m
-    integer(ip) :: m1
-    integer(ip) :: m2
-    integer(ip) :: n
-    real(dp), intent(inout) :: point_xy(2,point_num)
-    integer(ip) :: redg
-    integer(ip) :: rtri
-    integer(ip) :: stack(point_num)
-    integer(ip) :: t
-    real(dp) :: tol
-    integer(ip) :: top
-    integer(ip), intent(out) :: tri_nabe(3,point_num*2)
-    integer(ip), intent(out) :: tri_num
-    integer(ip), intent(out) :: tri_vert(3,point_num*2)
+    real(real64) cmax
+    integer(int32) e
+    integer(int32) i
+    integer(int32) ierr
+    integer(int32) indx(point_num)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) ledg
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) ltri
+    integer(int32) m
+    integer(int32) m1
+    integer(int32) m2
+    integer(int32) n
+    real(real64) point_xy(2,point_num)
+    integer(int32) redg
+    integer(int32) rtri
+    integer(int32) stack(point_num)
+    integer(int32) t
+    real(real64) tol
+    integer(int32) top
+    integer(int32) tri_nabe(3,point_num*2)
+    integer(int32) tri_num
+    integer(int32) tri_vert(3,point_num*2)
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     ierr = 0
   !
@@ -242,7 +235,7 @@ contains
 
         cmax = max ( abs ( point_xy(j,m) ), abs ( point_xy(j,m1) ) )
 
-        if ( tol * ( cmax + 1.0_dp ) &
+        if ( tol * ( cmax + 1.0e+00_real64 ) &
              < abs ( point_xy(j,m) - point_xy(j,m1) ) ) then
           k = j
           exit
@@ -281,7 +274,7 @@ contains
       m = j
 
       lr = lrline ( point_xy(1,m), point_xy(2,m), point_xy(1,m1), &
-        point_xy(2,m1), point_xy(1,m2), point_xy(2,m2), 0.0_dp )
+        point_xy(2,m1), point_xy(1,m2), point_xy(2,m2), 0.0e+00_real64 )
 
       if ( lr /= 0 ) then
         exit
@@ -364,7 +357,7 @@ contains
       end if
 
       lr = lrline ( point_xy(1,m), point_xy(2,m), point_xy(1,m1), &
-        point_xy(2,m1), point_xy(1,m2), point_xy(2,m2), 0.0_dp )
+        point_xy(2,m1), point_xy(1,m2), point_xy(2,m2), 0.0e+00_real64 )
 
       if ( 0 < lr ) then
         rtri = ltri
@@ -448,10 +441,9 @@ contains
     call perm_inverse ( point_num, indx )
 
     call r82vec_permute ( point_num, indx, point_xy )
-  end subroutine dtris2
+  end
 
-  function i4_modp ( i, j ) &
-        bind(C, name="i4_modp")
+  function i4_modp ( i, j )
 
   !*****************************************************************************80
   !
@@ -474,7 +466,7 @@ contains
   !
   !    On the other hand, I4_MODP(A,360) is between 0 and 360, always.
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !  Example:
   !
@@ -487,7 +479,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -499,18 +491,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the number to be divided.
+  !    Input, integer(int32) I, the number to be divided.
   !
-  !    Input, integer(ip) J, the number that divides I.
+  !    Input, integer(int32) J, the number that divides I.
   !
-  !    Output, integer(ip) I4_MODP, the nonnegative remainder when I is
+  !    Output, integer(int32) I4_MODP, the nonnegative remainder when I is
   !    divided by J.
   !
 
-    integer(ip), intent(in), value :: i                                  !! number to be divided
-    integer(ip) :: i4_modp
-    integer(ip), intent(in), value :: j                                  !! divisor
-    integer(ip) :: value
+    integer(int32) i
+    integer(int32) i4_modp
+    integer(int32) j
+    integer(int32) value
 
     if ( j == 0 ) then
       write ( *, '(a)' ) ' '
@@ -526,10 +518,9 @@ contains
     end if
 
     i4_modp = value
-  end function i4_modp
+  end
 
-  function i4_sign ( x ) &
-        bind(C, name="i4_sign")
+  function i4_sign ( x )
 
   !*****************************************************************************80
   !
@@ -537,11 +528,11 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -553,23 +544,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) X, the number whose sign is desired.
+  !    Input, integer(int32) X, the number whose sign is desired.
   !
-  !    Output, integer(ip) I4_SIGN, the sign of X:
+  !    Output, integer(int32) I4_SIGN, the sign of X:
   !
 
-    integer(ip) :: i4_sign
-    integer(ip), intent(in), value :: x                                  !! number whose sign is desired
+    integer(int32) i4_sign
+    integer(int32) x
 
     if ( x < 0 ) then
       i4_sign = -1
     else
       i4_sign = +1
     end if
-  end function i4_sign
+  end
 
-  function i4_wrap ( ival, ilo, ihi ) &
-        bind(C, name="i4_wrap")
+  function i4_wrap ( ival, ilo, ihi )
 
   !*****************************************************************************80
   !
@@ -577,7 +567,7 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !  Example:
   !
@@ -605,7 +595,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -617,22 +607,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IVAL, a value.
+  !    Input, integer(int32) IVAL, a value.
   !
-  !    Input, integer(ip) ILO, IHI, the desired bounds.
+  !    Input, integer(int32) ILO, IHI, the desired bounds.
   !
-  !    Output, integer(ip) I4_WRAP, a "wrapped" version of the value.
+  !    Output, integer(int32) I4_WRAP, a "wrapped" version of the value.
   !
 
-    integer(ip) :: i4_modp
-    integer(ip) :: i4_wrap
-    integer(ip), intent(in), value :: ihi                                !! upper bound
-    integer(ip), intent(in), value :: ilo                                !! lower bound
-    integer(ip), intent(in), value :: ival                               !! value to wrap
-    integer(ip) :: jhi
-    integer(ip) :: jlo
-    integer(ip) :: value
-    integer(ip) :: wide
+    integer(int32) i4_modp
+    integer(int32) i4_wrap
+    integer(int32) ihi
+    integer(int32) ilo
+    integer(int32) ival
+    integer(int32) jhi
+    integer(int32) jlo
+    integer(int32) value
+    integer(int32) wide
 
     jlo = min ( ilo, ihi )
     jhi = max ( ilo, ihi )
@@ -646,10 +636,9 @@ contains
     end if
 
     i4_wrap = value
-  end function i4_wrap
+  end
 
-  subroutine i4vec_indicator ( n, a ) &
-        bind(C, name="i4vec_indicator")
+  subroutine i4vec_indicator ( n, a )
 
   !*****************************************************************************80
   !
@@ -661,7 +650,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -673,23 +662,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Output, integer(ip) A(N), the array to be initialized.
+  !    Output, integer(int32) A(N), the array to be initialized.
   !
 
-    integer(ip), intent(in), value :: n                                  !! number of elements
+    integer(int32) n
 
-    integer(ip), intent(out) :: a(n)
-    integer(ip) :: i
+    integer(int32) a(n)
+    integer(int32) i
 
     do i = 1, n
       a(i) = i
     end do
-  end subroutine i4vec_indicator
+  end
 
-  function lrline ( xu, yu, xv1, yv1, xv2, yv2, dv ) &
-        bind(C, name="lrline")
+  function lrline ( xu, yu, xv1, yv1, xv2, yv2, dv )
 
   !*****************************************************************************80
   !
@@ -702,7 +690,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -723,39 +711,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XU, YU, the coordinates of the point whose
+  !    Input, real(real64) XU, YU, the coordinates of the point whose
   !    position relative to the directed line is to be determined.
   !
-  !    Input, real(dp) XV1, YV1, XV2, YV2, the coordinates of two points
+  !    Input, real(real64) XV1, YV1, XV2, YV2, the coordinates of two points
   !    that determine the directed base line.
   !
-  !    Input, real(dp) DV, the signed distance of the directed line
+  !    Input, real(real64) DV, the signed distance of the directed line
   !    from the directed base line through the points (XV1,YV1) and (XV2,YV2).
   !    DV is positive for a line to the left of the base line.
   !
-  !    Output, integer(ip) LRLINE, the result:
+  !    Output, integer(int32) LRLINE, the result:
   !    +1, the point is to the right of the directed line;
   !     0, the point is on the directed line;
   !    -1, the point is to the left of the directed line.
   !
 
-    real(dp), intent(in), value :: dv                                    !! signed distance
-    real(dp) :: dx
-    real(dp) :: dxu
-    real(dp) :: dy
-    real(dp) :: dyu
-    integer(ip) :: lrline
-    real(dp) :: t
-    real(dp) :: tol
-    real(dp) :: tolabs
-    real(dp), intent(in), value :: xu                                    !! x-coordinate of test point
-    real(dp), intent(in), value :: xv1                                   !! x-coordinate of base point 1
-    real(dp), intent(in), value :: xv2                                   !! x-coordinate of base point 2
-    real(dp), intent(in), value :: yu                                    !! y-coordinate of test point
-    real(dp), intent(in), value :: yv1                                   !! y-coordinate of base point 1
-    real(dp), intent(in), value :: yv2                                   !! y-coordinate of base point 2
+    real(real64) dv
+    real(real64) dx
+    real(real64) dxu
+    real(real64) dy
+    real(real64) dyu
+    integer(int32) lrline
+    real(real64) t
+    real(real64) tol
+    real(real64) tolabs
+    real(real64) xu
+    real(real64) xv1
+    real(real64) xv2
+    real(real64) yu
+    real(real64) yv1
+    real(real64) yv2
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     dx = xv2 - xv1
     dy = yv2 - yv1
@@ -774,10 +762,9 @@ contains
     else
       lrline = -1
     end if
-  end function lrline
+  end
 
-  subroutine perm_check ( n, p, base, ierror ) &
-        bind(C, name="perm_check")
+  subroutine perm_check ( n, p, base, ierror )
 
   !*****************************************************************************80
   !
@@ -793,7 +780,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -805,25 +792,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries.
+  !    Input, integer(int32) N, the number of entries.
   !
-  !    Input, integer(ip) P(N), the array to check.
+  !    Input, integer(int32) P(N), the array to check.
   !
-  !    Input, integer(ip) BASE, the index base.
+  !    Input, integer(int32) BASE, the index base.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    0, the array represents a permutation.
   !    nonzero, the array does not represent a permutation.  The smallest
   !    missing value is equal to IERROR.
   !
 
-    integer(ip), intent(in), value :: n                                  !! number of entries
+    integer(int32) n
 
-    integer(ip), intent(in), value :: base                               !! index base
-    integer(ip) :: find
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(in) :: p(n)
-    integer(ip) :: seek
+    integer(int32) base
+    integer(int32) find
+    integer(int32) ierror
+    integer(int32) p(n)
+    integer(int32) seek
 
     ierror = 0
 
@@ -847,10 +834,9 @@ contains
       end if
 
     end do
-  end subroutine perm_check
+  end
 
-  subroutine perm_inverse ( n, p ) &
-        bind(C, name="perm_inverse")
+  subroutine perm_inverse ( n, p )
 
   !*****************************************************************************80
   !
@@ -858,7 +844,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -870,23 +856,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of objects being permuted.
+  !    Input, integer(int32) N, the number of objects being permuted.
   !
-  !    Input/output, integer(ip) P(N), the permutation, in standard
+  !    Input/output, integer(int32) P(N), the permutation, in standard 
   !    index form.  On output, P describes the inverse permutation
   !
 
-    integer(ip), intent(in), value :: n                                  !! number of objects
+    integer(int32) n
 
-    integer(ip), parameter :: base = 1
-    integer(ip) :: i
-    integer(ip) :: i0
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i4_sign
-    integer(ip) :: ierror
-    integer(ip) :: is
-    integer(ip), intent(inout) :: p(n)
+    integer(int32), parameter :: base = 1
+    integer(int32) i
+    integer(int32) i0
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i4_sign
+    integer(int32) ierror
+    integer(int32) is
+    integer(int32) p(n)
 
     if ( n <= 0 ) then
       write ( *, '(a)' ) ' '
@@ -947,10 +933,9 @@ contains
       end if
 
     end do
-  end subroutine perm_inverse
+  end
 
-  subroutine r82vec_permute ( n, p, a ) &
-        bind(C, name="r82vec_permute")
+  subroutine r82vec_permute ( n, p, a )
 
   !*****************************************************************************80
   !
@@ -960,7 +945,7 @@ contains
   !
   !    An R82VEC is an array of pairs of R8 values.
   !
-  !    The same logic can be used to permute an array of objects of any
+  !    The same logic can be used to permute an array of objects of any 
   !    arithmetic type, or an array of objects of any complexity.  The only
   !    temporary storage required is enough to store a single object.  The number
   !    of data movements made is N + the number of cycles of order 2 or more,
@@ -982,7 +967,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -994,26 +979,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of objects.
+  !    Input, integer(int32) N, the number of objects.
   !
-  !    Input, integer(ip) P(N), the permutation.  P(I) = J means
+  !    Input, integer(int32) P(N), the permutation.  P(I) = J means
   !    that the I-th element of the output array should be the J-th
-  !    element of the input array.
+  !    element of the input array.  
   !
-  !    Input/output, real(dp) A(2,N), the array to be permuted.
+  !    Input/output, real(real64) A(2,N), the array to be permuted.
   !
 
-    integer(ip), intent(in), value :: n                                  !! number of objects
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(inout) :: a(dim_num,n)
-    real(dp) :: a_temp(dim_num)
-    integer(ip), parameter :: base = 1
-    integer(ip) :: ierror
-    integer(ip) :: iget
-    integer(ip) :: iput
-    integer(ip) :: istart
-    integer(ip), intent(inout) :: p(n)
+    real(real64) a(dim_num,n)
+    real(real64) a_temp(dim_num)
+    integer(int32), parameter :: base = 1
+    integer(int32) ierror
+    integer(int32) iget
+    integer(int32) iput
+    integer(int32) istart
+    integer(int32) p(n)
 
     call perm_check ( n, p, base, ierror )
 
@@ -1075,10 +1060,9 @@ contains
   !  Restore the signs of the entries.
   !
     p(1:n) = - p(1:n)
-  end subroutine r82vec_permute
+  end
 
-  subroutine r82vec_sort_heap_index_a ( n, a, indx ) &
-        bind(C, name="r82vec_sort_heap_index_a")
+  subroutine r82vec_sort_heap_index_a ( n, a, indx )
 
   !*****************************************************************************80
   !
@@ -1106,7 +1090,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -1118,25 +1102,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, real(dp) A(2,N), an array to be index-sorted.
+  !    Input, real(real64) A(2,N), an array to be index-sorted.
   !
-  !    Output, integer(ip) INDX(N), the sort index.  The
+  !    Output, integer(int32) INDX(N), the sort index.  The
   !    I-th element of the sorted array is A(1:2,INDX(I)).
   !
 
-    integer(ip), intent(in), value :: n                                  !! number of entries
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in) :: a(dim_num,n)
-    real(dp) :: aval(dim_num)
-    integer(ip) :: i
-    integer(ip), intent(out) :: indx(n)
-    integer(ip) :: indxt
-    integer(ip) :: ir
-    integer(ip) :: j
-    integer(ip) :: l
+    real(real64) a(dim_num,n)
+    real(real64) aval(dim_num)
+    integer(int32) i
+    integer(int32) indx(n)
+    integer(int32) indxt
+    integer(int32) ir
+    integer(int32) j
+    integer(int32) l
 
     if ( n < 1 ) then
     end if
@@ -1201,11 +1185,10 @@ contains
       indx(i) = indxt
 
     end do
-  end subroutine r82vec_sort_heap_index_a
+  end
 
   subroutine swapec ( i, top, btri, bedg, point_num, point_xy, tri_num, &
-    tri_vert, tri_nabe, stack, ierr ) &
-        bind(C, name="swapec")
+    tri_vert, tri_nabe, stack, ierr )
 
   !*****************************************************************************80
   !
@@ -1219,7 +1202,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -1234,77 +1217,77 @@ contains
   !
   !    Barry Joe,
   !    GEOMPACK - a software package for the generation of meshes
-  !    using geometric algorithms,
+  !    using geometric algorithms, 
   !    Advances in Engineering Software,
   !    Volume 13, pages 325-331, 1991.
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the index of the new vertex.
+  !    Input, integer(int32) I, the index of the new vertex.
   !
-  !    Input/output, integer(ip) TOP, the index of the top of the stack.
+  !    Input/output, integer(int32) TOP, the index of the top of the stack.
   !    On output, TOP is zero.
   !
-  !    Input/output, integer(ip) BTRI, BEDG; on input, if positive, are
+  !    Input/output, integer(int32) BTRI, BEDG; on input, if positive, are 
   !    the triangle and edge indices of a boundary edge whose updated indices
   !    must be recorded.  On output, these may be updated because of swaps.
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, real(dp) POINT_XY(2,POINT_NUM), the coordinates
+  !    Input, real(real64) POINT_XY(2,POINT_NUM), the coordinates
   !    of the points.
   !
-  !    Input, integer(ip) TRI_NUM, the number of triangles.
+  !    Input, integer(int32) TRI_NUM, the number of triangles.
   !
-  !    Input/output, integer(ip) TRI_VERT(3,TRI_NUM), the triangle
+  !    Input/output, integer(int32) TRI_VERT(3,TRI_NUM), the triangle 
   !    incidence list.  May be updated on output because of swaps.
   !
-  !    Input/output, integer(ip) TRI_NABE(3,TRI_NUM), the triangle
-  !    neighbor list; negative values are used for links of the counter-clockwise
+  !    Input/output, integer(int32) TRI_NABE(3,TRI_NUM), the triangle 
+  !    neighbor list; negative values are used for links of the counter-clockwise 
   !    linked list of boundary edges;  May be updated on output because of swaps.
   !      LINK = -(3*I + J-1) where I, J = triangle, edge index.
   !
-  !    Workspace, integer(ip) STACK(MAXST); on input, entries 1 through
+  !    Workspace, integer(int32) STACK(MAXST); on input, entries 1 through
   !    TOP contain the indices of initial triangles (involving vertex I)
   !    put in stack; the edges opposite I should be in interior;  entries
   !    TOP+1 through MAXST are used as a stack.
   !
-  !    Output, integer(ip) IERR is set to 8 for abnormal return.
+  !    Output, integer(int32) IERR is set to 8 for abnormal return.
   !
 
-    integer(ip), intent(in), value :: point_num                          !! number of points
-    integer(ip), intent(in), value :: tri_num                            !! number of triangles
+    integer(int32) point_num
+    integer(int32) tri_num
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip), intent(inout) :: bedg
-    integer(ip), intent(inout) :: btri
-    integer(ip) :: c
-    integer(ip) :: diaedg
-    integer(ip) :: e
-    integer(ip) :: ee
-    integer(ip) :: em1
-    integer(ip) :: ep1
-    integer(ip) :: f
-    integer(ip) :: fm1
-    integer(ip) :: fp1
-    integer(ip), intent(in), value :: i                                  !! index of new vertex
-    integer(ip), intent(out) :: ierr
-    integer(ip) :: i4_wrap
-    integer(ip) :: l
-    integer(ip) :: r
-    integer(ip) :: s
-    integer(ip), intent(inout) :: stack(point_num)
-    integer(ip) :: swap
-    integer(ip) :: t
-    integer(ip), intent(inout) :: top
-    integer(ip), intent(inout) :: tri_nabe(3,tri_num)
-    integer(ip), intent(inout) :: tri_vert(3,tri_num)
-    integer(ip) :: tt
-    integer(ip) :: u
-    real(dp), intent(in) :: point_xy(2,point_num)
-    real(dp) :: x
-    real(dp) :: y
+    integer(int32) a
+    integer(int32) b
+    integer(int32) bedg
+    integer(int32) btri
+    integer(int32) c
+    integer(int32) diaedg
+    integer(int32) e
+    integer(int32) ee
+    integer(int32) em1
+    integer(int32) ep1
+    integer(int32) f
+    integer(int32) fm1
+    integer(int32) fp1
+    integer(int32) i
+    integer(int32) ierr
+    integer(int32) i4_wrap
+    integer(int32) l
+    integer(int32) r
+    integer(int32) s
+    integer(int32) stack(point_num)
+    integer(int32) swap
+    integer(int32) t
+    integer(int32) top
+    integer(int32) tri_nabe(3,tri_num)
+    integer(int32) tri_vert(3,tri_num)
+    integer(int32) tt
+    integer(int32) u
+    real(real64) point_xy(2,point_num)
+    real(real64) x
+    real(real64) y
   !
   !  Determine whether triangles in stack are Delaunay, and swap
   !  diagonal edge of convex quadrilateral if not.
@@ -1459,11 +1442,10 @@ contains
       end if
 
     end do
-  end subroutine swapec
+  end
 
   subroutine vbedg ( x, y, point_num, point_xy, tri_num, tri_vert, tri_nabe, &
-    ltri, ledg, rtri, redg ) &
-        bind(C, name="vbedg")
+    ltri, ledg, rtri, redg )
 
   !*****************************************************************************80
   !
@@ -1476,7 +1458,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -1491,66 +1473,66 @@ contains
   !
   !    Barry Joe,
   !    GEOMPACK - a software package for the generation of meshes
-  !    using geometric algorithms,
+  !    using geometric algorithms, 
   !    Advances in Engineering Software,
   !    Volume 13, pages 325-331, 1991.
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, Y, the coordinates of a point outside
+  !    Input, real(real64) X, Y, the coordinates of a point outside
   !    the convex hull of the current triangulation.
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, real(dp) POINT_XY(2,POINT_NUM), the coordinates
+  !    Input, real(real64) POINT_XY(2,POINT_NUM), the coordinates 
   !    of the vertices.
   !
-  !    Input, integer(ip) TRI_NUM, the number of triangles.
+  !    Input, integer(int32) TRI_NUM, the number of triangles.
   !
-  !    Input, integer(ip) TRI_VERT(3,TRI_NUM), the triangle incidence
+  !    Input, integer(int32) TRI_VERT(3,TRI_NUM), the triangle incidence 
   !    list.
   !
-  !    Input, integer(ip) TRI_NABE(3,TRI_NUM), the triangle neighbor
-  !    list; negative values are used for links of a counter clockwise linked
+  !    Input, integer(int32) TRI_NABE(3,TRI_NUM), the triangle neighbor 
+  !    list; negative values are used for links of a counter clockwise linked 
   !    list of boundary edges;
   !      LINK = -(3*I + J-1) where I, J = triangle, edge index.
   !
-  !    Input/output, integer(ip) LTRI, LEDG.  If LTRI /= 0 then these
-  !    values are assumed to be already computed and are not changed, else they
-  !    are updated.  On output, LTRI is the index of boundary triangle to the
-  !    left of the leftmost boundary triangle visible from (X,Y), and LEDG is
+  !    Input/output, integer(int32) LTRI, LEDG.  If LTRI /= 0 then these 
+  !    values are assumed to be already computed and are not changed, else they 
+  !    are updated.  On output, LTRI is the index of boundary triangle to the 
+  !    left of the leftmost boundary triangle visible from (X,Y), and LEDG is 
   !    the boundary edge of triangle LTRI to the left of the leftmost boundary
   !    edge visible from (X,Y).  1 <= LEDG <= 3.
   !
-  !    Input/output, integer(ip) RTRI.  On input, the index of the
-  !    boundary triangle to begin the search at.  On output, the index of the
+  !    Input/output, integer(int32) RTRI.  On input, the index of the 
+  !    boundary triangle to begin the search at.  On output, the index of the 
   !    rightmost boundary triangle visible from (X,Y).
   !
-  !    Input/output, integer(ip) REDG, the edge of triangle RTRI that
+  !    Input/output, integer(int32) REDG, the edge of triangle RTRI that 
   !    is visible from (X,Y).  1 <= REDG <= 3.
   !
 
-    integer(ip), intent(in), value :: point_num                          !! number of points
-    integer(ip), intent(in), value :: tri_num                            !! number of triangles
+    integer(int32) point_num
+    integer(int32) tri_num
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: e
-    integer(ip) :: i4_wrap
-    integer(ip) :: l
-    logical :: ldone
-    integer(ip), intent(inout) :: ledg
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip), intent(inout) :: ltri
-    real(dp), intent(in) :: point_xy(2,point_num)
-    integer(ip), intent(inout) :: redg
-    integer(ip), intent(inout) :: rtri
-    integer(ip) :: t
-    integer(ip), intent(in) :: tri_nabe(3,tri_num)
-    integer(ip), intent(in) :: tri_vert(3,tri_num)
-    real(dp), intent(in), value :: x                                     !! x-coordinate of test point
-    real(dp), intent(in), value :: y                                     !! y-coordinate of test point
+    integer(int32) a
+    integer(int32) b
+    integer(int32) e
+    integer(int32) i4_wrap
+    integer(int32) l
+    logical ldone
+    integer(int32) ledg
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) ltri
+    real(real64) point_xy(2,point_num)
+    integer(int32) redg
+    integer(int32) rtri
+    integer(int32) t
+    integer(int32) tri_nabe(3,tri_num)
+    integer(int32) tri_vert(3,tri_num)
+    real(real64) x
+    real(real64) y
   !
   !  Find the rightmost visible boundary edge using links, then possibly
   !  leftmost visible boundary edge using triangle neighbor information.
@@ -1577,7 +1559,7 @@ contains
       end if
 
       lr = lrline ( x, y, point_xy(1,a), point_xy(2,a), point_xy(1,b), &
-        point_xy(2,b), 0.0_dp )
+        point_xy(2,b), 0.0e+00_real64 )
 
       if ( lr <= 0 ) then
         exit
@@ -1616,7 +1598,7 @@ contains
       a = tri_vert(e,t)
 
       lr = lrline ( x, y, point_xy(1,a), point_xy(2,a), point_xy(1,b), &
-         point_xy(2,b), 0.0_dp )
+         point_xy(2,b), 0.0e+00_real64 )
 
       if ( lr <= 0 ) then
         exit
@@ -1626,6 +1608,6 @@ contains
 
     ltri = t
     ledg = e
-  end subroutine vbedg
+  end
 
 end module table_delaunay_mod

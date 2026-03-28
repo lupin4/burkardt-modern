@@ -1,16 +1,11 @@
-!> tet_mesh_quality � Modern Fortran 2018
+!> tet_mesh_quality — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module tet_mesh_quality_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: i4vec_histogram, mesh_base_one, r8_swap, r8mat_det_4d, r8mat_solve, r8vec_cross_3d
   public :: r8vec_length, r8vec_mean, r8vec_variance, tet_mesh_node_order, tet_mesh_quality1, tet_mesh_quality2
@@ -19,8 +14,7 @@ module tet_mesh_quality_mod
 
 contains
 
-  pure subroutine i4vec_histogram ( n, a, histo_num, histo_gram ) &
-        bind(C, name="i4vec_histogram")
+  subroutine i4vec_histogram ( n, a, histo_num, histo_gram )
 
   !*****************************************************************************80
   !
@@ -45,23 +39,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Input, integer(ip) A(N), the array to examine.
+  !    Input, integer(int32) A(N), the array to examine.
   !
-  !    Input, integer(ip) HISTO_NUM, the maximum value for which a
+  !    Input, integer(int32) HISTO_NUM, the maximum value for which a
   !    histogram entry will be computed.
   !
-  !    Output, integer(ip) HISTO_GRAM(0:HISTO_NUM), contains the number of
+  !    Output, integer(int32) HISTO_GRAM(0:HISTO_NUM), contains the number of
   !    entries of A with the values of 0 through HISTO_NUM.
   !
 
-    integer(ip), intent(in), value :: histo_num
-    integer(ip), intent(in), value :: n
+    integer(int32) histo_num
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(n)
-    integer(ip), intent(out) :: histo_gram(0:histo_num)
-    integer(ip) :: i
+    integer(int32) a(n)
+    integer(int32) histo_gram(0:histo_num)
+    integer(int32) i
 
     histo_gram(0:histo_num) = 0
 
@@ -72,10 +66,9 @@ contains
       end if
 
     end do
-  end subroutine i4vec_histogram
+  end
 
-  subroutine mesh_base_one ( node_num, element_order, element_num, element_node ) &
-        bind(C, name="mesh_base_one")
+  subroutine mesh_base_one ( node_num, element_order, element_num, element_node )
 
   !*****************************************************************************80
   !
@@ -115,16 +108,16 @@ contains
   !    definitions.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(inout) :: element_node(element_order,element_num)
-    integer(ip) :: node
-    integer(ip) :: node_max
-    integer(ip) :: node_min
-    integer(ip), intent(in), value :: node_num
-    integer(ip) :: order
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) node
+    integer(int32) node_max
+    integer(int32) node_min
+    integer(int32) node_num
+    integer(int32) order
 
     node_min = node_num + 1
     node_max = -1
@@ -149,10 +142,9 @@ contains
       write ( *, '(a)' )'MESH_BASE_ZERO - Warning!'
       write ( *, '(a)' )' The element indexing is not of a recognized type.'
     end if
-  end subroutine mesh_base_one
+  end
 
-  pure subroutine r8_swap ( x, y ) &
-        bind(C, name="r8_swap")
+  subroutine r8_swap ( x, y )
 
   !*****************************************************************************80
   !
@@ -172,21 +164,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, real(dp) X, Y.  On output, the values of X and
+  !    Input/output, real(real64) X, Y.  On output, the values of X and
   !    Y have been interchanged.
   !
 
-    real(dp), intent(inout) :: x
-    real(dp), intent(inout) :: y
-    real(dp) :: z
+    real(real64) x
+    real(real64) y
+    real(real64) z
 
     z = x
     x = y
     y = z
-  end subroutine r8_swap
+  end
 
-  pure function r8mat_det_4d ( a ) &
-        bind(C, name="r8mat_det_4d")
+  function r8mat_det_4d ( a )
 
   !*****************************************************************************80
   !
@@ -206,13 +197,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the matrix whose determinant is desired.
+  !    Input, real(real64) A(4,4), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) R8MAT_DET_4D, the determinant of the matrix.
+  !    Output, real(real64) R8MAT_DET_4D, the determinant of the matrix.
   !
 
-    real(dp), intent(in) :: a(4,4)
-    real(dp) :: r8mat_det_4d
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
 
     r8mat_det_4d = &
         a(1,1) * ( &
@@ -231,10 +222,9 @@ contains
           a(2,1) * ( a(3,2) * a(4,3) - a(3,3) * a(4,2) ) &
         - a(2,2) * ( a(3,1) * a(4,3) - a(3,3) * a(4,1) ) &
         + a(2,3) * ( a(3,1) * a(4,2) - a(3,2) * a(4,1) ) )
-  end function r8mat_det_4d
+  end
 
-  subroutine r8mat_solve ( n, rhs_num, a, info ) &
-        bind(C, name="r8mat_solve")
+  subroutine r8mat_solve ( n, rhs_num, a, info )
 
   !*****************************************************************************80
   !
@@ -254,33 +244,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !
-  !    Input, integer(ip) rhs_num, the number of right hand sides.  rhs_num
+  !    Input, integer(int32) rhs_num, the number of right hand sides.  rhs_num
   !    must be at least 0.
   !
-  !    Input/output, real(dp) A(N,N+rhs_num), contains in rows and
+  !    Input/output, real(real64) A(N,N+rhs_num), contains in rows and
   !    columns 1 to N the coefficient matrix, and in columns N+1 through
   !    N+rhs_num, the right hand sides.  On output, the coefficient matrix
   !    area has been destroyed, while the right hand sides have
   !    been overwritten with the corresponding solutions.
   !
-  !    Output, integer(ip) INFO, singularity flag.
+  !    Output, integer(int32) INFO, singularity flag.
   !    0, the matrix was not singular, the solutions were computed;
   !    J, factorization failed on step J, and the solutions could not
   !    be computed.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: rhs_num
+    integer(int32) n
+    integer(int32) rhs_num
 
-    real(dp), intent(inout) :: a(n,n+rhs_num)
-    real(dp) :: apivot
-    real(dp) :: factor
-    integer(ip) :: i
-    integer(ip), intent(out) :: info
-    integer(ip) :: ipivot
-    integer(ip) :: j
+    real(real64) a(n,n+rhs_num)
+    real(real64) apivot
+    real(real64) factor
+    integer(int32) i
+    integer(int32) info
+    integer(int32) ipivot
+    integer(int32) j
 
     info = 0
 
@@ -298,7 +288,7 @@ contains
         end if
       end do
 
-      if ( apivot == 0.0_dp ) then
+      if ( apivot == 0.0e+00_real64 ) then
         info = j
       end if
   !
@@ -310,7 +300,7 @@ contains
   !
   !  A(J,J) becomes 1.
   !
-      a(j,j) = 1.0_dp
+      a(j,j) = 1.0e+00_real64
       a(j,j+1:n+rhs_num) = a(j,j+1:n+rhs_num) / apivot
   !
   !  A(I,J) becomes 0.
@@ -320,7 +310,7 @@ contains
         if ( i /= j ) then
 
           factor = a(i,j)
-          a(i,j) = 0.0_dp
+          a(i,j) = 0.0e+00_real64
           a(i,j+1:n+rhs_num) = a(i,j+1:n+rhs_num) - factor * a(j,j+1:n+rhs_num)
 
         end if
@@ -328,10 +318,9 @@ contains
       end do
 
     end do
-  end subroutine r8mat_solve
+  end
 
-  pure subroutine r8vec_cross_3d ( v1, v2, v3 ) &
-        bind(C, name="r8vec_cross_3d")
+  subroutine r8vec_cross_3d ( v1, v2, v3 )
 
   !*****************************************************************************80
   !
@@ -364,24 +353,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), the two vectors.
+  !    Input, real(real64) V1(3), V2(3), the two vectors.
   !
-  !    Output, real(dp) V3(3), the cross product vector.
+  !    Output, real(real64) V3(3), the cross product vector.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in) :: v1(dim_num)
-    real(dp), intent(in) :: v2(dim_num)
-    real(dp), intent(out) :: v3(dim_num)
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
+    real(real64) v3(dim_num)
 
     v3(1) = v1(2) * v2(3) - v1(3) * v2(2)
     v3(2) = v1(3) * v2(1) - v1(1) * v2(3)
     v3(3) = v1(1) * v2(2) - v1(2) * v2(1)
-  end subroutine r8vec_cross_3d
+  end
 
-  pure function r8vec_length ( dim_num, x ) &
-        bind(C, name="r8vec_length")
+  function r8vec_length ( dim_num, x )
 
   !*****************************************************************************80
   !
@@ -401,23 +389,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) X(DIM_NUM), the vector.
+  !    Input, real(real64) X(DIM_NUM), the vector.
   !
-  !    Output, real(dp) R8VEC_LENGTH, the Euclidean length of the vector.
+  !    Output, real(real64) R8VEC_LENGTH, the Euclidean length of the vector.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: r8vec_length
-    real(dp), intent(in) :: x(dim_num)
+    real(real64) r8vec_length
+    real(real64) x(dim_num)
 
     r8vec_length = sqrt ( sum ( ( x(1:dim_num) )**2 ) )
-  end function r8vec_length
+  end
 
-  pure subroutine r8vec_mean ( n, a, mean ) &
-        bind(C, name="r8vec_mean")
+  subroutine r8vec_mean ( n, a, mean )
 
   !*****************************************************************************80
   !
@@ -437,23 +424,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input, real(dp) A(N), the vector whose mean is desired.
+  !    Input, real(real64) A(N), the vector whose mean is desired.
   !
-  !    Output, real(dp) MEAN, the mean of the vector entries.
+  !    Output, real(real64) MEAN, the mean of the vector entries.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp), intent(out) :: mean
+    real(real64) a(n)
+    real(real64) mean
 
-    mean = sum ( a(1:n) ) / real ( n, dp)
-  end subroutine r8vec_mean
+    mean = sum ( a(1:n) ) / real ( n, real64)
+  end
 
-  pure subroutine r8vec_variance ( n, a, variance ) &
-        bind(C, name="r8vec_variance")
+  subroutine r8vec_variance ( n, a, variance )
 
   !*****************************************************************************80
   !
@@ -481,38 +467,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !    N should be at least 2.
   !
-  !    Input, real(dp) A(N), the vector.
+  !    Input, real(real64) A(N), the vector.
   !
-  !    Output, real(dp) VARIANCE, the variance of the vector.
+  !    Output, real(real64) VARIANCE, the variance of the vector.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp) :: mean
-    real(dp), intent(out) :: variance
+    real(real64) a(n)
+    real(real64) mean
+    real(real64) variance
 
     if ( n < 2 ) then
 
-      variance = 0.0_dp
+      variance = 0.0e+00_real64
 
     else
 
-      mean = sum ( a(1:n) ) / real ( n, dp)
+      mean = sum ( a(1:n) ) / real ( n, real64)
 
       variance = sum ( ( a(1:n) - mean )**2 )
 
-      variance = variance / real ( n - 1, dp)
+      variance = variance / real ( n - 1, real64)
 
     end if
-  end subroutine r8vec_variance
+  end
 
   subroutine tet_mesh_node_order ( tetra_order, tetra_num, tetra_node, &
-    node_num, node_order ) &
-        bind(C, name="tet_mesh_node_order")
+    node_num, node_order )
 
   !*****************************************************************************80
   !
@@ -539,27 +524,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TETRA_ORDER, the order of the mesh, either 4 or 10.
+  !    Input, integer(int32) TETRA_ORDER, the order of the mesh, either 4 or 10.
   !
-  !    Input, integer(ip) TETRA_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TETRA_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
+  !    Input, integer(int32) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
   !    that make up the tetrahedrons.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Output, integer(ip) NODE_ORDER(NODE_NUM), the order of each node.
+  !    Output, integer(int32) NODE_ORDER(NODE_NUM), the order of each node.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tetra_num
-    integer(ip), intent(in), value :: tetra_order
+    integer(int32) node_num
+    integer(int32) tetra_num
+    integer(int32) tetra_order
 
-    integer(ip) :: i
-    integer(ip) :: node
-    integer(ip), intent(out) :: node_order(node_num)
-    integer(ip) :: tetra
-    integer(ip), intent(in) :: tetra_node(tetra_order,tetra_num)
+    integer(int32) i
+    integer(int32) node
+    integer(int32) node_order(node_num)
+    integer(int32) tetra
+    integer(int32) tetra_node(tetra_order,tetra_num)
 
     node_order(1:node_num) = 0
 
@@ -576,11 +561,10 @@ contains
         end if
       end do
     end do
-  end subroutine tet_mesh_node_order
+  end
 
   subroutine tet_mesh_quality1 ( node_num, node_xyz, tetra_order, tetra_num, &
-    tetra_node, tetra_quality ) &
-        bind(C, name="tet_mesh_quality1")
+    tetra_node, tetra_quality )
 
   !*****************************************************************************80
   !
@@ -609,31 +593,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TETRA_ORDER, the order of the mesh, either 4 or 10.
+  !    Input, integer(int32) TETRA_ORDER, the order of the mesh, either 4 or 10.
   !
-  !    Input, integer(ip) TETRA_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TETRA_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
+  !    Input, integer(int32) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
   !    that make up the tetrahedrons.
   !
-  !    Output, real(dp) TETRA_QUALITY(TETRA_NUM), the quality
+  !    Output, real(real64) TETRA_QUALITY(TETRA_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tetra_num
-    integer(ip), intent(in), value :: tetra_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tetra_num
+    integer(int32) tetra_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tetra
-    integer(ip), intent(in) :: tetra_node(tetra_order,tetra_num)
-    real(dp), intent(out) :: tetra_quality(tetra_num)
-    real(dp) :: tetra_xyz(dim_num,4)
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tetra
+    integer(int32) tetra_node(tetra_order,tetra_num)
+    real(real64) tetra_quality(tetra_num)
+    real(real64) tetra_xyz(dim_num,4)
 
     do tetra = 1, tetra_num
 
@@ -642,11 +626,10 @@ contains
       call tetrahedron_quality1_3d ( tetra_xyz, tetra_quality(tetra) )
 
     end do
-  end subroutine tet_mesh_quality1
+  end
 
   subroutine tet_mesh_quality2 ( node_num, node_xyz, tetra_order, tetra_num, &
-    tetra_node, tetra_quality ) &
-        bind(C, name="tet_mesh_quality2")
+    tetra_node, tetra_quality )
 
   !*****************************************************************************80
   !
@@ -676,31 +659,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TETRA_ORDER, the order of the mesh, either 4 or 10.
+  !    Input, integer(int32) TETRA_ORDER, the order of the mesh, either 4 or 10.
   !
-  !    Input, integer(ip) TETRA_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TETRA_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
+  !    Input, integer(int32) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
   !    that make up the tetrahedrons.
   !
-  !    Output, real(dp) TETRA_QUALITY(TETRA_NUM), the quality
+  !    Output, real(real64) TETRA_QUALITY(TETRA_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tetra_num
-    integer(ip), intent(in), value :: tetra_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tetra_num
+    integer(int32) tetra_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tetra
-    integer(ip), intent(in) :: tetra_node(tetra_order,tetra_num)
-    real(dp), intent(out) :: tetra_quality(tetra_num)
-    real(dp) :: tetra_xyz(dim_num,4)
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tetra
+    integer(int32) tetra_node(tetra_order,tetra_num)
+    real(real64) tetra_quality(tetra_num)
+    real(real64) tetra_xyz(dim_num,4)
 
     do tetra = 1, tetra_num
 
@@ -709,11 +692,10 @@ contains
       call tetrahedron_quality2_3d ( tetra_xyz, tetra_quality(tetra) )
 
     end do
-  end subroutine tet_mesh_quality2
+  end
 
   subroutine tet_mesh_quality3 ( node_num, node_xyz, tetra_order, tetra_num, &
-    tetra_node, tetra_quality ) &
-        bind(C, name="tet_mesh_quality3")
+    tetra_node, tetra_quality )
 
   !*****************************************************************************80
   !
@@ -743,31 +725,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TETRA_ORDER, the order of the mesh, either 4 or 10.
+  !    Input, integer(int32) TETRA_ORDER, the order of the mesh, either 4 or 10.
   !
-  !    Input, integer(ip) TETRA_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TETRA_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
+  !    Input, integer(int32) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
   !    that make up the tetrahedrons.
   !
-  !    Output, real(dp) TETRA_QUALITY(TETRA_NUM), the quality
+  !    Output, real(real64) TETRA_QUALITY(TETRA_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tetra_num
-    integer(ip), intent(in), value :: tetra_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tetra_num
+    integer(int32) tetra_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tetra
-    integer(ip), intent(in) :: tetra_node(tetra_order,tetra_num)
-    real(dp), intent(out) :: tetra_quality(tetra_num)
-    real(dp) :: tetra_xyz(dim_num,4)
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tetra
+    integer(int32) tetra_node(tetra_order,tetra_num)
+    real(real64) tetra_quality(tetra_num)
+    real(real64) tetra_xyz(dim_num,4)
 
     do tetra = 1, tetra_num
 
@@ -776,11 +758,10 @@ contains
       call tetrahedron_quality3_3d ( tetra_xyz, tetra_quality(tetra) )
 
     end do
-  end subroutine tet_mesh_quality3
+  end
 
   subroutine tet_mesh_quality4 ( node_num, node_xyz, tetra_order, tetra_num, &
-    tetra_node, tetra_quality ) &
-        bind(C, name="tet_mesh_quality4")
+    tetra_node, tetra_quality )
 
   !*****************************************************************************80
   !
@@ -810,31 +791,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TETRA_ORDER, the order of the mesh, either 4 or 10.
+  !    Input, integer(int32) TETRA_ORDER, the order of the mesh, either 4 or 10.
   !
-  !    Input, integer(ip) TETRA_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TETRA_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
+  !    Input, integer(int32) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
   !    that make up the tetrahedrons.
   !
-  !    Output, real(dp) TETRA_QUALITY(TETRA_NUM), the quality
+  !    Output, real(real64) TETRA_QUALITY(TETRA_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tetra_num
-    integer(ip), intent(in), value :: tetra_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tetra_num
+    integer(int32) tetra_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tetra
-    integer(ip), intent(in) :: tetra_node(tetra_order,tetra_num)
-    real(dp), intent(out) :: tetra_quality(tetra_num)
-    real(dp) :: tetra_xyz(dim_num,4)
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tetra
+    integer(int32) tetra_node(tetra_order,tetra_num)
+    real(real64) tetra_quality(tetra_num)
+    real(real64) tetra_xyz(dim_num,4)
 
     do tetra = 1, tetra_num
 
@@ -843,11 +824,10 @@ contains
       call tetrahedron_quality4_3d ( tetra_xyz, tetra_quality(tetra) )
 
     end do
-  end subroutine tet_mesh_quality4
+  end
 
   subroutine tet_mesh_quality5 ( node_num, node_xyz, tetra_order, tetra_num, &
-    tetra_node, tetra_quality ) &
-        bind(C, name="tet_mesh_quality5")
+    tetra_node, tetra_quality )
 
   !*****************************************************************************80
   !
@@ -876,32 +856,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the nodes.
   !
-  !    Input, integer(ip) TETRA_ORDER, the order of the mesh, either 4 or 10.
+  !    Input, integer(int32) TETRA_ORDER, the order of the mesh, either 4 or 10.
   !
-  !    Input, integer(ip) TETRA_NUM, the number of tetrahedrons.
+  !    Input, integer(int32) TETRA_NUM, the number of tetrahedrons.
   !
-  !    Input, integer(ip) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
+  !    Input, integer(int32) TETRA_NODE(TETRA_ORDER,TETRA_NUM), the nodes
   !    that make up the tetrahedrons.
   !
-  !    Output, real(dp) TETRA_QUALITY(TETRA_NUM), the quality
+  !    Output, real(real64) TETRA_QUALITY(TETRA_NUM), the quality
   !    measure for each tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: tetra_num
-    integer(ip), intent(in), value :: tetra_order
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
+    integer(int32) tetra_num
+    integer(int32) tetra_order
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
-    integer(ip) :: tetra
-    integer(ip), intent(in) :: tetra_node(tetra_order,tetra_num)
-    real(dp), intent(out) :: tetra_quality(tetra_num)
-    real(dp) :: tetra_xyz(dim_num,4)
-    real(dp) :: volume_max
+    real(real64) node_xyz(dim_num,node_num)
+    integer(int32) tetra
+    integer(int32) tetra_node(tetra_order,tetra_num)
+    real(real64) tetra_quality(tetra_num)
+    real(real64) tetra_xyz(dim_num,4)
+    real(real64) volume_max
 
     do tetra = 1, tetra_num
 
@@ -913,13 +893,12 @@ contains
 
     volume_max = maxval ( tetra_quality(1:tetra_num) )
 
-    if ( 0.0_dp < volume_max ) then
+    if ( 0.0e+00_real64 < volume_max ) then
       tetra_quality(1:tetra_num) = tetra_quality(1:tetra_num) / volume_max
     end if
-  end subroutine tet_mesh_quality5
+  end
 
-  subroutine tetrahedron_circumsphere_3d ( tetra, r, pc ) &
-        bind(C, name="tetrahedron_circumsphere_3d")
+  subroutine tetrahedron_circumsphere_3d ( tetra, r, pc )
 
   !*****************************************************************************80
   !
@@ -960,23 +939,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) R, PC(3), the center of the
+  !    Output, real(real64) R, PC(3), the center of the
   !    circumscribed sphere, and its radius.  If the linear system is
   !    singular, then R = -1, PC(1:3) = 0.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), parameter :: rhs_num = 1
+    integer(int32), parameter :: dim_num = 3
+    integer(int32), parameter :: rhs_num = 1
 
-    real(dp) :: a(dim_num,dim_num+rhs_num)
-    integer(ip) :: i
-    integer(ip) :: info
-    integer(ip) :: j
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: tetra(dim_num,4)
+    real(real64) a(dim_num,dim_num+rhs_num)
+    integer(int32) i
+    integer(int32) info
+    integer(int32) j
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) tetra(dim_num,4)
   !
   !  Set up the linear system.
   !
@@ -997,19 +976,18 @@ contains
   !  If the system was singular, return a consolation prize.
   !
     if ( info /= 0 ) then
-      r = -1.0_dp
-      pc(1:dim_num) = 0.0_dp
+      r = -1.0e+00_real64
+      pc(1:dim_num) = 0.0e+00_real64
     end if
   !
   !  Compute the radius and center.
   !
-    r = 0.5_dp * sqrt ( sum ( a(1:dim_num,4)**2 ) )
+    r = 0.5e+00_real64 * sqrt ( sum ( a(1:dim_num,4)**2 ) )
 
-    pc(1:dim_num) = tetra(1:dim_num,1) + 0.5_dp * a(1:dim_num,4)
-  end subroutine tetrahedron_circumsphere_3d
+    pc(1:dim_num) = tetra(1:dim_num,1) + 0.5e+00_real64 * a(1:dim_num,4)
+  end
 
-  pure subroutine tetrahedron_edge_length_3d ( tetra, edge_length ) &
-        bind(C, name="tetrahedron_edge_length_3d")
+  subroutine tetrahedron_edge_length_3d ( tetra, edge_length )
 
   !*****************************************************************************80
   !
@@ -1029,19 +1007,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) EDGE_LENGTH(6), the length of the edges.
+  !    Output, real(real64) EDGE_LENGTH(6), the length of the edges.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8vec_length
-    real(dp), intent(out) :: edge_length(6)
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip) :: k
-    real(dp), intent(in) :: tetra(dim_num,4)
+    real(real64) r8vec_length
+    real(real64) edge_length(6)
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) k
+    real(real64) tetra(dim_num,4)
 
     k = 0
     do j1 = 1, 3
@@ -1051,10 +1029,9 @@ contains
           tetra(1:dim_num,j2) - tetra(1:dim_num,j1) )
       end do
     end do
-  end subroutine tetrahedron_edge_length_3d
+  end
 
-  subroutine tetrahedron_insphere_3d ( tetra, r, pc ) &
-        bind(C, name="tetrahedron_insphere_3d")
+  subroutine tetrahedron_insphere_3d ( tetra, r, pc )
 
   !*****************************************************************************80
   !
@@ -1092,35 +1069,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) R, PC(3), the radius and the center
+  !    Output, real(real64) R, PC(3), the radius and the center
   !    of the sphere.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: b(4,4)
-    real(dp) :: r8mat_det_4d
-    real(dp) :: r8vec_length
-    real(dp) :: gamma
-    real(dp) :: l123
-    real(dp) :: l124
-    real(dp) :: l134
-    real(dp) :: l234
-    real(dp) :: n123(1:dim_num)
-    real(dp) :: n124(1:dim_num)
-    real(dp) :: n134(1:dim_num)
-    real(dp) :: n234(1:dim_num)
-    real(dp), intent(out) :: pc(1:dim_num)
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: tetra(1:dim_num,4)
-    real(dp) :: v21(1:dim_num)
-    real(dp) :: v31(1:dim_num)
-    real(dp) :: v41(1:dim_num)
-    real(dp) :: v32(1:dim_num)
-    real(dp) :: v42(1:dim_num)
-    real(dp) :: v43(1:dim_num)
+    real(real64) b(4,4)
+    real(real64) r8mat_det_4d
+    real(real64) r8vec_length
+    real(real64) gamma
+    real(real64) l123
+    real(real64) l124
+    real(real64) l134
+    real(real64) l234
+    real(real64) n123(1:dim_num)
+    real(real64) n124(1:dim_num)
+    real(real64) n134(1:dim_num)
+    real(real64) n234(1:dim_num)
+    real(real64) pc(1:dim_num)
+    real(real64) r
+    real(real64) tetra(1:dim_num,4)
+    real(real64) v21(1:dim_num)
+    real(real64) v31(1:dim_num)
+    real(real64) v41(1:dim_num)
+    real(real64) v32(1:dim_num)
+    real(real64) v42(1:dim_num)
+    real(real64) v43(1:dim_num)
 
     v21(1:dim_num) = tetra(1:dim_num,2) - tetra(1:dim_num,1)
     v31(1:dim_num) = tetra(1:dim_num,3) - tetra(1:dim_num,1)
@@ -1146,7 +1123,7 @@ contains
                   / ( l234 + l134 + l124 + l123 )
 
     b(1:dim_num,1:4) = tetra(1:dim_num,1:4)
-    b(4,1:4) = 1.0_dp
+    b(4,1:4) = 1.0e+00_real64
 
     gamma = abs ( r8mat_det_4d ( b ) )
 
@@ -1165,10 +1142,9 @@ contains
   !     + tetra(1,3) * tetra(2,1) * tetra(3,2) ) )
 
     r = gamma / ( l234 + l134 + l124 + l123 )
-  end subroutine tetrahedron_insphere_3d
+  end
 
-  subroutine tetrahedron_quality1_3d ( tetra, quality ) &
-        bind(C, name="tetrahedron_quality1_3d")
+  subroutine tetrahedron_quality1_3d ( tetra, quality )
 
   !*****************************************************************************80
   !
@@ -1195,28 +1171,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) QUALITY, the quality of the tetrahedron.
+  !    Output, real(real64) QUALITY, the quality of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: pc(dim_num)
-    real(dp), intent(out) :: quality
-    real(dp) :: r_in
-    real(dp) :: r_out
-    real(dp), intent(in) :: tetra(dim_num,4)
+    real(real64) pc(dim_num)
+    real(real64) quality
+    real(real64) r_in
+    real(real64) r_out
+    real(real64) tetra(dim_num,4)
 
     call tetrahedron_circumsphere_3d ( tetra, r_out, pc )
 
     call tetrahedron_insphere_3d ( tetra, r_in, pc )
 
-    quality = 3.0_dp * r_in / r_out
-  end subroutine tetrahedron_quality1_3d
+    quality = 3.0e+00_real64 * r_in / r_out
+  end
 
-  subroutine tetrahedron_quality2_3d ( tetra, quality2 ) &
-        bind(C, name="tetrahedron_quality2_3d")
+  subroutine tetrahedron_quality2_3d ( tetra, quality2 )
 
   !*****************************************************************************80
   !
@@ -1257,19 +1232,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) QUALITY2, the quality of the tetrahedron.
+  !    Output, real(real64) QUALITY2, the quality of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: edge_length(6)
-    real(dp) :: l_max
-    real(dp) :: pc(dim_num)
-    real(dp), intent(out) :: quality2
-    real(dp) :: r_in
-    real(dp), intent(in) :: tetra(dim_num,4)
+    real(real64) edge_length(6)
+    real(real64) l_max
+    real(real64) pc(dim_num)
+    real(real64) quality2
+    real(real64) r_in
+    real(real64) tetra(dim_num,4)
 
     call tetrahedron_edge_length_3d ( tetra, edge_length )
 
@@ -1277,11 +1252,10 @@ contains
 
     call tetrahedron_insphere_3d ( tetra, r_in, pc )
 
-    quality2 = 2.0_dp * sqrt ( 6.0_dp ) * r_in / l_max
-  end subroutine tetrahedron_quality2_3d
+    quality2 = 2.0e+00_real64 * sqrt ( 6.0e+00_real64 ) * r_in / l_max
+  end
 
-  pure subroutine tetrahedron_quality3_3d ( tetra, quality3 ) &
-        bind(C, name="tetrahedron_quality3_3d")
+  subroutine tetrahedron_quality3_3d ( tetra, quality3 )
 
   !******************************************************************************
   !
@@ -1323,29 +1297,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) QUALITY3, the mean ratio of the tetrahedron.
+  !    Output, real(real64) QUALITY3, the mean ratio of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: ab(dim_num)
-    real(dp) :: ac(dim_num)
-    real(dp) :: ad(dim_num)
-    real(dp) :: bc(dim_num)
-    real(dp) :: bd(dim_num)
-    real(dp) :: cd(dim_num)
-    real(dp) :: denom
-    real(dp) :: lab
-    real(dp) :: lac
-    real(dp) :: lad
-    real(dp) :: lbc
-    real(dp) :: lbd
-    real(dp) :: lcd
-    real(dp), intent(out) :: quality3
-    real(dp), intent(in) :: tetra(dim_num,4)
-    real(dp) :: volume
+    real(real64) ab(dim_num)
+    real(real64) ac(dim_num)
+    real(real64) ad(dim_num)
+    real(real64) bc(dim_num)
+    real(real64) bd(dim_num)
+    real(real64) cd(dim_num)
+    real(real64) denom
+    real(real64) lab
+    real(real64) lac
+    real(real64) lad
+    real(real64) lbc
+    real(real64) lbd
+    real(real64) lcd
+    real(real64) quality3
+    real(real64) tetra(dim_num,4)
+    real(real64) volume
   !
   !  Compute the vectors representing the sides of the tetrahedron.
   !
@@ -1370,19 +1344,18 @@ contains
     volume = abs ( &
         ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
       + ab(2) * ( ac(3) * ad(1) - ac(1) * ad(3) ) &
-      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0_dp
+      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0e+00_real64
 
     denom = lab + lac + lad + lbc + lbd + lcd
 
-    if ( denom == 0.0_dp ) then
-      quality3 = 0.0_dp
+    if ( denom == 0.0e+00_real64 ) then
+      quality3 = 0.0e+00_real64
     else
-      quality3 = 12.0_dp * ( 3.0_dp * volume )**( 2.0_dp / 3.0_dp ) / denom
+      quality3 = 12.0e+00_real64 * ( 3.0e+00_real64 * volume )**( 2.0e+00_real64 / 3.0e+00_real64 ) / denom
     end if
-  end subroutine tetrahedron_quality3_3d
+  end
 
-  pure subroutine tetrahedron_quality4_3d ( tetra, quality4 ) &
-        bind(C, name="tetrahedron_quality4_3d")
+  subroutine tetrahedron_quality4_3d ( tetra, quality4 )
 
   !******************************************************************************
   !
@@ -1419,36 +1392,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) QUALITY4, the value of the quality measure.
+  !    Output, real(real64) QUALITY4, the value of the quality measure.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a(dim_num)
-    real(dp) :: ab(dim_num)
-    real(dp) :: ac(dim_num)
-    real(dp) :: ad(dim_num)
-    real(dp) :: b(dim_num)
-    real(dp) :: bc(dim_num)
-    real(dp) :: bd(dim_num)
-    real(dp) :: c(dim_num)
-    real(dp) :: cd(dim_num)
-    real(dp) :: d(dim_num)
-    real(dp) :: denom
-    real(dp) :: l1
-    real(dp) :: l2
-    real(dp) :: l3
-    real(dp) :: lab
-    real(dp) :: lac
-    real(dp) :: lad
-    real(dp) :: lbc
-    real(dp) :: lbd
-    real(dp) :: lcd
-    real(dp), intent(out) :: quality4
-    real(dp), intent(in) :: tetra(dim_num,4)
-    real(dp) :: volume
+    real(real64) a(dim_num)
+    real(real64) ab(dim_num)
+    real(real64) ac(dim_num)
+    real(real64) ad(dim_num)
+    real(real64) b(dim_num)
+    real(real64) bc(dim_num)
+    real(real64) bd(dim_num)
+    real(real64) c(dim_num)
+    real(real64) cd(dim_num)
+    real(real64) d(dim_num)
+    real(real64) denom
+    real(real64) l1
+    real(real64) l2
+    real(real64) l3
+    real(real64) lab
+    real(real64) lac
+    real(real64) lad
+    real(real64) lbc
+    real(real64) lbd
+    real(real64) lcd
+    real(real64) quality4
+    real(real64) tetra(dim_num,4)
+    real(real64) volume
   !
   !  Compute the vectors that represent the sides.
   !
@@ -1473,9 +1446,9 @@ contains
     volume = abs ( &
         ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
       + ab(2) * ( ac(3) * ad(1) - ac(1) * ad(3) ) &
-      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0_dp
+      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0e+00_real64
 
-    quality4 = 1.0_dp
+    quality4 = 1.0e+00_real64
 
     l1 = lab + lac
     l2 = lab + lad
@@ -1485,10 +1458,10 @@ contains
           * ( l2 + lbd ) * ( l2 - lbd ) &
           * ( l3 + lcd ) * ( l3 - lcd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lab + lbc
@@ -1499,10 +1472,10 @@ contains
           * ( l2 + lad ) * ( l2 - lad ) &
           * ( l3 + lcd ) * ( l3 - lcd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lac + lbc
@@ -1513,10 +1486,10 @@ contains
           * ( l2 + lad ) * ( l2 - lad ) &
           * ( l3 + lbd ) * ( l3 - lbd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lad + lbd
@@ -1527,17 +1500,16 @@ contains
           * ( l2 + lac ) * ( l2 - lac ) &
           * ( l3 + lbc ) * ( l3 - lbc )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
-    quality4 = quality4 * 1.5_dp * sqrt ( 6.0_dp )
-  end subroutine tetrahedron_quality4_3d
+    quality4 = quality4 * 1.5e+00_real64 * sqrt ( 6.0e+00_real64 )
+  end
 
-  pure subroutine tetrahedron_volume_3d ( tetra, volume ) &
-        bind(C, name="tetrahedron_volume_3d")
+  subroutine tetrahedron_volume_3d ( tetra, volume )
 
   !*****************************************************************************80
   !
@@ -1557,22 +1529,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) VOLUME, the volume of the tetrahedron.
+  !    Output, real(real64) VOLUME, the volume of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a(4,4)
-    real(dp) :: r8mat_det_4d
-    real(dp), intent(in) :: tetra(dim_num,4)
-    real(dp), intent(out) :: volume
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
+    real(real64) tetra(dim_num,4)
+    real(real64) volume
 
     a(1:dim_num,1:4) = tetra(1:dim_num,1:4)
-    a(4,1:4) = 1.0_dp
+    a(4,1:4) = 1.0e+00_real64
 
-    volume = abs ( r8mat_det_4d ( a ) ) / 6.0_dp
-  end subroutine tetrahedron_volume_3d
+    volume = abs ( r8mat_det_4d ( a ) ) / 6.0e+00_real64
+  end
 
 end module tet_mesh_quality_mod

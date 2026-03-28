@@ -1,16 +1,11 @@
-!> hex_grid_angle -- Modern Fortran 2018
+!> hex_grid_angle — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module hex_grid_angle_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: box_01_contains_point_2d, box_contains_point_2d, cos_deg, degrees_to_radians, hex_grid_angle_01, hex_grid_angle_01_size
   public :: hex_grid_angle_01_write, hex_grid_angle, hex_grid_angle_size, hex_grid_angle_write, r8_modp, r8_uniform_01
@@ -18,8 +13,7 @@ module hex_grid_angle_mod
 
 contains
 
-  pure function box_01_contains_point_2d ( p ) &
-        bind(C, name="box_01_contains_point_2d")
+  function box_01_contains_point_2d ( p )
 
   !*****************************************************************************80
   !
@@ -47,26 +41,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical BOX_01_CONTAINS_POINT_2D, is TRUE if the point is
   !    inside the box.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    logical :: box_01_contains_point_2d
-    real(dp), intent(in) :: p(dim_num)
+    integer(int32), parameter :: dim_num = 2
+
+    logical box_01_contains_point_2d
+    real(real64) p(dim_num)
 
     box_01_contains_point_2d = &
     ( &
-      all ( 0.0_dp <= p(1:dim_num) ) &
+      all ( 0.0e+00_real64 <= p(1:dim_num) ) &
     .and. &
-      all (            p(1:dim_num) <= 1.0_dp ) &
+      all (            p(1:dim_num) <= 1.0e+00_real64 ) &
     )
-  end function box_01_contains_point_2d
+  end
 
-  pure function box_contains_point_2d ( box, p ) &
-        bind(C, name="box_contains_point_2d")
+  function box_contains_point_2d ( box, p )
 
   !*****************************************************************************80
   !
@@ -94,27 +88,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) BOX(2,2), the lower left and upper right
+  !    Input, real(real64) BOX(2,2), the lower left and upper right
   !    corners of the box.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical BOX_CONTAINS_POINT_2D, is TRUE if the point is
   !    inside the box.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    real(dp), intent(in) :: box(dim_num,2)
-    logical :: box_contains_point_2d
-    real(dp), intent(in) :: p(dim_num)
+    integer(int32), parameter :: dim_num = 2
+
+    real(real64) box(dim_num,2)
+    logical box_contains_point_2d
+    real(real64) p(dim_num)
 
     box_contains_point_2d = &
       all ( box(1:dim_num,1) <= p(1:dim_num) ) .and. &
       all ( p(1:dim_num) <= box(1:dim_num,2) )
-  end function box_contains_point_2d
+  end
 
-  pure function cos_deg ( angle ) &
-        bind(C, name="cos_deg")
+  function cos_deg ( angle )
 
   !*****************************************************************************80
   !
@@ -134,21 +128,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE, the angle, in degrees.
+  !    Input, real(real64) ANGLE, the angle, in degrees.
   !
-  !    Output, real(dp) COS_DEG, the cosine of the angle.
+  !    Output, real(real64) COS_DEG, the cosine of the angle.
   !
 
-    real(dp), intent(in), value :: angle
-    real(dp) :: cos_deg
-    real(dp), parameter :: degrees_to_radians &
-      = 3.141592653589793e+00_dp / 180.0_dp
+    real(real64) angle
+    real(real64) cos_deg
+    real(real64), parameter :: degrees_to_radians &
+      = 3.141592653589793e+00_real64 / 180.0e+00_real64
 
     cos_deg = cos ( degrees_to_radians * angle )
-  end function cos_deg
+  end
 
-  pure function degrees_to_radians ( degrees ) &
-        bind(C, name="degrees_to_radians")
+  function degrees_to_radians ( degrees )
 
   !*****************************************************************************80
   !
@@ -168,19 +161,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DEGREES, the angle measure in degrees.
+  !    Input, real(real64) DEGREES, the angle measure in degrees.
   !
-  !    Output, real(dp) DEGREES_TO_RADIANS, the angle measure in radians.
+  !    Output, real(real64) DEGREES_TO_RADIANS, the angle measure in radians.
   !
 
-    real(dp), intent(in), value :: degrees
-    real(dp) :: degrees_to_radians
+    real(real64) degrees
+    real(real64) degrees_to_radians
 
-    degrees_to_radians = ( degrees / 180.0_dp ) * 3.141592653589793e+00_dp
-  end function degrees_to_radians
+    degrees_to_radians = ( degrees / 180.0e+00_real64 ) * 3.141592653589793e+00_real64
+  end
 
-  subroutine hex_grid_angle_01 ( center, angle, h, n, r ) &
-        bind(C, name="hex_grid_angle_01")
+  subroutine hex_grid_angle_01 ( center, angle, h, n, r )
 
   !*****************************************************************************80
   !
@@ -200,40 +192,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) CENTER(2), the center of the grid.
+  !    Input, real(real64) CENTER(2), the center of the grid.
   !    This point must be inside the unit square.
   !
-  !    Input, real(dp) ANGLE, the angle, in degrees, of the grid.
+  !    Input, real(real64) ANGLE, the angle, in degrees, of the grid.
   !    Normally, 0 <= ANGLE <= 180, but any value is allowed.
   !
-  !    Input, real(dp) H, the spacing between neighboring
+  !    Input, real(real64) H, the spacing between neighboring
   !    points on a grid line.
   !
-  !    Input, integer(ip) N, the number of points of the angled hex grid
+  !    Input, integer(int32) N, the number of points of the angled hex grid
   !    that are within the unit square.  This value may have been computed
   !    by calling HEX_GRID_ANGLE_01_SIZE.
   !
-  !    Output, real(dp) R(2,N), the grid points.
+  !    Output, real(real64) R(2,N), the grid points.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
-    real(dp), intent(in), value :: angle
-    real(dp) :: angle2
-    logical :: box_01_contains_point_2d
-    real(dp), intent(in) :: center(dim_num)
-    real(dp) :: cos_deg
-    real(dp), intent(in), value :: h
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: layer
-    integer(ip) :: layer_size
-    real(dp) :: point(dim_num)
-    real(dp), intent(out) :: r(dim_num,n)
-    real(dp) :: r8_modp
-    real(dp) :: sin_deg
-    integer(ip) :: size
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
+
+    real(real64) angle
+    real(real64) angle2
+    logical box_01_contains_point_2d
+    real(real64) center(dim_num)
+    real(real64) cos_deg
+    real(real64) h
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) layer
+    integer(int32) layer_size
+    real(real64) point(dim_num)
+    real(real64) r(dim_num,n)
+    real(real64) r8_modp
+    real(real64) sin_deg
+    integer(int32) size
   !
   !  Ninny checks.
   !
@@ -246,7 +239,7 @@ contains
       stop
     end if
 
-    if ( h == 0.0_dp ) then
+    if ( h == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'HEX_GRID_ANGLE_01 - Fatal error!'
       write ( *, '(a)' ) '  The grid spacing must be nonzero.'
@@ -275,11 +268,11 @@ contains
       point(1:dim_num) = point(1:dim_num) &
         + h * (/ cos_deg ( angle2 ), sin_deg ( angle2 ) /)
 
-      angle2 = r8_modp ( angle2 + 60.0_dp, 360.0_dp )
+      angle2 = r8_modp ( angle2 + 60.0e+00_real64, 360.0e+00_real64 )
 
       do i = 1, 6
 
-        angle2 = r8_modp ( angle2 + 60.0_dp, 360.0_dp )
+        angle2 = r8_modp ( angle2 + 60.0e+00_real64, 360.0e+00_real64 )
 
         do j = 1, layer
 
@@ -306,10 +299,9 @@ contains
       end if
 
     end do
-  end subroutine hex_grid_angle_01
+  end
 
-  subroutine hex_grid_angle_01_size ( center, angle, h, n ) &
-        bind(C, name="hex_grid_angle_01_size")
+  subroutine hex_grid_angle_01_size ( center, angle, h, n )
 
   !*****************************************************************************80
   !
@@ -329,34 +321,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) CENTER(2), the center of the grid.
+  !    Input, real(real64) CENTER(2), the center of the grid.
   !    This point must be inside the unit square.
   !
-  !    Input, real(dp) ANGLE, the angle, in degrees, of the grid.
+  !    Input, real(real64) ANGLE, the angle, in degrees, of the grid.
   !    Normally, 0 <= ANGLE <= 180, but any value is allowed.
   !
-  !    Input, real(dp) H, the spacing between neighboring
+  !    Input, real(real64) H, the spacing between neighboring
   !    points on a grid line.
   !
-  !    Output, integer(ip) N, the number of points of the angled hex grid
+  !    Output, integer(int32) N, the number of points of the angled hex grid
   !    that are within the unit square.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    real(dp), intent(in), value :: angle
-    real(dp) :: angle2
-    logical :: box_01_contains_point_2d
-    real(dp), intent(in) :: center(dim_num)
-    real(dp) :: cos_deg
-    real(dp), intent(in), value :: h
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: layer
-    integer(ip) :: layer_size
-    integer(ip), intent(out) :: n
-    real(dp) :: point(dim_num)
-    real(dp) :: r8_modp
-    real(dp) :: sin_deg
+    integer(int32), parameter :: dim_num = 2
+
+    real(real64) angle
+    real(real64) angle2
+    logical box_01_contains_point_2d
+    real(real64) center(dim_num)
+    real(real64) cos_deg
+    real(real64) h
+    integer(int32) i
+    integer(int32) j
+    integer(int32) layer
+    integer(int32) layer_size
+    integer(int32) n
+    real(real64) point(dim_num)
+    real(real64) r8_modp
+    real(real64) sin_deg
   !
   !  Ninny checks.
   !
@@ -369,7 +362,7 @@ contains
       stop
     end if
 
-    if ( h == 0.0_dp ) then
+    if ( h == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'HEX_GRID_ANGLE_01_SIZE - Fatal error!'
       write ( *, '(a)' ) '  The grid spacing must be nonzero.'
@@ -397,11 +390,11 @@ contains
       point(1:dim_num) = point(1:dim_num) &
         + h * (/ cos_deg ( angle2 ), sin_deg ( angle2 ) /)
 
-      angle2 = r8_modp ( angle2 + 60.0_dp, 360.0_dp )
+      angle2 = r8_modp ( angle2 + 60.0e+00_real64, 360.0e+00_real64 )
 
       do i = 1, 6
 
-        angle2 = r8_modp ( angle2 + 60.0_dp, 360.0_dp )
+        angle2 = r8_modp ( angle2 + 60.0e+00_real64, 360.0e+00_real64 )
 
         do j = 1, layer
 
@@ -422,10 +415,9 @@ contains
       end if
 
     end do
-  end subroutine hex_grid_angle_01_size
+  end
 
-  subroutine hex_grid_angle_01_write ( center, angle, h, n, r, file_out_name ) &
-        bind(C, name="hex_grid_angle_01_write")
+  subroutine hex_grid_angle_01_write ( center, angle, h, n, r, file_out_name )
 
   !*****************************************************************************80
   !
@@ -453,30 +445,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) CENTER(2), the "center" of the grid.
+  !    Input, real(real64) CENTER(2), the "center" of the grid.
   !
-  !    Input, real(dp) ANGLE, the angle of the grid.
+  !    Input, real(real64) ANGLE, the angle of the grid.
   !
-  !    Input, real(dp) H, the spacing between points on a grid line.
+  !    Input, real(real64) H, the spacing between points on a grid line.
   !
-  !    Input, integer(ip) N, the number of elements in the subsequence.
+  !    Input, integer(int32) N, the number of elements in the subsequence.
   !
-  !    Input, real(dp) R(2,N), the points.
+  !    Input, real(real64) R(2,N), the points.
   !
   !    Input, character ( len = * ) FILE_OUT_NAME, the output file name.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in), value :: angle
-    real(dp), intent(in) :: center(dim_num)
-    character ( len = * ), intent(in) :: file_out_name
-    real(dp), intent(in), value :: h
-    integer(ip) :: file_out_unit
-    integer(ip) :: ios
-    integer(ip) :: j
-    real(dp), intent(in) :: r(dim_num,n)
-    character ( len = 40 ) :: string
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) n
+
+    real(real64) angle
+    real(real64) center(dim_num)
+    character ( len = * ) file_out_name
+    real(real64) h
+    integer(int32) file_out_unit
+    integer(int32) ios
+    integer(int32) j
+    real(real64) r(dim_num,n)
+    character ( len = 40 ) string
 
     call get_unit ( file_out_unit )
 
@@ -509,10 +502,9 @@ contains
     end do
 
     close ( unit = file_out_unit )
-  end subroutine hex_grid_angle_01_write
+  end
 
-  subroutine hex_grid_angle ( box, center, angle, h, n, r ) &
-        bind(C, name="hex_grid_angle")
+  subroutine hex_grid_angle ( box, center, angle, h, n, r )
 
   !*****************************************************************************80
   !
@@ -532,44 +524,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) BOX(2,2), the lower left and upper right
+  !    Input, real(real64) BOX(2,2), the lower left and upper right
   !    corners of the box.
   !
-  !    Input, real(dp) CENTER(2), the center of the grid.
+  !    Input, real(real64) CENTER(2), the center of the grid.
   !    This point must be inside the unit square.
   !
-  !    Input, real(dp) ANGLE, the angle, in degrees, of the grid.
+  !    Input, real(real64) ANGLE, the angle, in degrees, of the grid.
   !    Normally, 0 <= ANGLE <= 180, but any value is allowed.
   !
-  !    Input, real(dp) H, the spacing between neighboring
+  !    Input, real(real64) H, the spacing between neighboring
   !    points on a grid line.
   !
-  !    Input, integer(ip) N, the number of points of the angled hex grid
+  !    Input, integer(int32) N, the number of points of the angled hex grid
   !    that are within the unit square.  This value may have been computed
   !    by calling HEX_GRID_ANGLE_01_SIZE.
   !
-  !    Output, real(dp) R(2,N), the grid points.
+  !    Output, real(real64) R(2,N), the grid points.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
-    real(dp), intent(in), value :: angle
-    real(dp) :: angle2
-    real(dp), intent(in) :: box(dim_num,2)
-    logical :: box_contains_point_2d
-    real(dp), intent(in) :: center(dim_num)
-    real(dp) :: cos_deg
-    real(dp), intent(in), value :: h
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: layer
-    integer(ip) :: layer_size
-    real(dp) :: point(dim_num)
-    real(dp), intent(out) :: r(dim_num,n)
-    real(dp) :: r8_modp
-    real(dp) :: sin_deg
-    integer(ip) :: size
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
+
+    real(real64) angle
+    real(real64) angle2
+    real(real64) box(dim_num,2)
+    logical box_contains_point_2d
+    real(real64) center(dim_num)
+    real(real64) cos_deg
+    real(real64) h
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) layer
+    integer(int32) layer_size
+    real(real64) point(dim_num)
+    real(real64) r(dim_num,n)
+    real(real64) r8_modp
+    real(real64) sin_deg
+    integer(int32) size
   !
   !  Ninny checks.
   !
@@ -582,7 +575,7 @@ contains
       stop
     end if
 
-    if ( h == 0.0_dp ) then
+    if ( h == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'HEX_GRID_ANGLE - Fatal error!'
       write ( *, '(a)' ) '  The grid spacing must be nonzero.'
@@ -611,11 +604,11 @@ contains
       point(1:dim_num) = point(1:dim_num) &
         + h * (/ cos_deg ( angle2 ), sin_deg ( angle2 ) /)
 
-      angle2 = r8_modp ( angle2 + 60.0_dp, 360.0_dp )
+      angle2 = r8_modp ( angle2 + 60.0e+00_real64, 360.0e+00_real64 )
 
       do i = 1, 6
 
-        angle2 = r8_modp ( angle2 + 60.0_dp, 360.0_dp )
+        angle2 = r8_modp ( angle2 + 60.0e+00_real64, 360.0e+00_real64 )
 
         do j = 1, layer
 
@@ -642,10 +635,9 @@ contains
       end if
 
     end do
-  end subroutine hex_grid_angle
+  end
 
-  subroutine hex_grid_angle_size ( box, center, angle, h, n ) &
-        bind(C, name="hex_grid_angle_size")
+  subroutine hex_grid_angle_size ( box, center, angle, h, n )
 
   !*****************************************************************************80
   !
@@ -665,38 +657,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) BOX(2,2), the lower left and upper right
+  !    Input, real(real64) BOX(2,2), the lower left and upper right
   !    corners of the box.
   !
-  !    Input, real(dp) CENTER(2), the center of the grid.
+  !    Input, real(real64) CENTER(2), the center of the grid.
   !    This point must be inside the box
   !
-  !    Input, real(dp) ANGLE, the angle, in degrees, of the grid.
+  !    Input, real(real64) ANGLE, the angle, in degrees, of the grid.
   !    Normally, 0 <= ANGLE <= 180, but any value is allowed.
   !
-  !    Input, real(dp) H, the spacing between neighboring
+  !    Input, real(real64) H, the spacing between neighboring
   !    points on a grid line.
   !
-  !    Output, integer(ip) N, the number of points of the angled hex grid
+  !    Output, integer(int32) N, the number of points of the angled hex grid
   !    that are within the unit square.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    real(dp), intent(in), value :: angle
-    real(dp) :: angle2
-    real(dp), intent(in) :: box(dim_num,2)
-    logical :: box_contains_point_2d
-    real(dp), intent(in) :: center(dim_num)
-    real(dp) :: cos_deg
-    real(dp), intent(in), value :: h
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: layer
-    integer(ip) :: layer_size
-    integer(ip), intent(out) :: n
-    real(dp) :: point(dim_num)
-    real(dp) :: r8_modp
-    real(dp) :: sin_deg
+    integer(int32), parameter :: dim_num = 2
+
+    real(real64) angle
+    real(real64) angle2
+    real(real64) box(dim_num,2)
+    logical box_contains_point_2d
+    real(real64) center(dim_num)
+    real(real64) cos_deg
+    real(real64) h
+    integer(int32) i
+    integer(int32) j
+    integer(int32) layer
+    integer(int32) layer_size
+    integer(int32) n
+    real(real64) point(dim_num)
+    real(real64) r8_modp
+    real(real64) sin_deg
   !
   !  Ninny checks.
   !
@@ -709,7 +702,7 @@ contains
       stop
     end if
 
-    if ( h == 0.0_dp ) then
+    if ( h == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'HEX_GRID_ANGLE_SIZE - Fatal error!'
       write ( *, '(a)' ) '  The grid spacing must be nonzero.'
@@ -737,11 +730,11 @@ contains
       point(1:dim_num) = point(1:dim_num) &
         + h * (/ cos_deg ( angle2 ), sin_deg ( angle2 ) /)
 
-      angle2 = r8_modp ( angle2 + 60.0_dp, 360.0_dp )
+      angle2 = r8_modp ( angle2 + 60.0e+00_real64, 360.0e+00_real64 )
 
       do i = 1, 6
 
-        angle2 = r8_modp ( angle2 + 60.0_dp, 360.0_dp )
+        angle2 = r8_modp ( angle2 + 60.0e+00_real64, 360.0e+00_real64 )
 
         do j = 1, layer
 
@@ -762,10 +755,9 @@ contains
       end if
 
     end do
-  end subroutine hex_grid_angle_size
+  end
 
-  subroutine hex_grid_angle_write ( box, center, angle, h, n, r, file_out_name ) &
-        bind(C, name="hex_grid_angle_write")
+  subroutine hex_grid_angle_write ( box, center, angle, h, n, r, file_out_name )
 
   !*****************************************************************************80
   !
@@ -793,34 +785,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) BOX(2,2), the lower left and upper right
+  !    Input, real(real64) BOX(2,2), the lower left and upper right
   !    corners of the box.
   !
-  !    Input, real(dp) CENTER(2), the "center" of the grid.
+  !    Input, real(real64) CENTER(2), the "center" of the grid.
   !
-  !    Input, real(dp) ANGLE, the angle of the grid.
+  !    Input, real(real64) ANGLE, the angle of the grid.
   !
-  !    Input, real(dp) H, the spacing between points on a grid line.
+  !    Input, real(real64) H, the spacing between points on a grid line.
   !
-  !    Input, integer(ip) N, the number of elements in the subsequence.
+  !    Input, integer(int32) N, the number of elements in the subsequence.
   !
-  !    Input, real(dp) R(2,N), the points.
+  !    Input, real(real64) R(2,N), the points.
   !
   !    Input, character ( len = * ) FILE_OUT_NAME, the output file name.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in), value :: angle
-    real(dp), intent(in) :: box(dim_num,2)
-    real(dp), intent(in) :: center(dim_num)
-    character ( len = * ), intent(in) :: file_out_name
-    real(dp), intent(in), value :: h
-    integer(ip) :: file_out_unit
-    integer(ip) :: ios
-    integer(ip) :: j
-    real(dp), intent(in) :: r(dim_num,n)
-    character ( len = 40 ) :: string
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) n
+
+    real(real64) angle
+    real(real64) box(dim_num,2)
+    real(real64) center(dim_num)
+    character ( len = * ) file_out_name
+    real(real64) h
+    integer(int32) file_out_unit
+    integer(int32) ios
+    integer(int32) j
+    real(real64) r(dim_num,n)
+    character ( len = 40 ) string
 
     call get_unit ( file_out_unit )
 
@@ -855,10 +848,9 @@ contains
     end do
 
     close ( unit = file_out_unit )
-  end subroutine hex_grid_angle_write
+  end
 
-  function r8_modp ( x, y ) &
-        bind(C, name="r8_modp")
+  function r8_modp ( x, y )
 
   !*****************************************************************************80
   !
@@ -904,19 +896,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, the number to be divided.
+  !    Input, real(real64) X, the number to be divided.
   !
-  !    Input, real(dp) Y, the number that divides X.
+  !    Input, real(real64) Y, the number that divides X.
   !
-  !    Output, real(dp) R8_MODP, the nonnegative remainder
+  !    Output, real(real64) R8_MODP, the nonnegative remainder
   !    when X is divided by Y.
   !
 
-    real(dp) :: r8_modp
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    real(real64) r8_modp
+    real(real64) x
+    real(real64) y
 
-    if ( y == 0.0_dp ) then
+    if ( y == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'R8_MODP - Fatal error!'
       write ( *, '(a,g14.6)' ) '  R8_MODP ( X, Y ) called with Y = ', y
@@ -925,13 +917,12 @@ contains
 
     r8_modp = mod ( x, y )
 
-    if ( r8_modp < 0.0_dp ) then
+    if ( r8_modp < 0.0e+00_real64 ) then
       r8_modp = r8_modp + abs ( y )
     end if
-  end function r8_modp
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -939,7 +930,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
   !    For now, the input quantity SEED is an integer variable.
   !
@@ -998,16 +989,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -1027,11 +1018,10 @@ contains
   !  Although SEED can be represented exactly as a 32 bit integer,
   !  it generally cannot be represented exactly as a 32 bit real number!
   !
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  subroutine r8vec_uniform_01 ( n, seed, r ) &
-        bind(C, name="r8vec_uniform_01")
+  subroutine r8vec_uniform_01 ( n, seed, r )
 
   !*****************************************************************************80
   !
@@ -1039,7 +1029,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8VEC is a vector of real(dp) values.
+  !    An R8VEC is a vector of real(real64) values.
   !
   !    For now, the input quantity SEED is an integer variable.
   !
@@ -1075,19 +1065,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
+    integer(int32) n
+
+    integer(int32) i
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -1106,13 +1097,12 @@ contains
         seed = seed + 2147483647
       end if
 
-      r(i) = real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_01
+  end
 
-  pure function sin_deg ( angle ) &
-        bind(C, name="sin_deg")
+  function sin_deg ( angle )
 
   !*****************************************************************************80
   !
@@ -1132,17 +1122,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE, the angle, in degrees.
+  !    Input, real(real64) ANGLE, the angle, in degrees.
   !
-  !    Output, real(dp) SIN_DEG, the sine of the angle.
+  !    Output, real(real64) SIN_DEG, the sine of the angle.
   !
 
-    real(dp), intent(in), value :: angle
-    real(dp), parameter :: degrees_to_radians &
-      = 3.141592653589793e+00_dp / 180.0_dp
-    real(dp) :: sin_deg
+    real(real64) angle
+    real(real64), parameter :: degrees_to_radians &
+      = 3.141592653589793e+00_real64 / 180.0e+00_real64
+    real(real64) sin_deg
 
     sin_deg = sin ( degrees_to_radians * angle )
-  end function sin_deg
+  end
 
 end module hex_grid_angle_mod

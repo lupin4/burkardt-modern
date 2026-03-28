@@ -1,16 +1,11 @@
-!> quad_mesh_rcm — Modern Fortran 2018
+!> quad_mesh_rcm â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module quad_mesh_rcm_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: adj_bandwidth, adj_perm_bandwidth, adj_set_q4_mesh, adj_size_q4_mesh, bandwidth, degree
   public :: genrcm, i4col_compare, i4col_sort_a, i4col_swap, i4vec_heap_d, i4vec_reverse
@@ -19,8 +14,7 @@ module quad_mesh_rcm_mod
 
 contains
 
-  pure function adj_bandwidth ( node_num, adj_num, adj_row, adj ) &
-        bind(C, name="adj_bandwidth")
+  function adj_bandwidth ( node_num, adj_num, adj_row, adj )
 
   !*****************************************************************************80
   !
@@ -51,31 +45,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacency entries.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacency entries.
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1).  Information about
   !    row I is stored in entries ADJ_ROW(I) through ADJ_ROW(I+1)-1 of ADJ.
   !
-  !    Input, integer(ip) ADJ(ADJ_NUM), the adjacency structure.
+  !    Input, integer(int32) ADJ(ADJ_NUM), the adjacency structure.
   !    For each row, it contains the column indices of the nonzero entries.
   !
-  !    Output, integer(ip) ADJ_BANDWIDTH, the bandwidth of the adjacency
+  !    Output, integer(int32) ADJ_BANDWIDTH, the bandwidth of the adjacency
   !    matrix.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) node_num
 
-    integer(ip), intent(in) :: adj(adj_num)
-    integer(ip) :: adj_bandwidth
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: band_hi
-    integer(ip) :: band_lo
-    integer(ip) :: col
-    integer(ip) :: i
-    integer(ip) :: j
+    integer(int32) adj(adj_num)
+    integer(int32) adj_bandwidth
+    integer(int32) adj_row(node_num+1)
+    integer(int32) band_hi
+    integer(int32) band_lo
+    integer(int32) col
+    integer(int32) i
+    integer(int32) j
 
     band_lo = 0
     band_hi = 0
@@ -91,10 +85,9 @@ contains
     end do
 
     adj_bandwidth = band_lo + 1 + band_hi
-  end function adj_bandwidth
+  end
 
-  pure function adj_perm_bandwidth ( node_num, adj_num, adj_row, adj, perm, perm_inv ) &
-        bind(C, name="adj_perm_bandwidth")
+  function adj_perm_bandwidth ( node_num, adj_num, adj_row, adj, perm, perm_inv )
 
   !*****************************************************************************80
   !
@@ -126,36 +119,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacency entries.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacency entries.
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1).  Information about
   !    row I is stored in entries ADJ_ROW(I) through ADJ_ROW(I+1)-1 of ADJ.
   !
-  !    Input, integer(ip) ADJ(ADJ_NUM), the adjacency structure.
+  !    Input, integer(int32) ADJ(ADJ_NUM), the adjacency structure.
   !    For each row, it contains the column indices of the nonzero entries.
   !
-  !    Input, integer(ip) PERM(NODE_NUM), PERM_INV(NODE_NUM), the
+  !    Input, integer(int32) PERM(NODE_NUM), PERM_INV(NODE_NUM), the
   !    permutation and inverse permutation.
   !
-  !    Output, integer(ip) ADJ_PERM_BANDWIDTH, the bandwidth of the
+  !    Output, integer(int32) ADJ_PERM_BANDWIDTH, the bandwidth of the
   !    permuted adjacency matrix.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) node_num
 
-    integer(ip), intent(in) :: adj(adj_num)
-    integer(ip) :: adj_perm_bandwidth
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: band_hi
-    integer(ip) :: band_lo
-    integer(ip) :: col
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in) :: perm(node_num)
-    integer(ip), intent(in) :: perm_inv(node_num)
+    integer(int32) adj(adj_num)
+    integer(int32) adj_perm_bandwidth
+    integer(int32) adj_row(node_num+1)
+    integer(int32) band_hi
+    integer(int32) band_lo
+    integer(int32) col
+    integer(int32) i
+    integer(int32) j
+    integer(int32) perm(node_num)
+    integer(int32) perm_inv(node_num)
 
     band_lo = 0
     band_hi = 0
@@ -171,11 +164,10 @@ contains
     end do
 
     adj_perm_bandwidth = band_lo + 1 + band_hi
-  end function adj_perm_bandwidth
+  end
 
   subroutine adj_set_q4_mesh ( node_num, element_num, element_node, &
-    element_neighbor, adj_num, adj_row, adj ) &
-        bind(C, name="adj_set_q4_mesh")
+    element_neighbor, adj_num, adj_row, adj )
 
   !*****************************************************************************80
   !
@@ -243,45 +235,45 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(4,ELEMENT_NUM), lists the nodes
+  !    Input, integer(int32) ELEMENT_NODE(4,ELEMENT_NUM), lists the nodes
   !    that make up each element in counterclockwise order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(4,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(4,ELEMENT_NUM), for each
   !    side of an element, lists the neighboring element, or -1 if there is
   !    no neighbor.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacencies.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacencies.
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1).  Information about
   !    column J is stored in entries ADJ_ROW(J) through ADJ_ROW(J+1)-1 of ADJ.
   !
-  !    Output, integer(ip) ADJ(ADJ_NUM), the adjacency information.
+  !    Output, integer(int32) ADJ(ADJ_NUM), the adjacency information.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 4
+    integer(int32) adj_num
+    integer(int32) node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 4
 
-    integer(ip), intent(out) :: adj(adj_num)
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: adj_copy(node_num)
-    integer(ip) :: k1
-    integer(ip) :: k2
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: node
-    integer(ip) :: number
-    integer(ip) :: element
-    integer(ip) :: element2
-    integer(ip), intent(in) :: element_neighbor(4,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
+    integer(int32) adj(adj_num)
+    integer(int32) adj_row(node_num+1)
+    integer(int32) adj_copy(node_num)
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) node
+    integer(int32) number
+    integer(int32) element
+    integer(int32) element2
+    integer(int32) element_neighbor(4,element_num)
+    integer(int32) element_node(element_order,element_num)
 
     adj(1:adj_num) = -1
     adj_copy(1:node_num) = adj_row(1:node_num)
@@ -372,11 +364,10 @@ contains
       number = k2 + 1 - k1
       call i4vec_sort_heap_a ( number, adj(k1:k2) )
     end do
-  end subroutine adj_set_q4_mesh
+  end
 
-  pure subroutine adj_size_q4_mesh ( node_num, element_num, element_node, &
-    element_neighbor, adj_num, adj_row ) &
-        bind(C, name="adj_size_q4_mesh")
+  subroutine adj_size_q4_mesh ( node_num, element_num, element_node, &
+    element_neighbor, adj_num, adj_row )
 
   !*****************************************************************************80
   !
@@ -441,39 +432,39 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(4,ELEMENT_NUM), lists the
+  !    Input, integer(int32) ELEMENT_NODE(4,ELEMENT_NUM), lists the
   !    nodes that make up each element, in counterclockwise order.
   !
-  !    Input, integer(ip) ELEMENT_NEIGHBOR(4,ELEMENT_NUM), for each
+  !    Input, integer(int32) ELEMENT_NEIGHBOR(4,ELEMENT_NUM), for each
   !    side of a element, lists the neighboring elment, or -1 if there is
   !    no neighbor.
   !
-  !    Output, integer(ip) ADJ_NUM, the number of adjacencies.
+  !    Output, integer(int32) ADJ_NUM, the number of adjacencies.
   !
-  !    Output, integer(ip) ADJ_ROW(NODE_NUM+1), Information about
+  !    Output, integer(int32) ADJ_ROW(NODE_NUM+1), Information about
   !    column J is stored in entries ADJ_ROW(J) through ADJ_ROW(J+1)-1 of ADJ.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 4
-    integer(ip), intent(in), value :: node_num
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 4
+    integer(int32) node_num
 
-    integer(ip), intent(out) :: adj_row(node_num+1)
-    integer(ip), intent(out) :: adj_num
-    integer(ip) :: element
-    integer(ip), intent(in) :: element_neighbor(4,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: element2
-    integer(ip) :: i
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip) :: n4
-    integer(ip) :: node
+    integer(int32) adj_row(node_num+1)
+    integer(int32) adj_num
+    integer(int32) element
+    integer(int32) element_neighbor(4,element_num)
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) element2
+    integer(int32) i
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) n4
+    integer(int32) node
 
     adj_num = 0
   !
@@ -556,10 +547,9 @@ contains
   !  Finally, record the total number of adjacencies.
   !
     adj_num = adj_row(node_num+1) - 1
-  end subroutine adj_size_q4_mesh
+  end
 
-  pure subroutine bandwidth ( element_order, element_num, element_node, ml, mu, m ) &
-        bind(C, name="bandwidth")
+  subroutine bandwidth ( element_order, element_num, element_node, ml, mu, m )
 
   !*****************************************************************************80
   !
@@ -604,31 +594,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the elements.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the elements.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM);
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM);
   !    ELEMENT_NODE(I,J) is the global index of local node I in element J.
   !
-  !    Output, integer(ip) ML, MU, the lower and upper bandwidths
+  !    Output, integer(int32) ML, MU, the lower and upper bandwidths
   !    of the matrix.
   !
-  !    Output, integer(ip) M, the bandwidth of the matrix.
+  !    Output, integer(int32) M, the bandwidth of the matrix.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), intent(in), value :: element_order
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: global_i
-    integer(ip) :: global_j
-    integer(ip) :: local_i
-    integer(ip) :: local_j
-    integer(ip), intent(out) :: m
-    integer(ip), intent(out) :: ml
-    integer(ip), intent(out) :: mu
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) global_i
+    integer(int32) global_j
+    integer(int32) local_i
+    integer(int32) local_j
+    integer(int32) m
+    integer(int32) ml
+    integer(int32) mu
 
     ml = 0
     mu = 0
@@ -649,11 +639,10 @@ contains
     end do
 
     m = ml + 1 + mu
-  end subroutine bandwidth
+  end
 
-  pure subroutine degree ( root, adj_num, adj_row, adj, mask, deg, iccsze, ls, &
-    node_num ) &
-        bind(C, name="degree")
+  subroutine degree ( root, adj_num, adj_row, adj, mask, deg, iccsze, ls, &
+    node_num )
 
   !*****************************************************************************80
   !
@@ -685,53 +674,53 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ROOT, the node that defines the connected
+  !    Input, integer(int32) ROOT, the node that defines the connected
   !    component.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacency entries.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacency entries.
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1).  Information about
   !    row I is stored in entries ADJ_ROW(I) through ADJ_ROW(I+1)-1 of ADJ.
   !
-  !    Input, integer(ip) ADJ(ADJ_NUM), the adjacency structure.
+  !    Input, integer(int32) ADJ(ADJ_NUM), the adjacency structure.
   !    For each row, it contains the column indices of the nonzero entries.
   !
-  !    Input, integer(ip) MASK(NODE_NUM), is nonzero for those nodes
+  !    Input, integer(int32) MASK(NODE_NUM), is nonzero for those nodes
   !    which are to be considered.
   !
-  !    Output, integer(ip) DEG(NODE_NUM), contains, for each  node in
+  !    Output, integer(int32) DEG(NODE_NUM), contains, for each  node in
   !    the connected component, its degree.
   !
-  !    Output, integer(ip) ICCSIZE, the number of nodes in the
+  !    Output, integer(int32) ICCSIZE, the number of nodes in the
   !    connected component.
   !
-  !    Output, integer(ip) LS(NODE_NUM), stores in entries 1 through
+  !    Output, integer(int32) LS(NODE_NUM), stores in entries 1 through
   !    ICCSIZE the nodes in the connected component, starting with ROOT, and
   !    proceeding by levels.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) node_num
 
-    integer(ip), intent(in) :: adj(adj_num)
-    integer(ip), intent(out) :: adj_row(node_num+1)
-    integer(ip), intent(out) :: deg(node_num)
-    integer(ip) :: i
-    integer(ip), intent(out) :: iccsze
-    integer(ip) :: ideg
-    integer(ip) :: j
-    integer(ip) :: jstop
-    integer(ip) :: jstrt
-    integer(ip) :: lbegin
-    integer(ip), intent(out) :: ls(node_num)
-    integer(ip) :: lvlend
-    integer(ip) :: lvsize
-    integer(ip), intent(in) :: mask(node_num)
-    integer(ip) :: nbr
-    integer(ip) :: node
-    integer(ip), intent(in), value :: root
+    integer(int32) adj(adj_num)
+    integer(int32) adj_row(node_num+1)
+    integer(int32) deg(node_num)
+    integer(int32) i
+    integer(int32) iccsze
+    integer(int32) ideg
+    integer(int32) j
+    integer(int32) jstop
+    integer(int32) jstrt
+    integer(int32) lbegin
+    integer(int32) ls(node_num)
+    integer(int32) lvlend
+    integer(int32) lvsize
+    integer(int32) mask(node_num)
+    integer(int32) nbr
+    integer(int32) node
+    integer(int32) root
   !
   !  The sign of ADJ_ROW(I) is used to indicate if node I has been considered.
   !
@@ -798,10 +787,9 @@ contains
       node = ls(i)
       adj_row(node) = -adj_row(node)
     end do
-  end subroutine degree
+  end
 
-  subroutine genrcm ( node_num, adj_num, adj_row, adj, perm ) &
-        bind(C, name="genrcm")
+  subroutine genrcm ( node_num, adj_num, adj_row, adj, perm )
 
   !*****************************************************************************80
   !
@@ -833,17 +821,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacency entries.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacency entries.
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1).  Information about
   !    row I is stored in entries ADJ_ROW(I) through ADJ_ROW(I+1)-1 of ADJ.
   !
-  !    Input, integer(ip) ADJ(ADJ_NUM), the adjacency structure.
+  !    Input, integer(int32) ADJ(ADJ_NUM), the adjacency structure.
   !    For each row, it contains the column indices of the nonzero entries.
   !
-  !    Output, integer(ip) PERM(NODE_NUM), the RCM ordering.
+  !    Output, integer(int32) PERM(NODE_NUM), the RCM ordering.
   !
   !  Local Parameters:
   !
@@ -854,19 +842,19 @@ contains
   !    Local, integer MASK(NODE_NUM), marks variables that have been numbered.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) node_num
 
-    integer(ip), intent(in) :: adj(adj_num)
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: i
-    integer(ip) :: iccsze
-    integer(ip) :: mask(node_num)
-    integer(ip) :: level_num
-    integer(ip) :: level_row(node_num+1)
-    integer(ip) :: num
-    integer(ip), intent(out) :: perm(node_num)
-    integer(ip) :: root
+    integer(int32) adj(adj_num)
+    integer(int32) adj_row(node_num+1)
+    integer(int32) i
+    integer(int32) iccsze
+    integer(int32) mask(node_num)
+    integer(int32) level_num
+    integer(int32) level_row(node_num+1)
+    integer(int32) num
+    integer(int32) perm(node_num)
+    integer(int32) root
 
     mask(1:node_num) = 1
 
@@ -903,10 +891,9 @@ contains
       end if
 
     end do
-  end subroutine genrcm
+  end
 
-  subroutine i4col_compare ( m, n, a, i, j, isgn ) &
-        bind(C, name="i4col_compare")
+  subroutine i4col_compare ( m, n, a, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -941,28 +928,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), an array of N columns of vectors
+  !    Input, integer(int32) A(M,N), an array of N columns of vectors
   !    of length M.
   !
-  !    Input, integer(ip) I, J, the columns to be compared.
+  !    Input, integer(int32) I, J, the columns to be compared.
   !    I and J must be between 1 and N.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, column I < column J,
   !     0, column I = column J,
   !    +1, column J < column I.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(m,n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
-    integer(ip) :: k
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) k
   !
   !  Check.
   !
@@ -999,10 +986,9 @@ contains
       k = k + 1
 
     end do
-  end subroutine i4col_compare
+  end
 
-  subroutine i4col_sort_a ( m, n, a ) &
-        bind(C, name="i4col_sort_a")
+  subroutine i4col_sort_a ( m, n, a )
 
   !*****************************************************************************80
   !
@@ -1034,25 +1020,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows of A, and the length of
+  !    Input, integer(int32) M, the number of rows of A, and the length of
   !    a vector of data.
   !
-  !    Input, integer(ip) N, the number of columns of A.
+  !    Input, integer(int32) N, the number of columns of A.
   !
-  !    Input/output, integer(ip) A(M,N).
+  !    Input/output, integer(int32) A(M,N).
   !    On input, the array of N columns of M-vectors.
   !    On output, the columns of A have been sorted in ascending
   !    lexicographic order.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
 
     if ( m <= 0 ) then
     end if
@@ -1092,10 +1078,9 @@ contains
       end if
 
     end do
-  end subroutine i4col_sort_a
+  end
 
-  subroutine i4col_swap ( m, n, a, i, j ) &
-        bind(C, name="i4col_swap")
+  subroutine i4col_swap ( m, n, a, i, j )
 
   !*****************************************************************************80
   !
@@ -1133,22 +1118,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns
+  !    Input, integer(int32) M, N, the number of rows and columns
   !    in the array.
   !
-  !    Input/output, integer(ip) A(M,N), an array of N columns
+  !    Input/output, integer(int32) A(M,N), an array of N columns
   !    of length M.
   !
-  !    Input, integer(ip) I, J, the columns to be swapped.
+  !    Input, integer(int32) I, J, the columns to be swapped.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: col(m)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(in), value :: j
+    integer(int32) a(m,n)
+    integer(int32) col(m)
+    integer(int32) i
+    integer(int32) j
 
     if ( i < 1 .or. n < i .or. j < 1 .or. n < j ) then
 
@@ -1168,10 +1153,9 @@ contains
     col(1:m) = a(1:m,i)
     a(1:m,i) = a(1:m,j)
     a(1:m,j) = col(1:m)
-  end subroutine i4col_swap
+  end
 
-  pure subroutine i4vec_heap_d ( n, a ) &
-        bind(C, name="i4vec_heap_d")
+  subroutine i4vec_heap_d ( n, a )
 
   !*****************************************************************************80
   !
@@ -1214,20 +1198,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the size of the input array.
+  !    Input, integer(int32) N, the size of the input array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, an unsorted array.
   !    On output, the array has been reordered into a heap.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(n)
-    integer(ip) :: i
-    integer(ip) :: ifree
-    integer(ip) :: key
-    integer(ip) :: m
+    integer(int32) a(n)
+    integer(int32) i
+    integer(int32) ifree
+    integer(int32) key
+    integer(int32) m
   !
   !  Only nodes N/2 down to 1 can be "parent" nodes.
   !
@@ -1283,10 +1267,9 @@ contains
       a(ifree) = key
 
     end do
-  end subroutine i4vec_heap_d
+  end
 
-  pure subroutine i4vec_reverse ( n, a ) &
-        bind(C, name="i4vec_reverse")
+  subroutine i4vec_reverse ( n, a )
 
   !*****************************************************************************80
   !
@@ -1317,20 +1300,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input/output, integer(ip) A(N), the array to be reversed.
+  !    Input/output, integer(int32) A(N), the array to be reversed.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(n)
+    integer(int32) a(n)
 
     a(1:n) = a(n:1:-1)
-  end subroutine i4vec_reverse
+  end
 
-  subroutine i4vec_sort_heap_a ( n, a ) &
-        bind(C, name="i4vec_sort_heap_a")
+  subroutine i4vec_sort_heap_a ( n, a )
 
   !*****************************************************************************80
   !
@@ -1361,18 +1343,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, the array to be sorted;
   !    On output, the array has been sorted.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(n)
-    integer(ip) :: n1
-    integer(ip) :: t
+    integer(int32) a(n)
+    integer(int32) n1
+    integer(int32) t
 
     if ( n <= 1 ) then
     end if
@@ -1405,11 +1387,10 @@ contains
       a(n1) = t
 
     end do
-  end subroutine i4vec_sort_heap_a
+  end
 
-  pure subroutine level_set ( root, adj_num, adj_row, adj, mask, level_num, &
-    level_row, level, node_num ) &
-        bind(C, name="level_set")
+  subroutine level_set ( root, adj_num, adj_row, adj, mask, level_num, &
+    level_row, level, node_num )
 
   !*****************************************************************************80
   !
@@ -1446,51 +1427,51 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ROOT, the node at which the level structure
+  !    Input, integer(int32) ROOT, the node at which the level structure
   !    is to be rooted.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacency entries.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacency entries.
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1).  Information about
   !    row I is stored in entries ADJ_ROW(I) through ADJ_ROW(I+1)-1 of ADJ.
   !
-  !    Input, integer(ip) ADJ(ADJ_NUM), the adjacency structure.
+  !    Input, integer(int32) ADJ(ADJ_NUM), the adjacency structure.
   !    For each row, it contains the column indices of the nonzero entries.
   !
-  !    Input/output, integer(ip) MASK(NODE_NUM).  On input, only nodes
+  !    Input/output, integer(int32) MASK(NODE_NUM).  On input, only nodes
   !    with nonzero MASK are to be processed.  On output, those nodes which were
   !    included in the level set have MASK set to 1.
   !
-  !    Output, integer(ip) LEVEL_NUM, the number of levels in the level
+  !    Output, integer(int32) LEVEL_NUM, the number of levels in the level
   !    structure.  ROOT is in level 1.  The neighbors of ROOT
   !    are in level 2, and so on.
   !
-  !    Output, integer(ip) LEVEL_ROW(NODE_NUM+1), LEVEL(NODE_NUM),
+  !    Output, integer(int32) LEVEL_ROW(NODE_NUM+1), LEVEL(NODE_NUM),
   !    the rooted level structure.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) node_num
 
-    integer(ip), intent(in) :: adj(adj_num)
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: i
-    integer(ip) :: iccsze
-    integer(ip) :: j
-    integer(ip) :: jstop
-    integer(ip) :: jstrt
-    integer(ip) :: lbegin
-    integer(ip), intent(out) :: level_num
-    integer(ip), intent(out) :: level_row(node_num+1)
-    integer(ip), intent(out) :: level(node_num)
-    integer(ip) :: lvlend
-    integer(ip) :: lvsize
-    integer(ip), intent(inout) :: mask(node_num)
-    integer(ip) :: nbr
-    integer(ip) :: node
-    integer(ip), intent(in), value :: root
+    integer(int32) adj(adj_num)
+    integer(int32) adj_row(node_num+1)
+    integer(int32) i
+    integer(int32) iccsze
+    integer(int32) j
+    integer(int32) jstop
+    integer(int32) jstrt
+    integer(int32) lbegin
+    integer(int32) level_num
+    integer(int32) level_row(node_num+1)
+    integer(int32) level(node_num)
+    integer(int32) lvlend
+    integer(int32) lvsize
+    integer(int32) mask(node_num)
+    integer(int32) nbr
+    integer(int32) node
+    integer(int32) root
 
     mask(root) = 0
     level(1) = root
@@ -1547,11 +1528,10 @@ contains
   !  Reset MASK to 1 for the nodes in the level structure.
   !
     mask(level(1:iccsze)) = 1
-  end subroutine level_set
+  end
 
   subroutine neighbor_elements_q4_mesh ( element_num, element_node, &
-    element_neighbor ) &
-        bind(C, name="neighbor_elements_q4_mesh")
+    element_neighbor )
 
   !*****************************************************************************80
   !
@@ -1599,32 +1579,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(4,ELEMENT_NUM), the nodes
+  !    Input, integer(int32) ELEMENT_NODE(4,ELEMENT_NUM), the nodes
   !    that make up each element.
   !
-  !    Output, integer(ip) ELEMENT_NEIGHBOR(4,ELEMENT_NUM), lists the
+  !    Output, integer(int32) ELEMENT_NEIGHBOR(4,ELEMENT_NUM), lists the
   !    neighboring element on each side of a given element, or -1 if there is
   !    no neighbor.
   !
 
-    integer(ip), intent(in), value :: element_num
-    integer(ip), parameter :: element_order = 4
+    integer(int32) element_num
+    integer(int32), parameter :: element_order = 4
 
-    integer(ip), allocatable :: col(:,:)
-    integer(ip), intent(out) :: element_neighbor(4,element_num)
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: i
-    integer(ip) :: icol
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: q
-    integer(ip) :: q1
-    integer(ip) :: q2
-    integer(ip) :: side1
-    integer(ip) :: side2
+    integer(int32), allocatable :: col(:,:)
+    integer(int32) element_neighbor(4,element_num)
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) i
+    integer(int32) icol
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) q
+    integer(int32) q1
+    integer(int32) q2
+    integer(int32) side1
+    integer(int32) side2
 
     allocate ( col (4,4*element_num) )
   !
@@ -1716,10 +1696,9 @@ contains
     end do
 
     deallocate ( col )
-  end subroutine neighbor_elements_q4_mesh
+  end
 
-  subroutine perm_check ( n, p, base, ierror ) &
-        bind(C, name="perm_check")
+  subroutine perm_check ( n, p, base, ierror )
 
   !*****************************************************************************80
   !
@@ -1747,25 +1726,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries.
+  !    Input, integer(int32) N, the number of entries.
   !
-  !    Input, integer(ip) P(N), the array to check.
+  !    Input, integer(int32) P(N), the array to check.
   !
-  !    Input, integer(ip) BASE, the index base.
+  !    Input, integer(int32) BASE, the index base.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    0, the array represents a permutation.
   !    nonzero, the array does not represent a permutation.  The smallest
   !    missing value is equal to IERROR.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in), value :: base
-    integer(ip) :: find
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(in) :: p(n)
-    integer(ip) :: seek
+    integer(int32) base
+    integer(int32) find
+    integer(int32) ierror
+    integer(int32) p(n)
+    integer(int32) seek
 
     ierror = 0
 
@@ -1789,10 +1768,9 @@ contains
       end if
 
     end do
-  end subroutine perm_check
+  end
 
-  pure subroutine perm_inverse3 ( n, perm, perm_inv ) &
-        bind(C, name="perm_inverse3")
+  subroutine perm_inverse3 ( n, perm, perm_inv )
 
   !*****************************************************************************80
   !
@@ -1812,26 +1790,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items permuted.
+  !    Input, integer(int32) N, the number of items permuted.
   !
-  !    Input, integer(ip) PERM(N), a permutation.
+  !    Input, integer(int32) PERM(N), a permutation.
   !
-  !    Output, integer(ip) PERM_INV(N), the inverse permutation.
+  !    Output, integer(int32) PERM_INV(N), the inverse permutation.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), intent(in) :: perm(n)
-    integer(ip), intent(out) :: perm_inv(n)
+    integer(int32) i
+    integer(int32) perm(n)
+    integer(int32) perm_inv(n)
 
     do i = 1, n
       perm_inv(perm(i)) = i
     end do
-  end subroutine perm_inverse3
+  end
 
-  subroutine r8col_permute ( m, n, p, a ) &
-        bind(C, name="r8col_permute")
+  subroutine r8col_permute ( m, n, p, a )
 
   !*****************************************************************************80
   !
@@ -1877,28 +1854,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the dimension of objects.
+  !    Input, integer(int32) M, the dimension of objects.
   !
-  !    Input, integer(ip) N, the number of objects.
+  !    Input, integer(int32) N, the number of objects.
   !
-  !    Input, integer(ip) P(N), the permutation.  P(I) = J means
+  !    Input, integer(int32) P(N), the permutation.  P(I) = J means
   !    that the I-th element of the output array should be the J-th
   !    element of the input array.
   !
-  !    Input/output, real(dp) A(M,N), the array to be permuted.
+  !    Input/output, real(real64) A(M,N), the array to be permuted.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    real(dp), intent(inout) :: a(m,n)
-    real(dp) :: a_temp(m)
-    integer(ip), parameter :: base = 1
-    integer(ip) :: ierror
-    integer(ip) :: iget
-    integer(ip) :: iput
-    integer(ip) :: istart
-    integer(ip), intent(out) :: p(n)
+    real(real64) a(m,n)
+    real(real64) a_temp(m)
+    integer(int32), parameter :: base = 1
+    integer(int32) ierror
+    integer(int32) iget
+    integer(int32) iput
+    integer(int32) istart
+    integer(int32) p(n)
 
     call perm_check ( n, p, base, ierror )
 
@@ -1960,10 +1937,9 @@ contains
   !  Restore the signs of the entries.
   !
     p(1:n) = - p(1:n)
-  end subroutine r8col_permute
+  end
 
-  subroutine rcm ( root, adj_num, adj_row, adj, mask, perm, iccsze, node_num ) &
-        bind(C, name="rcm")
+  subroutine rcm ( root, adj_num, adj_row, adj, mask, perm, iccsze, node_num )
 
   !*****************************************************************************80
   !
@@ -2005,28 +1981,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ROOT, the node that defines the connected
+  !    Input, integer(int32) ROOT, the node that defines the connected
   !    component.  It is used as the starting point for the RCM ordering.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacency entries.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacency entries.
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1).  Information about
   !    row I is stored in entries ADJ_ROW(I) through ADJ_ROW(I+1)-1 of ADJ.
   !
-  !    Input, integer(ip) ADJ(ADJ_NUM), the adjacency structure.
+  !    Input, integer(int32) ADJ(ADJ_NUM), the adjacency structure.
   !    For each row, it contains the column indices of the nonzero entries.
   !
-  !    Input/output, integer(ip) MASK(NODE_NUM), a mask for the nodes.
+  !    Input/output, integer(int32) MASK(NODE_NUM), a mask for the nodes.
   !    Only those nodes with nonzero input mask values are considered by the
   !    routine.  The nodes numbered by RCM will have their mask values
   !    set to zero.
   !
-  !    Output, integer(ip) PERM(NODE_NUM), the RCM ordering.
+  !    Output, integer(int32) PERM(NODE_NUM), the RCM ordering.
   !
-  !    Output, integer(ip) ICCSZE, the size of the connected component
+  !    Output, integer(int32) ICCSZE, the size of the connected component
   !    that has been numbered.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
   !  Local Parameters:
   !
@@ -2034,29 +2010,29 @@ contains
   !    the degree of the nodes in the section graph specified by mask and root.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) node_num
 
-    integer(ip), intent(in) :: adj(adj_num)
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: deg(node_num)
-    integer(ip) :: fnbr
-    integer(ip) :: i
-    integer(ip), intent(out) :: iccsze
-    integer(ip) :: j
-    integer(ip) :: jstop
-    integer(ip) :: jstrt
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: lbegin
-    integer(ip) :: lnbr
-    integer(ip) :: lperm
-    integer(ip) :: lvlend
-    integer(ip), intent(inout) :: mask(node_num)
-    integer(ip) :: nbr
-    integer(ip) :: node
-    integer(ip), intent(out) :: perm(node_num)
-    integer(ip), intent(in), value :: root
+    integer(int32) adj(adj_num)
+    integer(int32) adj_row(node_num+1)
+    integer(int32) deg(node_num)
+    integer(int32) fnbr
+    integer(int32) i
+    integer(int32) iccsze
+    integer(int32) j
+    integer(int32) jstop
+    integer(int32) jstrt
+    integer(int32) k
+    integer(int32) l
+    integer(int32) lbegin
+    integer(int32) lnbr
+    integer(int32) lperm
+    integer(int32) lvlend
+    integer(int32) mask(node_num)
+    integer(int32) nbr
+    integer(int32) node
+    integer(int32) perm(node_num)
+    integer(int32) root
   !
   !  Find the degrees of the nodes in the component specified by MASK and ROOT.
   !
@@ -2146,11 +2122,10 @@ contains
   !  We now have the Cuthill-McKee ordering.  Reverse it.
   !
     call i4vec_reverse ( iccsze, perm )
-  end subroutine rcm
+  end
 
   subroutine root_find ( root, adj_num, adj_row, adj, mask, level_num, &
-    level_row, level, node_num ) &
-        bind(C, name="root_find")
+    level_row, level, node_num )
 
   !*****************************************************************************80
   !
@@ -2214,51 +2189,51 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) ROOT.  On input, ROOT is a node in the
+  !    Input/output, integer(int32) ROOT.  On input, ROOT is a node in the
   !    the component of the graph for which a pseudo-peripheral node is
   !    sought.  On output, ROOT is the pseudo-peripheral node obtained.
   !
-  !    Input, integer(ip) ADJ_NUM, the number of adjacency entries.
+  !    Input, integer(int32) ADJ_NUM, the number of adjacency entries.
   !
-  !    Input, integer(ip) ADJ_ROW(NODE_NUM+1).  Information about
+  !    Input, integer(int32) ADJ_ROW(NODE_NUM+1).  Information about
   !    row I is stored in entries ADJ_ROW(I) through ADJ_ROW(I+1)-1 of ADJ.
   !
-  !    Input, integer(ip) ADJ(ADJ_NUM), the adjacency structure.
+  !    Input, integer(int32) ADJ(ADJ_NUM), the adjacency structure.
   !    For each row, it contains the column indices of the nonzero entries.
   !
-  !    Input, integer(ip) MASK(NODE_NUM), specifies a section subgraph.
+  !    Input, integer(int32) MASK(NODE_NUM), specifies a section subgraph.
   !    Nodes for which MASK is zero are ignored by FNROOT.
   !
-  !    Output, integer(ip) LEVEL_NUM, is the number of levels in the
+  !    Output, integer(int32) LEVEL_NUM, is the number of levels in the
   !    level structure rooted at the node ROOT.
   !
-  !    Output, integer(ip) LEVEL_ROW(NODE_NUM+1), LEVEL(NODE_NUM), the
+  !    Output, integer(int32) LEVEL_ROW(NODE_NUM+1), LEVEL(NODE_NUM), the
   !    level structure array pair containing the level structure found.
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
 
-    integer(ip), intent(in), value :: adj_num
-    integer(ip), intent(in), value :: node_num
+    integer(int32) adj_num
+    integer(int32) node_num
 
-    integer(ip), intent(in) :: adj(adj_num)
-    integer(ip), intent(in) :: adj_row(node_num+1)
-    integer(ip) :: iccsze
-    integer(ip) :: j
-    integer(ip) :: jstrt
-    integer(ip) :: k
-    integer(ip) :: kstop
-    integer(ip) :: kstrt
-    integer(ip), intent(in) :: level(node_num)
-    integer(ip), intent(out) :: level_num
-    integer(ip) :: level_num2
-    integer(ip), intent(out) :: level_row(node_num+1)
-    integer(ip), intent(in) :: mask(node_num)
-    integer(ip) :: mindeg
-    integer(ip) :: nabor
-    integer(ip) :: ndeg
-    integer(ip) :: node
-    integer(ip), intent(inout) :: root
+    integer(int32) adj(adj_num)
+    integer(int32) adj_row(node_num+1)
+    integer(int32) iccsze
+    integer(int32) j
+    integer(int32) jstrt
+    integer(int32) k
+    integer(int32) kstop
+    integer(int32) kstrt
+    integer(int32) level(node_num)
+    integer(int32) level_num
+    integer(int32) level_num2
+    integer(int32) level_row(node_num+1)
+    integer(int32) mask(node_num)
+    integer(int32) mindeg
+    integer(int32) nabor
+    integer(int32) ndeg
+    integer(int32) node
+    integer(int32) root
   !
   !  Determine the level structure rooted at ROOT.
   !
@@ -2339,10 +2314,9 @@ contains
       end if
 
     end do
-  end subroutine root_find
+  end
 
-  subroutine sort_heap_external ( n, indx, i, j, isgn ) &
-        bind(C, name="sort_heap_external")
+  subroutine sort_heap_external ( n, indx, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -2378,9 +2352,9 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items to be sorted.
+  !    Input, integer(int32) N, the number of items to be sorted.
   !
-  !    Input/output, integer(ip) INDX, the main communication signal.
+  !    Input/output, integer(int32) INDX, the main communication signal.
   !
   !    The user must set INDX to 0 before the first call.
   !    Thereafter, the user should not change the value of INDX until
@@ -2399,27 +2373,27 @@ contains
   !
   !      equal to 0, the sorting is done.
   !
-  !    Output, integer(ip) I, J, the indices of two items.
+  !    Output, integer(int32) I, J, the indices of two items.
   !    On return with INDX positive, elements I and J should be interchanged.
   !    On return with INDX negative, elements I and J should be compared, and
   !    the result reported in ISGN on the next call.
   !
-  !    Input, integer(ip) ISGN, results of comparison of elements
+  !    Input, integer(int32) ISGN, results of comparison of elements
   !    I and J. (Used only when the previous call returned INDX less than 0).
   !    ISGN <= 0 means I is less than or equal to J;
   !    0 <= ISGN means I is greater than or equal to J.
   !
 
-    integer(ip), intent(out) :: i
-    integer(ip), save :: i_save = 0
-    integer(ip), intent(inout) :: indx
-    integer(ip), intent(in), value :: isgn
-    integer(ip), intent(out) :: j
-    integer(ip), save :: j_save = 0
-    integer(ip), save :: k = 0
-    integer(ip), save :: k1 = 0
-    integer(ip), intent(in), value :: n
-    integer(ip), save :: n1 = 0
+    integer(int32) i
+    integer(int32), save :: i_save = 0
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32), save :: j_save = 0
+    integer(int32), save :: k = 0
+    integer(int32), save :: k1 = 0
+    integer(int32) n
+    integer(int32), save :: n1 = 0
   !
   !  INDX = 0: This is the first call.
   !
@@ -2523,6 +2497,6 @@ contains
       i = i_save
       j = j_save
     end if
-  end subroutine sort_heap_external
+  end
 
 end module quad_mesh_rcm_mod

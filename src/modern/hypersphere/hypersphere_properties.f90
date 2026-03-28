@@ -1,16 +1,11 @@
-!> hypersphere_properties -- Modern Fortran 2018
+!> hypersphere_properties — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module hypersphere_properties_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: cartesian_to_hypersphere, hypersphere_01_area, hypersphere_01_area_values, hypersphere_01_interior_uniform, hypersphere_01_surface_uniform, hypersphere_01_volume
   public :: hypersphere_01_volume_values, hypersphere_area, hypersphere_stereograph, hypersphere_stereograph_inverse, hypersphere_surface_uniform, hypersphere_to_cartesian
@@ -19,8 +14,7 @@ module hypersphere_properties_mod
 
 contains
 
-  pure subroutine cartesian_to_hypersphere ( m, n, c, x, r, theta ) &
-        bind(C, name="cartesian_to_hypersphere")
+  subroutine cartesian_to_hypersphere ( m, n, c, x, r, theta )
 
   !*****************************************************************************80
   !
@@ -45,33 +39,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !    1 <= M.
   !
-  !    Input, integer(ip) N, the number of points to transform.
+  !    Input, integer(int32) N, the number of points to transform.
   !
-  !    Input, real(dp) C(M), the center of the hypersphere.
+  !    Input, real(real64) C(M), the center of the hypersphere.
   !
-  !    Input, real(dp) X(M,N), the Cartesian coordinates of the points.
+  !    Input, real(real64) X(M,N), the Cartesian coordinates of the points.
   !
-  !    Output, real(dp) R(N), the radius of the points on the
+  !    Output, real(real64) R(N), the radius of the points on the 
   !    hypersphere.  Except for the trivial case M = 1, R is assumed nonnegative.
   !
-  !    Output, real(dp) THETA(M-1,N), the coordinate angles of the
+  !    Output, real(real64) THETA(M-1,N), the coordinate angles of the 
   !    points, measured in radians.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: c(m)
-    real(dp), intent(in) :: x(m,n)
-    real(dp), intent(out) :: r(n)
-    real(dp), intent(out) :: theta(m-1,n)
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: j
-    real(dp) :: top(n)
-    real(dp) :: x2(m,n)
+    integer(int32) m
+    integer(int32) n
+
+    real(real64) c(m)
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) j
+    real(real64) r(n)
+    real(real64) theta(m-1,n)
+    real(real64) top(n)
+    real(real64) x(m,n)
+    real(real64) x2(m,n)
   !
   !  Handle special case of M = 1.
   !
@@ -93,7 +88,7 @@ contains
   !
   !  Compute M-2 components of THETA.
   !
-    theta(1:m-1,n) = 0.0_dp
+    theta(1:m-1,n) = 0.0e+00_real64
 
     do i = 2, m - 1
       do i1 = 1, i - 1
@@ -114,12 +109,11 @@ contains
     top(1:n) = sqrt ( x2(m,1:n) ** 2 + x2(m-1,1:n) ** 2 ) + x2(m-1,1:n)
 
     do j = 1, n
-      theta(m-1,j) = 2.0_dp * atan2 ( x2(m,j), top(j) )
+      theta(m-1,j) = 2.0 * atan2 ( x2(m,j), top(j) )
     end do
-  end subroutine cartesian_to_hypersphere
+  end
 
-  pure function hypersphere_01_area ( m ) &
-        bind(C, name="hypersphere_01_area")
+  function hypersphere_01_area ( m )
 
   !*****************************************************************************80
   !
@@ -151,7 +145,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -163,37 +157,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the dimension of the space.
+  !    Input, integer(int32) M, the dimension of the space.
   !
-  !    Output, real(dp) HYPERSPHERE_01_AREA, the area.
+  !    Output, real(real64) HYPERSPHERE_01_AREA, the area.
   !
 
-    real(dp) :: hypersphere_01_area
-    integer(ip), intent(in), value :: m
-    real(dp) :: area
-    integer(ip) :: i
-    integer(ip) :: m2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) hypersphere_01_area
+    integer(int32) i
+    integer(int32) m
+    integer(int32) m2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     if ( mod ( m, 2 ) == 0 ) then
       m2 = m / 2
-      area = 2.0_dp * ( r8_pi ) ** m2
+      area = 2.0e+00_real64 * ( r8_pi ) ** m2
       do i = 1, m2 - 1
-        area = area / real ( i, dp)
+        area = area / real ( i, real64)
       end do
     else
       m2 = ( m - 1 ) / 2
-      area = ( r8_pi ** m2 ) * ( 2.0_dp ** m )
+      area = ( r8_pi ** m2 ) * ( 2.0e+00_real64 ** m )
       do i = m2 + 1, 2 * m2
-        area = area / real ( i, dp)
+        area = area / real ( i, real64)
       end do
     end if
 
     hypersphere_01_area = area
-  end function hypersphere_01_area
+  end
 
-  subroutine hypersphere_01_area_values ( n_data, n, area ) &
-        bind(C, name="hypersphere_01_area_values")
+  subroutine hypersphere_01_area_values ( n_data, n, area )
 
   !*****************************************************************************80
   !
@@ -248,43 +241,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) N_DATA.  The user sets N_DATA to 0
+  !    Input/output, integer(int32) N_DATA.  The user sets N_DATA to 0
   !    before the first call.  On each call, the routine increments N_DATA by 1,
   !    and returns the corresponding data; when there is no more data, the
   !    output value of N_DATA will be 0 again.
   !
-  !    Output, integer(ip) N, the spatial dimension.
+  !    Output, integer(int32) N, the spatial dimension.
   !
-  !    Output, real(dp) AREA, the area
+  !    Output, real(real64) AREA, the area
   !    in that dimension.
   !
 
-    integer(ip), parameter :: n_max = 20
-    integer(ip), intent(inout) :: n_data
-    integer(ip), intent(out) :: n
-    real(dp), intent(out) :: area
-    real(dp), save, dimension ( n_max ) :: area_vec = (/ &
-      0.2000000000000000e+01_dp, &
-      0.6283185307179586e+01_dp, &
-      0.1256637061435917e+02_dp, &
-      0.1973920880217872e+02_dp, &
-      0.2631894506957162e+02_dp, &
-      0.3100627668029982e+02_dp, &
-      0.3307336179231981e+02_dp, &
-      0.3246969701133415e+02_dp, &
-      0.2968658012464836e+02_dp, &
-      0.2550164039877345e+02_dp, &
-      0.2072514267328890e+02_dp, &
-      0.1602315322625507e+02_dp, &
-      0.1183817381218268e+02_dp, &
-      0.8389703410491089e+01_dp, &
-      0.5721649212349567e+01_dp, &
-      0.3765290085742291e+01_dp, &
-      0.2396678817591364e+01_dp, &
-      0.1478625959000308e+01_dp, &
-      0.8858104195716824e+00_dp, &
-      0.5161378278002812e+00_dp /)
-    integer(ip), save, dimension ( n_max ) :: n_vec = (/ &
+    integer(int32), parameter :: n_max = 20
+
+    real(real64) area
+    real(real64), save, dimension ( n_max ) :: area_vec = (/ &
+      0.2000000000000000e+01_real64, &
+      0.6283185307179586e+01_real64, &
+      0.1256637061435917e+02_real64, &
+      0.1973920880217872e+02_real64, &
+      0.2631894506957162e+02_real64, &
+      0.3100627668029982e+02_real64, &
+      0.3307336179231981e+02_real64, &
+      0.3246969701133415e+02_real64, &
+      0.2968658012464836e+02_real64, &
+      0.2550164039877345e+02_real64, &
+      0.2072514267328890e+02_real64, &
+      0.1602315322625507e+02_real64, &
+      0.1183817381218268e+02_real64, &
+      0.8389703410491089e+01_real64, &
+      0.5721649212349567e+01_real64, &
+      0.3765290085742291e+01_real64, &
+      0.2396678817591364e+01_real64, &
+      0.1478625959000308e+01_real64, &
+      0.8858104195716824e+00_real64, &
+      0.5161378278002812e+00_real64 /)
+    integer(int32) n_data
+    integer(int32) n
+    integer(int32), save, dimension ( n_max ) :: n_vec = (/ &
        1, &
        2, &
        3, &
@@ -315,15 +309,14 @@ contains
     if ( n_max < n_data ) then
       n_data = 0
       n = 0
-      area = 0.0_dp
+      area = 0.0e+00_real64
     else
       n = n_vec(n_data)
       area = area_vec(n_data)
     end if
-  end subroutine hypersphere_01_area_values
+  end
 
-  subroutine hypersphere_01_interior_uniform ( m, n, seed, x ) &
-        bind(C, name="hypersphere_01_interior_uniform")
+  subroutine hypersphere_01_interior_uniform ( m, n, seed, x )
 
   !*****************************************************************************80
   !
@@ -367,27 +360,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the dimension of the space.
+  !    Input, integer(int32) M, the dimension of the space.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, real(dp) X(M,N), the points.
+  !    Output, real(real64) X(M,N), the points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(m,n)
-    real(dp) :: exponent
-    integer(ip) :: j
-    real(dp) :: norm
-    real(dp) :: r
-    real(dp) :: r8_uniform_01
+    integer(int32) m
+    integer(int32) n
 
-    exponent = 1.0_dp / real ( m, dp)
+    real(real64) exponent
+    integer(int32) j
+    real(real64) norm
+    real(real64) r
+    real(real64) r8_uniform_01
+    integer(int32) seed
+    real(real64) x(m,n)
+
+    exponent = 1.0e+00_real64 / real ( m, real64)
 
     do j = 1, n
   !
@@ -410,10 +404,9 @@ contains
       x(1:m,j) = r ** exponent * x(1:m,j)
 
     end do
-  end subroutine hypersphere_01_interior_uniform
+  end
 
-  subroutine hypersphere_01_surface_uniform ( m, n, seed, x ) &
-        bind(C, name="hypersphere_01_surface_uniform")
+  subroutine hypersphere_01_surface_uniform ( m, n, seed, x )
 
   !*****************************************************************************80
   !
@@ -459,22 +452,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the dimension of the space.
+  !    Input, integer(int32) M, the dimension of the space.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, real(dp) X(M,N), the points.
+  !    Output, real(real64) X(M,N), the points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(m,n)
-    integer(ip) :: j
-    real(dp) :: norm
+    integer(int32) m
+    integer(int32) n
+
+    integer(int32) j
+    real(real64) norm
+    integer(int32) seed
+    real(real64) x(m,n)
   !
   !  Fill a matrix with normally distributed values.
   !
@@ -493,10 +487,9 @@ contains
       x(1:m,j) = x(1:m,j) / norm
 
     end do
-  end subroutine hypersphere_01_surface_uniform
+  end
 
-  pure function hypersphere_01_volume ( m ) &
-        bind(C, name="hypersphere_01_volume")
+  function hypersphere_01_volume ( m )
 
   !*****************************************************************************80
   !
@@ -527,7 +520,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -539,37 +532,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Output, real(dp) HYPERSPHERE_01_VOLUME, the volume.
+  !    Output, real(real64) HYPERSPHERE_01_VOLUME, the volume.
   !
 
-    real(dp) :: hypersphere_01_volume
-    integer(ip), intent(in), value :: m
-    integer(ip) :: i
-    integer(ip) :: m2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: volume
+    real(real64) hypersphere_01_volume
+    integer(int32) i
+    integer(int32) m
+    integer(int32) m2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) volume
 
     if ( mod ( m, 2 ) == 0 ) then
       m2 = m / 2
       volume = r8_pi ** m2
       do i = 1, m2
-        volume = volume / real ( i, dp)
+        volume = volume / real ( i, real64)
       end do
     else
       m2 = ( m - 1 ) / 2
-      volume = ( r8_pi ** m2 ) * ( 2.0_dp ** m )
+      volume = ( r8_pi ** m2 ) * ( 2.0e+00_real64 ** m )
       do i = m2 + 1, 2 * m2 + 1
-        volume = volume / real ( i, dp)
+        volume = volume / real ( i, real64)
       end do
     end if
 
     hypersphere_01_volume = volume
-  end function hypersphere_01_volume
+  end
 
-  subroutine hypersphere_01_volume_values ( n_data, n, volume ) &
-        bind(C, name="hypersphere_01_volume_values")
+  subroutine hypersphere_01_volume_values ( n_data, n, volume )
 
   !*****************************************************************************80
   !
@@ -628,21 +620,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) N_DATA.  The user sets N_DATA to 0
+  !    Input/output, integer(int32) N_DATA.  The user sets N_DATA to 0
   !    before the first call.  On each call, the routine increments N_DATA by 1,
   !    and returns the corresponding data; when there is no more data, the
   !    output value of N_DATA will be 0 again.
   !
-  !    Output, integer(ip) N, the spatial dimension.
+  !    Output, integer(int32) N, the spatial dimension.
   !
-  !    Output, real(dp) VOLUME, the volume.
+  !    Output, real(real64) VOLUME, the volume.
   !
 
-    integer(ip), parameter :: n_max = 20
-    integer(ip), intent(inout) :: n_data
-    integer(ip), intent(out) :: n
-    real(dp), intent(out) :: volume
-    integer(ip), save, dimension ( n_max ) :: n_vec = (/ &
+    integer(int32), parameter :: n_max = 20
+
+    integer(int32) n_data
+    integer(int32) n
+    integer(int32), save, dimension ( n_max ) :: n_vec = (/ &
        1,  2, &
        3,  4, &
        5,  6, &
@@ -653,27 +645,28 @@ contains
       15, 16, &
       17, 18, &
       19, 20 /)
-    real(dp), save, dimension ( n_max ) :: volume_vec = (/ &
-      0.2000000000000000e+01_dp, &
-      0.3141592653589793e+01_dp, &
-      0.4188790204786391e+01_dp, &
-      0.4934802200544679e+01_dp, &
-      0.5263789013914325e+01_dp, &
-      0.5167712780049970e+01_dp, &
-      0.4724765970331401e+01_dp, &
-      0.4058712126416768e+01_dp, &
-      0.3298508902738707e+01_dp, &
-      0.2550164039877345e+01_dp, &
-      0.1884103879389900e+01_dp, &
-      0.1335262768854589e+01_dp, &
-      0.9106287547832831e+00_dp, &
-      0.5992645293207921e+00_dp, &
-      0.3814432808233045e+00_dp, &
-      0.2353306303588932e+00_dp, &
-      0.1409811069171390e+00_dp, &
-      0.8214588661112823e-01_dp, &
-      0.4662160103008855e-01_dp, &
-      0.2580689139001406e-01_dp /)
+    real(real64) volume
+    real(real64), save, dimension ( n_max ) :: volume_vec = (/ &
+      0.2000000000000000e+01_real64, &
+      0.3141592653589793e+01_real64, &
+      0.4188790204786391e+01_real64, &
+      0.4934802200544679e+01_real64, &
+      0.5263789013914325e+01_real64, &
+      0.5167712780049970e+01_real64, &
+      0.4724765970331401e+01_real64, &
+      0.4058712126416768e+01_real64, &
+      0.3298508902738707e+01_real64, &
+      0.2550164039877345e+01_real64, &
+      0.1884103879389900e+01_real64, &
+      0.1335262768854589e+01_real64, &
+      0.9106287547832831e+00_real64, &
+      0.5992645293207921e+00_real64, &
+      0.3814432808233045e+00_real64, &
+      0.2353306303588932e+00_real64, &
+      0.1409811069171390e+00_real64, &
+      0.8214588661112823e-01_real64, &
+      0.4662160103008855e-01_real64, &
+      0.2580689139001406e-01_real64 /)
 
     if ( n_data < 0 ) then
       n_data = 0
@@ -684,15 +677,14 @@ contains
     if ( n_max < n_data ) then
       n_data = 0
       n = 0
-      volume = 0.0_dp
+      volume = 0.0e+00_real64
     else
       n = n_vec(n_data)
       volume = volume_vec(n_data)
     end if
-  end subroutine hypersphere_01_volume_values
+  end
 
-  pure function hypersphere_area ( m, r ) &
-        bind(C, name="hypersphere_area")
+  function hypersphere_area ( m, r )
 
   !*****************************************************************************80
   !
@@ -717,7 +709,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -729,22 +721,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the dimension of the space.
+  !    Input, integer(int32) M, the dimension of the space.
   !
-  !    Input, real(dp) R, the radius.
+  !    Input, real(real64) R, the radius.
   !
-  !    Output, real(dp) HYPERSPHERE_AREA, the area.
+  !    Output, real(real64) HYPERSPHERE_AREA, the area.
   !
 
-    real(dp) :: hypersphere_area
-    integer(ip), intent(in), value :: m
-    real(dp), intent(in), value :: r
+    real(real64) hypersphere_01_area
+    real(real64) hypersphere_area
+    integer(int32) m
+    real(real64) r
 
     hypersphere_area = r ** ( m - 1  ) * hypersphere_01_area ( m )
-  end function hypersphere_area
+  end
 
-  pure subroutine hypersphere_stereograph ( m, n, x, x2 ) &
-        bind(C, name="hypersphere_stereograph")
+  subroutine hypersphere_stereograph ( m, n, x, x2 )
 
   !*****************************************************************************80
   !
@@ -764,31 +756,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !    M must be at least 2.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) X(M,N), the points to be mapped.
+  !    Input, real(real64) X(M,N), the points to be mapped.
   !
-  !    Output, real(dp) X2(M-1,N), the stereographically mapped points.
+  !    Output, real(real64) X2(M-1,N), the stereographically mapped points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: x(m,n)
-    real(dp), intent(out) :: x2(m-1,n)
-    integer(ip) :: i
+    integer(int32) m
+    integer(int32) n
+
+    integer(int32) i
+    real(real64) x(m,n)
+    real(real64) x2(m-1,n)
 
     x2(1:m-1,1:n) = x(1:m-1,1:n)
 
     do i = 1, m - 1
-      x2(i,1:n) = x2(i,1:n) / ( 1.0_dp - x(m,1:n) )
+      x2(i,1:n) = x2(i,1:n) / ( 1.0e+00_real64 - x(m,1:n) )
     end do
-  end subroutine hypersphere_stereograph
+  end
 
-  pure subroutine hypersphere_stereograph_inverse ( m, n, x2, x ) &
-        bind(C, name="hypersphere_stereograph_inverse")
+  subroutine hypersphere_stereograph_inverse ( m, n, x2, x )
 
   !*****************************************************************************80
   !
@@ -808,39 +800,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !    M must be at least 2.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) X2(M-1,N), points in the plane.
+  !    Input, real(real64) X2(M-1,N), points in the plane.
   !
-  !    Output, real(dp) X(M,N), points mapped back to the hypersphere.
+  !    Input, real(real64) X(M,N), points mapped back to the hypersphere.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: x2(m-1,n)
-    real(dp), intent(out) :: x(m,n)
-    real(dp) :: d(n)
-    integer(ip) :: i
-    integer(ip) :: j
+    integer(int32) m
+    integer(int32) n
 
-    x(1:m-1,1:n) = 2.0_dp * x2(1:m-1,1:n)
+    real(real64) d(n)
+    integer(int32) i
+    integer(int32) j
+    real(real64) x(m,n)
+    real(real64) x2(m-1,n)
+
+    x(1:m-1,1:n) = 2.0e+00_real64 * x2(1:m-1,1:n)
 
     do j = 1, n
       d(j) = sum ( x2(1:m-1,j) ** 2 )
     end do
 
-    x(m,1:n) = d(1:n) - 1.0_dp
+    x(m,1:n) = d(1:n) - 1.0e+00_real64
 
     do i = 1, m
-      x(i,1:n) = x(i,1:n) / ( d(1:n) + 1.0_dp )
+      x(i,1:n) = x(i,1:n) / ( d(1:n) + 1.0e+00_real64 )
     end do
-  end subroutine hypersphere_stereograph_inverse
+  end
 
-  subroutine hypersphere_surface_uniform ( m, n, r, c, seed, x ) &
-        bind(C, name="hypersphere_surface_uniform")
+  subroutine hypersphere_surface_uniform ( m, n, r, c, seed, x )
 
   !*****************************************************************************80
   !
@@ -878,27 +870,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the dimension of the space.
+  !    Input, integer(int32) M, the dimension of the space.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) R, the radius.
+  !    Input, real(real64) R, the radius.
   !
-  !    Input, real(dp) C(M), the center.
+  !    Input, real(real64) C(M), the center.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number 
   !    generator.
   !
-  !    Output, real(dp) X(M,N), the points.
+  !    Output, real(real64) X(M,N), the points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in), value :: r
-    real(dp), intent(in) :: c(m)
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(m,n)
-    integer(ip) :: i
+    integer(int32) m
+    integer(int32) n
+
+    real(real64) c(m)
+    integer(int32) i
+    real(real64) r
+    integer(int32) seed
+    real(real64) x(m,n)
 
     call hypersphere_01_surface_uniform ( m, n, seed, x )
   !
@@ -911,10 +904,9 @@ contains
     do i = 1, m
       x(i,1:n) = x(i,1:n) + c(i)
     end do
-  end subroutine hypersphere_surface_uniform
+  end
 
-  pure subroutine hypersphere_to_cartesian ( m, n, c, r, theta, x ) &
-        bind(C, name="hypersphere_to_cartesian")
+  subroutine hypersphere_to_cartesian ( m, n, c, r, theta, x )
 
   !*****************************************************************************80
   !
@@ -955,15 +947,16 @@ contains
   !    Output, real X(M,N), the Cartesian coordinates of the points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: c(m)
-    real(dp), intent(in) :: r(n)
-    real(dp), intent(in) :: theta(m-1,n)
-    real(dp), intent(out) :: x(m,n)
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
+    integer(int32) m
+    integer(int32) n
+
+    real(real64) c(m)
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    real(real64) r(n)
+    real(real64) theta(m-1,n)
+    real(real64) x(m,n)
 
     if ( m == 1 ) then
 
@@ -988,10 +981,9 @@ contains
     do i = 1, m
       x(i,1:n) = x(i,1:n) + c(i)
     end do
-  end subroutine hypersphere_to_cartesian
+  end
 
-  pure function hypersphere_volume ( m, r ) &
-        bind(C, name="hypersphere_volume")
+  function hypersphere_volume ( m, r )
 
   !*****************************************************************************80
   !
@@ -1018,7 +1010,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -1030,22 +1022,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the dimension of the space.
+  !    Input, integer(int32) M, the dimension of the space.
   !
-  !    Input, real(dp) R, the radius.
+  !    Input, real(real64) R, the radius.
   !
-  !    Output, real(dp) HYPERSPHERE_VOLUME, the volume.
+  !    Output, real(real64) HYPERSPHERE_VOLUME, the volume.
   !
 
-    real(dp) :: hypersphere_volume
-    integer(ip), intent(in), value :: m
-    real(dp), intent(in), value :: r
+    real(real64) hypersphere_01_volume
+    real(real64) hypersphere_volume
+    integer(int32) m
+    real(real64) r
 
     hypersphere_volume = ( r ** m ) * hypersphere_01_volume ( m )
-  end function hypersphere_volume
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -1053,7 +1045,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
   !    For now, the input quantity SEED is an integer variable.
   !
@@ -1112,17 +1104,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -1139,11 +1131,10 @@ contains
       seed = seed + i4_huge
     end if
 
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  pure function r8mat_norm_fro_affine ( m, n, a1, a2 ) &
-        bind(C, name="r8mat_norm_fro_affine")
+  function r8mat_norm_fro_affine ( m, n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -1177,39 +1168,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows.
+  !    Input, integer(int32) M, the number of rows.
   !
-  !    Input, integer(ip) N, the number of columns.
+  !    Input, integer(int32) N, the number of columns.
   !
-  !    Input, real(dp) A1(M,N), A2(M,N), the matrices for whose
+  !    Input, real(real64) A1(M,N), A2(M,N), the matrices for whose 
   !    difference the Frobenius norm is desired.
   !
-  !    Output, real(dp) R8MAT_NORM_FRO_AFFINE, the Frobenius
+  !    Output, real(real64) R8MAT_NORM_FRO_AFFINE, the Frobenius 
   !    norm of A1 - A2.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a1(m,n)
-    real(dp), intent(in) :: a2(m,n)
-    real(dp) :: r8mat_norm_fro_affine
-    real(dp) :: t
-    integer(ip) :: i
-    integer(ip) :: j
+    integer(int32) m
+    integer(int32) n
 
-    t = 0.0_dp
+    real(real64) a1(m,n)
+    real(real64) a2(m,n)
+    real(real64) r8mat_norm_fro_affine
+
+    real(real64) t
+    integer(int32) i, j
+    r8mat_norm_fro_affine = sqrt ( sum ( ( a1(1:m,1:n) - a2(1:m,1:n) )**2 ) )
+
+    t = 0.0e+00_real64
     do j = 1, n
-      do i = 1, m
+      do i = 1, n
         t = t + ( a1(i,j) - a2(i,j) )**2
       end do
     end do
     t = sqrt ( t )
 
     r8mat_norm_fro_affine = t
-  end function r8mat_norm_fro_affine
+  end
 
-  subroutine r8mat_normal_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_normal_01")
+  subroutine r8mat_normal_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -1262,25 +1254,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns
+  !    Input, integer(int32) M, N, the number of rows and columns
   !    in the array.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudonormal values.
+  !    Output, real(real64) R(M,N), the array of pseudonormal values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
+    integer(int32) m
+    integer(int32) n
+
+    integer(int32) seed
+    real(real64) r(m,n)
 
     call r8vec_normal_01 ( m * n, seed, r )
-  end subroutine r8mat_normal_01
+  end
 
-  pure subroutine r8mat_uniform_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_uniform_01")
+  subroutine r8mat_uniform_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -1322,25 +1314,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns in
+  !    Input, integer(int32) M, N, the number of rows and columns in
   !    the array.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudorandom values.
+  !    Output, real(real64) R(M,N), the array of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
-    integer(ip) :: i
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: j
-    integer(ip) :: k
+    integer(int32) m
+    integer(int32) n
+
+    integer(int32) i
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) j
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(m,n)
 
     do j = 1, n
+
       do i = 1, m
 
         k = seed / 127773
@@ -1351,14 +1345,13 @@ contains
           seed = seed + i4_huge
         end if
 
-        r(i,j) = real ( seed, dp) * 4.656612875e-10_dp
+        r(i,j) = real ( seed, real64) * 4.656612875e-10_real64
 
       end do
     end do
-  end subroutine r8mat_uniform_01
+  end
 
-  subroutine r8vec_normal_01 ( n, seed, x ) &
-        bind(C, name="r8vec_normal_01")
+  subroutine r8vec_normal_01 ( n, seed, x )
 
   !*****************************************************************************80
   !
@@ -1392,16 +1385,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of values desired.
+  !    Input, integer(int32) N, the number of values desired.  
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, real(dp) X(N), a sample of the standard normal PDF.
+  !    Output, real(real64) X(N), a sample of the standard normal PDF.
   !
   !  Local parameters:
   !
-  !    Local, real(dp) R(N+1), is used to store some uniform
+  !    Local, real(real64) R(N+1), is used to store some uniform
   !    random values.  Its dimension is N+1, but really it is only needed
   !    to be the smallest even number greater than or equal to N.
   !
@@ -1409,15 +1402,16 @@ contains
   !    X that we need to compute.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(n)
-    integer(ip) :: m
-    real(dp) :: r(n+1)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: r8_uniform_01
-    integer(ip) :: x_hi_index
-    integer(ip) :: x_lo_index
+    integer(int32) n
+
+    integer(int32) m
+    real(real64) r(n+1)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r8_uniform_01
+    integer(int32) seed
+    real(real64) x(n)
+    integer(int32) x_hi_index
+    integer(int32) x_lo_index
   !
   !  Record the range of X we need to fill in.
   !
@@ -1430,7 +1424,7 @@ contains
 
       r(1) = r8_uniform_01 ( seed )
 
-      if ( r(1) == 0.0_dp ) then
+      if ( r(1) == 0.0e+00_real64 ) then
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'R8VEC_NORMAL_01 - Fatal error!'
         write ( *, '(a)' ) '  R8_UNIFORM_01 returned a value of 0.'
@@ -1440,7 +1434,7 @@ contains
       r(2) = r8_uniform_01 ( seed )
 
       x(x_hi_index) = &
-               sqrt ( -2.0_dp * log ( r(1) ) ) * cos ( 2.0_dp * r8_pi * r(2) )
+               sqrt ( -2.0e+00_real64 * log ( r(1) ) ) * cos ( 2.0e+00_real64 * r8_pi * r(2) )
   !
   !  If we require an even number of values, that's easy.
   !
@@ -1451,12 +1445,12 @@ contains
       call r8vec_uniform_01 ( 2*m, seed, r )
 
       x(x_lo_index:x_hi_index-1:2) = &
-        sqrt ( -2.0_dp * log ( r(1:2*m-1:2) ) ) &
-        * cos ( 2.0_dp * r8_pi * r(2:2*m:2) )
+        sqrt ( -2.0e+00_real64 * log ( r(1:2*m-1:2) ) ) &
+        * cos ( 2.0e+00_real64 * r8_pi * r(2:2*m:2) )
 
       x(x_lo_index+1:x_hi_index:2) = &
-        sqrt ( -2.0_dp * log ( r(1:2*m-1:2) ) ) &
-        * sin ( 2.0_dp * r8_pi * r(2:2*m:2) )
+        sqrt ( -2.0e+00_real64 * log ( r(1:2*m-1:2) ) ) &
+        * sin ( 2.0e+00_real64 * r8_pi * r(2:2*m:2) )
   !
   !  If we require an odd number of values, we generate an even number,
   !  and handle the last pair specially, storing one in X(N), and
@@ -1471,21 +1465,20 @@ contains
       call r8vec_uniform_01 ( 2*m, seed, r )
 
       x(x_lo_index:x_hi_index-1:2) = &
-        sqrt ( -2.0_dp * log ( r(1:2*m-3:2) ) ) &
-        * cos ( 2.0_dp * r8_pi * r(2:2*m-2:2) )
+        sqrt ( -2.0e+00_real64 * log ( r(1:2*m-3:2) ) ) &
+        * cos ( 2.0e+00_real64 * r8_pi * r(2:2*m-2:2) )
 
       x(x_lo_index+1:x_hi_index:2) = &
-        sqrt ( -2.0_dp * log ( r(1:2*m-3:2) ) ) &
-        * sin ( 2.0_dp * r8_pi * r(2:2*m-2:2) )
+        sqrt ( -2.0e+00_real64 * log ( r(1:2*m-3:2) ) ) &
+        * sin ( 2.0e+00_real64 * r8_pi * r(2:2*m-2:2) )
 
-      x(n) = sqrt ( -2.0_dp * log ( r(2*m-1) ) ) &
-        * cos ( 2.0_dp * r8_pi * r(2*m) )
+      x(n) = sqrt ( -2.0e+00_real64 * log ( r(2*m-1) ) ) &
+        * cos ( 2.0e+00_real64 * r8_pi * r(2*m) )
 
     end if
-  end subroutine r8vec_normal_01
+  end
 
-  subroutine r8vec_uniform_01 ( n, seed, r ) &
-        bind(C, name="r8vec_uniform_01")
+  subroutine r8vec_uniform_01 ( n, seed, r )
 
   !*****************************************************************************80
   !
@@ -1527,19 +1520,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
-    integer(ip) :: i
-    integer(ip) :: k
+    integer(int32) n
+
+    integer(int32) i
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -1558,13 +1552,12 @@ contains
         seed = seed + 2147483647
       end if
 
-      r(i) = real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_01
+  end
 
-  pure subroutine sphere_stereograph ( m, n, p, q ) &
-        bind(C, name="sphere_stereograph")
+  subroutine sphere_stereograph ( m, n, p, q )
 
   !*****************************************************************************80
   !
@@ -1607,33 +1600,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) P(M,N), a set of points on the unit sphere.
+  !    Input, real(real64) P(M,N), a set of points on the unit sphere.
   !
-  !    Output, real(dp) Q(M,N), the coordinates of the
+  !    Output, real(real64) Q(M,N), the coordinates of the
   !    image points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: p(m,n)
-    real(dp), intent(out) :: q(m,n)
-    integer(ip) :: i
-    integer(ip) :: j
+    integer(int32) m
+    integer(int32) n
+
+    integer(int32) i
+    integer(int32) j
+    real(real64) p(m,n)
+    real(real64) q(m,n)
 
     do j = 1, n
       do i = 1, m - 1
-        q(i,j) = 2.0_dp * p(i,j) / ( 1.0_dp + p(m,j) )
+        q(i,j) = 2.0e+00_real64 * p(i,j) / ( 1.0e+00_real64 + p(m,j) )
       end do
-      q(m,j) = 1.0_dp
+      q(m,j) = 1.0e+00_real64
     end do
-  end subroutine sphere_stereograph
+  end
 
-  pure subroutine sphere_stereograph_inverse ( m, n, q, p ) &
-        bind(C, name="sphere_stereograph_inverse")
+  subroutine sphere_stereograph_inverse ( m, n, q, p )
 
   !*****************************************************************************80
   !
@@ -1676,33 +1669,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Q(M,N), the points, which are presumed to lie
+  !    Input, real(real64) Q(M,N), the points, which are presumed to lie
   !    on the plane Z = 1.
   !
-  !    Output, real(dp) P(M,N), the stereographic
+  !    Output, real(real64) P(M,N), the stereographic
   !    inverse projections of the points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: q(m,n)
-    real(dp), intent(out) :: p(m,n)
-    integer(ip) :: j
-    real(dp) :: qn
+    integer(int32) m
+    integer(int32) n
+
+    integer(int32) j
+    real(real64) p(m,n)
+    real(real64) q(m,n)
+    real(real64) qn
 
     do j = 1, n
 
       qn = sum ( q(1:m-1,j)**2 )
 
-      p(1:m-1,j) = 4.0_dp * q(1:m-1,j) / ( 4.0_dp + qn )
+      p(1:m-1,j) = 4.0e+00_real64 * q(1:m-1,j) / ( 4.0e+00_real64 + qn )
 
-      p(m,j) = ( 4.0_dp - qn ) / ( 4.0_dp + qn )
+      p(m,j) = ( 4.0e+00_real64 - qn ) / ( 4.0e+00_real64 + qn )
 
     end do
-  end subroutine sphere_stereograph_inverse
+  end
 
 end module hypersphere_properties_mod

@@ -1,16 +1,11 @@
-!> geompack2 — Modern Fortran 2018
+!> geompack2 â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module geompack2_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: angle, areapg, areatr, bedgmv, bnsrt2, cmcirc
   public :: cvdec2, cvdtri, degrees_to_radians, delaunay_print, dhpsrt, diaedg
@@ -30,8 +25,7 @@ module geompack2_mod
 
 contains
 
-  function angle ( xa, ya, xb, yb, xc, yc ) &
-        bind(C, name="angle")
+  function angle ( xa, ya, xb, yb, xc, yc )
 
   !*****************************************************************************80
   !
@@ -63,26 +57,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, the coordinates of the 
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, the coordinates of the 
   !    vertices.
   !
-  !    Output, real(dp) ANGLE, the interior angle formed by
+  !    Output, real(real64) ANGLE, the interior angle formed by
   !    the vertex, in radians, between 0 and 2*PI.
   !
 
-    real(dp) :: angle
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: t
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
+    real(real64) angle
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) t
+    real(real64) x1
+    real(real64) x2
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) y1
+    real(real64) y2
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
 
     x1 = xa - xb
     y1 = ya - yb
@@ -91,27 +85,26 @@ contains
 
     t = sqrt ( ( x1 * x1 + y1 * y1 ) * ( x2 * x2 + y2 * y2 ) )
 
-    if ( t == 0.0_dp ) then
+    if ( t == 0.0e+00_real64 ) then
       angle = pi
     end if
 
     t = ( x1 * x2 + y1 * y2 ) / t
 
-    if ( t < -1.0_dp ) then
-      t = -1.0_dp
-    else if ( 1.0_dp < t ) then
-      t = 1.0_dp
+    if ( t < -1.0e+00_real64 ) then
+      t = -1.0e+00_real64
+    else if ( 1.0e+00_real64 < t ) then
+      t = 1.0e+00_real64
     end if
 
     angle = acos ( t )
 
-    if ( x2 * y1 - y2 * x1 < 0.0_dp ) then
-      angle = 2.0_dp * pi - angle
+    if ( x2 * y1 - y2 * x1 < 0.0e+00_real64 ) then
+      angle = 2.0e+00_real64 * pi - angle
     end if
-  end function angle
+  end
 
-  function areapg ( nvrt, xc, yc ) &
-        bind(C, name="areapg")
+  function areapg ( nvrt, xc, yc )
 
   !*****************************************************************************80
   !
@@ -136,24 +129,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVRT, the number of vertices on the boundary of 
+  !    Input, integer(int32) NVRT, the number of vertices on the boundary of 
   !    the polygon.  N must be at least 3.
   !
-  !    Input, real(dp) XC(NVRT), YC(NVRT), the X and Y coordinates 
+  !    Input, real(real64) XC(NVRT), YC(NVRT), the X and Y coordinates 
   !    of the vertices.
   !
-  !    Output, real(dp) AREAPG, twice the signed area of the polygon,
+  !    Output, real(real64) AREAPG, twice the signed area of the polygon,
   !    which will be positive if the vertices were listed in counter clockwise
   !    order, and negative otherwise.
   !
 
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    real(dp) :: areapg
-    integer(ip) :: i
-    real(dp) :: sum2
-    real(dp), intent(in) :: xc(nvrt)
-    real(dp), intent(in) :: yc(nvrt)
+    real(real64) areapg
+    integer(int32) i
+    real(real64) sum2
+    real(real64) xc(nvrt)
+    real(real64) yc(nvrt)
 
     sum2 = xc(1) * ( yc(2) - yc(nvrt) )
 
@@ -164,10 +157,9 @@ contains
     sum2 = sum2 + xc(nvrt) * ( yc(1) - yc(nvrt-1) )
 
     areapg = sum2
-  end function areapg
+  end
 
-  function areatr ( xa, ya, xb, yb, xc, yc ) &
-        bind(C, name="areatr")
+  function areatr ( xa, ya, xb, yb, xc, yc )
 
   !*****************************************************************************80
   !
@@ -192,28 +184,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XA, YA, XB, YB, XC, YC, the coordinates of the 
+  !    Input, real(real64) XA, YA, XB, YB, XC, YC, the coordinates of the 
   !    vertices.
   !
-  !    Output, real(dp) AREATR, twice the signed area of the triangle.
+  !    Output, real(real64) AREATR, twice the signed area of the triangle.
   !    This will be positive if the vertices are listed in counter clockwise 
   !    order.
   !
 
-    real(dp) :: areatr 
-    real(dp), intent(in), value :: xa
-    real(dp), intent(in), value :: xb
-    real(dp), intent(in), value :: xc
-    real(dp), intent(in), value :: ya
-    real(dp), intent(in), value :: yb
-    real(dp), intent(in), value :: yc
+    real(real64) areatr 
+    real(real64) xa
+    real(real64) xb
+    real(real64) xc
+    real(real64) ya
+    real(real64) yb
+    real(real64) yc
 
     areatr = ( xb - xa ) * ( yc - ya ) - ( xc - xa ) * ( yb - ya )
-  end function areatr
+  end
 
   subroutine bedgmv ( nvc, npolg, nvert, maxvc, h, vcl, hvl, pvl, vstart, vnum, &
-    ierror ) &
-        bind(C, name="bedgmv")
+    ierror )
 
   !*****************************************************************************80
   !
@@ -243,67 +234,67 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) NVC, the number of coordinates or 
+  !    Input/output, integer(int32) NVC, the number of coordinates or 
   !    positions used in VCL array.
   !
-  !    Input, integer(ip) NPOLG, the number of polygons or positions used 
+  !    Input, integer(int32) NPOLG, the number of polygons or positions used 
   !    in HVL array.
   !
-  !    Input, integer(ip) NVERT, the number of vertices or positions 
+  !    Input, integer(int32) NVERT, the number of vertices or positions 
   !    used in PVL array.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for 
+  !    Input, integer(int32) MAXVC, the maximum size available for 
   !    VCL array.
   !
-  !    Input, real(dp) H(1:NPOLG), the spacing of mesh vertices for 
+  !    Input, real(real64) H(1:NPOLG), the spacing of mesh vertices for 
   !    convex polygons.
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input, integer(ip) HVL(1:NPOLG, the head vertex list.
+  !    Input, integer(int32) HVL(1:NPOLG, the head vertex list.
   !
-  !    Input, integer(ip) PVL(1:4,1:NVERT), the polygon vertex list.
+  !    Input, integer(int32) PVL(1:4,1:NVERT), the polygon vertex list.
   !
-  !    Output, integer(ip) VSTART(1:NVERT), the start location in VCL 
+  !    Output, integer(int32) VSTART(1:NVERT), the start location in VCL 
   !    for mesh vertices on each edge in PVL if there are any, else 0.
   !
-  !    Output, integer(ip) VNUM(1:NVERT), the number of mesh vertices 
+  !    Output, integer(int32) VNUM(1:NVERT), the number of mesh vertices 
   !    on interior of each edge in PVL; entry is negated if mesh vertices are 
   !    listed in backward order in VCL.
   !
-  !    Output, integer(ip) IERROR, is set to 3 on error.
+  !    Output, integer(int32) IERROR, is set to 3 on error.
   !
 
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: npolg
-    integer(ip), intent(in), value :: nvert
+    integer(int32) maxvc
+    integer(int32) npolg
+    integer(int32) nvert
 
-    real(dp) :: dx
-    real(dp) :: dy
-    integer(ip), parameter :: edgv = 4
-    real(dp), intent(in) :: h(npolg)
-    real(dp) :: hh
-    integer(ip), intent(in) :: hvl(npolg)
-    integer(ip) :: i
-    integer(ip) :: ia
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    real(dp) :: leng
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: m
-    integer(ip), intent(inout) :: nvc
-    integer(ip), parameter :: polg = 2
-    integer(ip), intent(in) :: pvl(4,nvert)
-    integer(ip), parameter :: succ = 3
-    integer(ip) :: u
-    integer(ip) :: v
-    integer(ip), intent(out) :: vstart(nvert)
-    integer(ip), intent(out) :: vnum(nvert)
-    real(dp), intent(inout) :: vcl(2,maxvc)
-    real(dp) :: x
-    real(dp) :: y
+    real(real64) dx
+    real(real64) dy
+    integer(int32), parameter :: edgv = 4
+    real(real64) h(npolg)
+    real(real64) hh
+    integer(int32) hvl(npolg)
+    integer(int32) i
+    integer(int32) ia
+    integer(int32) ierror
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    real(real64) leng
+    integer(int32), parameter :: loc = 1
+    integer(int32) m
+    integer(int32) nvc
+    integer(int32), parameter :: polg = 2
+    integer(int32) pvl(4,nvert)
+    integer(int32), parameter :: succ = 3
+    integer(int32) u
+    integer(int32) v
+    integer(int32) vstart(nvert)
+    integer(int32) vnum(nvert)
+    real(real64) vcl(2,maxvc)
+    real(real64) x
+    real(real64) y
 
     ierror = 0
     vstart(1:nvert) = -1
@@ -331,7 +322,7 @@ contains
             hh = sqrt ( h(k) * h(pvl(polg,ia)) )
           end if
 
-          if ( hh == 0.0_dp ) then
+          if ( hh == 0.0e+00_real64 ) then
             write ( *, '(a)' ) ' '
             write ( *, '(a)' ) 'BEDGMV - Fatal error!'
             write ( *, '(a)' ) '  HH = 0.'
@@ -340,8 +331,8 @@ contains
 
           l = int ( leng / hh )
 
-          if ( real ( l, dp) / real ( 2 * l + 1, dp) &
-            < ( leng / hh ) - real ( l, dp) ) then
+          if ( real ( l, real64) / real ( 2 * l + 1, real64) &
+            < ( leng / hh ) - real ( l, real64) ) then
             l = l + 1
           end if
 
@@ -352,8 +343,8 @@ contains
 
           else
 
-            dx = ( vcl(1,v) - x ) / real ( l, dp)
-            dy = ( vcl(2,v) - y ) / real ( l, dp)
+            dx = ( vcl(1,v) - x ) / real ( l, real64)
+            dy = ( vcl(2,v) - y ) / real ( l, real64)
             l = l - 1
 
             if ( maxvc < nvc + l ) then
@@ -392,10 +383,9 @@ contains
       end do
 
     end do
-  end subroutine bedgmv
+  end
 
-  subroutine bnsrt2 ( binexp, n, a, map, bin, iwk ) &
-        bind(C, name="bnsrt2")
+  subroutine bnsrt2 ( binexp, n, a, map, bin, iwk )
 
   !*****************************************************************************80
   !
@@ -404,7 +394,7 @@ contains
   !  Purpose: 
   !
   !    Use a bin sort to obtain the permutation of N 2D
-  !    real(dp) points so that points are in increasing bin
+  !    real(real64) points so that points are in increasing bin
   !    order, where the N points are assigned to about N**BINEXP bins.
   !
   !  Modified:
@@ -426,13 +416,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) BINEXP, the exponent for the number of bins.
+  !    Input, integer(int32) BINEXP, the exponent for the number of bins.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) A(2,*), the points to be binned.
+  !    Input, real(real64) A(2,*), the points to be binned.
   !
-  !    Input/output, integer(ip) MAP(N); on input, the points of A with
+  !    Input/output, integer(int32) MAP(N); on input, the points of A with
   !    indices MAP(1), MAP(2), ..., MAP(N) are to be sorted.  On output, MAP has
   !    been permuted so bin of MAP(1) <= bin of MAP(2) <= ... <= bin of MAP(N).
   !
@@ -441,26 +431,26 @@ contains
   !    Workspace, integer IWK(N), used for copy of MAP array.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(2,*)
-    integer(ip) :: bin(n)
-    real(dp), intent(in), value :: binexp
-    real(dp) :: dx
-    real(dp) :: dy
-    integer(ip) :: i
-    integer(ip) :: iwk(n)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip), intent(inout) :: map(n)
-    integer(ip) :: nside
-    real(dp) :: xmax
-    real(dp) :: xmin
-    real(dp) :: ymax
-    real(dp) :: ymin
+    real(real64) a(2,*)
+    integer(int32) bin(n)
+    real(real64) binexp
+    real(real64) dx
+    real(real64) dy
+    integer(int32) i
+    integer(int32) iwk(n)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) map(n)
+    integer(int32) nside
+    real(real64) xmax
+    real(real64) xmin
+    real(real64) ymax
+    real(real64) ymin
 
-    nside = int ( real ( n, dp)**( binexp / 2.0_dp ) + 0.5_dp )
+    nside = int ( real ( n, real64)**( binexp / 2.0e+00_real64 ) + 0.5e+00_real64 )
 
     if ( nside <= 1 ) then
     end if
@@ -477,15 +467,15 @@ contains
       ymax = max ( ymax, a(2,j) )
     end do
 
-    dx = 1.0001_dp * ( xmax - xmin ) / real ( nside, dp)
-    dy = 1.0001_dp * ( ymax - ymin ) / real ( nside, dp)
+    dx = 1.0001e+00_real64 * ( xmax - xmin ) / real ( nside, real64)
+    dy = 1.0001e+00_real64 * ( ymax - ymin ) / real ( nside, real64)
 
-    if ( dx == 0.0_dp ) then
-      dx = 1.0_dp
+    if ( dx == 0.0e+00_real64 ) then
+      dx = 1.0e+00_real64
     end if
 
-    if ( dy == 0.0_dp ) then
-      dy = 1.0_dp
+    if ( dy == 0.0e+00_real64 ) then
+      dy = 1.0e+00_real64
     end if
 
     do i = 1, n
@@ -508,10 +498,9 @@ contains
     do i = 1, n
       map(i) = iwk(bin(i))
     end do
-  end subroutine bnsrt2
+  end
 
-  function cmcirc ( x0, y0, x1, y1, x2, y2, x3, y3 ) &
-        bind(C, name="cmcirc")
+  function cmcirc ( x0, y0, x1, y1, x2, y2, x3, y3 )
 
   !*****************************************************************************80
   !
@@ -536,42 +525,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X0, Y0, the coordinates of the point to
+  !    Input, real(real64) X0, Y0, the coordinates of the point to
   !    be tested.
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, X3, Y3, the coordinates of
+  !    Input, real(real64) X1, Y1, X2, Y2, X3, Y3, the coordinates of
   !    three points that define a circle.
   !
-  !    Output, integer(ip) CMCIRC, reports the test results:
+  !    Output, integer(int32) CMCIRC, reports the test results:
   !     2, if the three vertices are collinear,
   !     1, if (X0,Y0) is inside the circle,
   !     0, if (X0,Y0) is on the circle,
   !    -1, if (X0,Y0) is outside the circle.
   !
-    real(dp) :: a11
-    real(dp) :: a12
-    real(dp) :: a21
-    real(dp) :: a22
-    real(dp) :: b1
-    real(dp) :: b2
-    integer(ip) :: cmcirc
-    real(dp) :: det
-    real(dp) :: diff
-    real(dp) :: rsq
-    real(dp) :: tol
-    real(dp) :: tolabs
-    real(dp) :: xc
-    real(dp) :: yc
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: y0
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
+    real(real64) a11
+    real(real64) a12
+    real(real64) a21
+    real(real64) a22
+    real(real64) b1
+    real(real64) b2
+    integer(int32) cmcirc
+    real(real64) det
+    real(real64) diff
+    real(real64) rsq
+    real(real64) tol
+    real(real64) tolabs
+    real(real64) xc
+    real(real64) yc
+    real(real64) x0
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y0
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
     cmcirc = 2
     a11 = x2 - x1
     a12 = y2 - y1
@@ -585,7 +574,7 @@ contains
 
     b1 = a11 * a11 + a12 * a12
     b2 = a21 * a21 + a22 * a22
-    det = 2.0_dp * det
+    det = 2.0e+00_real64 * det
     xc = ( b1 * a22 - b2 * a12 ) / det
     yc = ( b2 * a11 - b1 * a21 ) / det
     rsq = xc * xc + yc * yc
@@ -599,11 +588,10 @@ contains
     else
       cmcirc = 0
     end if
-  end function cmcirc
+  end
 
   subroutine cvdec2 ( angspc, angtol, nvc, npolg, nvert, maxvc, maxhv, &
-    maxpv, maxiw, maxwk, vcl, regnum, hvl, pvl, iang, iwk, wk, ierror ) &
-        bind(C, name="cvdec2")
+    maxpv, maxiw, maxwk, vcl, regnum, hvl, pvl, iang, iwk, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -635,86 +623,86 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGSPC, the angle spacing parameter in radians 
+  !    Input, real(real64) ANGSPC, the angle spacing parameter in radians 
   !    used in controlling vertices to be considered as an endpoint of a
   !    separator.
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter in radians 
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter in radians 
   !    used in accepting separator(s).
   !
-  !    Input/output, integer(ip) NVC, the number of vertex coordinates 
+  !    Input/output, integer(int32) NVC, the number of vertex coordinates 
   !    or positions used in VCL.
   !
-  !    Input/output, integer(ip) NPOLG, the number of polygonal 
+  !    Input/output, integer(int32) NPOLG, the number of polygonal 
   !    subregions or positions used in HVL array.
   !
-  !    Input/output, integer(ip) NVERT, the number of polygon vertices 
+  !    Input/output, integer(int32) NVERT, the number of polygon vertices 
   !    or positions used in PVL array.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL 
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL 
   !    array, should be greater than or equal to the number of vertex coordinates
   !    required for decomposition.
   !
-  !    Input, integer(ip) MAXHV, the maximum size available for HVL, 
+  !    Input, integer(int32) MAXHV, the maximum size available for HVL, 
   !    REGNUM arrays, should be greater than or equal to the number of polygons 
   !    required for decomposition.
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL, 
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL, 
   !    IANG arrays; should be greater than or equal to the number of polygon 
   !    vertices required for decomposition.
   !
-  !    Input, integer(ip) MAXIW, the maximum size available for IWK 
+  !    Input, integer(int32) MAXIW, the maximum size available for IWK 
   !    array; should be about 3 times maximum number of vertices in any polygon.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK 
+  !    Input, integer(int32) MAXWK, the maximum size available for WK 
   !    array; should be about 5 times maximum number of vertices in any polygon.
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) REGNUM(1:NPOLG), region numbers.
+  !    Input/output, integer(int32) REGNUM(1:NPOLG), region numbers.
   !
-  !    Input/output, integer(ip) HVL(1:NPOLG), the head vertex list.
+  !    Input/output, integer(int32) HVL(1:NPOLG), the head vertex list.
   !
-  !    Input/output, integer(ip) PVL(1:4,1:NVERT), real(dp) 
+  !    Input/output, integer(int32) PVL(1:4,1:NVERT), real(real64) 
   !    IANG(1:NVERT), the polygon vertex list and interior angles; see routine 
   !    DSPGDC for more details.  Note that the data structures should be as 
   !    output from routine SPDEC2.
   !
   !    Workspace, integer IWK(1:MAXIW).
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  For abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  For abnormal return,
   !    IERROR is set to 3, 4, 5, 6, 7, 206, 207, 208, 209, 210, or 212.
   !
-    integer(ip), intent(in), value :: maxhv
-    integer(ip), intent(in), value :: maxiw
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: maxwk
+    integer(int32) maxhv
+    integer(int32) maxiw
+    integer(int32) maxpv
+    integer(int32) maxvc
+    integer(int32) maxwk
 
-    real(dp), intent(in), value :: angspc
-    real(dp), intent(in), value :: angtol
-    integer(ip), intent(inout) :: hvl(maxhv)
-    real(dp) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: iwk(maxiw)
-    integer(ip), intent(inout) :: npolg
-    integer(ip), intent(inout) :: nvc
-    integer(ip), intent(inout) :: nvert
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: piptol
-    integer(ip), intent(inout) :: pvl(4,maxpv)
-    integer(ip), intent(inout) :: regnum(maxhv)
-    real(dp) :: tol
-    integer(ip) :: v
-    real(dp), intent(inout) :: vcl(2,maxvc)
-    integer(ip) :: w1
-    integer(ip) :: w2
-    real(dp) :: wk(maxwk)
+    real(real64) angspc
+    real(real64) angtol
+    integer(int32) hvl(maxhv)
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32) iwk(maxiw)
+    integer(int32) npolg
+    integer(int32) nvc
+    integer(int32) nvert
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) piptol
+    integer(int32) pvl(4,maxpv)
+    integer(int32) regnum(maxhv)
+    real(real64) tol
+    integer(int32) v
+    real(real64) vcl(2,maxvc)
+    integer(int32) w1
+    integer(int32) w2
+    real(real64) wk(maxwk)
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  For each reflex vertex, resolve it with one or two separators
   !  and update VCL, HVL, PVL, IANG.
@@ -755,10 +743,9 @@ contains
       v = v + 1
 
     end do
-  end subroutine cvdec2
+  end
 
-  subroutine cvdtri ( inter, ldv, nt, vcl, til, tedg, sptr, ierror ) &
-        bind(C, name="cvdtri")
+  subroutine cvdtri ( inter, ldv, nt, vcl, til, tedg, sptr, ierror )
 
   !*****************************************************************************80
   !
@@ -791,18 +778,18 @@ contains
   !    Input, logical INTER, is .TRUE. if and only if there is at least 
   !    one interior mesh vertex.
   !
-  !    Input, integer(ip) LDV, the leading dimension of VCL in calling 
+  !    Input, integer(int32) LDV, the leading dimension of VCL in calling 
   !    routine.
   !
-  !    Input, integer(ip) NT, the number of triangles in strip or 
+  !    Input, integer(int32) NT, the number of triangles in strip or 
   !    polygon.
   !
   !    Input, VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) TIL(1:3,1:NT), the triangle incidence
+  !    Input/output, integer(int32) TIL(1:3,1:NT), the triangle incidence
   !    list.
   !
-  !    Input/output, integer(ip) TEDG(1:3,1:NT) - TEDG(J,I) refers to 
+  !    Input/output, integer(int32) TEDG(1:3,1:NT) - TEDG(J,I) refers to 
   !    edge with vertices TIL(J:J+1,I) and contains index of merge edge or
   !    a value greater than NT for edge of chains.
   !
@@ -810,25 +797,25 @@ contains
   !    else greater than or equal to 0 and pointer (index of SPTR) to next 
   !    edge in stack (0 indicates bottom of stack).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return:
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return:
   !    IERROR is set to 231.
   !
-    integer(ip), intent(in), value :: ldv
-    integer(ip), intent(in), value :: nt
+    integer(int32) ldv
+    integer(int32) nt
 
-    integer(ip) :: e
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: ind(2)
-    logical, intent(in), value :: inter
-    integer(ip) :: itr(2)
-    integer(ip) :: k
-    integer(ip) :: mxtr
-    logical :: sflag
-    integer(ip) :: sptr(nt)
-    integer(ip), intent(inout) :: tedg(3,nt)
-    integer(ip), intent(inout) :: til(3,nt)
-    integer(ip) :: top
-    real(dp), intent(in) :: vcl(ldv,*)
+    integer(int32) e
+    integer(int32) ierror
+    integer(int32) ind(2)
+    logical inter
+    integer(int32) itr(2)
+    integer(int32) k
+    integer(int32) mxtr
+    logical sflag
+    integer(int32) sptr(nt)
+    integer(int32) tedg(3,nt)
+    integer(int32) til(3,nt)
+    integer(int32) top
+    real(real64) vcl(ldv,*)
 
     ierror = 0
     sflag = .true.
@@ -867,10 +854,9 @@ contains
       end do
 
     end do
-  end subroutine cvdtri
+  end
 
-  function degrees_to_radians ( angle ) &
-        bind(C, name="degrees_to_radians")
+  function degrees_to_radians ( angle )
 
   !*****************************************************************************80
   !
@@ -886,20 +872,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE, an angle in degrees.
+  !    Input, real(real64) ANGLE, an angle in degrees.
   !
-  !    Output, real(dp) DEGREES_TO_RADIANS, the equivalent angle
+  !    Output, real(real64) DEGREES_TO_RADIANS, the equivalent angle
   !    in radians.
   !
-    real(dp), intent(in), value :: angle
-    real(dp) :: degrees_to_radians
-    real(dp), parameter :: pi = 3.141592653589793_dp
+    real(real64) angle
+    real(real64) degrees_to_radians
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
 
-    degrees_to_radians = ( angle / 180.0_dp ) * pi
-  end function degrees_to_radians
+    degrees_to_radians = ( angle / 180.0e+00_real64 ) * pi
+  end
 
-  subroutine delaunay_print ( num_pts, xc, num_tri, nodtri, tnbr ) &
-        bind(C, name="delaunay_print")
+  subroutine delaunay_print ( num_pts, xc, num_tri, nodtri, tnbr )
 
   !*****************************************************************************80
   !
@@ -915,32 +900,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NUM_PTS, the number of points.
+  !    Input, integer(int32) NUM_PTS, the number of points.
   !
-  !    Input, real(dp) XC(2,NUM_PTS), the point coordinates.
+  !    Input, real(real64) XC(2,NUM_PTS), the point coordinates.
   !
-  !    Input, integer(ip) NUM_TRI, the number of triangles.
+  !    Input, integer(int32) NUM_TRI, the number of triangles.
   !
-  !    Input, integer(ip) NODTRI(3,NUM_TRI), the nodes that make up 
+  !    Input, integer(int32) NODTRI(3,NUM_TRI), the nodes that make up 
   !    the triangles.
   !
-  !    Input, integer(ip) TNBR(3,NUM_TRI), the triangle neighbors on 
+  !    Input, integer(int32) TNBR(3,NUM_TRI), the triangle neighbors on 
   !    each side.
   !
-    integer(ip), intent(in), value :: num_pts
-    integer(ip), intent(in), value :: num_tri
+    integer(int32) num_pts
+    integer(int32) num_tri
 
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip), intent(in) :: nodtri(3,num_tri)
-    integer(ip) :: s
-    integer(ip) :: t
-    integer(ip), intent(in) :: tnbr(3,num_tri)
-    real(dp), intent(in) :: xc(2,num_pts)
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) k
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) nodtri(3,num_tri)
+    integer(int32) s
+    integer(int32) t
+    integer(int32) tnbr(3,num_tri)
+    real(real64) xc(2,num_pts)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'DELAUNAY_PRINT'
@@ -997,10 +982,9 @@ contains
         end if
       end do
     end do
-  end subroutine delaunay_print
+  end
 
-  subroutine dhpsrt ( k, n, lda, a, map ) &
-        bind(C, name="dhpsrt")
+  subroutine dhpsrt ( k, n, lda, a, map )
 
   !*****************************************************************************80
   !
@@ -1030,18 +1014,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) K, the dimension of the points (for instance, 2
+  !    Input, integer(int32) K, the dimension of the points (for instance, 2
   !    for points in the plane).
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, integer(ip) LDA, the leading dimension of array A in the 
+  !    Input, integer(int32) LDA, the leading dimension of array A in the 
   !    calling routine; LDA should be at least K.
   !
-  !    Input, real(dp) A(LDA,N); A(I,J) contains the I-th coordinate
+  !    Input, real(real64) A(LDA,N); A(I,J) contains the I-th coordinate
   !    of point J.
   !
-  !    Input/output, integer(ip) MAP(N).
+  !    Input/output, integer(int32) MAP(N).
   !    On input, the points of A with indices MAP(1), MAP(2), ...,
   !    MAP(N) are to be sorted.
   !
@@ -1049,13 +1033,13 @@ contains
   !    property that, lexicographically,
   !      A(*,MAP(1)) <= A(*,MAP(2)) <= ... <= A(*,MAP(N)).
   !
-    integer(ip), intent(in), value :: lda
-    integer(ip), intent(in), value :: n
+    integer(int32) lda
+    integer(int32) n
 
-    real(dp), intent(in) :: a(lda,*)
-    integer(ip) :: i
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(inout) :: map(n)
+    real(real64) a(lda,*)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) map(n)
 
     do i = n / 2, 1, -1
       call dsftdw ( i, n, k, lda, a, map )
@@ -1065,10 +1049,9 @@ contains
       call i4_swap ( map(1), map(i) )
       call dsftdw ( 1, i-1, k, lda, a, map )
     end do
-  end subroutine dhpsrt
+  end
 
-  function diaedg ( x0, y0, x1, y1, x2, y2, x3, y3 ) &
-        bind(C, name="diaedg")
+  function diaedg ( x0, y0, x1, y1, x2, y2, x3, y3 )
 
   !*****************************************************************************80
   !
@@ -1110,39 +1093,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X0, Y0, X1, Y1, X2, Y2, X3, Y3, the points.
+  !    Input, real(real64) X0, Y0, X1, Y1, X2, Y2, X3, Y3, the points.
   !
-  !    Output, integer(ip) DIAEDG, chooses a diagonal:
+  !    Output, integer(int32) DIAEDG, chooses a diagonal:
   !    +1, choose edge 0--2;
   !    -1, choose edge 1--3;
   !     0, the four vertices are essentially cocircular.
   !
 
-    real(dp) :: ca
-    real(dp) :: cb
-    integer(ip) :: diaedg
-    real(dp) :: dx10
-    real(dp) :: dx12
-    real(dp) :: dx30
-    real(dp) :: dx32
-    real(dp) :: dy10
-    real(dp) :: dy12
-    real(dp) :: dy30
-    real(dp) :: dy32
-    real(dp) :: s
-    real(dp) :: tol
-    real(dp) :: tola
-    real(dp) :: tolb
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: y0
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
+    real(real64) ca
+    real(real64) cb
+    integer(int32) diaedg
+    real(real64) dx10
+    real(real64) dx12
+    real(real64) dx30
+    real(real64) dx32
+    real(real64) dy10
+    real(real64) dy12
+    real(real64) dy30
+    real(real64) dy32
+    real(real64) s
+    real(real64) tol
+    real(real64) tola
+    real(real64) tolb
+    real(real64) x0
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y0
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     dx10 = x1 - x0
     dy10 = y1 - y0
@@ -1185,10 +1168,9 @@ contains
       end if
 
     end if
-  end function diaedg
+  end
 
-  subroutine diam2 ( nvrt, xc, yc, i1, i2, diamsq, ierror ) &
-        bind(C, name="diam2")
+  subroutine diam2 ( nvrt, xc, yc, i1, i2, diamsq, ierror )
 
   !*****************************************************************************80
   !
@@ -1218,49 +1200,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVRT, the number of vertices.
+  !    Input, integer(int32) NVRT, the number of vertices.
   !
-  !    Input, real(dp) XC(NVRT),YC(NVRT), the vertex coordinates in 
+  !    Input, real(real64) XC(NVRT),YC(NVRT), the vertex coordinates in 
   !    counter-clockwise order.
   !
-  !    Output, integer(ip) I1, I2 , indices in XC, YC of the diameter 
+  !    Output, integer(int32) I1, I2 , indices in XC, YC of the diameter 
   !    edge; the diameter is from (XC(I1),YC(I1)) to (XC(I2),YC(I2)).
   !
-  !    Output, real(dp) DIAMSQ, the square of the diameter.
+  !    Output, real(real64) DIAMSQ, the square of the diameter.
   !
-  !    Output, integer(ip) IERROR, an error flag.
+  !    Output, integer(int32) IERROR, an error flag.
   !    0, no error was detected.
   !    200, an error was detected.
   !
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    real(dp) :: area1
-    real(dp) :: area2
-    real(dp) :: areatr
-    real(dp) :: c1mtol
-    real(dp) :: c1ptol
-    real(dp), intent(out) :: diamsq
-    real(dp) :: dist
-    integer(ip), intent(out) :: i1
-    integer(ip), intent(out) :: i2
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: j
-    integer(ip) :: jp1
-    integer(ip) :: k
-    integer(ip) :: kp1
-    integer(ip) :: m
-    real(dp) :: tol
-    real(dp), intent(in) :: xc(nvrt)
-    real(dp), intent(out) :: yc(nvrt)
+    real(real64) area1
+    real(real64) area2
+    real(real64) areatr
+    real(real64) c1mtol
+    real(real64) c1ptol
+    real(real64) diamsq
+    real(real64) dist
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) ierror
+    integer(int32) j
+    integer(int32) jp1
+    integer(int32) k
+    integer(int32) kp1
+    integer(int32) m
+    real(real64) tol
+    real(real64) xc(nvrt)
+    real(real64) yc(nvrt)
   !
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  Find the first vertex which is farthest from the edge connecting
   !  vertices with indices NVRT, 1.
   !
-    c1mtol = 1.0_dp - tol
-    c1ptol = 1.0_dp + tol
+    c1mtol = 1.0e+00_real64 - tol
+    c1ptol = 1.0e+00_real64 + tol
     j = nvrt
     jp1 = 1
     k = 2
@@ -1280,7 +1262,7 @@ contains
     end do
 
     m = k
-    diamsq = 0.0_dp
+    diamsq = 0.0e+00_real64
   !
   !  Find diameter = maximum distance of antipodal pairs.
   !
@@ -1329,10 +1311,9 @@ contains
       end if
 
     end do
-  end subroutine diam2
+  end
 
-  function dless ( k, p, q ) &
-        bind(C, name="dless")
+  function dless ( k, p, q )
 
   !*****************************************************************************80
   !
@@ -1361,22 +1342,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) K, the spatial dimension of the points.
+  !    Input, integer(int32) K, the spatial dimension of the points.
   !
-  !    Input, real(dp) P(K), Q(K), the points to be compared.
+  !    Input, real(real64) P(K), Q(K), the points to be compared.
   !
   !    Output, logical RLESS, is TRUE if P < Q, FALSE otherwise.
   !
-    integer(ip), intent(in), value :: k
+    integer(int32) k
 
-    real(dp) :: cmax
-    logical :: dless
-    integer(ip) :: i
-    real(dp), intent(in) :: p(k)
-    real(dp), intent(in) :: q(k)
-    real(dp) :: tol
+    real(real64) cmax
+    logical dless
+    integer(int32) i
+    real(real64) p(k)
+    real(real64) q(k)
+    real(real64) tol
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     do i = 1, k
 
@@ -1394,10 +1375,9 @@ contains
     end do
 
     dless = .false.
-  end function dless
+  end
 
-  subroutine dsftdw ( l, u, k, lda, a, map ) &
-        bind(C, name="dsftdw")
+  subroutine dsftdw ( l, u, k, lda, a, map )
 
   !*****************************************************************************80
   !
@@ -1422,18 +1402,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) L, U, the lower and upper indices of part of 
+  !    Input, integer(int32) L, U, the lower and upper indices of part of 
   !    the heap.
   !
-  !    Input, integer(ip) K, the spatial dimension of the points.
+  !    Input, integer(int32) K, the spatial dimension of the points.
   !
-  !    Input, integer(ip) LDA, the leading dimension of A in the calling
+  !    Input, integer(int32) LDA, the leading dimension of A in the calling
   !    routine.
   !
-  !    Input, real(dp) A(LDA,N); A(I,J) contains the I-th coordinate
+  !    Input, real(real64) A(LDA,N); A(I,J) contains the I-th coordinate
   !    of point J.
   !
-  !    Input/output, integer(ip) MAP(N).
+  !    Input/output, integer(int32) MAP(N).
   !    On input, the points of A with indices MAP(1), MAP(2), ...,
   !    MAP(N) are to be sorted.
   !
@@ -1441,17 +1421,17 @@ contains
   !    property that, lexicographically,
   !      A(*,MAP(1)) <= A(*,MAP(2)) <= ... <= A(*,MAP(N)).
   !
-    integer(ip), intent(in), value :: lda
+    integer(int32) lda
 
-    real(dp), intent(in) :: a(lda,*)
-    logical :: dless
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(in), value :: l
-    integer(ip), intent(inout) :: map(*)
-    integer(ip) :: t
-    integer(ip), intent(in), value :: u
+    real(real64) a(lda,*)
+    logical dless
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) map(*)
+    integer(int32) t
+    integer(int32) u
 
     i = l
     j = 2 * i
@@ -1476,11 +1456,10 @@ contains
     end do
 
     map(i) = t
-  end subroutine dsftdw
+  end
 
   subroutine dsmcpr ( nhole, nvbc, vcl, maxhv, maxpv, maxho, nvc, npolg, &
-    nvert, nhola, regnum, hvl, pvl, iang, holv, ierror ) &
-        bind(C, name="dsmcpr")
+    nvert, nhola, regnum, hvl, pvl, iang, holv, ierror )
 
   !*****************************************************************************80
   !
@@ -1511,12 +1490,12 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NHOLE, the number of holes in the region.
+  !    Input, integer(int32) NHOLE, the number of holes in the region.
   !
-  !    Input, integer(ip) NVBC(1:NHOLE+1), the number of vertices per 
+  !    Input, integer(int32) NVBC(1:NHOLE+1), the number of vertices per 
   !    boundary curve; first boundary curve is the outer boundary of the region.
   !
-  !    Input, real(dp) VCL(1:2,1:NVC), the vertex coordinates of 
+  !    Input, real(real64) VCL(1:2,1:NVC), the vertex coordinates of 
   !    boundary curves in counter clockwise order; 
   !    NVC = NVBC(1) + ... + NVBC(NHOLE+1); 
   !    positions 1 to NVBC(1) of VCL contain the vertex coordinates of the
@@ -1524,79 +1503,79 @@ contains
   !    NVBC(1)+NVBC(2) contain the vertex coordinates of the
   !    first hole boundary in counter clockwise order, etc.
   !
-  !    Input, integer(ip) MAXHV, the maximum size available for HVL, 
+  !    Input, integer(int32) MAXHV, the maximum size available for HVL, 
   !    REGNUM arrays, should be greater than or equal to NHOLE + 1.
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL, 
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL, 
   !    IANG arrays; should be greater than or equal to NVC.
   !
-  !    Input, integer(ip) MAXHO, the maximum size available for HOLV 
+  !    Input, integer(int32) MAXHO, the maximum size available for HOLV 
   !    array; should be greater than or equal to NHOLE*2.
   !
-  !    Output, integer(ip) NVC, the number of vertex coordinates,
+  !    Output, integer(int32) NVC, the number of vertex coordinates,
   !    set to sum of NVBC(I).
   !
-  !    Output, integer(ip) NPOLG, the number of polygonal subregions, 
+  !    Output, integer(int32) NPOLG, the number of polygonal subregions, 
   !    set to 1.  For consistency with DSPGDC.
   !
-  !    Output, integer(ip) NVERT, the number of vertices in PVL, set to
+  !    Output, integer(int32) NVERT, the number of vertices in PVL, set to
   !    NVC.  For consistency with DSPGDC.
   !
-  !    Output, integer(ip) NHOLA, number of attached holes, set to 0.
+  !    Output, integer(int32) NHOLA, number of attached holes, set to 0.
   !    For consistency with DSPGDC.
   !
-  !    Output, integer(ip) REGNUM(1:1), region number of only subregion,
+  !    Output, integer(int32) REGNUM(1:1), region number of only subregion,
   !    set to 1.  For consistency with DSPGDC.
   !
-  !    Output, integer(ip) HVL(1:NHOLE+1), the head vertex list; first 
+  !    Output, integer(int32) HVL(1:NHOLE+1), the head vertex list; first 
   !    entry is the head vertex (index in PVL) of outer boundary curve; next
   !    NHOLE entries contain the head vertex of a hole.
   !
-  !    Output, integer(ip) PVL(1:4,1:NVC), IANG(1:NVC), the polygon 
+  !    Output, integer(int32) PVL(1:4,1:NVC), IANG(1:NVC), the polygon 
   !    vertex list and interior angles; vertices of outer boundary curve are in 
   !    counter clockwise order followed by vertices of each hole in CW hole; 
   !    vertices of each polygon are in a circular linked list; see
   !    routine DSPGDC for more details of this data structure.
   !
-  !    Output, integer(ip) HOLV(1:NHOLE*2), the indices in PVL of top 
+  !    Output, integer(int32) HOLV(1:NHOLE*2), the indices in PVL of top 
   !    and bottom vertices of holes; first (last) NHOLE entries are for top
   !    (bottom) vertices; top (bottom) vertices are sorted in decreasing
   !    (increasing) lexicographic (y,x) order of coordinates.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    For abnormal return, IERROR is set to 2, 4, or 5.
   !
-    integer(ip), intent(in), value :: maxho
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: nhole
+    integer(int32) maxho
+    integer(int32) maxpv
+    integer(int32) nhole
 
-    real(dp) :: angle
-    integer(ip), parameter :: edgv = 4
-    integer(ip) :: i
-    real(dp), intent(out) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: iv
-    integer(ip) :: ivs
-    integer(ip) :: j
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: lv
-    integer(ip) :: lvp
-    integer(ip) :: lvs
-    integer(ip), intent(in), value :: maxhv
-    integer(ip), intent(out) :: nhola
-    integer(ip), intent(out) :: npolg
-    integer(ip) :: nv
-    integer(ip), intent(out) :: nvc
-    integer(ip), intent(out) :: nvert
-    integer(ip) :: nvs
-    integer(ip), intent(out) :: hvl(nhole+1)
-    integer(ip), intent(out) :: holv(maxho)
-    integer(ip), intent(in) :: nvbc(nhole+1)
-    integer(ip), parameter :: polg = 2
-    integer(ip), intent(out) :: pvl(4,maxpv)
-    integer(ip), intent(out) :: regnum(1)
-    integer(ip), parameter :: succ = 3
-    real(dp), intent(in) :: vcl(2,*)
+    real(real64) angle
+    integer(int32), parameter :: edgv = 4
+    integer(int32) i
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32) iv
+    integer(int32) ivs
+    integer(int32) j
+    integer(int32), parameter :: loc = 1
+    integer(int32) lv
+    integer(int32) lvp
+    integer(int32) lvs
+    integer(int32) maxhv
+    integer(int32) nhola
+    integer(int32) npolg
+    integer(int32) nv
+    integer(int32) nvc
+    integer(int32) nvert
+    integer(int32) nvs
+    integer(int32) hvl(nhole+1)
+    integer(int32) holv(maxho)
+    integer(int32) nvbc(nhole+1)
+    integer(int32), parameter :: polg = 2
+    integer(int32) pvl(4,maxpv)
+    integer(int32) regnum(1)
+    integer(int32), parameter :: succ = 3
+    real(real64) vcl(2,*)
 
     ierror = 0
     nvc = sum ( nvbc(1:nhole+1) )
@@ -1686,11 +1665,10 @@ contains
     if ( 0 < nhole ) then
       call holvrt ( nhole, vcl, hvl(2), pvl, holv )
     end if
-  end subroutine dsmcpr
+  end
 
   subroutine dsmdf2 ( hflag, nvc, npolg, maxwk, vcl, hvl, pvl, iang, ivrt, &
-    xivrt, widsq, edgval, vrtval, area, wk, ierror ) &
-        bind(C, name="dsmdf2")
+    xivrt, widsq, edgval, vrtval, area, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -1726,23 +1704,23 @@ contains
   !    Input, logical HFLAG, set to .TRUE. if data structure is to be constructed,
   !    .FALSE. if only IVRT, XIVRT, AREA are to be computed.
   !
-  !    Input, integer(ip) NVC, the number of vertex coordinates in VCL 
+  !    Input, integer(int32) NVC, the number of vertex coordinates in VCL 
   !    array.
   !
-  !    Input, integer(ip) NPOLG, the number of polygonal subregions in 
+  !    Input, integer(int32) NPOLG, the number of polygonal subregions in 
   !    HVL array.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK 
+  !    Input, integer(int32) MAXWK, the maximum size available for WK 
   !    array; should be 2 times maximum number of vertices in any polygon.
   !
   !    Input, VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input, integer(ip) HVL(1:NPOLG), the head vertex list.
+  !    Input, integer(int32) HVL(1:NPOLG), the head vertex list.
   !
-  !    Input, integer(ip) PVL(1:4,1:*), real(dp) IANG(1:*), the 
+  !    Input, integer(int32) PVL(1:4,1:*), real(real64) IANG(1:*), the 
   !    polygon vertex list, interior angles.
   !
-  !    Output, integer(ip) IVRT(1:*), the indices of polygon vertices in
+  !    Output, integer(int32) IVRT(1:*), the indices of polygon vertices in
   !    VCL, ordered by polygon; same size as PVL.  For heuristic MDF data
   !    structure.
   !
@@ -1750,61 +1728,61 @@ contains
   !    in IVRT; vertices of polygon K are IVRT(I) for I from
   !    XIVRT(K) to XIVRT(K+1)-1.  For heuristic MDF data structure.
   !
-  !    Output, real(dp) WIDSQ(1:NPOLG), the square of width of convex 
+  !    Output, real(real64) WIDSQ(1:NPOLG), the square of width of convex 
   !    polygons.  For heuristic MDF data structure.
   !
-  !    Output, real(dp) EDGVAL(1:*), the value associated with each 
+  !    Output, real(real64) EDGVAL(1:*), the value associated with each 
   !    edge of decomposition; same size as PVL.  For heuristic MDF data structure.
   !
-  !    Output, real(dp) VRTVAL(1:NVC), the value associated with each 
+  !    Output, real(real64) VRTVAL(1:NVC), the value associated with each 
   !    vertex of decomposition.  For heuristic MDF data structure.
   !
-  !    Output, real(dp) AREA(1:NPOLG), the area of convex polygons.
+  !    Output, real(real64) AREA(1:NPOLG), the area of convex polygons.
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 7 or 201.
   !
-    integer(ip), intent(in), value :: maxwk
-    integer(ip), intent(in), value :: npolg
-    integer(ip), intent(in), value :: nvc
+    integer(int32) maxwk
+    integer(int32) npolg
+    integer(int32) nvc
 
-    real(dp), intent(out) :: area(npolg)
-    real(dp) :: areapg
-    integer(ip), parameter :: edgv = 4
-    real(dp), intent(out) :: edgval(*)
-    logical, intent(in), value :: hflag
-    integer(ip), intent(in) :: hvl(npolg)
-    integer(ip) :: i
-    real(dp) :: iang(*)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: il
-    integer(ip), intent(out) :: ivrt(*)
-    integer(ip) :: j
-    integer(ip) :: jl
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: m
-    integer(ip) :: nvrt
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: pimtol
-    integer(ip), parameter :: polg = 2
-    integer(ip), intent(in) :: pvl(4,*)
-    real(dp) :: s
-    integer(ip), parameter :: succ = 3
-    real(dp) :: tol
-    real(dp), intent(in) :: vcl(2,nvc)
-    real(dp), intent(out) :: vrtval(nvc)
-    real(dp), intent(out) :: widsq(npolg)
-    real(dp) :: wk(maxwk)
-    integer(ip) :: xc
-    integer(ip), intent(out) :: xivrt(npolg+1)
-    integer(ip) :: yc
+    real(real64) area(npolg)
+    real(real64) areapg
+    integer(int32), parameter :: edgv = 4
+    real(real64) edgval(*)
+    logical hflag
+    integer(int32) hvl(npolg)
+    integer(int32) i
+    real(real64) iang(*)
+    integer(int32) ierror
+    integer(int32) il
+    integer(int32) ivrt(*)
+    integer(int32) j
+    integer(int32) jl
+    integer(int32) k
+    integer(int32) l
+    integer(int32), parameter :: loc = 1
+    integer(int32) m
+    integer(int32) nvrt
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) pimtol
+    integer(int32), parameter :: polg = 2
+    integer(int32) pvl(4,*)
+    real(real64) s
+    integer(int32), parameter :: succ = 3
+    real(real64) tol
+    real(real64) vcl(2,nvc)
+    real(real64) vrtval(nvc)
+    real(real64) widsq(npolg)
+    real(real64) wk(maxwk)
+    integer(int32) xc
+    integer(int32) xivrt(npolg+1)
+    integer(int32) yc
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  Compute area and square of width of polygons.
   !
@@ -1859,7 +1837,7 @@ contains
 
       xc = 1
       yc = xc + nvrt
-      area(k) = areapg ( nvrt, wk(xc), wk(yc) ) * 0.5_dp
+      area(k) = areapg ( nvrt, wk(xc), wk(yc) ) * 0.5e+00_real64
 
       if ( hflag ) then
 
@@ -1922,7 +1900,7 @@ contains
     if ( .not. hflag ) then
     end if
 
-    vrtval(1:nvc) = 0.0_dp
+    vrtval(1:nvc) = 0.0e+00_real64
 
     do k = 1, npolg
 
@@ -1933,7 +1911,7 @@ contains
 
         il = ivrt(i)
 
-        if ( vrtval(il) == 0.0_dp ) then
+        if ( vrtval(il) == 0.0e+00_real64 ) then
           vrtval(il) = min ( edgval(i), edgval(j) )
         else
           vrtval(il) = min ( vrtval(il), edgval(i), edgval(j) )
@@ -1944,12 +1922,11 @@ contains
       end do
 
     end do
-  end subroutine dsmdf2
+  end
 
   subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv,  &
     maxho, npolg, nvert, nhole, nhola, regnum, hvl, pvl, iang, holv, htsiz,  &
-    maxedg, ht, edge, map, ierror ) &
-        bind(C, name="dspgdc")
+    maxedg, ht, edge, map, ierror )
 
   !*****************************************************************************80
   !
@@ -1981,21 +1958,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVC, the number of distinct vertex coordinates in region.
+  !    Input, integer(int32) NVC, the number of distinct vertex coordinates in region.
   !
-  !    Input, real(dp) VCL(1:2,1:NVC), the vertex coordinates of 
+  !    Input, real(real64) VCL(1:2,1:NVC), the vertex coordinates of 
   !    boundary curves in arbitrary order.
   !
-  !    Input, integer(ip) INCR, a positive integer greater than or equal to NVC, 
+  !    Input, integer(int32) INCR, a positive integer greater than or equal to NVC, 
   !    e.g. 10000, added to some elements of IVRT array.
   !
-  !    Input, integer(ip) NCUR, the number of boundary curves (includes outer boundary
+  !    Input, integer(int32) NCUR, the number of boundary curves (includes outer boundary
   !    curves of subregions and boundary curves of holes
   !    and hole interfaces).
   !
-  !    Input, integer(ip) NVBC(1:NCUR), the number of vertices per boundary curve.
+  !    Input, integer(int32) NVBC(1:NCUR), the number of vertices per boundary curve.
   !
-  !    Input, integer(ip) ICUR(1:NCUR), indicates type and location of the curves:
+  !    Input, integer(int32) ICUR(1:NCUR), indicates type and location of the curves:
   !    ICUR(I) = 0 if Ith curve is outer boundary curve,
   !    ICUR(I) = K if Ith curve is a hole and is inside
   !      the subregion to the left of Kth curve,
@@ -2008,7 +1985,7 @@ contains
   !    to the left of Kth curve must be the smallest
   !    subregion containing the Ith curve.
   !
-  !    Input, integer(ip) IVRT(1:NV), indices in VCL of vertices of boundary curves;
+  !    Input, integer(int32) IVRT(1:NV), indices in VCL of vertices of boundary curves;
   !    NV = NVBC(1) + ... + NVBC(NCUR); the vertices of each
   !    boundary curve must be in counter clockwise order; the first NVBC(1)
   !    positions of IVRT are used for the first curve; the
@@ -2031,36 +2008,36 @@ contains
   !    not in the region. If the Ith curve is the boundary of
   !    a hole or hole interface, then only IVRT(J) = K is used.
   !
-  !    Input, integer(ip) MAXHV, the maximum size available for HVL, REGNUM arrays, 
+  !    Input, integer(int32) MAXHV, the maximum size available for HVL, REGNUM arrays, 
   !    should be greater than or equal to NCUR + (number of hole interfaces).
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL, IANG arrays; 
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL, IANG arrays; 
   !    should be greater than or equal to NVERT (see below).
   !
-  !    Input, integer(ip) MAXHO, the maximum size available for HOLV array; should be
+  !    Input, integer(int32) MAXHO, the maximum size available for HOLV array; should be
   !    greater than or equal to NHOLE*2 + NHOLA (see below).
   !
-  !    Input, integer(ip) HTSIZ, the size of hash table HT; should be a prime number 
+  !    Input, integer(int32) HTSIZ, the size of hash table HT; should be a prime number 
   !    which is about NSC/2 where NSC is number of separator and cut
   !    interface edges.
   !
-  !    Input, integer(ip) MAXEDG, the maximum size available for EDGE array; should 
+  !    Input, integer(int32) MAXEDG, the maximum size available for EDGE array; should 
   !    be at least NSC.
   !
-  !    Output, integer(ip) NPOLG, the number of polygonal subregions, set to number 
+  !    Output, integer(int32) NPOLG, the number of polygonal subregions, set to number 
   !    of outer subregion boundaries plus number of hole interfaces.
   !
-  !    Output, integer(ip) NVERT, the number of vertices in PVL, set to NV plus number
+  !    Output, integer(int32) NVERT, the number of vertices in PVL, set to NV plus number
   !    of vertices in holes and hole interfaces (< 2*NV).
   !
-  !    Output, integer(ip) NHOLE, the number of holes and hole interfaces.
+  !    Output, integer(int32) NHOLE, the number of holes and hole interfaces.
   !
-  !    Output, integer(ip) NHOLA, the number of 'attached' holes; these holes are 
+  !    Output, integer(int32) NHOLA, the number of 'attached' holes; these holes are 
   !    attached to the outer boundary of a subregion through vertices
   !    or cut interfaces and have their edges in consecutive
   !    order on the boundary (<= NV/4).
   !
-  !    Output, integer(ip) REGNUM(1:NPOLG). region numbers to left of outer and hole
+  !    Output, integer(int32) REGNUM(1:NPOLG). region numbers to left of outer and hole
   !    interface boundary curves, which are set to the indices
   !    of ICUR or NVBC; this array may be useful in some
   !    applications for identifying which original region a
@@ -2073,10 +2050,10 @@ contains
   !    NHOLE positions contain the head vertex of a hole or
   !    hole interface in which vertices are in CW order in PVL.
   !
-  !    Output, PVL(1:4,1:NVERT), real(dp) IANG(1:NVERT), the polygon 
+  !    Output, PVL(1:4,1:NVERT), real(real64) IANG(1:NVERT), the polygon 
   !    vertex list and interior angles; contains the 5 'arrays' LOC, POLG, SUCC
   !    EDGV, IANG (the first 4 are integer arrays, the last
-  !    is a real(dp) array); the vertices of each
+  !    is a real(real64) array); the vertices of each
   !    polygon (except for holes) are stored in counter clockwise order in a
   !    circular linked list. PVL(LOC,V) is the location in VCL
   !    of the coordinates of 'vertex' (index) V. IANG(V) is
@@ -2093,7 +2070,7 @@ contains
   !    case, PVL(LOC,PVL(EDGV,V)) = PVL(LOC,PVL(SUCC,V)) and
   !    PVL(EDGV,PVL(EDGV,V)) = V.
   !
-  !    Output, integer(ip) HOLV(1:NHOLE*2+NHOLA), indices in PVL of top or bottom 
+  !    Output, integer(int32) HOLV(1:NHOLE*2+NHOLA), indices in PVL of top or bottom 
   !    vertex of holes; first (next) NHOLE entries are for top (bottom)
   !    vertices of holes and hole interfaces, with top (bottom)
   !    vertices sorted in decreasing (increasing) lexicographic
@@ -2110,71 +2087,71 @@ contains
   !    used to determine matching occurrences of separator or
   !    cut interface edges by calling routine EDGHT.
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 1, 2, 4, 5, 215, or 216.
   !
-    integer(ip), intent(in), value :: htsiz
-    integer(ip), intent(in), value :: maxedg
-    integer(ip), intent(in), value :: maxho
-    integer(ip), intent(in), value :: maxhv
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: ncur
+    integer(int32) htsiz
+    integer(int32) maxedg
+    integer(int32) maxho
+    integer(int32) maxhv
+    integer(int32) maxpv
+    integer(int32) ncur
 
-    real(dp) :: angle
-    integer(ip) :: edge(4,maxedg)
-    integer(ip), parameter :: edgv = 4
-    logical :: first
-    integer(ip) :: hdfree
-    integer(ip), intent(out) :: holv(maxho)
-    integer(ip) :: ht(0:htsiz-1)
-    integer(ip), intent(out) :: hvl(maxhv)
-    integer(ip) :: i
-    real(dp), intent(in) :: iang(maxpv)
-    integer(ip), intent(in) :: icur(ncur)
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(in), value :: incr
-    integer(ip) :: ipoly
-    integer(ip) :: iv
-    integer(ip), intent(in) :: ivrt(*)
-    integer(ip) :: ivs
-    integer(ip) :: j
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip) :: jend
-    integer(ip) :: jstr
-    integer(ip) :: k
-    integer(ip) :: kmax
-    integer(ip) :: kmin
-    integer(ip) :: kpoly
-    integer(ip) :: l
-    integer(ip) :: last
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: lv
-    integer(ip) :: lvp
-    integer(ip) :: lvs
-    integer(ip) :: map(ncur)
-    integer(ip) :: mpoly
-    integer(ip) :: nh2
-    integer(ip), intent(out) :: nhola
-    integer(ip), intent(out) :: nhole
-    integer(ip) :: nholi
-    integer(ip) :: nht
-    integer(ip), intent(out) :: npolg
-    integer(ip) :: nv
-    integer(ip), intent(in) :: nvbc(ncur)
-    integer(ip), intent(in), value :: nvc
-    integer(ip), intent(out) :: nvert
-    integer(ip), parameter :: polg = 2
-    integer(ip), intent(out) :: pvl(4,maxpv)
-    integer(ip), intent(out) :: regnum(maxhv)
-    integer(ip), parameter :: succ = 3
-    real(dp), intent(in) :: vcl(2,nvc)
-    real(dp) :: x
-    real(dp) :: xmax
-    real(dp) :: xmin
-    real(dp) :: y
-    real(dp) :: ymax
-    real(dp) :: ymin
+    real(real64) angle
+    integer(int32) edge(4,maxedg)
+    integer(int32), parameter :: edgv = 4
+    logical first
+    integer(int32) hdfree
+    integer(int32) holv(maxho)
+    integer(int32) ht(0:htsiz-1)
+    integer(int32) hvl(maxhv)
+    integer(int32) i
+    real(real64) iang(maxpv)
+    integer(int32) icur(ncur)
+    integer(int32) ierror
+    integer(int32) incr
+    integer(int32) ipoly
+    integer(int32) iv
+    integer(int32) ivrt(*)
+    integer(int32) ivs
+    integer(int32) j
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) jend
+    integer(int32) jstr
+    integer(int32) k
+    integer(int32) kmax
+    integer(int32) kmin
+    integer(int32) kpoly
+    integer(int32) l
+    integer(int32) last
+    integer(int32), parameter :: loc = 1
+    integer(int32) lv
+    integer(int32) lvp
+    integer(int32) lvs
+    integer(int32) map(ncur)
+    integer(int32) mpoly
+    integer(int32) nh2
+    integer(int32) nhola
+    integer(int32) nhole
+    integer(int32) nholi
+    integer(int32) nht
+    integer(int32) npolg
+    integer(int32) nv
+    integer(int32) nvbc(ncur)
+    integer(int32) nvc
+    integer(int32) nvert
+    integer(int32), parameter :: polg = 2
+    integer(int32) pvl(4,maxpv)
+    integer(int32) regnum(maxhv)
+    integer(int32), parameter :: succ = 3
+    real(real64) vcl(2,nvc)
+    real(real64) x
+    real(real64) xmax
+    real(real64) xmin
+    real(real64) y
+    real(real64) ymax
+    real(real64) ymin
 
     ierror = 0
     nhola = 0
@@ -2535,10 +2512,9 @@ contains
     if ( 0 < nhole ) then
       call holvrt ( nhole, vcl, hvl(npolg+1), pvl, holv )
     end if
-  end subroutine dspgdc
+  end
 
-  subroutine dtris2 ( npt, vcl, ind, ntri, til, tnbr, ierror ) &
-        bind(C, name="dtris2")
+  subroutine dtris2 ( npt, vcl, ind, ntri, til, tnbr, ierror )
 
   !*****************************************************************************80
   !
@@ -2580,63 +2556,64 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NPT, the number of vertices.
+  !    Input, integer(int32) NPT, the number of vertices.
   !
-  !    Input, real(dp) VCL(2,NPT), the coordinates of the vertices.
+  !    Input, real(real64) VCL(2,NPT), the coordinates of the vertices.
   !
-  !    Input/output, integer(ip) IND(NPT), the indices in VCL of the vertices 
+  !    Input/output, integer(int32) IND(NPT), the indices in VCL of the vertices 
   !    to be triangulated.  On output, IND has been permuted by the sort.
   !
-  !    Output, integer(ip) NTRI, the number of triangles in the triangulation; 
+  !    Output, integer(int32) NTRI, the number of triangles in the triangulation; 
   !    NTRI is equal to 2*NPT - NB - 2, where NB is the number of boundary 
   !    vertices.
   !
-  !    Output, integer(ip) TIL(3,NTRI), the nodes that make up each triangle.
+  !    Output, integer(int32) TIL(3,NTRI), the nodes that make up each triangle.
   !    The elements are indices of VCL.  The vertices of the triangles are 
   !    in counter clockwise order.
   !
-  !    Output, integer(ip) TNBR(3,NTRI), the triangle neighbor list.
+  !    Output, integer(int32) TNBR(3,NTRI), the triangle neighbor list.
   !    Positive elements are indices of TIL; negative elements are used for links
   !    of a counter clockwise linked list of boundary edges; LINK = -(3*I + J-1)
   !    where I, J = triangle, edge index; TNBR(J,I) refers to
   !    the neighbor along edge from vertex J to J+1 (mod 3).
   !
-  !    Output, integer(ip) IERROR, an error flag, nonzero if an error occurred.
+  !    Output, integer(int32) IERROR, an error flag, nonzero if an error occurred.
   !
-    integer(ip), intent(in), value :: npt
+    integer(int32) npt
 
-    real(dp) :: cmax
-    integer(ip) :: e
-    integer(ip) :: i
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(inout) :: ind(npt)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: ledg
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip) :: ltri
-    integer(ip) :: m
-    integer(ip) :: m1
-    integer(ip) :: m2
-    integer(ip), parameter :: msglvl = 0
-    integer(ip) :: n
-    integer(ip), intent(out) :: ntri
-    integer(ip) :: redg
-    integer(ip) :: rtri
-    integer(ip) :: stack(npt)
-    integer(ip) :: t
-    integer(ip), intent(out) :: til(3,npt*2)
-    integer(ip), intent(out) :: tnbr(3,npt*2)
-    real(dp) :: tol
-    integer(ip) :: top
-    real(dp), intent(in) :: vcl(2,npt)
+    real(real64) cmax
+    integer(int32) e
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) ind(npt)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) ledg
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) ltri
+    integer(int32) m
+    integer(int32) m1
+    integer(int32) m2
+    integer(int32), parameter :: msglvl = 0
+    integer(int32) n
+    integer(int32) ntri
+    integer(int32) redg
+    integer(int32) rtri
+    integer(int32) stack(npt)
+    integer(int32) t
+    integer(int32) til(3,npt*2)
+    integer(int32) tnbr(3,npt*2)
+    real(real64) tol
+    integer(int32) top
+    integer(int32) maxst
+    real(real64) vcl(2,npt)
 
     maxst = npt
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     ierror = 0
   !
@@ -2693,7 +2670,7 @@ contains
 
       m = ind(j)
       lr = lrline ( vcl(1,m), vcl(2,m), vcl(1,m1), vcl(2,m1), vcl(1,m2), &
-        vcl(2,m2), 0.0_dp )
+        vcl(2,m2), 0.0e+00_real64 )
 
       if ( lr /= 0 ) then
         exit
@@ -2795,7 +2772,7 @@ contains
       end if
 
       lr = lrline ( vcl(1,m), vcl(2,m), vcl(1,m1), vcl(2,m1), vcl(1,m2), &
-        vcl(2,m2), 0.0_dp )
+        vcl(2,m2), 0.0e+00_real64 )
 
       if ( 0 < lr ) then
         rtri = ltri
@@ -2879,10 +2856,9 @@ contains
     if ( msglvl == 4 ) then
       write ( *, '(i7)' ) npt + 1
     end if
-  end subroutine dtris2
+  end
 
-  subroutine dtriw2 ( npt, maxst, vcl, ind, ntri, til, tnbr, stack, ierror ) &
-        bind(C, name="dtriw2")
+  subroutine dtriw2 ( npt, maxst, vcl, ind, ntri, til, tnbr, stack, ierror )
 
   !*****************************************************************************80
   !
@@ -2915,23 +2891,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NPT, the number of 2D points (vertices).
+  !    Input, integer(int32) NPT, the number of 2D points (vertices).
   !
-  !    Input, integer(ip) MAXST, the maximum size available for STACK array; should 
+  !    Input, integer(int32) MAXST, the maximum size available for STACK array; should 
   !    be about NPT to be safe, but MAX(10,2*LOG2(NPT)) usually enough.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the coordinates of 2D vertices.
+  !    Input, real(real64) VCL(1:2,1:*), the coordinates of 2D vertices.
   !
-  !    Input, integer(ip) IND(1:NPT), indices in VCL of vertices to be triangulated;
+  !    Input, integer(int32) IND(1:NPT), indices in VCL of vertices to be triangulated;
   !    vertices are inserted in order given by this array.
   !
-  !    Output, integer(ip) NTRI, the number of triangles in triangulation; equal to
+  !    Output, integer(int32) NTRI, the number of triangles in triangulation; equal to
   !    2*NPT - NB - 2 where NB = number of boundary vertices.
   !
-  !    Output, integer(ip) TIL(1:3,1:NTRI), the triangle incidence list; elements 
+  !    Output, integer(int32) TIL(1:3,1:NTRI), the triangle incidence list; elements 
   !    are indices of VCL; vertices of triangles are in counter clockwise order.
   !
-  !    Output, integer(ip) TNBR(1:3,1:NTRI), the triangle neighbor list; positive 
+  !    Output, integer(int32) TNBR(1:3,1:NTRI), the triangle neighbor list; positive 
   !    elements are indices of TIL; negative elements are used for links
   !    of counter clockwise linked list of boundary edges; LINK = -(3*I + J-1)
   !    where I, J = triangle, edge index; TNBR(J,I) refers to
@@ -2940,47 +2916,47 @@ contains
   !    Workspace, integer STACK(1:MAXST), used for stack of triangles for which
   !    circumcircle test must be made.
   !
-  !    Output, integer(ip) IERROR, error flag. For abnormal return,
+  !    Output, integer(int32) IERROR, error flag. For abnormal return,
   !    IERROR is set to 8, 224, 225, or 226.
   !
-    integer(ip), intent(in), value :: maxst
-    integer(ip), intent(in), value :: npt
+    integer(int32) maxst
+    integer(int32) npt
 
-    integer(ip) :: bedg
-    integer(ip) :: btri
-    real(dp) :: cmax
-    integer(ip) :: e
-    integer(ip) :: em1
-    integer(ip) :: ep1
-    integer(ip), intent(out) :: ntri
-    integer(ip) :: i
-    integer(ip) :: i3
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(in) :: ind(npt)
-    integer(ip) :: j
-    integer(ip) :: l
-    integer(ip) :: ledg
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip) :: ltri
-    integer(ip) :: m
-    integer(ip) :: m1
-    integer(ip) :: m2
-    integer(ip) :: m3
-    integer(ip), parameter :: msglvl = 0
-    integer(ip) :: n
-    integer(ip) :: redg
-    integer(ip) :: rtri
-    integer(ip) :: stack(maxst)
-    integer(ip) :: t
-    integer(ip), intent(out) :: til(3,npt*2)
-    integer(ip), intent(out) :: tnbr(3,npt*2)
-    integer(ip) :: top
-    real(dp) :: tol
-    real(dp), intent(in) :: vcl(2,*)
+    integer(int32) bedg
+    integer(int32) btri
+    real(real64) cmax
+    integer(int32) e
+    integer(int32) em1
+    integer(int32) ep1
+    integer(int32) ntri
+    integer(int32) i
+    integer(int32) i3
+    integer(int32) ierror
+    integer(int32) ind(npt)
+    integer(int32) j
+    integer(int32) l
+    integer(int32) ledg
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) ltri
+    integer(int32) m
+    integer(int32) m1
+    integer(int32) m2
+    integer(int32) m3
+    integer(int32), parameter :: msglvl = 0
+    integer(int32) n
+    integer(int32) redg
+    integer(int32) rtri
+    integer(int32) stack(maxst)
+    integer(int32) t
+    integer(int32) til(3,npt*2)
+    integer(int32) tnbr(3,npt*2)
+    integer(int32) top
+    real(real64) tol
+    real(real64) vcl(2,*)
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  Determine the initial triangle.
   !
@@ -3009,7 +2985,7 @@ contains
 
     m = ind(i3)
     lr = lrline ( vcl(1,m), vcl(2,m), vcl(1,m1), vcl(2,m1), vcl(1,m2), &
-      vcl(2,m2), 0.0_dp )
+      vcl(2,m2), 0.0e+00_real64 )
 
     if ( lr == 0 ) then
       i3 = i3 + 1
@@ -3430,11 +3406,10 @@ contains
     end if
 
   600 format (1x,i7,4f15.7)
-  end subroutine dtriw2
+  end
 
   subroutine edght ( a, b, v, n, htsiz, maxedg, hdfree, last, ht, edge, w, &
-    ierror ) &
-        bind(C, name="edght")
+    ierror )
 
   !*****************************************************************************80
   !
@@ -3464,60 +3439,60 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) A, B, vertex indices, greater than 0, of edge (also 
+  !    Input, integer(int32) A, B, vertex indices, greater than 0, of edge (also 
   !    key of hash table).
   !
-  !    Input, integer(ip) V, value associated with edge.
+  !    Input, integer(int32) V, value associated with edge.
   !
-  !    Input, integer(ip) N, upper bound on A, B.
+  !    Input, integer(int32) N, upper bound on A, B.
   !
-  !    Input, integer(ip) HTSIZ, the size of hash table HT.
+  !    Input, integer(int32) HTSIZ, the size of hash table HT.
   !
-  !    Input, integer(ip) MAXEDG, the maximum size available for EDGE array.
+  !    Input, integer(int32) MAXEDG, the maximum size available for EDGE array.
   !
-  !    Input/output, integer(ip) HDFREE, head pointer to linked list of free entries 
+  !    Input/output, integer(int32) HDFREE, head pointer to linked list of free entries 
   !    of EDGE array due to deletions.  Before first call to this routine, HDFREE
   !    should be set to 0.
   !
-  !    Input/output, integer(ip) LAST, index of last entry used in EDGE array.  
+  !    Input/output, integer(int32) LAST, index of last entry used in EDGE array.  
   !    Before first call to this routine, LAST should be set to 0.
   !
-  !    Input/output, integer(ip) HT(0:HTSIZ-1), hash table of head pointers (direct 
+  !    Input/output, integer(int32) HT(0:HTSIZ-1), hash table of head pointers (direct 
   !    chaining with ordered lists is used).  Before first call to this routine, 
   !    entries of HT should be set to 0.  If key with A,B is found then this 
   !    record is deleted from hash table, else record is inserted in hash table.
   !
-  !    Input/output, integer(ip) EDGE(1:4,1:MAXEDG), entries of hash table records;
+  !    Input/output, integer(int32) EDGE(1:4,1:MAXEDG), entries of hash table records;
   !      EDGE(1,I) = MIN(A,B); EDGE(2,I) = MAX(A,B);
   !      EDGE(3,I) = V; EDGE(4,I) = link
   !    If key with A,B is found then this record is deleted
   !    from hash table, else record is inserted in hash table.
   !
-  !    Output, integer(ip) W, EDGE(3,INDEX), where INDEX is index of record, if found;
+  !    Output, integer(int32) W, EDGE(3,INDEX), where INDEX is index of record, if found;
   !    else 0.
   !
-  !    Output, integer(ip) IERROR, error flag.  For abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  For abnormal return,
   !    IERROR is set to 1
   !
-    integer(ip), intent(in), value :: htsiz
-    integer(ip), intent(in), value :: maxedg
+    integer(int32) htsiz
+    integer(int32) maxedg
 
-    integer(ip), intent(in), value :: a
-    integer(ip) :: aa
-    integer(ip), intent(in), value :: b
-    integer(ip) :: bb
-    integer(ip) :: bptr
-    integer(ip), intent(out) :: edge(4,maxedg)
-    integer(ip), intent(inout) :: hdfree
-    integer(ip), intent(inout) :: ht(0:htsiz-1)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: k
-    integer(ip), intent(inout) :: last
-    integer(ip), intent(in), value :: n
-    integer(ip) :: newp
-    integer(ip) :: ptr
-    integer(ip), intent(in), value :: v
-    integer(ip), intent(out) :: w
+    integer(int32) a
+    integer(int32) aa
+    integer(int32) b
+    integer(int32) bb
+    integer(int32) bptr
+    integer(int32) edge(4,maxedg)
+    integer(int32) hdfree
+    integer(int32) ht(0:htsiz-1)
+    integer(int32) ierror
+    integer(int32) k
+    integer(int32) last
+    integer(int32) n
+    integer(int32) newp
+    integer(int32) ptr
+    integer(int32) v
+    integer(int32) w
 
     ierror = 0
 
@@ -3597,12 +3572,11 @@ contains
     edge(3,newp) = v
     edge(4,newp) = ptr
     w = 0
-  end subroutine edght
+  end
 
   subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
     nvc, npolg, nvert, maxvc, maxhv, maxpv, maxiw, maxwk, vcl, regnum, hvl,  &
-    pvl, iang, area, psi, h, iwk, wk, ierror ) &
-        bind(C, name="eqdis2")
+    pvl, iang, area, psi, h, iwk, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -3642,123 +3616,123 @@ contains
   !    of the form:
   !
   !      function umdf ( x, y )
-  !      real(dp) umdf
-  !      real(dp) x
-  !      real(dp) y
+  !      real(real64) umdf
+  !      real(real64) x
+  !      real(real64) y
   !
-  !    Input, real(dp) KAPPA, the mesh smoothness parameter in 
+  !    Input, real(real64) KAPPA, the mesh smoothness parameter in 
   !    the interval [0.0,1.0].
   !
-  !    Input, real(dp) ANGSPC, the angle spacing parameter in radians
+  !    Input, real(real64) ANGSPC, the angle spacing parameter in radians
   !    used to determine extra points as possible endpoints of separators.
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter in radians
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter in radians
   !    used in accepting separators.
   !
-  !    Input, real(dp) DMIN, a parameter used to determine if variation 
+  !    Input, real(real64) DMIN, a parameter used to determine if variation 
   !    of mdf in polygon is 'sufficiently high'.
   !
-  !    Input, integer(ip) NMIN, a parameter used to determine if 'sufficiently large'
+  !    Input, integer(int32) NMIN, a parameter used to determine if 'sufficiently large'
   !    number of triangles in polygon.
   !
-  !    Input, integer(ip) NTRID, the desired number of triangles in mesh.
+  !    Input, integer(int32) NTRID, the desired number of triangles in mesh.
   !
-  !    Input/output, integer(ip) NVC, the number of vertex coordinates or 
+  !    Input/output, integer(int32) NVC, the number of vertex coordinates or 
   !    positions used in VCL array.
   !
-  !    Input/output, integer(ip) NPOLG, the number of polygonal subregions or 
+  !    Input/output, integer(int32) NPOLG, the number of polygonal subregions or 
   !    positions used in HVL array.
   !
-  !    Input/output, integer(ip) NVERT, the number of polygon vertices or positions 
+  !    Input/output, integer(int32) NVERT, the number of polygon vertices or positions 
   !    used in PVL array.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL array, should 
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL array, should 
   !    be greater than or equal to the number of vertex coordinates required
   !    for decomposition (approximately NVC + 2*NS where NS is expected number 
   !    of new separators).
   !
-  !    Input, integer(ip) MAXHV, the maximum size available for HVL, REGNUM, AREA, 
+  !    Input, integer(int32) MAXHV, the maximum size available for HVL, REGNUM, AREA, 
   !    PSI, H arrays; should be greater than or equal to the number of polygons
   !    required for decomposition (approximately NPOLG + NS).
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL, IANG arrays; 
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL, IANG arrays; 
   !    should be greater than or equal to the number of polygon vertices 
   !    required for decomposition (approximately NVERT + 5*NS).
   !
-  !    Input, integer(ip) MAXIW, the maximum size available for IWK array; should 
+  !    Input, integer(int32) MAXIW, the maximum size available for IWK array; should 
   !    be greater than or equal to 
   !      MAX(2*NP, NVERT + NPOLG + 3*NVRT + INT(2*PI/ANGSPC))
   !    where NVRT is maximum number of vertices in a convex
   !    polygon of the (input) decomposition, NP is expected
   !    value of NPOLG on output.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK array; should
+  !    Input, integer(int32) MAXWK, the maximum size available for WK array; should
   !    be greater than or equal to 
   !      NVC + NVERT + 2*NPOLG + 3*(NVRT + INT(2*PI/ANGSPC)).
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) REGNUM(1:NPOLG), the region numbers.
+  !    Input/output, integer(int32) REGNUM(1:NPOLG), the region numbers.
   !
-  !    Input/output, real(dp) HVL(1:NPOLG), head vertex list.
+  !    Input/output, real(real64) HVL(1:NPOLG), head vertex list.
   !
-  !    Input/output, integer(ip) PVL(1:4,1:NVERT), real(dp) IANG(1:NVERT), 
+  !    Input/output, integer(int32) PVL(1:4,1:NVERT), real(real64) IANG(1:NVERT), 
   !    the polygon vertex list and interior angles; see routine DSPGDC for more 
   !    details.  Note that the data structures should be as output from routine
   !    CVDEC2.
   !
-  !    Output, real(dp) AREA(1:NPOLG), the area of convex polygons 
+  !    Output, real(real64) AREA(1:NPOLG), the area of convex polygons 
   !    in the decomposition.
   !
-  !    Output, real(dp) PSI(1:NPOLG), the smoothed mean mdf 
+  !    Output, real(real64) PSI(1:NPOLG), the smoothed mean mdf 
   !    values in the convex polygons.
   !
-  !    Output, real(dp) H(1:NPOLG), the triangle size for convex
+  !    Output, real(real64) H(1:NPOLG), the triangle size for convex
   !    polygons.
   !
   !    Workspace, integer IWK(1:MAXIW).
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  For abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  For abnormal return,
   !    IERROR is set to 3, 4, 5, 6, 7, 200, 201, or 222.
   !
-    integer(ip), intent(in), value :: maxhv
-    integer(ip), intent(in), value :: maxiw
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: maxwk
+    integer(int32) maxhv
+    integer(int32) maxiw
+    integer(int32) maxpv
+    integer(int32) maxvc
+    integer(int32) maxwk
 
-    real(dp), intent(in), value :: angspc
-    real(dp), intent(in), value :: angtol
-    real(dp), intent(out) :: area(maxhv)
-    real(dp), intent(in), value :: dmin
-    integer(ip) :: edgval
-    real(dp), intent(out) :: h(maxhv)
-    logical, intent(in), value :: hflag
-    integer(ip), intent(inout) :: hvl(maxhv)
-    real(dp), intent(in) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: ivrt
-    integer(ip) :: iwk(maxiw)
-    real(dp), intent(in), value :: kappa
-    integer(ip) :: m
-    integer(ip) :: n
-    integer(ip), intent(in), value :: nmin
-    integer(ip), intent(inout) :: npolg
-    integer(ip), intent(in), value :: ntrid
-    integer(ip), intent(inout) :: nvc
-    integer(ip), intent(inout) :: nvert
-    real(dp), intent(out) :: psi(maxhv)
-    integer(ip), intent(inout) :: pvl(4,maxpv)
-    integer(ip), intent(inout) :: regnum(maxhv)
-    real(dp) :: umdf
+    real(real64) angspc
+    real(real64) angtol
+    real(real64) area(maxhv)
+    real(real64) dmin
+    integer(int32) edgval
+    real(real64) h(maxhv)
+    logical hflag
+    integer(int32) hvl(maxhv)
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32) ivrt
+    integer(int32) iwk(maxiw)
+    real(real64) kappa
+    integer(int32) m
+    integer(int32) n
+    integer(int32) nmin
+    integer(int32) npolg
+    integer(int32) ntrid
+    integer(int32) nvc
+    integer(int32) nvert
+    real(real64) psi(maxhv)
+    integer(int32) pvl(4,maxpv)
+    integer(int32) regnum(maxhv)
+    real(real64) umdf
     external umdf
-    real(dp) :: vcl(2,maxvc)
-    integer(ip) :: vrtval
-    integer(ip) :: widsq
-    real(dp) :: wk(maxwk)
-    integer(ip) :: xivrt
+    real(real64) vcl(2,maxvc)
+    integer(int32) vrtval
+    integer(int32) widsq
+    real(real64) wk(maxwk)
+    integer(int32) xivrt
 
     ierror = 0
     ivrt = 1
@@ -3823,11 +3797,10 @@ contains
     end if
 
     call trisiz ( ntrid, npolg, hvl, pvl, area, psi, h, iwk, iwk(npolg+1) )
-  end subroutine eqdis2
+  end
 
   subroutine fndsep ( angac1, xr, yr, nvrt, xc, yc, ivis, theta, nv, iv,  &
-    vcl, pvl, iang, angsep, i1, i2, wkang ) &
-        bind(C, name="fndsep")
+    vcl, pvl, iang, angsep, i1, i2, wkang )
 
   !*****************************************************************************80
   !
@@ -3860,83 +3833,83 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGAC1, the angle tolerance parameter used 
+  !    Input, real(real64) ANGAC1, the angle tolerance parameter used 
   !    for preference in accepting one separator.
   !
-  !    Input, real(dp) XR, YR, the coordinates of reflex vertex.
+  !    Input, real(real64) XR, YR, the coordinates of reflex vertex.
   !
-  !    Input, integer(ip) NVRT, (number of vertices) - 1.
+  !    Input, integer(int32) NVRT, (number of vertices) - 1.
   !
-  !    Input, real(dp) XC(0:NVRT), YC(0:NVRT), the vertex coordinates 
+  !    Input, real(real64) XC(0:NVRT), YC(0:NVRT), the vertex coordinates 
   !    of possible endpoints of a separator.
   !
-  !    Input, integer(ip) IVIS(0:NVRT), contains information about the vertices of
+  !    Input, integer(int32) IVIS(0:NVRT), contains information about the vertices of
   !    XC, YC arrays with respect to the polygon vertex list; if
   !    0 < IVIS(I) then vertex (XC(I),YC(I)) has index IVIS(I)
   !    in PVL; if IVIS(I) < 0 then vertex (XC(I),YC(I)) is on
   !    the edge joining vertices with indices -IVIS(I) and
   !    SUCC(-IVIS(I)) in PVL.
   !
-  !    Input, real(dp) THETA(0:NVRT), the polar angles of vertices 
+  !    Input, real(real64) THETA(0:NVRT), the polar angles of vertices 
   !    in increasing order; THETA(NVRT) is the interior angle of reflex vertex;
   !    THETA(I), 0 <= I, is the polar angle of (XC(I),YC(I))
   !    with respect to reflex vertex.
   !
-  !    Input, integer(ip) NV, (number of vertices to be considered as endpoint of a
+  !    Input, integer(int32) NV, (number of vertices to be considered as endpoint of a
   !    separator) - 1.
   !
-  !    Input, integer(ip) IV(0:NV), the indices of vertices in XC, YC arrays to be
+  !    Input, integer(int32) IV(0:NV), the indices of vertices in XC, YC arrays to be
   !    considered as endpoint of a separator; angle between
   !    consecutive vertices is assumed to be < 180 degrees.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Input, integer(ip) PVL(1:4,1:*), real(dp) IANG(1:*), the polygon 
+  !    Input, integer(int32) PVL(1:4,1:*), real(real64) IANG(1:*), the polygon 
   !    vertex list, interior angles.
   !
-  !    Output, real(dp) ANGSEP, the minimum of the 4 or 7 angles at the
+  !    Output, real(real64) ANGSEP, the minimum of the 4 or 7 angles at the
   !    boundary resulting from 1 or 2 separators, respectively.
   !
-  !    Output, integer(ip) I1, I2, the indices of endpoints of separators in XC, 
+  !    Output, integer(int32) I1, I2, the indices of endpoints of separators in XC, 
   !    YC arrays; I2 = -1 if there is only one separator, else I1 < I2.
   !
-  !    Workspace, real(dp) WKANG(0:NV).
+  !    Workspace, real(real64) WKANG(0:NV).
   !
-    real(dp) :: ang
-    real(dp), intent(in), value :: angac1
-    real(dp), intent(out) :: angsep
-    real(dp) :: angsp2
-    integer(ip) :: i
-    integer(ip), intent(out) :: i1
-    integer(ip), intent(out) :: i2
-    real(dp) :: iang(*)
-    integer(ip) :: ii
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: m
-    integer(ip) :: nl
-    integer(ip) :: nr
-    integer(ip), intent(in), value :: nv
-    integer(ip), intent(in), value :: nvrt
-    integer(ip), intent(in) :: iv(0:nv)
-    integer(ip), intent(in) :: ivis(0:nvrt)
-    real(dp) :: minang
-    integer(ip) :: p
-    real(dp) :: phi
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    integer(ip), intent(in) :: pvl(4,*)
-    integer(ip) :: q
-    integer(ip) :: r
-    real(dp), intent(in) :: theta(0:nvrt)
-    real(dp) :: tol
-    real(dp), intent(in) :: vcl(2,*)
-    real(dp) :: wkang(0:nv)
-    real(dp), intent(in) :: xc(0:nvrt)
-    real(dp), intent(in), value :: xr
-    real(dp), intent(in) :: yc(0:nvrt)
-    real(dp), intent(in), value :: yr
+    real(real64) ang
+    real(real64) angac1
+    real(real64) angsep
+    real(real64) angsp2
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    real(real64) iang(*)
+    integer(int32) ii
+    integer(int32) k
+    integer(int32) l
+    integer(int32) m
+    integer(int32) nl
+    integer(int32) nr
+    integer(int32) nv
+    integer(int32) nvrt
+    integer(int32) iv(0:nv)
+    integer(int32) ivis(0:nvrt)
+    real(real64) minang
+    integer(int32) p
+    real(real64) phi
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    integer(int32) pvl(4,*)
+    integer(int32) q
+    integer(int32) r
+    real(real64) theta(0:nvrt)
+    real(real64) tol
+    real(real64) vcl(2,*)
+    real(real64) wkang(0:nv)
+    real(real64) xc(0:nvrt)
+    real(real64) xr
+    real(real64) yc(0:nvrt)
+    real(real64) yr
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  Determine the vertices in the inner cone - indices P to Q.
   !
@@ -4000,7 +3973,7 @@ contains
 
     do r = 0, p - 1
 
-      wkang(r) = 0.0_dp
+      wkang(r) = 0.0e+00_real64
 
       if ( angsep < theta(iv(r)) ) then
 
@@ -4026,7 +3999,7 @@ contains
 
     do l = q+1, nv
 
-      wkang(l) = 0.0_dp
+      wkang(l) = 0.0e+00_real64
 
       if ( theta(iv(l)) < phi ) then
 
@@ -4098,10 +4071,9 @@ contains
     else
       angsep = angsp2
     end if
-  end subroutine fndsep
+  end
 
-  subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror ) &
-        bind(C, name="fndtri")
+  subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
 
   !*****************************************************************************80
   !
@@ -4130,32 +4102,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IEDG, the index of edge to be searched in TEDG.
+  !    Input, integer(int32) IEDG, the index of edge to be searched in TEDG.
   !
-  !    Input, integer(ip) MXTR, the maximum index of triangle to be searched in TEDG.
+  !    Input, integer(int32) MXTR, the maximum index of triangle to be searched in TEDG.
   !
   !    Input, logical SFLAG, is .TRUE. if and only if the second triangle is to be 
   !    searched from end of array.
   !
-  !    Input, integer(ip) TEDG(1:3,1:MXTR), triangle edge indices; see routine CVDTRI.
+  !    Input, integer(int32) TEDG(1:3,1:MXTR), triangle edge indices; see routine CVDTRI.
   !
-  !    Output, integer(ip) ITR(1:2), IND(1:2), indices such that IEDG =
+  !    Output, integer(int32) ITR(1:2), IND(1:2), indices such that IEDG =
   !    TEDG(IND(1),ITR(1)) = TEDG(IND(2),ITR(2)).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 231.
   !
-    integer(ip), intent(in), value :: mxtr
+    integer(int32) mxtr
 
-    integer(ip) :: i
-    integer(ip), intent(in), value :: iedg
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(out) :: ind(2)
-    integer(ip), intent(out) :: itr(2)
-    integer(ip) :: j
-    integer(ip) :: k
-    logical, intent(in), value :: sflag
-    integer(ip), intent(in) :: tedg(3,mxtr)
+    integer(int32) i
+    integer(int32) iedg
+    integer(int32) ierror
+    integer(int32) ind(2)
+    integer(int32) itr(2)
+    integer(int32) j
+    integer(int32) k
+    logical sflag
+    integer(int32) tedg(3,mxtr)
   !
   !  Search from end of array TEDG.
   !
@@ -4231,10 +4203,9 @@ contains
 
     itr(2) = i
     ind(2) = j
-  end subroutine fndtri
+  end
 
-  subroutine gtime ( time ) &
-        bind(C, name="gtime")
+  subroutine gtime ( time )
 
   !*****************************************************************************80
   !
@@ -4250,21 +4221,20 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) TIME, the current reading of the CPU clock
+  !    Output, real(real64) TIME, the current reading of the CPU clock
   !    in seconds.
   !
-    integer(ip) :: clock_count
-    integer(ip) :: clock_max
-    integer(ip) :: clock_rate
-    real(dp), intent(out) :: time
+    integer(int32) clock_count
+    integer(int32) clock_max
+    integer(int32) clock_rate
+    real(real64) time
 
     call system_clock ( clock_count, clock_rate, clock_max )
 
-    time = real ( clock_count, dp) / real ( clock_rate, dp)
-  end subroutine gtime
+    time = real ( clock_count, real64) / real ( clock_rate, real64)
+  end
 
-  subroutine holvrt ( nhole, vcl, hvl, pvl, holv ) &
-        bind(C, name="holvrt")
+  subroutine holvrt ( nhole, vcl, hvl, pvl, holv )
 
   !*****************************************************************************80
   !
@@ -4295,42 +4265,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NHOLE, the number of holes in region(s).
+  !    Input, integer(int32) NHOLE, the number of holes in region(s).
   !
-  !    Input, real(dp) VCL(1:2,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Input, integer(ip) HVL(1:NHOLE), the head vertex list; HVL(I) is index in 
+  !    Input, integer(int32) HVL(1:NHOLE), the head vertex list; HVL(I) is index in 
   !    PVL of head vertex of Ith hole.
   !
-  !    Input, integer(ip) PVL(1:4,1:*), the polygon vertex list; see routine DSPGDC.
+  !    Input, integer(int32) PVL(1:4,1:*), the polygon vertex list; see routine DSPGDC.
   !
-  !    Output, integer(ip) HOLV(1:NHOLE*2), the indices in PVL of top and bottom 
+  !    Output, integer(int32) HOLV(1:NHOLE*2), the indices in PVL of top and bottom 
   !    vertices of holes; first (last) NHOLE entries are for top (bottom)
   !    vertices; top (bottom) vertices are sorted in decreasing
   !    (increasing) lexicographic (y,x) order of coordinates.
   !
-    integer(ip), intent(in), value :: nhole
+    integer(int32) nhole
 
-    integer(ip), intent(out) :: holv(nhole*2)
-    integer(ip) :: hv
-    integer(ip), intent(in) :: hvl(nhole)
-    integer(ip) :: i
-    integer(ip) :: imax
-    integer(ip) :: imin
-    integer(ip) :: iv
-    integer(ip) :: j
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: lv
-    integer(ip) :: nhp1
-    integer(ip), intent(in) :: pvl(4,*)
-    integer(ip), parameter :: succ = 3
-    real(dp), intent(in) :: vcl(2,*)
-    real(dp) :: x
-    real(dp) :: xmax
-    real(dp) :: xmin
-    real(dp) :: y
-    real(dp) :: ymax
-    real(dp) :: ymin
+    integer(int32) holv(nhole*2)
+    integer(int32) hv
+    integer(int32) hvl(nhole)
+    integer(int32) i
+    integer(int32) imax
+    integer(int32) imin
+    integer(int32) iv
+    integer(int32) j
+    integer(int32), parameter :: loc = 1
+    integer(int32) lv
+    integer(int32) nhp1
+    integer(int32) pvl(4,*)
+    integer(int32), parameter :: succ = 3
+    real(real64) vcl(2,*)
+    real(real64) x
+    real(real64) xmax
+    real(real64) xmin
+    real(real64) y
+    real(real64) ymax
+    real(real64) ymin
   !
   !  Determine top and bottom vertices of holes.
   !
@@ -4440,10 +4410,9 @@ contains
       holv(j) = hv
 
     end do
-  end subroutine holvrt
+  end
 
-  function i4_modp ( i, j ) &
-        bind(C, name="i4_modp")
+  function i4_modp ( i, j )
 
   !*****************************************************************************80
   !
@@ -4487,16 +4456,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the number to be divided.
+  !    Input, integer(int32) I, the number to be divided.
   !
-  !    Input, integer(ip) J, the number that divides I.
+  !    Input, integer(int32) J, the number that divides I.
   !
-  !    Output, integer(ip) I4_MODP, the nonnegative remainder when I is
+  !    Output, integer(int32) I4_MODP, the nonnegative remainder when I is
   !    divided by J.
   !
-    integer(ip), intent(in), value :: i
-    integer(ip) :: i4_modp
-    integer(ip), intent(in), value :: j
+    integer(int32) i
+    integer(int32) i4_modp
+    integer(int32) j
 
     if ( j == 0 ) then
       write ( *, '(a)' ) ' '
@@ -4510,10 +4479,9 @@ contains
     if ( i4_modp < 0 ) then
       i4_modp = i4_modp + abs ( j )
     end if
-  end function i4_modp
+  end
 
-  subroutine i4_swap ( i, j ) &
-        bind(C, name="i4_swap")
+  subroutine i4_swap ( i, j )
 
   !*****************************************************************************80
   !
@@ -4529,20 +4497,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) I, J.  On output, the values of I and
+  !    Input/output, integer(int32) I, J.  On output, the values of I and
   !    J have been interchanged.
   !
-    integer(ip), intent(inout) :: i
-    integer(ip), intent(inout) :: j
-    integer(ip) :: k
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
 
     k = i
     i = j
     j = k
-  end subroutine i4_swap
+  end
 
-  function i4_wrap ( ival, ilo, ihi ) &
-        bind(C, name="i4_wrap")
+  function i4_wrap ( ival, ilo, ihi )
 
   !*****************************************************************************80
   !
@@ -4582,18 +4549,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IVAL, an integer value.
+  !    Input, integer(int32) IVAL, an integer value.
   !
-  !    Input, integer(ip) ILO, IHI, the desired bounds for the integer value.
+  !    Input, integer(int32) ILO, IHI, the desired bounds for the integer value.
   !
-  !    Output, integer(ip) I4_WRAP, a "wrapped" version of IVAL.
+  !    Output, integer(int32) I4_WRAP, a "wrapped" version of IVAL.
   !
-    integer(ip) :: i4_modp
-    integer(ip) :: i4_wrap
-    integer(ip), intent(in), value :: ihi
-    integer(ip), intent(in), value :: ilo
-    integer(ip), intent(in), value :: ival
-    integer(ip) :: wide
+    integer(int32) i4_modp
+    integer(int32) i4_wrap
+    integer(int32) ihi
+    integer(int32) ilo
+    integer(int32) ival
+    integer(int32) wide
 
     wide = ihi + 1 - ilo
 
@@ -4602,10 +4569,9 @@ contains
     else
       i4_wrap = ilo + i4_modp ( ival-ilo, wide )
     end if
-  end function i4_wrap
+  end
 
-  subroutine ihpsrt ( k, n, lda, a, map ) &
-        bind(C, name="ihpsrt")
+  subroutine ihpsrt ( k, n, lda, a, map )
 
   !*****************************************************************************80
   !
@@ -4636,29 +4602,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) K, the dimension of points.
+  !    Input, integer(int32) K, the dimension of points.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, integer(ip) LDA, the leading dimension of array A in calling 
+  !    Input, integer(int32) LDA, the leading dimension of array A in calling 
   !    routine; K <= LDA.
   !
-  !    Input, integer(ip) A(1:K,1:*), the array of at least N K-dimensional 
+  !    Input, integer(int32) A(1:K,1:*), the array of at least N K-dimensional 
   !    integer points.
   !
-  !    Input/output, integer(ip) MAP(1:N), the points of A with indices MAP(1), 
+  !    Input/output, integer(int32) MAP(1:N), the points of A with indices MAP(1), 
   !    MAP(2), ..., MAP(N) are to be sorted.
   !    On output, elements are permuted so that A(*,MAP(1)) <=
   !    A(*,MAP(2)) <= ... <= A(*,MAP(N)).
   !
-    integer(ip), intent(in), value :: lda
-    integer(ip), intent(in), value :: n
+    integer(int32) lda
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(lda,*)
-    integer(ip) :: i
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(inout) :: map(n)
-    integer(ip) :: t
+    integer(int32) a(lda,*)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) map(n)
+    integer(int32) t
 
     do i = n/2, 1, -1
       call isftdw ( i, n, k, lda, a, map )
@@ -4670,10 +4636,9 @@ contains
       map(i) = t
       call isftdw ( 1, i-1, k, lda, a, map )
     end do
-  end subroutine ihpsrt
+  end
 
-  function iless ( k, p, q ) &
-        bind(C, name="iless")
+  function iless ( k, p, q )
 
   !*****************************************************************************80
   !
@@ -4702,18 +4667,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) K, the dimension of points.
+  !    Input, integer(int32) K, the dimension of points.
   !
-  !    Input, integer(ip) P(1:K), Q(1:K), two points to compare.
+  !    Input, integer(int32) P(1:K), Q(1:K), two points to compare.
   !
   !    Output, logical ILESS, is .TRUE. if P < Q, .FALSE. otherwise.
   !
-    integer(ip), intent(in), value :: k
+    integer(int32) k
 
-    integer(ip) :: i
-    logical :: iless
-    integer(ip), intent(in) :: p(k)
-    integer(ip), intent(in) :: q(k)
+    integer(int32) i
+    logical iless
+    integer(int32) p(k)
+    integer(int32) q(k)
 
     do i = 1, k
 
@@ -4729,11 +4694,10 @@ contains
     end do
 
     iless = .false.
-  end function iless
+  end
 
   subroutine insed2 ( v, w, npolg, nvert, maxhv, maxpv, vcl, regnum, &
-    hvl, pvl, iang, ierror ) &
-        bind(C, name="insed2")
+    hvl, pvl, iang, ierror )
 
   !*****************************************************************************80
   !
@@ -4763,54 +4727,54 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) V, W, indices in PVL of vertices which are the endpoints
+  !    Input, integer(int32) V, W, indices in PVL of vertices which are the endpoints
   !    of an edge to be added to decomposition.
   !
-  !    Input, integer(ip) NPOLG, the number of positions used in HVL array.
+  !    Input, integer(int32) NPOLG, the number of positions used in HVL array.
   !
-  !    Input, integer(ip) NVERT, the number of positions used in PVL array.
+  !    Input, integer(int32) NVERT, the number of positions used in PVL array.
   !
-  !    Input, integer(ip) MAXHV, the maximum size available for HVL array.
+  !    Input, integer(int32) MAXHV, the maximum size available for HVL array.
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL array.
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL array.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) REGNUM(1:NPOLG), the region numbers.
+  !    Input/output, integer(int32) REGNUM(1:NPOLG), the region numbers.
   !
-  !    Input/output, integer(ip) HVL(1:NPOLG), the head vertex list.
+  !    Input/output, integer(int32) HVL(1:NPOLG), the head vertex list.
   !
-  !    Input/output, integer(ip) PVL(1:4,1:NVERT), real(dp) IANG(1:NVERT), 
+  !    Input/output, integer(int32) PVL(1:4,1:NVERT), real(real64) IANG(1:NVERT), 
   !    the polygon vertex list and interior angles.
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 4 or 5.
   !
-    integer(ip), intent(in), value :: maxhv
-    integer(ip), intent(in), value :: maxpv
+    integer(int32) maxhv
+    integer(int32) maxpv
 
-    real(dp) :: angle
-    integer(ip), parameter :: edgv = 4
-    integer(ip), intent(inout) :: hvl(maxhv)
-    integer(ip) :: i
-    real(dp) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: l
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: lv
-    integer(ip) :: lw
-    integer(ip), parameter :: msglvl = 0
-    integer(ip), intent(in), value :: npolg
-    integer(ip), intent(in), value :: nvert
-    integer(ip), parameter :: polg = 2
-    integer(ip), intent(inout) :: pvl(4,maxpv)
-    integer(ip), intent(inout) :: regnum(maxhv)
-    integer(ip), parameter :: succ = 3
-    integer(ip), intent(in), value :: v
-    real(dp), intent(in) :: vcl(2,*)
-    integer(ip) :: vv
-    integer(ip), intent(in), value :: w
-    integer(ip) :: ww
+    real(real64) angle
+    integer(int32), parameter :: edgv = 4
+    integer(int32) hvl(maxhv)
+    integer(int32) i
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32) l
+    integer(int32), parameter :: loc = 1
+    integer(int32) lv
+    integer(int32) lw
+    integer(int32), parameter :: msglvl = 0
+    integer(int32) npolg
+    integer(int32) nvert
+    integer(int32), parameter :: polg = 2
+    integer(int32) pvl(4,maxpv)
+    integer(int32) regnum(maxhv)
+    integer(int32), parameter :: succ = 3
+    integer(int32) v
+    real(real64) vcl(2,*)
+    integer(int32) vv
+    integer(int32) w
+    integer(int32) ww
 
     ierror = 0
 
@@ -4882,11 +4846,10 @@ contains
     if ( msglvl == 2 ) then
       write ( *, '(2i6,4f15.7)' ) v, w, vcl(1:2,lv), vcl(1:2,lw)
     end if
-  end subroutine insed2
+  end
 
   subroutine insvr2 ( xi, yi, wp, nvc, nvert, maxvc, maxpv, vcl, pvl, &
-    iang, w, ierror ) &
-        bind(C, name="insvr2")
+    iang, w, ierror )
 
   !*****************************************************************************80
   !
@@ -4916,55 +4879,55 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XI, YI, the coordinates of point to be inserted.
+  !    Input, real(real64) XI, YI, the coordinates of point to be inserted.
   !
-  !    Input, integer(ip) WP, the index of vertex in PVL which is to be the
+  !    Input, integer(int32) WP, the index of vertex in PVL which is to be the
   !    predecessor vertex of the inserted vertex.
   !
-  !    Input/output, integer(ip) NVC, the number of positions used in VCL array.
+  !    Input/output, integer(int32) NVC, the number of positions used in VCL array.
   !
-  !    Input/output, integer(ip) NVERT, the number of positions used in PVL array.
+  !    Input/output, integer(int32) NVERT, the number of positions used in PVL array.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL array.
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL array.
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL array.
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL array.
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) PVL(1:4,1:NVERT), real(dp) IANG(1:NVERT),
+  !    Input/output, integer(int32) PVL(1:4,1:NVERT), real(real64) IANG(1:NVERT),
   !    the polygon vertex list and interior angles.
   !
-  !    Output, integer(ip) W, the index of inserted vertex in PVL.
+  !    Output, integer(int32) W, the index of inserted vertex in PVL.
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 3 or 5.
   !
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: maxvc
+    integer(int32) maxpv
+    integer(int32) maxvc
 
-    integer(ip), parameter :: edgv = 4
-    real(dp) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip), parameter :: loc = 1
-    integer(ip), intent(inout) :: nvc
-    integer(ip), intent(inout) :: nvert
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    integer(ip), parameter :: polg = 2
-    integer(ip), intent(inout) :: pvl(4,maxpv)
-    integer(ip), parameter :: succ = 3
-    real(dp) :: tol
-    real(dp), intent(inout) :: vcl(2,maxvc)
-    integer(ip), intent(out) :: w
-    integer(ip), intent(in), value :: wp
-    integer(ip) :: ws
-    integer(ip) :: ww
-    integer(ip) :: wwp
-    integer(ip) :: wws
-    real(dp), intent(in), value :: xi
-    real(dp), intent(in), value :: yi
+    integer(int32), parameter :: edgv = 4
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32), parameter :: loc = 1
+    integer(int32) nvc
+    integer(int32) nvert
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    integer(int32), parameter :: polg = 2
+    integer(int32) pvl(4,maxpv)
+    integer(int32), parameter :: succ = 3
+    real(real64) tol
+    real(real64) vcl(2,maxvc)
+    integer(int32) w
+    integer(int32) wp
+    integer(int32) ws
+    integer(int32) ww
+    integer(int32) wwp
+    integer(int32) wws
+    real(real64) xi
+    real(real64) yi
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     if ( maxvc <= nvc ) then
       ierror = 3
@@ -5006,11 +4969,10 @@ contains
       pvl(edgv,ww) = wp
       pvl(edgv,wws) = w
     end if
-  end subroutine insvr2
+  end
 
   subroutine intpg ( nvrt, xc, yc, ctrx, ctry, arpoly, hflag, umdf, wsq, nev, &
-    ifv, listev, ivrt, edgval, vrtval, vcl, mdfint, mean, stdv, mdftr ) &
-        bind(C, name="intpg")
+    ifv, listev, ivrt, edgval, vrtval, vcl, mdfint, mean, stdv, mdftr )
 
   !*****************************************************************************80
   !
@@ -5040,16 +5002,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVRT, the number of vertices in polygon.
+  !    Input, integer(int32) NVRT, the number of vertices in polygon.
   !
-  !    Input, real(dp) XC(0:NVRT), YC(0:NVRT), the coordinates of 
+  !    Input, real(real64) XC(0:NVRT), YC(0:NVRT), the coordinates of 
   !    polygon vertices in counter clockwise order, translated so that 
   !    centroid is at origin; (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)).
   !
-  !    Input, real(dp) CTRX, CTRY, the coordinates of centroid 
+  !    Input, real(real64) CTRX, CTRY, the coordinates of centroid 
   !    before translation.
   !
-  !    Input, real(dp) ARPOLY, the area of polygon.
+  !    Input, real(real64) ARPOLY, the area of polygon.
   !
   !    Input, logical HFLAG, is .TRUE. if heuristic mdf, .FALSE. if 
   !    user-supplied mdf.
@@ -5058,83 +5020,83 @@ contains
   !    the form:
   !
   !      function umdf ( x, y )
-  !      real(dp) umdf
-  !      real(dp) x
-  !      real(dp) y
+  !      real(real64) umdf
+  !      real(real64) x
+  !      real(real64) y
   !
-  !    Input, real(dp) WSQ, the square of width of original polygon 
+  !    Input, real(real64) WSQ, the square of width of original polygon 
   !    of decomposition.
   !
-  !    Input, integer(ip) NEV, integer IFV, integer LISTEV(1:NEV), output from 
+  !    Input, integer(int32) NEV, integer IFV, integer LISTEV(1:NEV), output from 
   !    routine PRMDF2.
   !
-  !    Input, IVRT(1:*), real(dp) EDGVAL(1:*), 
-  !    real(dp) VRTVAL(1:*), arrays output from DSMDF2;
+  !    Input, IVRT(1:*), real(real64) EDGVAL(1:*), 
+  !    real(real64) VRTVAL(1:*), arrays output from DSMDF2;
   !    if .NOT. HFLAG then only first array exists.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Output, real(dp) MDFINT, the integral of MDF in polygon.
+  !    Output, real(real64) MDFINT, the integral of MDF in polygon.
   !
-  !    Output, real(dp) MEAN, the mean MDF value in polygon.
+  !    Output, real(real64) MEAN, the mean MDF value in polygon.
   !
-  !    Output, real(dp) STDV, the standard deviation of MDF in polygon.
+  !    Output, real(real64) STDV, the standard deviation of MDF in polygon.
   !
-  !    Output, real(dp) MDFTR(0:NVRT-1), the mean MDF value in each 
+  !    Output, real(real64) MDFTR(0:NVRT-1), the mean MDF value in each 
   !    triangle of polygon;  triangles are determined by polygon vertices 
   !    and centroid.
   !
-    integer(ip), intent(in), value :: nev
-    integer(ip), parameter :: nqpt = 3
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nev
+    integer(int32), parameter :: nqpt = 3
+    integer(int32) nvrt
 
-    real(dp) :: areatr
-    real(dp), intent(in), value :: arpoly
-    real(dp), intent(in), value :: ctrx
-    real(dp), intent(in), value :: ctry
-    real(dp) :: d
-    real(dp) :: edgval(*)
-    logical, intent(in), value :: hflag
-    integer(ip) :: i
-    integer(ip) :: ifv
-    integer(ip), intent(in) :: ivrt(*)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: kp1
-    integer(ip) :: l
-    integer(ip) :: listev(nev)
-    integer(ip) :: m
-    real(dp), intent(out) :: mdfint
-    real(dp) :: mdfsqi
-    real(dp), intent(out) :: mdftr(0:nvrt-1)
-    real(dp), intent(out) :: mean
-    real(dp), save, dimension ( 3, nqpt ) :: qc = reshape ( (/ &
-      0.6666666666666666_dp, 0.1666666666666667_dp, 0.1666666666666667_dp, &
-      0.1666666666666667_dp, 0.6666666666666666_dp, 0.1666666666666667_dp, &
-      0.1666666666666667_dp, 0.1666666666666667_dp, 0.6666666666666666_dp/), &
+    real(real64) areatr
+    real(real64) arpoly
+    real(real64) ctrx
+    real(real64) ctry
+    real(real64) d
+    real(real64) edgval(*)
+    logical hflag
+    integer(int32) i
+    integer(int32) ifv
+    integer(int32) ivrt(*)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) kp1
+    integer(int32) l
+    integer(int32) listev(nev)
+    integer(int32) m
+    real(real64) mdfint
+    real(real64) mdfsqi
+    real(real64) mdftr(0:nvrt-1)
+    real(real64) mean
+    real(real64), save, dimension ( 3, nqpt ) :: qc = reshape ( (/ &
+      0.6666666666666666e+00_real64, 0.1666666666666667e+00_real64, 0.1666666666666667e+00_real64, &
+      0.1666666666666667e+00_real64, 0.6666666666666666e+00_real64, 0.1666666666666667e+00_real64, &
+      0.1666666666666667e+00_real64, 0.1666666666666667e+00_real64, 0.6666666666666666e+00_real64/), &
       (/ 3, nqpt /) )
-    real(dp) :: s
-    real(dp) :: stdv
-    real(dp) :: sum1
-    real(dp) :: sum2
-    real(dp) :: temp
-    real(dp) :: umdf
-    real(dp) :: val
-    real(dp) :: vcl(2,*)
-    real(dp) :: vrtval(*)
-    real(dp) :: wsq
-    real(dp), save, dimension ( nqpt ) :: wt = &
-      (/ 0.3333333333333333_dp, 0.3333333333333333_dp, 0.3333333333333333_dp /)
-    real(dp) :: x
-    real(dp) :: x0
-    real(dp) :: x1
-    real(dp) :: xc(0:nvrt)
-    real(dp) :: xx
-    real(dp) :: y
-    real(dp) :: y0
-    real(dp) :: y1
-    real(dp) :: yc(0:nvrt)
-    real(dp) :: yy
+    real(real64) s
+    real(real64) stdv
+    real(real64) sum1
+    real(real64) sum2
+    real(real64) temp
+    real(real64) umdf
+    real(real64) val
+    real(real64) vcl(2,*)
+    real(real64) vrtval(*)
+    real(real64) wsq
+    real(real64), save, dimension ( nqpt ) :: wt = &
+      (/ 0.3333333333333333e+00_real64, 0.3333333333333333e+00_real64, 0.3333333333333333e+00_real64 /)
+    real(real64) x
+    real(real64) x0
+    real(real64) x1
+    real(real64) xc(0:nvrt)
+    real(real64) xx
+    real(real64) y
+    real(real64) y0
+    real(real64) y1
+    real(real64) yc(0:nvrt)
+    real(real64) yy
 
     external umdf
   !
@@ -5142,14 +5104,14 @@ contains
   !  WT(I) is weight of Ith quadrature point.
   !  QC(1:3,I) are barycentric coordinates of Ith quadrature point.
   !
-    mdfint = 0.0_dp
-    mdfsqi = 0.0_dp
+    mdfint = 0.0e+00_real64
+    mdfsqi = 0.0e+00_real64
 
     do l = 0, nvrt-1
 
-      areatr = 0.5_dp * ( xc(l) * yc(l+1) - xc(l+1) * yc(l) )
-      sum1 = 0.0_dp
-      sum2 = 0.0_dp
+      areatr = 0.5e+00_real64 * ( xc(l) * yc(l+1) - xc(l+1) * yc(l) )
+      sum1 = 0.0e+00_real64
+      sum2 = 0.0e+00_real64
 
       do m = 1, nqpt
 
@@ -5170,7 +5132,7 @@ contains
               if ( k < 0 ) then
                  k = -k
                  d = ( vcl(1,k) - x )**2 + ( vcl(2,k) - y )**2
-                 d = max ( 0.25_dp * d, vrtval(k) )
+                 d = max ( 0.25e+00_real64 * d, vrtval(k) )
                  s = min ( s, d )
               else
                  kp1 = k + 1
@@ -5183,23 +5145,23 @@ contains
                  x1 = vcl(1,ivrt(k)) - vcl(1,j)
                  y1 = vcl(2,ivrt(k)) - vcl(2,j)
 
-                 if ( x0 * x1 + y0 * y1 <= 0.0_dp ) then
+                 if ( x0 * x1 + y0 * y1 <= 0.0e+00_real64 ) then
                    d = x0**2 + y0**2
                  else
                    x0 = x0 - x1
                    y0 = y0 - y1
-                   if ( 0.0_dp <= x0 * x1 + y0 * y1 ) then
+                   if ( 0.0e+00_real64 <= x0 * x1 + y0 * y1 ) then
                      d = x0**2 + y0**2
                    else
                      d = ( x1 * y0 - y1 * x0 )**2 / ( x1**2 + y1**2 )
                    end if
                  end if
 
-                 d = max ( 0.25_dp * d, edgval(k) )
+                 d = max ( 0.25e+00_real64 * d, edgval(k) )
                  s = min ( s, d )
               end if
              end do
-             val = 1.0_dp / s
+             val = 1.0e+00_real64 / s
         else
           val = umdf ( xx+ctrx, yy+ctry )
         end if
@@ -5218,12 +5180,11 @@ contains
 
     mean = mdfint / arpoly
     stdv = mdfsqi / arpoly - mean**2
-    stdv = sqrt ( max ( stdv, 0.0_dp ) )
-  end subroutine intpg
+    stdv = sqrt ( max ( stdv, 0.0e+00_real64 ) )
+  end
 
   subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
-    maxvc, maxti, maxcw, vcl, til, ncw, cwalk, ierror ) &
-        bind(C, name="inttri")
+    maxvc, maxti, maxcw, vcl, til, ncw, cwalk, ierror )
 
   !*****************************************************************************80
   !
@@ -5254,104 +5215,104 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVRT, the number of vertices on the boundary of
+  !    Input, integer(int32) NVRT, the number of vertices on the boundary of
   !    convex polygon.
   !
-  !    Input, real(dp) XC(0:NVRT), YC(0:NVRT), the vertex coordinates 
+  !    Input, real(real64) XC(0:NVRT), YC(0:NVRT), the vertex coordinates 
   !    in counter clockwise order; (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)).
   !
-  !    Input, real(dp) H, the spacing of mesh vertices in polygon.
+  !    Input, real(real64) H, the spacing of mesh vertices in polygon.
   !
-  !    Input, integer(ip) IBOT, the index of bottom vertex; diameter contains vertices
+  !    Input, integer(int32) IBOT, the index of bottom vertex; diameter contains vertices
   !    (XC(0),YC(0)) and (XC(IBOT),YC(IBOT)).
   !
-  !    Input, real(dp) COSTH, SINTH; COS(THETA), SIN(THETA) where 
+  !    Input, real(real64) COSTH, SINTH; COS(THETA), SIN(THETA) where 
   !    THETA in [-PI,PI] is rotation angle to get diameter parallel to y-axis.
   !
-  !    Input, integer(ip) LDV, the leading dimension of VCL in calling routine.
+  !    Input, integer(int32) LDV, the leading dimension of VCL in calling routine.
   !
-  !    Input/output, integer(ip) NVC, the number of coordinates or positions 
+  !    Input/output, integer(int32) NVC, the number of coordinates or positions 
   !    used in VCL array.
   !
-  !    Input/output, integer(ip) NTRI, the number of triangles or positions 
+  !    Input/output, integer(int32) NTRI, the number of triangles or positions 
   !    used in TIL.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL array.
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL array.
   !
-  !    Input, integer(ip) MAXTI, the maximum size available for TIL array.
+  !    Input, integer(int32) MAXTI, the maximum size available for TIL array.
   !
-  !    Input, integer(ip) MAXCW, the maximum size available for CWALK array; 
+  !    Input, integer(int32) MAXCW, the maximum size available for CWALK array; 
   !    assumed to be at least 6*(1 + INT((YC(0) - YC(IBOT))/H)).
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) TIL(1:3,1:NTRI), the triangle incidence list.
+  !    Input/output, integer(int32) TIL(1:3,1:NTRI), the triangle incidence list.
   !
-  !    Output, integer(ip) NCW, the number of mesh vertices in closed walk, 
+  !    Output, integer(int32) NCW, the number of mesh vertices in closed walk, 
   !    except NCW = 0 for 1 vertex.
   !
-  !    Output, integer(ip) CWALK(0:NCW), indices in VCL of mesh vertices of closed
+  !    Output, integer(int32) CWALK(0:NCW), indices in VCL of mesh vertices of closed
   !    walk; CWALK(0) = CWALK(NCW)
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 3, 9, or 10
   !
-    integer(ip), intent(in), value :: ldv
-    integer(ip), intent(in), value :: maxcw
-    integer(ip), intent(in), value :: maxti
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) ldv
+    integer(int32) maxcw
+    integer(int32) maxti
+    integer(int32) maxvc
+    integer(int32) nvrt
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp), intent(in), value :: costh
-    integer(ip), intent(out) :: cwalk(0:maxcw)
-    real(dp) :: cy
-    real(dp), intent(in), value :: h
-    integer(ip) :: i
-    integer(ip), intent(in), value :: ibot
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: il
-    integer(ip) :: im1l
-    integer(ip) :: im1r
-    integer(ip) :: ir
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: l0
-    integer(ip) :: l1
-    integer(ip) :: lw
-    integer(ip) :: m
-    integer(ip) :: n
-    integer(ip), intent(out) :: ncw
-    integer(ip), intent(inout) :: ntri
-    integer(ip), intent(inout) :: nvc
-    integer(ip) :: p
-    integer(ip) :: r
-    integer(ip) :: r0
-    integer(ip) :: r1
-    integer(ip) :: rw
-    real(dp), intent(in), value :: sinth
-    real(dp) :: sy
-    integer(ip), intent(inout) :: til(3,maxti)
-    real(dp) :: tol
-    real(dp), intent(inout) :: vcl(ldv,maxvc)
-    real(dp) :: x
-    real(dp), intent(in) :: xc(0:nvrt)
-    real(dp) :: xj
-    real(dp) :: xk
-    real(dp) :: xl
-    real(dp) :: xm1l
-    real(dp) :: xm1r
-    real(dp) :: xr
-    real(dp) :: y
-    real(dp), intent(in) :: yc(0:nvrt)
+    real(real64) a
+    real(real64) b
+    real(real64) costh
+    integer(int32) cwalk(0:maxcw)
+    real(real64) cy
+    real(real64) h
+    integer(int32) i
+    integer(int32) ibot
+    integer(int32) ierror
+    integer(int32) il
+    integer(int32) im1l
+    integer(int32) im1r
+    integer(int32) ir
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) l0
+    integer(int32) l1
+    integer(int32) lw
+    integer(int32) m
+    integer(int32) n
+    integer(int32) ncw
+    integer(int32) ntri
+    integer(int32) nvc
+    integer(int32) p
+    integer(int32) r
+    integer(int32) r0
+    integer(int32) r1
+    integer(int32) rw
+    real(real64) sinth
+    real(real64) sy
+    integer(int32) til(3,maxti)
+    real(real64) tol
+    real(real64) vcl(ldv,maxvc)
+    real(real64) x
+    real(real64) xc(0:nvrt)
+    real(real64) xj
+    real(real64) xk
+    real(real64) xl
+    real(real64) xm1l
+    real(real64) xm1r
+    real(real64) xr
+    real(real64) y
+    real(real64) yc(0:nvrt)
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     n = int ( ( yc(0) - yc(ibot) ) / h )
-    y = yc(0) - 0.5_dp * ( yc(0) - yc(ibot ) - real ( n, dp) * h )
+    y = yc(0) - 0.5e+00_real64 * ( yc(0) - yc(ibot ) - real ( n, real64) * h )
     l = 0
     r = nvrt
 
@@ -5371,7 +5332,7 @@ contains
       xl = xc(l) + ( xc(l+1) - xc(l) ) * ( y - yc(l) ) / ( yc(l+1) - yc(l) )
       xr = xc(r) + ( xc(r-1) - xc(r) ) * ( y - yc(r) ) / ( yc(r-1) - yc(r) )
       m = int ( ( xr - xl ) / h )
-      x = xl + 0.5_dp * ( xr - xl - real ( m, dp) * h )
+      x = xl + 0.5e+00_real64 * ( xr - xl - real ( m, real64) * h )
 
       if ( maxvc < nvc + m + 1 ) then
         ierror = 3
@@ -5422,7 +5383,7 @@ contains
         l0 = im1l
         x = ( xm1l - xl ) / h
         j = int(x + tol)
-        if ( abs ( x - real ( j, dp) ) <= tol ) then
+        if ( abs ( x - real ( j, real64) ) <= tol ) then
           j = j - 1
         end if
         if ( j < 0 ) then
@@ -5433,7 +5394,7 @@ contains
         l1 = il
         x = ( xl - xm1l ) / h
         j = int ( x + tol )
-        if ( abs ( x - real ( j, dp) ) <= tol ) then
+        if ( abs ( x - real ( j, real64) ) <= tol ) then
           j = j - 1
         end if
         if ( j < 0 ) then
@@ -5446,7 +5407,7 @@ contains
         r0 = im1r
         x = ( xr - xm1r ) / h
         j = int ( x + tol )
-        if ( abs ( x - real ( j, dp) ) <= tol ) then
+        if ( abs ( x - real ( j, real64) ) <= tol ) then
           j = j - 1
         end if
         if ( j < 0 ) then
@@ -5457,7 +5418,7 @@ contains
         r1 = ir
         x = ( xm1r - xr ) / h
         j = int ( x + tol )
-        if ( abs ( x - real ( j, dp) ) <= tol ) then
+        if ( abs ( x - real ( j, real64) ) <= tol ) then
           j = j - 1
         end if
         if ( j < 0 ) then
@@ -5470,8 +5431,8 @@ contains
 
         j = l0
         k = l1
-        xj = xm1l + real ( j-im1l, dp) * h
-        xk = xl + real ( k - il, dp) * h
+        xj = xm1l + real ( j-im1l, real64) * h
+        xk = xl + real ( k - il, real64) * h
 
         do
 
@@ -5564,10 +5525,9 @@ contains
     end do
 
     ncw = lw
-  end subroutine inttri
+  end
 
-  subroutine isftdw ( l, u, k, lda, a, map ) &
-        bind(C, name="isftdw")
+  subroutine isftdw ( l, u, k, lda, a, map )
 
   !*****************************************************************************80
   !
@@ -5597,27 +5557,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) L, U, the lower and upper index of part of heap.
+  !    Input, integer(int32) L, U, the lower and upper index of part of heap.
   !
-  !    Input, integer(ip) K, the dimension of points.
+  !    Input, integer(int32) K, the dimension of points.
   !
-  !    Input, integer(ip) LDA, the leading dimension of array A in calling routine.
+  !    Input, integer(int32) LDA, the leading dimension of array A in calling routine.
   !
-  !    Input, integer(ip) A(1:K,1:*); see routine IHPSRT.
+  !    Input, integer(int32) A(1:K,1:*); see routine IHPSRT.
   !
-  !    Input/output, integer(ip) MAP(1:*); see routine IHPSRT.
+  !    Input/output, integer(int32) MAP(1:*); see routine IHPSRT.
   !
-    integer(ip), intent(in), value :: lda
+    integer(int32) lda
 
-    integer(ip), intent(in) :: a(lda,*)
-    integer(ip) :: i
-    logical :: iless
-    integer(ip) :: j
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(in), value :: l
-    integer(ip), intent(inout) :: map(*)
-    integer(ip), intent(in), value :: u
-    integer(ip) :: t
+    integer(int32) a(lda,*)
+    integer(int32) i
+    logical iless
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) map(*)
+    integer(int32) u
+    integer(int32) t
 
     i = l
     j = 2 * i
@@ -5642,10 +5602,9 @@ contains
     end do
 
     map(i) = t
-  end subroutine isftdw
+  end
 
-  subroutine i4vec_indicator ( n, a ) &
-        bind(C, name="i4vec_indicator")
+  subroutine i4vec_indicator ( n, a )
 
   !*****************************************************************************80
   !
@@ -5657,23 +5616,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Output, integer(ip) A(N), the array to be initialized.
+  !    Output, integer(int32) A(N), the array to be initialized.
   !
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(out) :: a(n)
-    integer(ip) :: i
+    integer(int32) a(n)
+    integer(int32) i
 
     do i = 1, n
       a(i) = i
     end do
-  end subroutine i4vec_indicator
+  end
 
   subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv,  &
-    maxiw, maxwk, vcl, hvl, pvl, iang, iwk, wk, ierror ) &
-        bind(C, name="jnhole")
+    maxiw, maxwk, vcl, hvl, pvl, iang, iwk, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -5704,104 +5662,104 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ITOPHV, the index in PVL of top vertex of hole.
+  !    Input, integer(int32) ITOPHV, the index in PVL of top vertex of hole.
   !
-  !    Input, real(dp) ANGSPC, the angle spacing parameter used in 
+  !    Input, real(real64) ANGSPC, the angle spacing parameter used in 
   !    controlling the vertices to be considered as an endpoint of a separator.
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter used 
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter used 
   !    in accepting separator(s).
   !
-  !    Input/output, integer(ip) NVC, the number of positions used in VCL array.
+  !    Input/output, integer(int32) NVC, the number of positions used in VCL array.
   !
-  !    Input/output, integer(ip) NVERT, the number of positions used in PVL array.
+  !    Input/output, integer(int32) NVERT, the number of positions used in PVL array.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL array.
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL array.
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL array.
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL array.
   !
-  !    Input, integer(ip) MAXIW, the maximum size available for IWK array; should 
+  !    Input, integer(int32) MAXIW, the maximum size available for IWK array; should 
   !    be about 3 times number of vertices in outer polygon.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK array; should 
+  !    Input, integer(int32) MAXWK, the maximum size available for WK array; should 
   !    be about 5 times number of vertices in outer polygon.
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC),the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC),the vertex coordinate list.
   !
-  !    Input, integer(ip) HVL(1:*), the head vertex list.
+  !    Input, integer(int32) HVL(1:*), the head vertex list.
   !
-  !    Input/output, integer(ip) PVL(1:4,1:NVERT), real(dp) IANG(1:NVERT), 
+  !    Input/output, integer(int32) PVL(1:4,1:NVERT), real(real64) IANG(1:NVERT), 
   !    the polygon vertex list and interior angles.
   !
   !    Workspace, integer IWK(1:MAXIW).
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 3, 5, 6, 7, 206 to 210, 212, 218, or 219.
   !
-    integer(ip), intent(in), value :: maxiw
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: maxwk
+    integer(int32) maxiw
+    integer(int32) maxpv
+    integer(int32) maxvc
+    integer(int32) maxwk
 
-    real(dp) :: angle
-    real(dp), intent(in), value :: angspc
-    real(dp), intent(in), value :: angtol
-    real(dp) :: dy
-    integer(ip), parameter :: edgv = 4
-    integer(ip) :: hv
-    integer(ip), intent(in) :: hvl(*)
-    real(dp) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: ilft
-    integer(ip) :: ipoly
-    integer(ip) :: irgt
-    integer(ip), intent(in), value :: itophv
-    integer(ip) :: iv
-    integer(ip) :: ivs
-    integer(ip) :: iwk(maxiw)
-    integer(ip) :: l
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: lv
-    integer(ip) :: lw
-    integer(ip), parameter :: msglvl = 0
-    integer(ip), intent(inout) :: nvc
-    integer(ip), intent(inout) :: nvert
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    integer(ip), parameter :: polg = 2
-    integer(ip), intent(inout) :: pvl(4,maxpv)
-    real(dp) :: s
-    real(dp) :: slft
-    real(dp) :: srgt
-    integer(ip), parameter :: succ = 3
-    integer(ip) :: succil
-    integer(ip) :: succir
-    real(dp) :: tol
-    real(dp), intent(inout) :: vcl(2,maxvc)
-    integer(ip) :: vp
-    integer(ip) :: vr
-    integer(ip) :: vs
-    integer(ip) :: vv
-    integer(ip) :: w
-    real(dp) :: wk(maxwk)
-    integer(ip) :: ww
-    real(dp) :: xint
-    real(dp) :: xlft
-    real(dp) :: xrgt
-    real(dp) :: xt
-    real(dp) :: xv
-    real(dp) :: xvs
-    real(dp) :: ylft
-    real(dp) :: yrgt
-    real(dp) :: yt
-    real(dp) :: ytmtol
-    real(dp) :: ytptol
-    real(dp) :: yv
-    real(dp) :: yvs
+    real(real64) angle
+    real(real64) angspc
+    real(real64) angtol
+    real(real64) dy
+    integer(int32), parameter :: edgv = 4
+    integer(int32) hv
+    integer(int32) hvl(*)
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32) ilft
+    integer(int32) ipoly
+    integer(int32) irgt
+    integer(int32) itophv
+    integer(int32) iv
+    integer(int32) ivs
+    integer(int32) iwk(maxiw)
+    integer(int32) l
+    integer(int32), parameter :: loc = 1
+    integer(int32) lv
+    integer(int32) lw
+    integer(int32), parameter :: msglvl = 0
+    integer(int32) nvc
+    integer(int32) nvert
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    integer(int32), parameter :: polg = 2
+    integer(int32) pvl(4,maxpv)
+    real(real64) s
+    real(real64) slft
+    real(real64) srgt
+    integer(int32), parameter :: succ = 3
+    integer(int32) succil
+    integer(int32) succir
+    real(real64) tol
+    real(real64) vcl(2,maxvc)
+    integer(int32) vp
+    integer(int32) vr
+    integer(int32) vs
+    integer(int32) vv
+    integer(int32) w
+    real(real64) wk(maxwk)
+    integer(int32) ww
+    real(real64) xint
+    real(real64) xlft
+    real(real64) xrgt
+    real(real64) xt
+    real(real64) xv
+    real(real64) xvs
+    real(real64) ylft
+    real(real64) yrgt
+    real(real64) yt
+    real(real64) ytmtol
+    real(real64) ytptol
+    real(real64) yv
+    real(real64) yvs
   !
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     if ( maxvc < nvc + 3 ) then
       ierror = 3
@@ -5824,7 +5782,7 @@ contains
     lv = pvl(loc,itophv)
     xt = vcl(1,lv)
     yt = vcl(2,lv)
-    dy = 0.0_dp
+    dy = 0.0e+00_real64
     hv = hvl(ipoly)
     iv = hv
     yv = vcl(2,pvl(loc,iv))
@@ -5846,8 +5804,8 @@ contains
     ytptol = yt + tol * dy
     ilft = 0
     irgt = 0
-    xlft = 0.0_dp
-    xrgt = 0.0_dp
+    xlft = 0.0e+00_real64
+    xrgt = 0.0e+00_real64
     hv = hvl(ipoly)
     iv = hv
     lv = pvl(loc,iv)
@@ -6043,10 +6001,9 @@ contains
     end if
 
   600 format (1x,2i7,4f15.7)
-  end subroutine jnhole
+  end
 
-  subroutine lop ( itr, ind, mxedg, top, ldv, vcl, til, tedg, sptr ) &
-        bind(C, name="lop")
+  subroutine lop ( itr, ind, mxedg, top, ldv, vcl, til, tedg, sptr )
 
   !*****************************************************************************80
   !
@@ -6077,49 +6034,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ITR(1:2), the indices of triangles for LOP.
+  !    Input, integer(int32) ITR(1:2), the indices of triangles for LOP.
   !
-  !    Input, integer(ip) IND(1:2), indices indicating common edge of triangles.
+  !    Input, integer(int32) IND(1:2), indices indicating common edge of triangles.
   !
-  !    Input, integer(ip) MXEDG, the maximum index of edge to be considered for LOP.
+  !    Input, integer(int32) MXEDG, the maximum index of edge to be considered for LOP.
   !
-  !    Input/output, integer(ip) TOP, the index of SPTR indicating top of stack.
+  !    Input/output, integer(int32) TOP, the index of SPTR indicating top of stack.
   !
-  !    Input, integer(ip) LDV, the leading dimension of VCL in calling routine.
+  !    Input, integer(int32) LDV, the leading dimension of VCL in calling routine.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) TIL(1:3,1:*), the triangle incidence list.
+  !    Input/output, integer(int32) TIL(1:3,1:*), the triangle incidence list.
   !
-  !    Input/output, integer(ip) TEDG(1:3,1:*), the triangle edge indices; 
+  !    Input/output, integer(int32) TEDG(1:3,1:*), the triangle edge indices; 
   !    see routine CVDTRI.
   !
-  !    Input/output, integer(ip) SPTR(1:*), stack pointers; see routine CVDTRI.
+  !    Input/output, integer(int32) SPTR(1:*), stack pointers; see routine CVDTRI.
   !
-    integer(ip), intent(in), value :: ldv
+    integer(int32) ldv
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: c
-    integer(ip) :: d
-    integer(ip) :: diaedg
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: iedg
-    integer(ip) :: in
-    integer(ip), intent(in) :: ind(2)
-    integer(ip) :: ind1m1
-    integer(ip) :: ind1p1
-    integer(ip) :: ind2m1
-    integer(ip) :: ind2p1
-    integer(ip), intent(in) :: itr(2)
-    integer(ip) :: j
-    integer(ip), intent(in), value :: mxedg
-    integer(ip), intent(inout) :: top
-    integer(ip), intent(inout) :: sptr(*)
-    integer(ip), intent(inout) :: tedg(3,*)
-    integer(ip), intent(inout) :: til(3,*)
-    real(dp), intent(in) :: vcl(ldv,*)
+    integer(int32) a
+    integer(int32) b
+    integer(int32) c
+    integer(int32) d
+    integer(int32) diaedg
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) iedg
+    integer(int32) in
+    integer(int32) ind(2)
+    integer(int32) ind1m1
+    integer(int32) ind1p1
+    integer(int32) ind2m1
+    integer(int32) ind2p1
+    integer(int32) itr(2)
+    integer(int32) j
+    integer(int32) mxedg
+    integer(int32) top
+    integer(int32) sptr(*)
+    integer(int32) tedg(3,*)
+    integer(int32) til(3,*)
+    real(real64) vcl(ldv,*)
   !
   !  Common edge is BC, other two vertices are A and D.
   !
@@ -6173,10 +6130,9 @@ contains
       tedg(ind2p1,itr(2)) = iedg
 
     end if
-  end subroutine lop
+  end
 
-  function lrline ( xu, yu, xv1, yv1, xv2, yv2, dv ) &
-        bind(C, name="lrline")
+  function lrline ( xu, yu, xv1, yv1, xv2, yv2, dv )
 
   !*****************************************************************************80
   !
@@ -6206,39 +6162,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XU, YU, the coordinates of the point whose
+  !    Input, real(real64) XU, YU, the coordinates of the point whose
   !    position relative to the directed line is to be determined.
   !
-  !    Input, real(dp) XV1, YV1, XV2, YV2, the coordinates of two points
+  !    Input, real(real64) XV1, YV1, XV2, YV2, the coordinates of two points
   !    that determine the directed base line.
   !
-  !    Input, real(dp) DV, the signed distance of the directed line 
+  !    Input, real(real64) DV, the signed distance of the directed line 
   !    from the directed base line through the points (XV1,YV1) and (XV2,YV2).  
   !    DV is positive for a line to the left of the base line.
   ! 
-  !    Output, integer(ip) LRLINE, the result:
+  !    Output, integer(int32) LRLINE, the result:
   !    +1, the point is to the right of the directed line;
   !     0, the point is on the directed line;
   !    -1, the point is to the left of the directed line.
   !
 
-    real(dp), intent(in), value :: dv
-    real(dp) :: dx
-    real(dp) :: dxu
-    real(dp) :: dy
-    real(dp) :: dyu
-    integer(ip) :: lrline
-    real(dp) :: t
-    real(dp) :: tol
-    real(dp) :: tolabs
-    real(dp), intent(in), value :: xu
-    real(dp), intent(in), value :: xv1
-    real(dp), intent(in), value :: xv2
-    real(dp), intent(in), value :: yu
-    real(dp), intent(in), value :: yv1
-    real(dp), intent(in), value :: yv2
+    real(real64) dv
+    real(real64) dx
+    real(real64) dxu
+    real(real64) dy
+    real(real64) dyu
+    integer(int32) lrline
+    real(real64) t
+    real(real64) tol
+    real(real64) tolabs
+    real(real64) xu
+    real(real64) xv1
+    real(real64) xv2
+    real(real64) yu
+    real(real64) yv1
+    real(real64) yv2
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     dx = xv2 - xv1
     dy = yv2 - yv1
@@ -6257,10 +6213,9 @@ contains
     else
       lrline = -1
     end if
-  end function lrline
+  end
 
-  subroutine lufac ( a, lda, n, tol, ipvt, singlr ) &
-        bind(C, name="lufac")
+  subroutine lufac ( a, lda, n, tol, ipvt, singlr )
 
   !*****************************************************************************80
   !
@@ -6290,44 +6245,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, real(dp) A(1:N,1:N), the matrix.  On input, 
+  !    Input/output, real(real64) A(1:N,1:N), the matrix.  On input, 
   !    the N by N matrix to be factored.  On output, the upper triangular 
   !    matrix U and multipliers of unit lower triangular matrix L (if matrix 
   !    A is nonsingular).
   !
-  !    Input, integer(ip) LDA, the leading dimension of array A in calling routine.
+  !    Input, integer(int32) LDA, the leading dimension of array A in calling routine.
   !
-  !    Input, integer(ip) N, the order of matrix A.
+  !    Input, integer(int32) N, the order of matrix A.
   !
   !    Input, double preicison TOL, the relative tolerance for detecting 
   !    singularity of A.
   !
-  !    Output, integer(ip) IPVT(1:N-1), the pivot indices.
+  !    Output, integer(int32) IPVT(1:N-1), the pivot indices.
   !
   !    Output, logical SINGLR, is .TRUE. if matrix is singular; this occurs 
   !    when the magnitude of a pivot element is <= TOL*MAX(|A(I,J)|).
   !
-    integer(ip), intent(in), value :: lda
-    integer(ip), intent(in), value :: n
+    integer(int32) lda
+    integer(int32) n
 
-    real(dp), intent(inout) :: a(lda,n)
-    integer(ip) :: i
-    integer(ip), intent(out) :: ipvt(n-1)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: kp1
-    integer(ip) :: m
-    logical, intent(out) :: singlr
-    real(dp) :: t
-    real(dp) :: tol
-    real(dp) :: tolabs
+    real(real64) a(lda,n)
+    integer(int32) i
+    integer(int32) ipvt(n-1)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) kp1
+    integer(int32) m
+    logical singlr
+    real(real64) t
+    real(real64) tol
+    real(real64) tolabs
 
     if ( n < 1 ) then
     end if
 
     singlr = .true.
 
-    t = 0.0_dp
+    t = 0.0e+00_real64
     do j = 1, n
       do i = 1, n
         t = max ( t, abs ( a(i,j) ) )
@@ -6380,10 +6335,9 @@ contains
     if ( tolabs < abs ( a(n,n) ) ) then
       singlr = .false.
     end if
-  end subroutine lufac
+  end
 
-  subroutine lusol ( a, lda, n, ipvt, b ) &
-        bind(C, name="lusol")
+  subroutine lusol ( a, lda, n, ipvt, b )
 
   !*****************************************************************************80
   !
@@ -6413,28 +6367,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(1:N,1:N), contains factors L, U output 
+  !    Input, real(real64) A(1:N,1:N), contains factors L, U output 
   !    from routine LUFAC.
   !
-  !    Input, integer(ip) LDA, the leading dimension of array A in calling routine.
+  !    Input, integer(int32) LDA, the leading dimension of array A in calling routine.
   !
-  !    Input, integer(ip) N, the order of matrix A.
+  !    Input, integer(int32) N, the order of matrix A.
   !
-  !    Input, integer(ip) IPVT(1:N-1), the pivot indices from routine LUFAC.
+  !    Input, integer(int32) IPVT(1:N-1), the pivot indices from routine LUFAC.
   !
   !    Input/output, B(1:N).  On input, the right hand side vector.
   !    On output, the solution vector X.
   !
-    integer(ip), intent(in), value :: lda
-    integer(ip), intent(in), value :: n
+    integer(int32) lda
+    integer(int32) n
 
-    real(dp), intent(in) :: a(lda,n)
-    real(dp), intent(inout) :: b(n)
-    integer(ip), intent(in) :: ipvt(n-1)
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip) :: m
-    real(dp) :: t
+    real(real64) a(lda,n)
+    real(real64) b(n)
+    integer(int32) ipvt(n-1)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) m
+    real(real64) t
   !
   !  Forward elimination
   !
@@ -6465,10 +6419,9 @@ contains
     end do
 
     b(1) = b(1) / a(1,1)
-  end subroutine lusol
+  end
 
-  function mdf2 ( x, y, wsq, nev, ifv, listev, ivrt, edgval, vrtval, vcl ) &
-        bind(C, name="mdf2")
+  function mdf2 ( x, y, wsq, nev, ifv, listev, ivrt, edgval, vrtval, vcl )
 
   !*****************************************************************************80
   !
@@ -6493,46 +6446,46 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, Y, the coordinates of point.
+  !    Input, real(real64) X, Y, the coordinates of point.
   !
-  !    Input, real(dp) WSQ, the square of the width of the polygon 
+  !    Input, real(real64) WSQ, the square of the width of the polygon 
   !    containing (X,Y).
   !
-  !    Input, integer(ip) NEV, IFV, LISTEV(1:NEV), output from routine PRMDF2.
+  !    Input, integer(int32) NEV, IFV, LISTEV(1:NEV), output from routine PRMDF2.
   !
-  !    Input, integer(ip) IVRT(1:*), output from DSMDF2.
+  !    Input, integer(int32) IVRT(1:*), output from DSMDF2.
   !
-  !    Input, real(dp) EDGVAL(1:*), output from DSMDF2.
+  !    Input, real(real64) EDGVAL(1:*), output from DSMDF2.
   !
-  !    Input, real(dp) VRTVAL(1:*), output from DSMDF2.
+  !    Input, real(real64) VRTVAL(1:*), output from DSMDF2.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Output, real(dp) MDF2, the reciprocal of square of length 
+  !    Output, real(real64) MDF2, the reciprocal of square of length 
   !    scale at (X,Y).
   !
-    integer(ip), intent(in), value :: nev
+    integer(int32) nev
 
-    real(dp) :: d
-    real(dp), intent(in) :: edgval(*)
-    integer(ip) :: i
-    integer(ip), intent(in), value :: ifv
-    integer(ip), intent(in) :: ivrt(*)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: kp1
-    integer(ip), intent(in) :: listev(nev)
-    real(dp) :: mdf2
-    real(dp) :: s
-    real(dp), intent(in) :: vcl(2,*)
-    real(dp), intent(in) :: vrtval(*)
-    real(dp), intent(in), value :: wsq
-    real(dp), intent(in), value :: x
-    real(dp) :: x0
-    real(dp) :: x1
-    real(dp), intent(in), value :: y
-    real(dp) :: y0
-    real(dp) :: y1
+    real(real64) d
+    real(real64) edgval(*)
+    integer(int32) i
+    integer(int32) ifv
+    integer(int32) ivrt(*)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) kp1
+    integer(int32) listev(nev)
+    real(real64) mdf2
+    real(real64) s
+    real(real64) vcl(2,*)
+    real(real64) vrtval(*)
+    real(real64) wsq
+    real(real64) x
+    real(real64) x0
+    real(real64) x1
+    real(real64) y
+    real(real64) y0
+    real(real64) y1
 
     s = wsq
 
@@ -6543,7 +6496,7 @@ contains
       if ( k < 0 ) then
         k = -k
         d = ( vcl(1,k) - x )**2 + ( vcl(2,k) - y )**2
-        d = max ( 0.25_dp * d, vrtval(k) )
+        d = max ( 0.25e+00_real64 * d, vrtval(k) )
         s = min ( s, d )
       else
         kp1 = k + 1
@@ -6556,32 +6509,31 @@ contains
         x1 = vcl(1,ivrt(k)) - vcl(1,j)
         y1 = vcl(2,ivrt(k)) - vcl(2,j)
 
-        if ( x0 * x1 + y0 * y1 <= 0.0_dp ) then
+        if ( x0 * x1 + y0 * y1 <= 0.0e+00_real64 ) then
           d = x0**2 + y0**2
         else
           x0 = x0 - x1
           y0 = y0 - y1
-          if ( 0.0_dp <= x0 * x1 + y0 * y1 ) then
+          if ( 0.0e+00_real64 <= x0 * x1 + y0 * y1 ) then
             d = x0**2 + y0**2
           else
             d = ( x1 * y0 - y1 * x0 )**2 / ( x1**2 + y1**2 )
           end if
         end if
 
-        d = max ( 0.25_dp * d, edgval(k) )
+        d = max ( 0.25e+00_real64 * d, edgval(k) )
         s = min ( s, d )
 
       end if
 
     end do
 
-    mdf2 = 1.0_dp / s
-  end function mdf2
+    mdf2 = 1.0e+00_real64 / s
+  end
 
   subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
     nvc, npolg, nvert, maxvc, maxhv, maxpv, maxiw, maxwk, vcl, regnum, hvl,  &
-    pvl, iang, ivrt, xivrt, widsq, edgval, vrtval, area, psi, iwk, wk, ierror ) &
-        bind(C, name="mfdec2")
+    pvl, iang, ivrt, xivrt, widsq, edgval, vrtval, area, psi, iwk, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -6618,170 +6570,170 @@ contains
   !    Input, external UMDF, a user-supplied mdf, of the form
   !
   !      function umdf ( x, y )
-  !      real(dp) umdf
-  !      real(dp) x
-  !      real(dp) y
+  !      real(real64) umdf
+  !      real(real64) x
+  !      real(real64) y
   !
-  !    Input, real(dp) KAPPA, the mesh smoothness parameter in 
+  !    Input, real(real64) KAPPA, the mesh smoothness parameter in 
   !    interval [0.0,1.0].
   !
-  !    Input, real(dp) ANGSPC, the angle spacing parameter in radians 
+  !    Input, real(real64) ANGSPC, the angle spacing parameter in radians 
   !    used to determine extra points as possible endpoints of separators.
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter in 
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter in 
   !    radians used in accepting separators.
   !
-  !    Input, real(dp) DMIN, a parameter used to determine if 
+  !    Input, real(real64) DMIN, a parameter used to determine if 
   !    variation of mdf in polygon is 'sufficiently high'.
   !
-  !    Input, integer(ip) NMIN, a parameter used to determine if 'sufficiently large'
+  !    Input, integer(int32) NMIN, a parameter used to determine if 'sufficiently large'
   !    number of triangles in polygon.
   !
-  !    Input, integer(ip) NTRID, the desired number of triangles in mesh.
+  !    Input, integer(int32) NTRID, the desired number of triangles in mesh.
   !
-  !    Input/output, integer(ip) NVC, the number of vertex coordinates or 
+  !    Input/output, integer(int32) NVC, the number of vertex coordinates or 
   !    positions used in VCL array.
   !
-  !    Input/output, integer(ip) NPOLG, the number of polygonal subregions or 
+  !    Input/output, integer(int32) NPOLG, the number of polygonal subregions or 
   !    positions used in HVL array.
   !
-  !    Input/output, integer(ip) NVERT, the number of polygon vertices or positions 
+  !    Input/output, integer(int32) NVERT, the number of polygon vertices or positions 
   !    used in PVL array.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL array.
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL array.
   !
-  !    Input, integer(ip) MAXHV, the maximum size available for HVL, REGNUM, AREA, 
+  !    Input, integer(int32) MAXHV, the maximum size available for HVL, REGNUM, AREA, 
   !    PSI arrays.
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL, IANG arrays.
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL, IANG arrays.
   !
-  !    Input, integer(ip) MAXIW, the maximum size available for IWK array; should 
+  !    Input, integer(int32) MAXIW, the maximum size available for IWK array; should 
   !    be about 3*NVRT + INT(2*PI/ANGSPC) where NVRT is maximum number of
   !    vertices in a convex polygon of the (input) decomposition.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK array; should 
+  !    Input, integer(int32) MAXWK, the maximum size available for WK array; should 
   !    be about NPOLG + 3*(NVRT + INT(2*PI/ANGSPC)) + 2.
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) REGNUM(1:NPOLG), the region numbers.
+  !    Input/output, integer(int32) REGNUM(1:NPOLG), the region numbers.
   !
   !    Input/output, HVL(1:NPOLG), the head vertex list.
   !
   !    Input/output, PVL(1:4,1:NVERT), IANG(1:NVERT), the polygon vertex list and
   !    interior angles.
   !
-  !    Input, integer(ip) IVRT(1:NVERT), integer XIVRT(1:NPOLG+1), 
-  !    real(dp) WIDSQ(1:NPOLG), real(dp) EDGVAL(1:NVERT),
-  !    real(dp) VRTVAL(1:NVC), arrays output from routine DSMDF2;
+  !    Input, integer(int32) IVRT(1:NVERT), integer XIVRT(1:NPOLG+1), 
+  !    real(real64) WIDSQ(1:NPOLG), real(real64) EDGVAL(1:NVERT),
+  !    real(real64) VRTVAL(1:NVC), arrays output from routine DSMDF2;
   !    if .NOT. HFLAG then only first two arrays exist.
   !
-  !    Input/output, real(dp) AREA(1:NPOLG), the area of convex polygons 
+  !    Input/output, real(real64) AREA(1:NPOLG), the area of convex polygons 
   !    in decomposition.
   !
-  !    Output, real(dp) PSI(1:NPOLG), the mean mdf values in the
+  !    Output, real(real64) PSI(1:NPOLG), the mean mdf values in the
   !    convex polygons
   !
   !    Workspace, integer IWK(1:MAXIW).
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 3, 4, 5, 6, 7, 200, or 222.
   !
-    integer(ip), intent(in), value :: maxhv
-    integer(ip), intent(in), value :: maxiw
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: maxwk
-    integer(ip), intent(inout) :: nvc
-    integer(ip), intent(inout) :: nvert
+    integer(int32) maxhv
+    integer(int32) maxiw
+    integer(int32) maxpv
+    integer(int32) maxvc
+    integer(int32) maxwk
+    integer(int32) nvc
+    integer(int32) nvert
 
-    real(dp) :: alpha
-    real(dp) :: angsp2
-    real(dp), intent(in), value :: angspc
-    real(dp), intent(in), value :: angtol
-    real(dp), intent(inout) :: area(maxhv)
-    real(dp) :: areapg
-    real(dp) :: arearg
-    real(dp) :: c1
-    real(dp) :: c2
-    real(dp) :: cosalp
-    real(dp) :: ctrx
-    real(dp) :: ctry
-    real(dp) :: delta
-    real(dp), intent(in), value :: dmin
-    real(dp) :: dx
-    real(dp) :: dy
-    real(dp) :: edgval(nvert)
-    logical, intent(in), value :: hflag
-    integer(ip), intent(inout) :: hvl(maxhv)
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
-    real(dp), intent(inout) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: ifv
-    integer(ip) :: ii
-    integer(ip) :: inc
-    integer(ip) :: indpvl
-    real(dp) :: intreg
-    integer(ip), intent(in) :: ivrt(nvert)
-    integer(ip) :: iwk(maxiw)
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp), intent(in), value :: kappa
-    integer(ip) :: l
-    integer(ip) :: listev
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: m
-    integer(ip) :: maxn
-    real(dp) :: mdfint
-    integer(ip) :: mdftr
-    real(dp) :: mean
-    integer(ip) :: nev
-    integer(ip), intent(in), value :: nmin
-    integer(ip) :: np
-    integer(ip), intent(inout) :: npolg
-    integer(ip), intent(in), value :: ntrid
-    real(dp) :: numer
-    integer(ip) :: nvrt
-    real(dp) :: nwarea
-    integer(ip) :: p
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: pi2
-    real(dp), intent(out) :: psi(maxhv)
-    integer(ip), intent(inout) :: pvl(4,maxpv)
-    real(dp) :: r
-    integer(ip), intent(inout) :: regnum(maxhv)
-    real(dp) :: sinalp
-    real(dp) :: stdv
-    integer(ip), parameter :: succ = 3
-    real(dp) :: sumx
-    real(dp) :: sumy
-    real(dp) :: theta1
-    real(dp) :: theta2
-    real(dp) :: tol
-    real(dp) :: umdf
-    integer(ip) :: v
-    real(dp), intent(inout) :: vcl(2,maxvc)
-    real(dp) :: vrtval(nvc)
-    integer(ip) :: w
-    real(dp) :: widsq(npolg)
-    real(dp) :: wk(maxwk)
-    real(dp) :: wsq
-    real(dp) :: x1
-    real(dp) :: x2
-    integer(ip) :: xc
-    integer(ip) :: xivrt(npolg+1)
-    real(dp) :: y1
-    real(dp) :: y2
-    integer(ip) :: yc
+    real(real64) alpha
+    real(real64) angsp2
+    real(real64) angspc
+    real(real64) angtol
+    real(real64) area(maxhv)
+    real(real64) areapg
+    real(real64) arearg
+    real(real64) c1
+    real(real64) c2
+    real(real64) cosalp
+    real(real64) ctrx
+    real(real64) ctry
+    real(real64) delta
+    real(real64) dmin
+    real(real64) dx
+    real(real64) dy
+    real(real64) edgval(nvert)
+    logical hflag
+    integer(int32) hvl(maxhv)
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32) ifv
+    integer(int32) ii
+    integer(int32) inc
+    integer(int32) indpvl
+    real(real64) intreg
+    integer(int32) ivrt(nvert)
+    integer(int32) iwk(maxiw)
+    integer(int32) j
+    integer(int32) k
+    real(real64) kappa
+    integer(int32) l
+    integer(int32) listev
+    integer(int32), parameter :: loc = 1
+    integer(int32) m
+    integer(int32) maxn
+    real(real64) mdfint
+    integer(int32) mdftr
+    real(real64) mean
+    integer(int32) nev
+    integer(int32) nmin
+    integer(int32) np
+    integer(int32) npolg
+    integer(int32) ntrid
+    real(real64) numer
+    integer(int32) nvrt
+    real(real64) nwarea
+    integer(int32) p
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) pi2
+    real(real64) psi(maxhv)
+    integer(int32) pvl(4,maxpv)
+    real(real64) r
+    integer(int32) regnum(maxhv)
+    real(real64) sinalp
+    real(real64) stdv
+    integer(int32), parameter :: succ = 3
+    real(real64) sumx
+    real(real64) sumy
+    real(real64) theta1
+    real(real64) theta2
+    real(real64) tol
+    real(real64) umdf
+    integer(int32) v
+    real(real64) vcl(2,maxvc)
+    real(real64) vrtval(nvc)
+    integer(int32) w
+    real(real64) widsq(npolg)
+    real(real64) wk(maxwk)
+    real(real64) wsq
+    real(real64) x1
+    real(real64) x2
+    integer(int32) xc
+    integer(int32) xivrt(npolg+1)
+    real(real64) y1
+    real(real64) y2
+    integer(int32) yc
 
     external umdf
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  WK(1:NPOLG) is used for MDF standard deviation in polygons.
   !  Compute AREARG = area of region and INTREG = estimated integral
@@ -6804,8 +6756,8 @@ contains
     xc = npolg + 1
     yc = xc + nvrt + 1
     mdftr = yc + nvrt + 1
-    arearg = 0.0_dp
-    intreg = 0.0_dp
+    arearg = 0.0e+00_real64
+    intreg = 0.0e+00_real64
     nev = -1
 
     do i = 1, npolg
@@ -6816,16 +6768,16 @@ contains
       end if
 
       if ( nev == 0 ) then
-        psi(i) = 1.0_dp / wsq
-        wk(i) = 0.0_dp
+        psi(i) = 1.0e+00_real64 / wsq
+        wk(i) = 0.0e+00_real64
         mdfint = psi(i) * area(i)
       else
 
         nvrt = xivrt(i+1) - xivrt(i)
         k = xivrt(i)
 
-        sumx = 0.0_dp
-        sumy = 0.0_dp
+        sumx = 0.0e+00_real64
+        sumy = 0.0e+00_real64
         do j = 0, nvrt-1
           l = ivrt(k)
           wk(xc+j) = vcl(1,l)
@@ -6835,8 +6787,8 @@ contains
           k = k + 1
         end do
 
-        ctrx = sumx / real ( nvrt, dp)
-        ctry = sumy / real ( nvrt, dp)
+        ctrx = sumx / real ( nvrt, real64)
+        ctry = sumy / real ( nvrt, real64)
 
         do j = 0, nvrt-1
           wk(xc+j) = wk(xc+j) - ctrx
@@ -6862,11 +6814,11 @@ contains
   !  be further subdivided (indicated by negative PSI(I) value).
   !
     if ( hflag ) then
-      c1 = ( 1.0_dp - kappa ) / intreg
+      c1 = ( 1.0e+00_real64 - kappa ) / intreg
       c2 = kappa / arearg
     else
-      c1 = 1.0_dp / intreg
-      c2 = 0.0_dp
+      c1 = 1.0e+00_real64 / intreg
+      c2 = 0.0e+00_real64
     end if
 
     do i = 1, npolg
@@ -6884,8 +6836,8 @@ contains
   !  Further subdivide polygons for which DMIN < STDV/MEAN and
   !  NMIN < (estimated number of triangles).
   !
-    angsp2 = 2.0_dp * angspc
-    pi2 = 2.0_dp * pi
+    angsp2 = 2.0e+00_real64 * angspc
+    pi2 = 2.0e+00_real64 * pi
     inc = int ( pi2 / angspc )
     nev = 0
     np = npolg
@@ -6893,7 +6845,7 @@ contains
 
     do i = 1, np
 
-      if ( psi(i) < 0.0_dp ) then
+      if ( psi(i) < 0.0e+00_real64 ) then
 
         if ( hflag ) then
           wsq = widsq(i)
@@ -6913,13 +6865,13 @@ contains
 
   70       continue
 
-           if ( 0.0_dp <= psi(k) ) then
+           if ( 0.0e+00_real64 <= psi(k) ) then
              go to 120
            end if
 
             nvrt = 0
-            sumx = 0.0_dp
-            sumy = 0.0_dp
+            sumx = 0.0e+00_real64
+            sumy = 0.0e+00_real64
             j = hvl(k)
 
             do
@@ -6936,8 +6888,8 @@ contains
 
             end do
 
-            ctrx = sumx / real ( nvrt, dp)
-            ctry = sumy / real ( nvrt, dp)
+            ctrx = sumx / real ( nvrt, real64)
+            ctry = sumy / real ( nvrt, real64)
             maxn = nvrt + inc
 
             if ( maxiw < nev + maxn + 1 ) then
@@ -6977,7 +6929,7 @@ contains
                if ( angsp2 <= delta ) then
 
                  m = int ( delta / angspc )
-                 delta = delta / real ( m, dp)
+                 delta = delta / real ( m, real64)
                  dx = x2 - x1
                  dy = y2 - y1
                  numer = x1 * dy - y1 * dx
@@ -7082,7 +7034,7 @@ contains
 
             end do
 
-            nwarea = areapg ( nvrt, wk(xc), wk(yc) ) * 0.5_dp
+            nwarea = areapg ( nvrt, wk(xc), wk(yc) ) * 0.5e+00_real64
             area(npolg) = area(k) - nwarea
             area(k) = nwarea
             psi(k) = -psi(k)
@@ -7109,10 +7061,9 @@ contains
       end if
 
     end do
-  end subroutine mfdec2
+  end
 
-  function minang ( xr, yr, xs, ys, ind, alpha, theta, vcl, pvl, iang ) &
-        bind(C, name="minang")
+  function minang ( xr, yr, xs, ys, ind, alpha, theta, vcl, pvl, iang )
 
   !*****************************************************************************80
   !
@@ -7143,46 +7094,46 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XR, YR, the coordinates of the reflex vertex.
+  !    Input, real(real64) XR, YR, the coordinates of the reflex vertex.
   !
-  !    Input, real(dp) XS, YS, the coordinates of other endpoint of 
+  !    Input, real(real64) XS, YS, the coordinates of other endpoint of 
   !    possible separator.
   !
-  !    Input, integer(ip) IND, if positive then (XS,YS) has index IND in PVL; else
+  !    Input, integer(int32) IND, if positive then (XS,YS) has index IND in PVL; else
   !    (XS,YS) is on edge joining vertices with indices -IND
   !    and SUCC(-IND) in PVL.
   !
-  !    Input, real(dp) ALPHA, the polar angle of (XS,YS) with respect
+  !    Input, real(real64) ALPHA, the polar angle of (XS,YS) with respect
   !    to (XR,YR).
   !
-  !    Input, real(dp) THETA, the interior angle at reflex vertex.
+  !    Input, real(real64) THETA, the interior angle at reflex vertex.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Input, integer(ip) PVL(1:4,1:*), real(dp) IANG(1:*), the polygon 
+  !    Input, integer(int32) PVL(1:4,1:*), real(real64) IANG(1:*), the polygon 
   !    vertex list, interior angles.
   !
-  !    Output, real(dp) MINANG, the minimum of the 4 angles in radians.
+  !    Output, real(real64) MINANG, the minimum of the 4 angles in radians.
   !
-    real(dp), intent(in), value :: alpha
-    real(dp) :: ang
-    real(dp) :: angle
-    real(dp) :: beta1
-    real(dp) :: iang(*)
-    integer(ip), intent(in), value :: ind
-    integer(ip) :: j
-    integer(ip) :: l
-    integer(ip), parameter :: loc = 1
-    real(dp) :: minang
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    integer(ip), intent(in) :: pvl(4,*)
-    integer(ip), parameter :: succ = 3
-    real(dp), intent(in), value :: theta
-    real(dp), intent(in) :: vcl(2,*)
-    real(dp), intent(in), value :: xr
-    real(dp), intent(in), value :: xs
-    real(dp), intent(in), value :: yr
-    real(dp), intent(in), value :: ys
+    real(real64) alpha
+    real(real64) ang
+    real(real64) angle
+    real(real64) beta1
+    real(real64) iang(*)
+    integer(int32) ind
+    integer(int32) j
+    integer(int32) l
+    integer(int32), parameter :: loc = 1
+    real(real64) minang
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    integer(int32) pvl(4,*)
+    integer(int32), parameter :: succ = 3
+    real(real64) theta
+    real(real64) vcl(2,*)
+    real(real64) xr
+    real(real64) xs
+    real(real64) yr
+    real(real64) ys
 
     if ( 0 < ind ) then
       j = pvl(succ,ind)
@@ -7196,10 +7147,9 @@ contains
     beta1 = angle ( xr, yr, xs, ys, vcl(1,l), vcl(2,l) )
 
     minang = min ( alpha, theta - alpha, ang - beta1, beta1 )
-  end function minang
+  end
 
-  subroutine mmasep ( angtol, xc, yc, indpvl, iang, v, w, i1, i2 ) &
-        bind(C, name="mmasep")
+  subroutine mmasep ( angtol, xc, yc, indpvl, iang, v, w, i1, i2 )
 
   !*****************************************************************************80
   !
@@ -7229,51 +7179,51 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter (in 
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter (in 
   !    radians) for accepting separator.
   !
-  !    Input, real(dp) XC(0:NVRT), YC(0:NVRT), the coordinates of 
+  !    Input, real(real64) XC(0:NVRT), YC(0:NVRT), the coordinates of 
   !    polygon vertices in counter clockwise order where NVRT is number of 
   !    vertices; (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)).
   !
-  !    Input, integer(ip) INDPVL(0:NVRT), indices in PVL of vertices; INDPVL(I) = -K
+  !    Input, integer(int32) INDPVL(0:NVRT), indices in PVL of vertices; INDPVL(I) = -K
   !    if (XC(I),YC(I)) is extra vertex inserted on edge from K to PVL(SUCC,K).
   !
-  !    Input, real(dp) IANG(1:*), the interior angle array.
+  !    Input, real(real64) IANG(1:*), the interior angle array.
   !
-  !    Input, integer(ip) V(1:2), W(1:2), indices in XC, YC in range 0 to NVRT-1; 
+  !    Input, integer(int32) V(1:2), W(1:2), indices in XC, YC in range 0 to NVRT-1; 
   !    four possible separators are V(I),W(J), I,J = 1,2.
   !
-  !    Output, integer(ip) I1, I2, indices in range 0 to NVRT-1 of best separator
+  !    Output, integer(int32) I1, I2, indices in range 0 to NVRT-1 of best separator
   !    according to max-min angle criterion; I1 = -1
   !    if no satisfactory separator is found.
   !
-    real(dp) :: alpha
-    real(dp) :: angle
-    real(dp) :: angmax
-    real(dp) :: angmin
-    real(dp), intent(in), value :: angtol
-    real(dp) :: beta
-    real(dp) :: delta
-    real(dp) :: gamma
-    integer(ip) :: i
-    integer(ip), intent(out) :: i1
-    integer(ip), intent(out) :: i2
-    real(dp), intent(in) :: iang(*)
-    integer(ip), intent(in) :: indpvl(0:*)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: m
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: tol
-    integer(ip), intent(in) :: v(2)
-    integer(ip), intent(in) :: w(2)
-    real(dp), intent(in) :: xc(0:*)
-    real(dp), intent(in) :: yc(0:*)
+    real(real64) alpha
+    real(real64) angle
+    real(real64) angmax
+    real(real64) angmin
+    real(real64) angtol
+    real(real64) beta
+    real(real64) delta
+    real(real64) gamma
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    real(real64) iang(*)
+    integer(int32) indpvl(0:*)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) m
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) tol
+    integer(int32) v(2)
+    integer(int32) w(2)
+    real(real64) xc(0:*)
+    real(real64) yc(0:*)
 
-    tol = 100.0_dp * epsilon ( tol )
-    angmax = 0.0_dp
+    tol = 100.0e+00_real64 * epsilon ( tol )
+    angmax = 0.0e+00_real64
 
     do i = 1, 2
 
@@ -7321,10 +7271,9 @@ contains
     if ( angmax < angtol ) then
       i1 = -1
     end if
-  end subroutine mmasep
+  end
 
-  subroutine mtredg ( utype, i1, i2, i3, ibndry, nt, til, tedg ) &
-        bind(C, name="mtredg")
+  subroutine mtredg ( utype, i1, i2, i3, ibndry, nt, til, tedg )
 
   !*****************************************************************************80
   !
@@ -7356,25 +7305,25 @@ contains
   !
   !    Input, logical UTYPE, is .TRUE. iff triangle contains two 'U' vertices.
   !
-  !    Input, integer(ip) I1, I2, I3, the indices of 3 triangle vertices in VCL; 
+  !    Input, integer(int32) I1, I2, I3, the indices of 3 triangle vertices in VCL; 
   !    the first two indices also belong to the next merge edge.
   !
-  !    Input, integer(ip) IBNDRY, the index of boundary edge for TEDG.
+  !    Input, integer(int32) IBNDRY, the index of boundary edge for TEDG.
   !
-  !    Input/output, integer(ip) NT, the number of entries in TIL, TEDG so far.
+  !    Input/output, integer(int32) NT, the number of entries in TIL, TEDG so far.
   !
-  !    Input/output, integer(ip) TIL(1:NT), the triangle incidence list.
+  !    Input/output, integer(int32) TIL(1:NT), the triangle incidence list.
   !
   !    Input/output, TEDG(1:NT), the triangle edge indices; see routine TMERGE.
   !
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip), intent(in), value :: i3
-    integer(ip), intent(in), value :: ibndry
-    integer(ip), intent(inout) :: nt
-    integer(ip), intent(inout) :: tedg(3,*)
-    integer(ip), intent(inout) :: til(3,*)
-    logical, intent(in), value :: utype
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) ibndry
+    integer(int32) nt
+    integer(int32) tedg(3,*)
+    integer(int32) til(3,*)
+    logical utype
 
     nt = nt + 1
     til(1,nt) = i1
@@ -7389,10 +7338,9 @@ contains
       tedg(2,nt) = ibndry
       tedg(3,nt) = nt - 1
     end if
-  end subroutine mtredg
+  end
 
-  function prime ( k ) &
-        bind(C, name="prime")
+  function prime ( k )
 
   !*****************************************************************************80
   !
@@ -7422,18 +7370,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) K, a positive integer.
+  !    Input, integer(int32) K, a positive integer.
   !
-  !    Output, integer(ip) PRIME, the smallest prime greater than or equal to
+  !    Output, integer(int32) PRIME, the smallest prime greater than or equal to
   !    K from internal array (or largest in array).
   !
-    integer(ip), parameter :: nprime = 150
+    integer(int32), parameter :: nprime = 150
 
-    integer(ip), intent(in), value :: k
-    integer(ip) :: l
-    integer(ip) :: m
-    integer(ip) :: prime
-    integer(ip), save, dimension ( nprime ) :: primes = (/ &
+    integer(int32) k
+    integer(int32) l
+    integer(int32) m
+    integer(int32) prime
+    integer(int32), save, dimension ( nprime ) :: primes = (/ &
       17,31,47,61,79,97,113,127,149,163,179,193,211,227,241, &
       257,271,293,307,331,353,379,401,431,457,479,503,541,563,587, &
       613,641,673,701,727,751,773,797,821,853,877,907,929,953,977, &
@@ -7447,7 +7395,7 @@ contains
       10037,10211,10427,10613,10831,11027,11213,11411,11617,11813, &
       12011,12211,12413,12611,12821,13033,13217,13411,13613,13829, &
       14011 /)
-    integer(ip) :: u
+    integer(int32) u
 
     if ( k <= primes(1) ) then
       prime = primes(1)
@@ -7480,10 +7428,9 @@ contains
     end do
 
     prime = primes(u+1)
-  end function prime
+  end
 
-  subroutine prmdf2 ( ipoly, wsq, ivrt, xivrt, edgval, vrtval, nev, ifv, listev ) &
-        bind(C, name="prmdf2")
+  subroutine prmdf2 ( ipoly, wsq, ivrt, xivrt, edgval, vrtval, nev, ifv, listev )
 
   !*****************************************************************************80
   !
@@ -7514,46 +7461,46 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IPOLY, the index of the polygon.
+  !    Input, integer(int32) IPOLY, the index of the polygon.
   !
-  !    Input, real(dp) WSQ, the square of the width of polygon IPOLY.
+  !    Input, real(real64) WSQ, the square of the width of polygon IPOLY.
   !
-  !    Input, integer(ip) IVRT(1:*), the indices of polygon vertices in 
+  !    Input, integer(int32) IVRT(1:*), the indices of polygon vertices in 
   !    VCL, ordered by polygon.
   !
-  !    Input, integer(ip) XIVRT(1:*), pointers to first vertex of each polygon 
+  !    Input, integer(int32) XIVRT(1:*), pointers to first vertex of each polygon 
   !    in IVRT; vertices of polygon IPOLY are IVRT(I) for I from
   !    XIVRT(IPOLY) to XIVRT(IPOLY+1)-1.
   !
-  !    Input, real(dp) EDGVAL(1:*), a value associated with each edge 
+  !    Input, real(real64) EDGVAL(1:*), a value associated with each edge 
   !    of the decomposition.
   !
-  !    Input, real(dp) VRTVAL(1:*), a value associated with each vertex 
+  !    Input, real(real64) VRTVAL(1:*), a value associated with each vertex 
   !    of the decomposition.
   !
-  !    Output, integer(ip) NEV, the number of edges and vertices for which distances
+  !    Output, integer(int32) NEV, the number of edges and vertices for which distances
   !    must be evaluated.
   !
-  !    Output, integer(ip) IFV, the index of first vertex XIVRT(IPOLY) if LISTEV(NEV)
+  !    Output, integer(int32) IFV, the index of first vertex XIVRT(IPOLY) if LISTEV(NEV)
   !    = XIVRT(IPOLY+1) - 1; 0 otherwise.
   !
-  !    Output, integer(ip) LISTEV(1:*), an array of length 
+  !    Output, integer(int32) LISTEV(1:*), an array of length 
   !    <= [XIVRT(IPOLY+1)-XIVRT(IPOLY)]*2, containing indices of edges and 
   !    vertices mentioned above; indices of vertices are negated.
   !
-    real(dp), intent(in) :: edgval(*)
-    integer(ip) :: i
-    integer(ip), intent(out) :: ifv
-    integer(ip) :: im1
-    integer(ip), intent(in), value :: ipoly
-    integer(ip), intent(in) :: ivrt(*)
-    integer(ip) :: j
-    integer(ip) :: l
-    integer(ip), intent(out) :: listev(*)
-    integer(ip), intent(out) :: nev
-    real(dp), intent(in) :: vrtval(*)
-    real(dp), intent(in), value :: wsq
-    integer(ip), intent(in) :: xivrt(*)
+    real(real64) edgval(*)
+    integer(int32) i
+    integer(int32) ifv
+    integer(int32) im1
+    integer(int32) ipoly
+    integer(int32) ivrt(*)
+    integer(int32) j
+    integer(int32) l
+    integer(int32) listev(*)
+    integer(int32) nev
+    real(real64) vrtval(*)
+    real(real64) wsq
+    integer(int32) xivrt(*)
 
     ifv = 0
     nev = 0
@@ -7583,10 +7530,9 @@ contains
         ifv = xivrt(ipoly)
       end if
     end if
-  end subroutine prmdf2
+  end
 
-  subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout ) &
-        bind(C, name="ptpolg")
+  subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
 
   !*****************************************************************************80
   !
@@ -7617,73 +7563,73 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM, the dimension of the polygon (2 or 3).
+  !    Input, integer(int32) DIM, the dimension of the polygon (2 or 3).
   !
-  !    Input, integer(ip) LDV, the leading dimension of VCL array in calling routine.
+  !    Input, integer(int32) LDV, the leading dimension of VCL array in calling routine.
   !
-  !    Input, integer(ip) NV, the number of vertices in polygon.
+  !    Input, integer(int32) NV, the number of vertices in polygon.
   !
-  !    Input, integer(ip) INC, the increment for PGIND indicating indices of polygon.
+  !    Input, integer(int32) INC, the increment for PGIND indicating indices of polygon.
   !
-  !    Input, integer(ip) PGIND(0:NV*INC), indices in VCL of polygon vertices are in
+  !    Input, integer(int32) PGIND(0:NV*INC), indices in VCL of polygon vertices are in
   !    PGIND(0), PGIND(INC), ..., PGIND(NV*INC) with first and
   !    last vertices identical.
   !
-  !    Input, real(dp) VCL(1:DIM,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:DIM,1:*), the vertex coordinate list.
   !
-  !    Input, real(dp) PT(1:DIM), the point for which in/out test is
+  !    Input, real(real64) PT(1:DIM), the point for which in/out test is
   !    applied.
   !
-  !    Input, real(dp) NRML(1:3), the unit normal vector of plane 
+  !    Input, real(real64) NRML(1:3), the unit normal vector of plane 
   !    containing polygon, with vertices oriented counter clockwise with
   !    respect to the normal (used iff DIM = 3);
   !    The normal is assumed to be (0,0,1) if DIM = 2.
   !
-  !    Input, real(dp) DTOL, an absolute tolerance to determine 
+  !    Input, real(real64) DTOL, an absolute tolerance to determine 
   !    whether a point is on a line or plane.
   !
-  !    Output, integer(ip) INOUT, point PT is:
+  !    Output, integer(int32) INOUT, point PT is:
   !    +1, inside the polygon, 
   !     0, on boundary of polygon, 
   !    -1, outside polygon;
   !    -2 if error in input parameters.
   !
-    integer(ip), intent(in), value :: dim
-    integer(ip), intent(in), value :: ldv
+    integer(int32) dim
+    integer(int32) ldv
 
-    real(dp) :: cp(3)
-    real(dp) :: de(3)
-    real(dp) :: dir(3)
-    real(dp) :: dist
-    real(dp) :: dotp
-    real(dp), intent(in), value :: dtol
-    integer(ip) :: i
-    integer(ip), intent(in), value :: inc
-    integer(ip), intent(out) :: inout
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: la
-    integer(ip) :: lb
-    real(dp) :: len1
-    real(dp) :: len2
-    integer(ip) :: m
-    integer(ip) :: n
-    real(dp) :: nr(4)
-    real(dp), intent(in) :: nrml(3)
-    integer(ip), intent(in), value :: nv
-    integer(ip), intent(in) :: pgind(0:*)
-    real(dp), intent(in) :: pt(dim)
-    real(dp) :: rhs(3)
-    integer(ip) :: s
-    integer(ip) :: sa
-    integer(ip) :: sb
-    real(dp) :: t
-    real(dp) :: ta
-    real(dp) :: tol
-    real(dp), intent(in) :: vcl(ldv,*)
+    real(real64) cp(3)
+    real(real64) de(3)
+    real(real64) dir(3)
+    real(real64) dist
+    real(real64) dotp
+    real(real64) dtol
+    integer(int32) i
+    integer(int32) inc
+    integer(int32) inout
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) la
+    integer(int32) lb
+    real(real64) len1
+    real(real64) len2
+    integer(int32) m
+    integer(int32) n
+    real(real64) nr(4)
+    real(real64) nrml(3)
+    integer(int32) nv
+    integer(int32) pgind(0:*)
+    real(real64) pt(dim)
+    real(real64) rhs(3)
+    integer(int32) s
+    integer(int32) sa
+    integer(int32) sb
+    real(real64) t
+    real(real64) ta
+    real(real64) tol
+    real(real64) vcl(ldv,*)
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     inout = -2
 
@@ -7720,9 +7666,9 @@ contains
         len2 = dir(1)**2 + dir(2)**2 + dir(3)**2
       end if
 
-      if ( len1 == 0.0_dp ) then
+      if ( len1 == 0.0e+00_real64 ) then
         go to 10
-      else if ( len2 == 0.0_dp ) then
+      else if ( len2 == 0.0e+00_real64 ) then
         inout = 0
       end if
 
@@ -7733,26 +7679,26 @@ contains
           / sqrt(len1*len2)
       end if
 
-      if ( 1.0_dp - tol <= dotp ) then
+      if ( 1.0e+00_real64 - tol <= dotp ) then
         go to 10
       end if
 
       if ( dim == 2 ) then
-        dir(1) = 0.5_dp * ( vcl(1,la) + vcl(1,lb) ) - pt(1)
-        dir(2) = 0.5_dp * ( vcl(2,la) + vcl(2,lb) ) - pt(2)
+        dir(1) = 0.5e+00_real64 * ( vcl(1,la) + vcl(1,lb) ) - pt(1)
+        dir(2) = 0.5e+00_real64 * ( vcl(2,la) + vcl(2,lb) ) - pt(2)
         dist = sqrt ( dir(1)**2 + dir(2)**2 )
         dir(1) = dir(1) / dist
         dir(2) = dir(2) / dist
-        dir(3) = 0.0_dp
+        dir(3) = 0.0e+00_real64
         nr(1) = -dir(2)
         nr(2) = dir(1)
-        nr(3) = 0.0_dp
+        nr(3) = 0.0e+00_real64
         nr(4) = nr(1) * pt(1) + nr(2) * pt(2)
         dist = nr(1) * vcl(1,lb) + nr(2) * vcl(2,lb) - nr(4)
       else if ( dim == 3 ) then
-        dir(1) = 0.5_dp * ( vcl(1,la) + vcl(1,lb) ) - pt(1)
-        dir(2) = 0.5_dp * ( vcl(2,la) + vcl(2,lb) ) - pt(2)
-        dir(3) = 0.5_dp * ( vcl(3,la) + vcl(3,lb) ) - pt(3)
+        dir(1) = 0.5e+00_real64 * ( vcl(1,la) + vcl(1,lb) ) - pt(1)
+        dir(2) = 0.5e+00_real64 * ( vcl(2,la) + vcl(2,lb) ) - pt(2)
+        dir(3) = 0.5e+00_real64 * ( vcl(3,la) + vcl(3,lb) ) - pt(3)
         dist = sqrt ( dir(1)**2 + dir(2)**2 + dir(3)**2 )
 
         dir(1) = dir(1) / dist
@@ -7766,7 +7712,7 @@ contains
         dist = nr(1)*vcl(1,lb)+nr(2)*vcl(2,lb)+nr(3)*vcl(3,lb) - nr(4)
       end if
 
-      if ( 0.0_dp < dist ) then
+      if ( 0.0e+00_real64 < dist ) then
         sb = 1
       else
         sb = -1
@@ -7804,7 +7750,7 @@ contains
 
      if ( abs ( dist) <= dtol ) then
        sb = 0
-     else if ( 0.0_dp < dist ) then
+     else if ( 0.0e+00_real64 < dist ) then
        sb = 1
      else
        sb = -1
@@ -7880,7 +7826,7 @@ contains
 
       if ( abs ( dist) <= dtol ) then
         go to 40
-      else if ( 0.0_dp < dist ) then
+      else if ( 0.0e+00_real64 < dist ) then
         sb = 1
       else
         sb = -1
@@ -7894,12 +7840,12 @@ contains
 
       if ( la /= l ) then
         ta = ( vcl(m,la) - pt(m) ) / dir(m)
-        if ( abs ( ta ) <= dtol .or. t * ta < 0.0_dp ) then
+        if ( abs ( ta ) <= dtol .or. t * ta < 0.0e+00_real64 ) then
           inout = 0
         end if
       end if
 
-      if ( sa * sb < 0 .and. 0.0_dp < t ) then
+      if ( sa * sb < 0 .and. 0.0e+00_real64 < t ) then
         k = k + 1
       end if
 
@@ -7922,10 +7868,9 @@ contains
     else
       inout = -1
     end if
-  end subroutine ptpolg
+  end
 
-  function radians_to_degrees ( angle ) &
-        bind(C, name="radians_to_degrees")
+  function radians_to_degrees ( angle )
 
   !*****************************************************************************80
   !
@@ -7941,20 +7886,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE, an angle in radians.
+  !    Input, real(real64) ANGLE, an angle in radians.
   !
-  !    Output, real(dp) RADIANS_TO_DEGREES, the equivalent angle
+  !    Output, real(real64) RADIANS_TO_DEGREES, the equivalent angle
   !    in degrees.
   !
-    real(dp), intent(in), value :: angle
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: radians_to_degrees
+    real(real64) angle
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) radians_to_degrees
 
-    radians_to_degrees = ( angle / pi ) * 180.0_dp
-  end function radians_to_degrees
+    radians_to_degrees = ( angle / pi ) * 180.0e+00_real64
+  end
 
-  subroutine randpt ( k, n, seed, axis, nptav, scale, trans, lda, a ) &
-        bind(C, name="randpt")
+  subroutine randpt ( k, n, seed, axis, nptav, scale, trans, lda, a )
 
   !*****************************************************************************80
   !
@@ -7983,42 +7927,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) K, the dimension of points.
+  !    Input, integer(int32) K, the dimension of points.
   !
-  !    Input, integer(ip) N, the number of random points.
+  !    Input, integer(int32) N, the number of random points.
   !
-  !    Input/output, integer(ip) SEED, a seed for pseudo random number generator.
+  !    Input/output, integer(int32) SEED, a seed for pseudo random number generator.
   !
-  !    Input, integer(ip) AXIS, integer NPTAV; if AXIS < 1 or K < AXIS, then uniform 
+  !    Input, integer(int32) AXIS, integer NPTAV; if AXIS < 1 or K < AXIS, then uniform 
   !    random points are generated; if 1 <= AXIS <= K, then an average of NPTAV
   !    uniform random points are generated with the same AXIS
   !    coordinate on about N/NPTAV random parallel hyperplanes.
   !
-  !    Input, real(dp) SCALE(K), TRANS(K), the scale and 
+  !    Input, real(real64) SCALE(K), TRANS(K), the scale and 
   !    translation factors for coordinates 1 to K; the I-th coordinate of 
   !    random point is R*SCALE(I) + TRANS(I) where 0 < R < 1.
   !
-  !    Input, integer(ip) LDA, the leading dimension of array A in calling
+  !    Input, integer(int32) LDA, the leading dimension of array A in calling
   !    routine; should be at least K.
   !
-  !    Output, real(dp) A(LDA,N), an array of N uniform random 
+  !    Output, real(real64) A(LDA,N), an array of N uniform random 
   !    K-dimensional points.
   !
-    integer(ip), intent(in), value :: k
-    integer(ip), intent(in), value :: lda
-    integer(ip), intent(out) :: n
+    integer(int32) k
+    integer(int32) lda
+    integer(int32) n
 
-    real(dp), intent(out) :: a(lda,n)
-    integer(ip), intent(in), value :: axis
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: m
-    integer(ip) :: nptav
-    real(dp) :: r
-    real(dp), intent(in) :: scale(k)
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(in) :: trans(k)
-    real(dp) :: urand
+    real(real64) a(lda,n)
+    integer(int32) axis
+    integer(int32) i
+    integer(int32) j
+    integer(int32) m
+    integer(int32) nptav
+    real(real64) r
+    real(real64) scale(k)
+    integer(int32) seed
+    real(real64) trans(k)
+    real(real64) urand
 
     if ( axis < 1 .or. k < axis ) then
 
@@ -8030,7 +7974,7 @@ contains
 
     else
 
-      m = int ( urand ( seed ) * 2.0_dp * nptav + 0.5_dp )
+      m = int ( urand ( seed ) * 2.0e+00_real64 * nptav + 0.5e+00_real64 )
       r = urand ( seed ) * scale(axis) + trans(axis)
 
       do j = 1, n
@@ -8046,18 +7990,17 @@ contains
         m = m - 1
 
         if ( m <= 0 ) then
-          m = int ( urand ( seed ) * 2.0_dp * nptav + 0.5_dp )
+          m = int ( urand ( seed ) * 2.0e+00_real64 * nptav + 0.5e+00_real64 )
           r = urand ( seed ) * scale(axis) + trans(axis)
         end if
 
       end do
 
     end if
-  end subroutine randpt
+  end
 
   subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
-    maxwk, vcl, pvl, iang, w1, w2, iwk, wk, ierror ) &
-        bind(C, name="resvrt")
+    maxwk, vcl, pvl, iang, w1, w2, iwk, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -8089,89 +8032,89 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) VR, the index in PVL of reflex vertex.
+  !    Input, integer(int32) VR, the index in PVL of reflex vertex.
   !
-  !    Input, real(dp) ANGSPC, the angle spacing parameter used in
+  !    Input, real(real64) ANGSPC, the angle spacing parameter used in
   !    controlling the vertices to be considered as an endpoint of a separator.
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter used in 
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter used in 
   !    accepting separator(s).
   !
-  !    Input/output, integer(ip) NVC, the number of positions used 
+  !    Input/output, integer(int32) NVC, the number of positions used 
   !    in VCL array.
   !
-  !    Input/output, integer(ip) NVERT, the number of positions used in PVL array.
+  !    Input/output, integer(int32) NVERT, the number of positions used in PVL array.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL array.
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL array.
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL array.
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL array.
   !
-  !    Input, integer(ip) MAXIW, the maximum size available for IWK array; should 
+  !    Input, integer(int32) MAXIW, the maximum size available for IWK array; should 
   !    be about 3 times number of vertices in polygon.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK array; should 
+  !    Input, integer(int32) MAXWK, the maximum size available for WK array; should 
   !    be about 5 times number of vertices in polygon.
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) PVL(1:4,1:NVERT), real(dp) IANG(1:NVERT),
+  !    Input/output, integer(int32) PVL(1:4,1:NVERT), real(real64) IANG(1:NVERT),
   !    the polygon vertex list and interior angles.
   !
-  !    Output, integer(ip) W1, the index in PVL of vertex which is the endpoint 
+  !    Output, integer(int32) W1, the index in PVL of vertex which is the endpoint 
   !    of separator in inner cone or right cone with respect to the reflex vertex.
   !
-  !    Output, integer(ip) W2, is 0 if there is only one separator; else index 
+  !    Output, integer(int32) W2, is 0 if there is only one separator; else index 
   !    in PVL of vertex which is endpoint of second separator in left cone.
   !
   !    Workspace, integer IWK(1:MAXIW).
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 3, 5, 6, 7, 206, 207, 208, 209, 210, or 212
   !
-    integer(ip), intent(in), value :: maxiw
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: maxwk
+    integer(int32) maxiw
+    integer(int32) maxpv
+    integer(int32) maxvc
+    integer(int32) maxwk
 
-    real(dp) :: angsep
-    real(dp), intent(in), value :: angspc
-    real(dp), intent(in), value :: angtol
-    real(dp) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: ivis
-    integer(ip) :: ivor
-    integer(ip) :: ivrt
-    integer(ip) :: iwk(maxiw)
-    integer(ip) :: l
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: maxn
-    integer(ip), intent(inout) :: nvc
-    integer(ip), intent(inout) :: nvert
-    integer(ip) :: nvis
-    integer(ip) :: nvor
-    integer(ip) :: nvrt
-    integer(ip) :: nvsvrt
-    integer(ip), intent(inout) :: pvl(4,maxpv)
-    integer(ip), parameter :: succ = 3
-    integer(ip) :: theta
-    integer(ip) :: v
-    real(dp), intent(inout) :: vcl(2,maxvc)
-    integer(ip), intent(in), value :: vr
-    integer(ip), intent(out) :: w1
-    integer(ip), intent(out) :: w2
-    real(dp) :: wk(maxwk)
-    integer(ip) :: wkang
-    integer(ip) :: xc
-    real(dp) :: xr
-    integer(ip) :: xvor
-    integer(ip) :: yc
-    real(dp) :: yr
-    integer(ip) :: yvor
+    real(real64) angsep
+    real(real64) angspc
+    real(real64) angtol
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) ivis
+    integer(int32) ivor
+    integer(int32) ivrt
+    integer(int32) iwk(maxiw)
+    integer(int32) l
+    integer(int32), parameter :: loc = 1
+    integer(int32) maxn
+    integer(int32) nvc
+    integer(int32) nvert
+    integer(int32) nvis
+    integer(int32) nvor
+    integer(int32) nvrt
+    integer(int32) nvsvrt
+    integer(int32) pvl(4,maxpv)
+    integer(int32), parameter :: succ = 3
+    integer(int32) theta
+    integer(int32) v
+    real(real64) vcl(2,maxvc)
+    integer(int32) vr
+    integer(int32) w1
+    integer(int32) w2
+    real(real64) wk(maxwk)
+    integer(int32) wkang
+    integer(int32) xc
+    real(real64) xr
+    integer(int32) xvor
+    integer(int32) yc
+    real(real64) yr
+    integer(int32) yvor
   !
   !  Determine number of vertices in polygon containing reflex vertex.
   !
@@ -8344,10 +8287,9 @@ contains
     else
       w1 = iwk(ivis+i1)
     end if
-  end subroutine resvrt
+  end
 
-  subroutine rotiar ( n, arr, shift ) &
-        bind(C, name="rotiar")
+  subroutine rotiar ( n, arr, shift )
 
   !*****************************************************************************80
   !
@@ -8372,27 +8314,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of array.
+  !    Input, integer(int32) N, the number of elements of array.
   !
-  !    Input/output, integer(ip) ARR(0:N-1), the array to be shifted.
+  !    Input/output, integer(int32) ARR(0:N-1), the array to be shifted.
   !
-  !    Input, integer(ip) SHIFT, the amount of (left) shift or rotation; 
+  !    Input, integer(int32) SHIFT, the amount of (left) shift or rotation; 
   !    ARR(SHIFT) on input becomes ARR(0) on output.
   !
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a
-    integer(ip), intent(inout) :: arr(0:n-1)
-    integer(ip) :: b
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: m
-    integer(ip) :: r
-    integer(ip) :: sh
-    integer(ip), intent(in), value :: shift
-    integer(ip) :: t
+    integer(int32) a
+    integer(int32) arr(0:n-1)
+    integer(int32) b
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) m
+    integer(int32) r
+    integer(int32) sh
+    integer(int32) shift
+    integer(int32) t
 
     sh = mod ( shift, n )
 
@@ -8434,10 +8376,9 @@ contains
       arr(k) = t
 
     end do
-  end subroutine rotiar
+  end
 
-  subroutine rotipg ( xeye, yeye, nvrt, xc, yc, ierror ) &
-        bind(C, name="rotipg")
+  subroutine rotipg ( xeye, yeye, nvrt, xc, yc, ierror )
 
   !*****************************************************************************80
   !
@@ -8472,13 +8413,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XEYE, YEYE, the coordinates of eyepoint.
+  !    Input, real(real64) XEYE, YEYE, the coordinates of eyepoint.
   !
-  !    Input/output, integer(ip) NVRT, the number of vertices on boundary of simple 
+  !    Input/output, integer(int32) NVRT, the number of vertices on boundary of simple 
   !    polygon.  On output, NVRT is increased by 1 if the closest vertex
   !    is a new vertex.
   !
-  !    Input/output, real(dp) XC(0:NVRT), YC(0:NVRT), the vertices 
+  !    Input/output, real(real64) XC(0:NVRT), YC(0:NVRT), the vertices 
   !    of polygon in counter clockwise (or clockwise) order if eyepoint is 
   !    interior (or blocked exterior);
   !      (XC(0),YC(0)) = (XC(NVRT),YC(NVRT))
@@ -8486,39 +8427,39 @@ contains
   !    as input but with indices rotated and possibly
   !      (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)) has been added.
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 205.
   !
-    integer(ip), intent(inout) :: nvrt
+    integer(int32) nvrt
 
-    integer(ip) :: a
-    integer(ip) :: b
-    real(dp) :: dy
-    integer(ip) :: i
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: irgt
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: m
-    integer(ip) :: n
-    integer(ip) :: r
-    real(dp) :: tol
-    real(dp), intent(inout) :: xc(0:nvrt+1)
-    real(dp), intent(in), value :: xeye
-    real(dp) :: xint
-    real(dp) :: xrgt
-    real(dp) :: xt
-    real(dp), intent(inout) :: yc(0:nvrt+1)
-    real(dp), intent(in), value :: yeye
-    real(dp) :: yeyemt
-    real(dp) :: yeyept
-    real(dp) :: yt
+    integer(int32) a
+    integer(int32) b
+    real(real64) dy
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) irgt
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) m
+    integer(int32) n
+    integer(int32) r
+    real(real64) tol
+    real(real64) xc(0:nvrt+1)
+    real(real64) xeye
+    real(real64) xint
+    real(real64) xrgt
+    real(real64) xt
+    real(real64) yc(0:nvrt+1)
+    real(real64) yeye
+    real(real64) yeyemt
+    real(real64) yeyept
+    real(real64) yt
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
-    dy = 0.0_dp
+    dy = 0.0e+00_real64
     do i = 0, nvrt-1
       dy = max ( dy, abs ( yc(i+1) - yc(i) ) )
     end do
@@ -8527,7 +8468,7 @@ contains
     yeyept = yeye + tol * dy
     n = nvrt + 1
     irgt = n
-    xrgt = 0.0_dp
+    xrgt = 0.0e+00_real64
   !
   !  Determine closest point on boundary which is to the right of
   !  (XEYE,YEYE) and on the horizontal line through (XEYE,YEYE).
@@ -8631,10 +8572,9 @@ contains
 
     xc(nvrt) = xc(0)
     yc(nvrt) = yc(0)
-  end subroutine rotipg
+  end
 
-  subroutine rotpg ( nvrt, xc, yc, i1, i2, ibot, costh, sinth ) &
-        bind(C, name="rotpg")
+  subroutine rotpg ( nvrt, xc, yc, i1, i2, ibot, costh, sinth )
 
   !*****************************************************************************80
   !
@@ -8664,65 +8604,65 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVRT, the number of vertices on the boundary of
+  !    Input, integer(int32) NVRT, the number of vertices on the boundary of
   !    the convex polygon.
   !
-  !    Input/output, real(dp) XC(0:NVRT), YC(0:NVRT).  The vertex 
+  !    Input/output, real(real64) XC(0:NVRT), YC(0:NVRT).  The vertex 
   !    coordinates in counter clockwise order;
   !      (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)).
   !    On output, the rotated vertex coordinates; indices are
   !    also rotated so that (XC(0),YC(0)) = (XC(NVRT),YC(NVRT))
   !    is top vertex and (XC(IBOT),YC(IBOT)) is bottom vertex.
   !
-  !    Input, integer(ip) I1, I2, the index of vertices of line segment; 
+  !    Input, integer(int32) I1, I2, the index of vertices of line segment; 
   !    I1, I2 must be positive.
   !
-  !    Output, integer(ip) IBOT, the index of bottom vertex.
+  !    Output, integer(int32) IBOT, the index of bottom vertex.
   !
-  !    Output, real(dp) COSTH, SINTH, the values COS(THETA) and 
+  !    Output, real(real64) COSTH, SINTH, the values COS(THETA) and 
   !    SIN(THETA) where THETA in [-PI,PI] is the rotation angle.
   !
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    integer(ip) :: a
-    integer(ip) :: b
-    real(dp), intent(out) :: costh
-    integer(ip) :: i
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip), intent(out) :: ibot
-    integer(ip) :: itop
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: m
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    integer(ip) :: r
-    real(dp), intent(out) :: sinth
-    real(dp) :: theta
-    real(dp) :: tol
-    real(dp) :: x0
-    real(dp), intent(inout) :: xc(0:nvrt)
-    real(dp) :: y0
-    real(dp), intent(inout) :: yc(0:nvrt)
+    integer(int32) a
+    integer(int32) b
+    real(real64) costh
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) ibot
+    integer(int32) itop
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) m
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    integer(int32) r
+    real(real64) sinth
+    real(real64) theta
+    real(real64) tol
+    real(real64) x0
+    real(real64) xc(0:nvrt)
+    real(real64) y0
+    real(real64) yc(0:nvrt)
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     itop = i1
     ibot = i2
 
     if ( yc(i1) == yc(i2) ) then
       if ( xc(i1) < xc(i2) ) then
-        theta = -pi / 2.0_dp
+        theta = -pi / 2.0e+00_real64
       else
-        theta = pi / 2.0_dp
+        theta = pi / 2.0e+00_real64
       end if
     else
       if ( yc(i1) < yc(i2) ) then
         itop = i2
         ibot = i1
       end if
-      theta = pi / 2.0_dp &
+      theta = pi / 2.0e+00_real64 &
         - atan2 ( yc(itop) - yc(ibot), xc(itop) - xc(ibot) )
     end if
 
@@ -8786,11 +8726,10 @@ contains
 
     xc(0) = xc(nvrt)
     yc(0) = yc(nvrt)
-  end subroutine rotpg
+  end
 
   subroutine sepmdf ( angtol, nvrt, xc, yc, arpoly, mean, mdftr, indpvl, &
-    iang, i1, i2 ) &
-        bind(C, name="sepmdf")
+    iang, i1, i2 )
 
   !*****************************************************************************80
   !
@@ -8820,58 +8759,58 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter
   !    (in radians).
   !
-  !    Input, integer(ip) NVRT, the number of vertices in polygon.
+  !    Input, integer(int32) NVRT, the number of vertices in polygon.
   !
-  !    Input, real(dp) XC(0:NVRT),YC(0:NVRT), the coordinates of polygon
+  !    Input, real(real64) XC(0:NVRT),YC(0:NVRT), the coordinates of polygon
   !    vertices in counter clockwise order, translated so that centroid is at 
   !    origin; (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)).
   !
-  !    Input, real(dp) ARPOLY, the area of polygon.
+  !    Input, real(real64) ARPOLY, the area of polygon.
   !
-  !    Input, real(dp) MEAN, the mean mdf value in polygon.
+  !    Input, real(real64) MEAN, the mean mdf value in polygon.
   !
-  !    Input, real(dp) MDFTR(0:NVRT-1), the mean mdf value in each 
+  !    Input, real(real64) MDFTR(0:NVRT-1), the mean mdf value in each 
   !    triangle of polygon; triangles are determined by polygon vertices 
   !    and centroid.
   !
-  !    Input, integer(ip) INDPVL(0:NVRT), the indices in PVL of vertices; 
+  !    Input, integer(int32) INDPVL(0:NVRT), the indices in PVL of vertices; 
   !    INDPVL(I) = -K if (XC(I),YC(I)) is extra vertex inserted on edge from
   !    K to PVL(SUCC,K).
   !
-  !    Input, real(dp) IANG(1:*), the interior angle array.
+  !    Input, real(real64) IANG(1:*), the interior angle array.
   !
-  !    Output, integer(ip) I1, I2, indices in range 0 to NVRT-1 of best separator
+  !    Output, integer(int32) I1, I2, indices in range 0 to NVRT-1 of best separator
   !    according to MDF and max-min angle criterion; I1 = -1
   !    if no satisfactory separator is found.
   !
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    real(dp) :: angle
-    real(dp), intent(in), value :: angtol
-    real(dp) :: areatr
-    real(dp), intent(in), value :: arpoly
-    integer(ip) :: hi
-    integer(ip) :: i
-    integer(ip), intent(out) :: i1
-    integer(ip), intent(out) :: i2
-    real(dp), intent(in) :: iang(*)
-    integer(ip), intent(in) :: indpvl(0:nvrt)
-    integer(ip) :: l
-    integer(ip) :: m
-    real(dp), intent(in) :: mdftr(0:nvrt-1)
-    real(dp), intent(in), value :: mean
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: sum2
-    real(dp) :: tol
-    integer(ip) :: v(2)
-    integer(ip) :: w(2)
-    real(dp), intent(in) :: xc(0:nvrt)
-    real(dp), intent(in) :: yc(0:nvrt)
+    real(real64) angle
+    real(real64) angtol
+    real(real64) areatr
+    real(real64) arpoly
+    integer(int32) hi
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    real(real64) iang(*)
+    integer(int32) indpvl(0:nvrt)
+    integer(int32) l
+    integer(int32) m
+    real(real64) mdftr(0:nvrt-1)
+    real(real64) mean
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) sum2
+    real(real64) tol
+    integer(int32) v(2)
+    integer(int32) w(2)
+    real(real64) xc(0:nvrt)
+    real(real64) yc(0:nvrt)
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  Determine triangle with highest mean mesh density; then determine
   !  triangles adjacent to this triangle with mesh density at least MEAN
@@ -8940,7 +8879,7 @@ contains
   !  (XC(M),YC(M)), (0,0), and (XC(L),YC(L)).
   !  Possible separators are L,M; L,M+1; L+1,M; L+1,M+1.
   !
-    if ( pi < angle ( xc(m), yc(m), 0.0_dp, 0.0_dp, xc(l), yc(l) ) ) then
+    if ( pi < angle ( xc(m), yc(m), 0.0e+00_real64, 0.0e+00_real64, xc(l), yc(l) ) ) then
       i = l
       l = m
       m = i
@@ -8959,10 +8898,9 @@ contains
     end if
 
     call mmasep ( angtol, xc, yc, indpvl, iang, v, w, i1, i2 )
-  end subroutine sepmdf
+  end
 
-  subroutine sepshp ( angtol, nvrt, xc, yc, indpvl, iang, i1, i2, wk, ierror ) &
-        bind(C, name="sepshp")
+  subroutine sepshp ( angtol, nvrt, xc, yc, indpvl, iang, i1, i2, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -8992,58 +8930,58 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter
   !    (in radians).
   !
-  !    Input, integer(ip) NVRT, the number of vertices in polygon.
+  !    Input, integer(int32) NVRT, the number of vertices in polygon.
   !
-  !    Input, real(dp) XC(0:NVRT), YC(0:NVRT), the coordinates of 
+  !    Input, real(real64) XC(0:NVRT), YC(0:NVRT), the coordinates of 
   !    polygon vertices in counter clockwise order, translated so that 
   !    centroid is at origin;
   !    (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)).
   !
-  !    Input, integer(ip) INDPVL(0:NVRT), the indices in PVL of vertices;
+  !    Input, integer(int32) INDPVL(0:NVRT), the indices in PVL of vertices;
   !    INDPVL(I) = -K if (XC(I),YC(I)) is extra vertex inserted on edge from
   !    K to PVL(SUCC,K).
   !
-  !    Input, real(dp) IANG(1:*), the interior angle array.
+  !    Input, real(real64) IANG(1:*), the interior angle array.
   !
-  !    Output, integer(ip) I1, I2, the indices in range 0 to NVRT-1 of best separator
+  !    Output, integer(int32) I1, I2, the indices in range 0 to NVRT-1 of best separator
   !    according to shape and max-min angle criterion; I1 = -1
   !    if no satisfactory separator is found.
   !
-  !    Workspace, real(dp) WK(1:2*NVRT).
+  !    Workspace, real(real64) WK(1:2*NVRT).
   !
-  !    Output, integer(ip) IERROR, error flag.  For abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  For abnormal return,
   !    IERROR is set to 200.
   !
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    real(dp), intent(in), value :: angtol
-    real(dp) :: dist
-    real(dp) :: dx
-    real(dp) :: dy
-    integer(ip) :: i
-    integer(ip), intent(out) :: i1
-    integer(ip), intent(out) :: i2
-    real(dp), intent(in) :: iang(*)
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(in) :: indpvl(0:nvrt)
-    integer(ip) :: k
-    integer(ip) :: n
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: pimtol
-    real(dp) :: tol
-    integer(ip) :: v(2)
-    integer(ip) :: w(2)
-    real(dp) :: wk(2*nvrt)
-    real(dp) :: xa
-    real(dp), intent(in) :: xc(0:nvrt)
-    real(dp) :: ya
-    real(dp), intent(in) :: yc(0:nvrt)
+    real(real64) angtol
+    real(real64) dist
+    real(real64) dx
+    real(real64) dy
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    real(real64) iang(*)
+    integer(int32) ierror
+    integer(int32) indpvl(0:nvrt)
+    integer(int32) k
+    integer(int32) n
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) pimtol
+    real(real64) tol
+    integer(int32) v(2)
+    integer(int32) w(2)
+    real(real64) wk(2*nvrt)
+    real(real64) xa
+    real(real64) xc(0:nvrt)
+    real(real64) ya
+    real(real64) yc(0:nvrt)
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  Determine diameter of polygon. Possible separators endpoints (two
   !  on each side of polygon) are nearest to perpendicular bisector of
@@ -9076,8 +9014,8 @@ contains
 
     dx = wk(i2+nvrt) - wk(i1+nvrt)
     dy = wk(i1) - wk(i2)
-    xa = 0.5_dp * ( wk(i1) + wk(i2) - dx )
-    ya = 0.5_dp * ( wk(i1+nvrt) + wk(i2+nvrt) - dy )
+    xa = 0.5e+00_real64 * ( wk(i1) + wk(i2) - dx )
+    ya = 0.5e+00_real64 * ( wk(i1+nvrt) + wk(i2+nvrt) - dy )
 
     i = i1 - 1
 
@@ -9107,7 +9045,7 @@ contains
 
     dist = dx * ( yc(i) - ya ) - dy * ( xc(i) - xa )
 
-    if ( 0.0_dp <= dist ) then
+    if ( 0.0e+00_real64 <= dist ) then
       v(1) = i - 1
       v(2) = i
     else
@@ -9125,7 +9063,7 @@ contains
 
     dist = dx * ( yc(i) - ya ) - dy * ( xc(i) - xa )
 
-    if ( dist <= 0.0_dp ) then
+    if ( dist <= 0.0e+00_real64 ) then
       w(1) = i - 1
       w(2) = i
       if ( i <= 0 ) then
@@ -9137,10 +9075,9 @@ contains
     end if
 
     call mmasep ( angtol, xc, yc, indpvl, iang, v, w, i1, i2 )
-  end subroutine sepshp
+  end
 
-  subroutine sfdwmf ( l, r, psi, indp, loch ) &
-        bind(C, name="sfdwmf")
+  subroutine sfdwmf ( l, r, psi, indp, loch )
 
   !*****************************************************************************80
   !
@@ -9170,28 +9107,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) L, the element of heap to be sifted down.
+  !    Input, integer(int32) L, the element of heap to be sifted down.
   !
-  !    Input, integer(ip) R, the upper bound of heap.
+  !    Input, integer(int32) R, the upper bound of heap.
   !
-  !    Input, real(dp) PSI(1:*), the key values for heap.
+  !    Input, real(real64) PSI(1:*), the key values for heap.
   !
-  !    Input/output, integer(ip) INDP(1:R), the indices of PSI which are 
+  !    Input/output, integer(int32) INDP(1:R), the indices of PSI which are 
   !    maintained in heap.
   !
-  !    Input/output, integer(ip) LOCH(1:*), the location of indices in
+  !    Input/output, integer(int32) LOCH(1:*), the location of indices in
   !    heap (inverse of INDP).
   !
-    integer(ip), intent(in), value :: r
+    integer(int32) r
 
-    integer(ip) :: i
-    integer(ip), intent(inout) :: indp(r)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(in), value :: l
-    integer(ip), intent(inout) :: loch(*)
-    real(dp), intent(in) :: psi(*)
-    real(dp) :: t
+    integer(int32) i
+    integer(int32) indp(r)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) loch(*)
+    real(real64) psi(*)
+    real(real64) t
 
     i = l
     j = 2 * i
@@ -9219,10 +9156,9 @@ contains
 
     indp(i) = k
     loch(k) = i
-  end subroutine sfdwmf
+  end
 
-  subroutine sfupmf ( r, psi, indp, loch ) &
-        bind(C, name="sfupmf")
+  subroutine sfupmf ( r, psi, indp, loch )
 
   !*****************************************************************************80
   !
@@ -9252,25 +9188,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) R, the element of heap to be sifted up.
+  !    Input, integer(int32) R, the element of heap to be sifted up.
   !
-  !    Input, real(dp) PSI(1:*), the key values for heap.
+  !    Input, real(real64) PSI(1:*), the key values for heap.
   !
-  !    Input/output, integer(ip) INDP(1:R), the indices of PSI which are 
+  !    Input/output, integer(int32) INDP(1:R), the indices of PSI which are 
   !    maintained in heap.
   !
-  !    Input/output, integer(ip) LOCH(1:*), the location of indices in
+  !    Input/output, integer(int32) LOCH(1:*), the location of indices in
   !    heap (inverse of INDP).
   !
-    integer(ip), intent(in), value :: r
+    integer(int32) r
 
-    integer(ip) :: i
-    integer(ip), intent(inout) :: indp(r)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(inout) :: loch(*)
-    real(dp), intent(in) :: psi(*)
-    real(dp) :: t
+    integer(int32) i
+    integer(int32) indp(r)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) loch(*)
+    real(real64) psi(*)
+    real(real64) t
 
     i = r
     j = int ( i / 2 )
@@ -9296,10 +9232,9 @@ contains
 
     indp(i) = k
     loch(k) = i
-  end subroutine sfupmf
+  end
 
-  subroutine shrnk2 ( nvrt, xc, yc, sdist, nshr, xs, ys, iedge, ierror ) &
-        bind(C, name="shrnk2")
+  subroutine shrnk2 ( nvrt, xc, yc, sdist, nshr, xs, ys, iedge, ierror )
 
   !*****************************************************************************80
   !
@@ -9330,56 +9265,56 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVRT, the number of vertices on the boundary
+  !    Input, integer(int32) NVRT, the number of vertices on the boundary
   !    of convex polygon.
   !
-  !    Input, real(dp) XC(0:NVRT), YC(0:NVRT), the vertex coordinates 
+  !    Input, real(real64) XC(0:NVRT), YC(0:NVRT), the vertex coordinates 
   !    in counter clockwise order;
   !    (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)).
   !
-  !    Input, real(dp) SDIST(0:NVRT-1), the nonnegative shrink 
+  !    Input, real(real64) SDIST(0:NVRT-1), the nonnegative shrink 
   !    distances for edges.
   !
-  !    Output, integer(ip) NSHR, the number of vertices on boundary of
+  !    Output, integer(int32) NSHR, the number of vertices on boundary of
   !    shrunken polygon; 0 if shrunken polygon is empty else 3 <= NSHR <= NVRT.
   !
-  !    Output, real(dp) XS(0:NSHR), YS(0:NSHR), the coordinates of
+  !    Output, real(real64) XS(0:NSHR), YS(0:NSHR), the coordinates of
   !    shrunken polygon in counter clockwise order if NSHR is greater than 0; 
   !    (XS(0),YS(0)) = (XS(NSHR),YS(NSHR)).
   !
-  !    Output, integer(ip) IEDGE(0:NVRT), the indices of edges of 
+  !    Output, integer(int32) IEDGE(0:NVRT), the indices of edges of 
   !    shrunken polygon in range from 0 to NVRT-1.
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 202.
   !
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    real(dp) :: alpha
-    logical :: first
-    integer(ip) :: i
-    integer(ip), intent(out) :: iedge(0:nvrt)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip), intent(out) :: nshr
-    logical :: parall
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: pi2
-    real(dp), intent(in) :: sdist(0:nvrt-1)
-    real(dp) :: theta
-    real(dp) :: tol
-    real(dp), intent(in) :: xc(0:nvrt)
-    real(dp), intent(out) :: xs(0:nvrt)
-    real(dp), intent(in) :: yc(0:nvrt)
-    real(dp), intent(out) :: ys(0:nvrt)
+    real(real64) alpha
+    logical first
+    integer(int32) i
+    integer(int32) iedge(0:nvrt)
+    integer(int32) ierror
+    integer(int32) j
+    integer(int32) k
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) nshr
+    logical parall
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) pi2
+    real(real64) sdist(0:nvrt-1)
+    real(real64) theta
+    real(real64) tol
+    real(real64) xc(0:nvrt)
+    real(real64) xs(0:nvrt)
+    real(real64) yc(0:nvrt)
+    real(real64) ys(0:nvrt)
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
-    pi2 = 2.0_dp * pi
+    pi2 = 2.0e+00_real64 * pi
     alpha = atan2 ( yc(1)-yc(0), xc(1)-xc(0) )
 
     call xline ( xc(0), yc(0), xc(1), yc(1), xc(1), yc(1), xc(2), yc(2), &
@@ -9403,7 +9338,7 @@ contains
   10 continue
 
     theta = atan2 ( yc(i+1)-yc(i), xc(i+1)-xc(i) ) - alpha
-    if ( theta < 0.0_dp ) then
+    if ( theta < 0.0e+00_real64 ) then
       theta = theta + pi2
     end if
 
@@ -9531,12 +9466,11 @@ contains
   90 continue
 
     nshr = 0
-  end subroutine shrnk2
+  end
 
   subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
     maxhv, maxpv, maxiw, maxwk, holv, vcl, regnum, hvl, pvl, iang, iwk, &
-    wk, ierror ) &
-        bind(C, name="spdec2")
+    wk, ierror )
 
   !*****************************************************************************80
   !
@@ -9567,48 +9501,48 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGSPC, the angle spacing parameter in radians 
+  !    Input, real(real64) ANGSPC, the angle spacing parameter in radians 
   !    used in controlling vertices to be considered as an endpoint of 
   !    a separator.
   !
-  !    Input, real(dp) ANGTOL, the angle tolerance parameter in radians 
+  !    Input, real(real64) ANGTOL, the angle tolerance parameter in radians 
   !    used in accepting separator(s).
   !
-  !    Input/output, integer(ip) NVC, the number of vertex coordinates 
+  !    Input/output, integer(int32) NVC, the number of vertex coordinates 
   !    or positions used in the VCL array.
   !
-  !    Input/output, integer(ip) NPOLG, the number of polygonal 
+  !    Input/output, integer(int32) NPOLG, the number of polygonal 
   !    subregions or positions used in HVL array.
   !
-  !    Input/output, integer(ip) NVERT, the number of polygon vertices 
+  !    Input/output, integer(int32) NVERT, the number of polygon vertices 
   !    or positions used in PVL array.
   !
-  !    Input, integer(ip) NHOLE, the number of holes and hole interfaces.
+  !    Input, integer(int32) NHOLE, the number of holes and hole interfaces.
   !
-  !    Input, integer(ip) NHOLA, the number of 'attached' holes; these
+  !    Input, integer(int32) NHOLA, the number of 'attached' holes; these
   !    holes are attached to the outer boundary of a subregion through vertices
   !    or cut interfaces and have their edges in consecutive order on 
   !    the boundary.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL 
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL 
   !    array, should be at least the number of vertex coordinates required 
   !    for decomposition.
   !
-  !    Input, integer(ip) MAXHV, the maximum size available for HVL, 
+  !    Input, integer(int32) MAXHV, the maximum size available for HVL, 
   !    REGNUM arrays, should be at least the number of polygons required for 
   !    decomposition.
   !
-  !    Input, integer(ip) MAXPV, the maximum size available for PVL, 
+  !    Input, integer(int32) MAXPV, the maximum size available for PVL, 
   !    IANG arrays; should be at least the number of polygon vertices required for
   !    decomposition.
   !
-  !    Input, integer(ip) MAXIW, the maximum size available for IWK 
+  !    Input, integer(int32) MAXIW, the maximum size available for IWK 
   !    array; should be about 3 times maximum number of vertices in any polygon.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK 
+  !    Input, integer(int32) MAXWK, the maximum size available for WK 
   !    array; should be about 5 times maximum number of vertices in any polygon.
   !
-  !    Input, integer(ip) HOLV(1:NHOLE*2+NHOLA), the indices in PVL of 
+  !    Input, integer(int32) HOLV(1:NHOLE*2+NHOLA), the indices in PVL of 
   !    bottom or top vertex of holes; first (next) NHOLE entries are for top 
   !    (bottom) vertices of holes and hole interfaces, with top (bottom)
   !    vertices sorted in decreasing (increasing) lexicographic
@@ -9618,63 +9552,63 @@ contains
   !    contains index of bottom vertex otherwise entry contains
   !    index of top vertex (which is simple).
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) REGNUM(1:NPOLG), the region numbers.
+  !    Input/output, integer(int32) REGNUM(1:NPOLG), the region numbers.
   !
-  !    Input/output, integer(ip) HVL(1:NPOLG), the head vertex list.
+  !    Input/output, integer(int32) HVL(1:NPOLG), the head vertex list.
   !
-  !    Input/output, integer(ip) PVL(1:4,1:NVERT), 
-  !    real(dp) IANG(1:NVERT), the polygon vertex list and interior 
+  !    Input/output, integer(int32) PVL(1:4,1:NVERT), 
+  !    real(real64) IANG(1:NVERT), the polygon vertex list and interior 
   !    angles; see routine DSPGDC for more details.  Note that the data 
   !    structures should be as output from routines DSMCPR or DSPGDC.
   !
   !    Workspace, integer IWK(1:MAXIW).
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 3, 4, 5, 6, 7, 206 to 210, 212, 218, or 219.
   !
-    integer(ip), intent(in), value :: maxhv
-    integer(ip), intent(in), value :: maxiw
-    integer(ip), intent(in), value :: maxpv
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: maxwk
+    integer(int32) maxhv
+    integer(int32) maxiw
+    integer(int32) maxpv
+    integer(int32) maxvc
+    integer(int32) maxwk
 
-    real(dp), intent(in), value :: angspc
-    real(dp), intent(in), value :: angtol
-    logical :: ci
-    logical :: cj
-    integer(ip), parameter :: edgv = 4
-    integer(ip), intent(in) :: holv(*)
-    integer(ip), intent(inout) :: hvl(maxhv)
-    integer(ip) :: i
-    real(dp) :: iang(maxpv)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: iwk(maxiw)
-    integer(ip) :: j
-    integer(ip), intent(in), value :: nhola
-    integer(ip), intent(in), value :: nhole
-    integer(ip), intent(inout) :: npolg
-    integer(ip), intent(inout) :: nvc
-    integer(ip), intent(inout) :: nvert
-    integer(ip) :: p
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: piptol
-    integer(ip), parameter :: polg = 2
-    integer(ip), intent(inout) :: pvl(4,maxpv)
-    integer(ip), intent(inout) :: regnum(maxhv)
-    integer(ip), parameter :: succ = 3
-    real(dp) :: tol
-    real(dp), intent(inout) :: vcl(2,maxvc)
-    integer(ip) :: vr
-    integer(ip) :: w1
-    integer(ip) :: w2
-    real(dp) :: wk(maxwk)
+    real(real64) angspc
+    real(real64) angtol
+    logical ci
+    logical cj
+    integer(int32), parameter :: edgv = 4
+    integer(int32) holv(*)
+    integer(int32) hvl(maxhv)
+    integer(int32) i
+    real(real64) iang(maxpv)
+    integer(int32) ierror
+    integer(int32) iwk(maxiw)
+    integer(int32) j
+    integer(int32) nhola
+    integer(int32) nhole
+    integer(int32) npolg
+    integer(int32) nvc
+    integer(int32) nvert
+    integer(int32) p
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) piptol
+    integer(int32), parameter :: polg = 2
+    integer(int32) pvl(4,maxpv)
+    integer(int32) regnum(maxhv)
+    integer(int32), parameter :: succ = 3
+    real(real64) tol
+    real(real64) vcl(2,maxvc)
+    integer(int32) vr
+    integer(int32) w1
+    integer(int32) w2
+    real(real64) wk(maxwk)
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  For each simple hole, find cut edge from top vertex of hole to
   !  a point on the outer boundary above top vertex, and update
@@ -9804,10 +9738,9 @@ contains
 
     go to 30
 
-  end subroutine spdec2
+  end
 
-  subroutine swapec ( i, top, maxst, btri, bedg, vcl, til, tnbr, stack, ierror ) &
-        bind(C, name="swapec")
+  subroutine swapec ( i, top, maxst, btri, bedg, vcl, til, tnbr, stack, ierror )
 
   !*****************************************************************************80
   !
@@ -9838,24 +9771,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the index in VCL of the new vertex.
+  !    Input, integer(int32) I, the index in VCL of the new vertex.
   !
-  !    Input/output, integer(ip) TOP, the index of the top of the stack.
+  !    Input/output, integer(int32) TOP, the index of the top of the stack.
   !    On output, TOP is zero.
   !
-  !    Input, integer(ip) MAXST, the maximum size available for the 
+  !    Input, integer(int32) MAXST, the maximum size available for the 
   !    STACK array.
   !
-  !    Input/output, integer(ip) BTRI, BEDG; on input, if positive, are the
+  !    Input/output, integer(int32) BTRI, BEDG; on input, if positive, are the
   !    triangle and edge indices of a boundary edge whose updated indices
   !    must be recorded.  On output, these may be updated because of swaps.
   !
-  !    Input, real(dp) VCL(2,*), the coordinates of the vertices.
+  !    Input, real(real64) VCL(2,*), the coordinates of the vertices.
   !
-  !    Input/output, integer(ip) TIL(3,*), the triangle incidence list.  
+  !    Input/output, integer(int32) TIL(3,*), the triangle incidence list.  
   !    May be updated on output because of swaps.
   !
-  !    Input/output, integer(ip) TNBR(3,*), the triangle neighbor list; negative 
+  !    Input/output, integer(int32) TNBR(3,*), the triangle neighbor list; negative 
   !    values are used for links of the counter-clockwise linked list of boundary 
   !    edges; May be updated on output because of swaps.
   !
@@ -9866,39 +9799,39 @@ contains
   !    put in stack; the edges opposite I should be in interior;  entries
   !    TOP+1 through MAXST are used as a stack.
   !
-  !    Output, integer(ip) IERROR is set to 8 for abnormal return.
+  !    Output, integer(int32) IERROR is set to 8 for abnormal return.
   !
-    integer(ip), intent(in), value :: maxst
+    integer(int32) maxst
 
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip), intent(inout) :: bedg
-    integer(ip), intent(inout) :: btri
-    integer(ip) :: c
-    integer(ip) :: diaedg
-    integer(ip) :: e
-    integer(ip) :: ee
-    integer(ip) :: em1
-    integer(ip) :: ep1
-    integer(ip) :: f
-    integer(ip) :: fm1
-    integer(ip) :: fp1
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: l
-    integer(ip) :: r
-    integer(ip) :: s
-    integer(ip) :: stack(maxst)
-    integer(ip) :: swap
-    integer(ip) :: t
-    integer(ip), intent(inout) :: til(3,*)
-    integer(ip), intent(inout) :: tnbr(3,*)
-    integer(ip), intent(inout) :: top
-    integer(ip) :: tt
-    integer(ip) :: u
-    real(dp), intent(in) :: vcl(2,*)
-    real(dp) :: x
-    real(dp) :: y
+    integer(int32) a
+    integer(int32) b
+    integer(int32) bedg
+    integer(int32) btri
+    integer(int32) c
+    integer(int32) diaedg
+    integer(int32) e
+    integer(int32) ee
+    integer(int32) em1
+    integer(int32) ep1
+    integer(int32) f
+    integer(int32) fm1
+    integer(int32) fp1
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) l
+    integer(int32) r
+    integer(int32) s
+    integer(int32) stack(maxst)
+    integer(int32) swap
+    integer(int32) t
+    integer(int32) til(3,*)
+    integer(int32) tnbr(3,*)
+    integer(int32) top
+    integer(int32) tt
+    integer(int32) u
+    real(real64) vcl(2,*)
+    real(real64) x
+    real(real64) y
   !
   !  Determine whether the triangles in the stack are Delaunay.
   !  Ifnot, swap the diagonal edge of the convex quadrilateral.
@@ -10059,11 +9992,10 @@ contains
       end if
 
     end do
-  end subroutine swapec
+  end
 
   subroutine tmerge ( inter, nbl, ncr, chbl, chcr, ldv, vcl, til, tedg, &
-    ierror ) &
-        bind(C, name="tmerge")
+    ierror )
 
   !*****************************************************************************80
   !
@@ -10095,66 +10027,66 @@ contains
   !
   !    Input, logical INTER, is .TRUE. iff at least one interior mesh vertex.
   !
-  !    Input, integer(ip) NBL, the number of vertices on boundary 
+  !    Input, integer(int32) NBL, the number of vertices on boundary 
   !    cycle if INTER, otherwise on left boundary chain.
   !
-  !    Input, integer(ip) NCR, the number of vertices on closed walk 
+  !    Input, integer(int32) NCR, the number of vertices on closed walk 
   !    if INTER, otherwise on right boundary chain.
   !
-  !    Input, integer(ip) CHBL(0:NBL), the indices in VCL of vertices
+  !    Input, integer(int32) CHBL(0:NBL), the indices in VCL of vertices
   !    on boundary cycle or left boundary chain; if INTER, CHBL(NBL) = CHBL(0).
   !
-  !    Input, integer(ip) CHCR(0:NCR), the indices in VCL of vertices 
+  !    Input, integer(int32) CHCR(0:NCR), the indices in VCL of vertices 
   !    on closed walk or right boundary chain; if INTER, CHCR(NCR) = CHCR(0),
   !    otherwise CHCR(0) is not referenced.
   !
-  !    Input, integer(ip) LDV, the leading dimension of VCL in 
+  !    Input, integer(int32) LDV, the leading dimension of VCL in 
   !    calling routine.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the vertex coordinate list.
+  !    Input, real(real64) VCL(1:2,1:*), the vertex coordinate list.
   !
-  !    Output, integer(ip) TIL(1:3,1:NT), the triangle incidence list,
+  !    Output, integer(int32) TIL(1:3,1:NT), the triangle incidence list,
   !    where NT = NBL + NCR - K where K = 0 if INTER, else K = 2.
   !
-  !    Output, integer(ip) TEDG(1:3,1:NT), the TEDG(J,I) refers to 
+  !    Output, integer(int32) TEDG(1:3,1:NT), the TEDG(J,I) refers to 
   !    edge with vertices TIL(J:J+1,I) and contains index of merge edge or 
   !    NBL+NCR+1 for edge of chains.  Note: It is assumed there is enough space 
   !    in 2 arrays.
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 230.
   !
 
-    integer(ip), intent(in), value :: ldv
-    integer(ip), intent(in), value :: nbl
-    integer(ip), intent(in), value :: ncr
+    integer(int32) ldv
+    integer(int32) nbl
+    integer(int32) ncr
 
-    integer(ip), intent(in) :: chbl(0:nbl)
-    integer(ip), intent(in) :: chcr(0:ncr)
-    integer(ip) :: diaedg
-    integer(ip) :: i
-    integer(ip) :: ibndry
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: in
-    logical, intent(in), value :: inter
-    integer(ip) :: j
-    integer(ip) :: lri
-    integer(ip) :: lrip1
-    integer(ip) :: lrline
-    integer(ip) :: nl
-    integer(ip) :: nr
-    integer(ip) :: nt
-    integer(ip), intent(out) :: tedg(3,nbl+ncr)
-    integer(ip), intent(out) :: til(3,nbl+ncr)
-    real(dp), intent(in) :: vcl(ldv,*)
-    real(dp) :: xi
-    real(dp) :: xip1
-    real(dp) :: xj
-    real(dp) :: xjp1
-    real(dp) :: yi
-    real(dp) :: yip1
-    real(dp) :: yj
-    real(dp) :: yjp1
+    integer(int32) chbl(0:nbl)
+    integer(int32) chcr(0:ncr)
+    integer(int32) diaedg
+    integer(int32) i
+    integer(int32) ibndry
+    integer(int32) ierror
+    integer(int32) in
+    logical inter
+    integer(int32) j
+    integer(int32) lri
+    integer(int32) lrip1
+    integer(int32) lrline
+    integer(int32) nl
+    integer(int32) nr
+    integer(int32) nt
+    integer(int32) tedg(3,nbl+ncr)
+    integer(int32) til(3,nbl+ncr)
+    real(real64) vcl(ldv,*)
+    real(real64) xi
+    real(real64) xip1
+    real(real64) xj
+    real(real64) xjp1
+    real(real64) yi
+    real(real64) yip1
+    real(real64) yj
+    real(real64) yjp1
 
     ierror = 0
     ibndry = nbl + ncr + 1
@@ -10203,8 +10135,8 @@ contains
      in = diaedg ( xjp1, yjp1, xj, yj, xi, yi, xip1, yip1 )
 
      if ( inter ) then
-       lri = lrline ( xi, yi, xj, yj, xjp1, yjp1, 0.0_dp )
-       lrip1 = lrline ( xip1, yip1, xj, yj, xjp1, yjp1, 0.0_dp )
+       lri = lrline ( xi, yi, xj, yj, xjp1, yjp1, 0.0e+00_real64 )
+       lrip1 = lrline ( xip1, yip1, xj, yj, xjp1, yjp1, 0.0e+00_real64 )
      end if
 
      if ( in <= 0 .or. lri <= 0 .and. lrip1 <= 0 ) then
@@ -10258,7 +10190,7 @@ contains
 
         lri = lrline ( vcl(1,chbl(i)), vcl(2,chbl(i)), &
           vcl(1,chcr(j+1)), vcl(2,chcr(j+1)), vcl(1,chcr(j)), &
-          vcl(2,chcr(j)), 0.0_dp )
+          vcl(2,chcr(j)), 0.0e+00_real64 )
 
         if ( 0 <= lri ) then
           ierror = 230
@@ -10281,10 +10213,9 @@ contains
         tedg(3,1) = nbl + ncr
       end if
     end if
-  end subroutine tmerge
+  end
 
-  subroutine triangulation_plot_eps ( file_name, g_num, g_xy, tri_num, nod_tri ) &
-        bind(C, name="triangulation_plot_eps")
+  subroutine triangulation_plot_eps ( file_name, g_num, g_xy, tri_num, nod_tri )
 
   !*****************************************************************************80
   !
@@ -10310,43 +10241,43 @@ contains
   !
   !    Input, character ( len = * ) FILE_NAME, the name of the output file.
   !
-  !    Input, integer(ip) G_NUM, the number of points.
+  !    Input, integer(int32) G_NUM, the number of points.
   !
-  !    Input, real(dp) G_XY(2,G_NUM), the coordinates of the points.
+  !    Input, real(real64) G_XY(2,G_NUM), the coordinates of the points.
   !
-  !    Input, integer(ip) TRI_NUM, the number of triangles.
+  !    Input, integer(int32) TRI_NUM, the number of triangles.
   !
-  !    Input, integer(ip) NOD_TRI(3,TRI_NUM), lists, for each triangle,
+  !    Input, integer(int32) NOD_TRI(3,TRI_NUM), lists, for each triangle,
   !    the indices of the points that form the vertices of the triangle.
   !
 
-    integer(ip), intent(in), value :: g_num
-    integer(ip), intent(in), value :: tri_num
+    integer(int32) g_num
+    integer(int32) tri_num
 
-    integer(ip) :: e
+    integer(int32) e
     character ( len = * ) file_name
-    integer(ip) :: file_unit
-    integer(ip) :: g
-    real(dp) :: g_xy(2,g_num)
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: nod_tri(3,tri_num)
-    integer(ip) :: t
-    real(dp) :: x_max
-    real(dp) :: x_min
-    integer(ip) :: x_ps
-    integer(ip) :: x_ps_max = 576
-    integer(ip) :: x_ps_max_clip = 594
-    integer(ip) :: x_ps_min = 36
-    integer(ip) :: x_ps_min_clip = 18
-    real(dp) :: y_max
-    real(dp) :: y_min
-    integer(ip) :: y_ps
-    integer(ip) :: y_ps_max = 666
-    integer(ip) :: y_ps_max_clip = 684
-    integer(ip) :: y_ps_min = 126
-    integer(ip) :: y_ps_min_clip = 108
+    integer(int32) file_unit
+    integer(int32) g
+    real(real64) g_xy(2,g_num)
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) k
+    integer(int32) nod_tri(3,tri_num)
+    integer(int32) t
+    real(real64) x_max
+    real(real64) x_min
+    integer(int32) x_ps
+    integer(int32) :: x_ps_max = 576
+    integer(int32) :: x_ps_max_clip = 594
+    integer(int32) :: x_ps_min = 36
+    integer(int32) :: x_ps_min_clip = 18
+    real(real64) y_max
+    real(real64) y_min
+    integer(int32) y_ps
+    integer(int32) :: y_ps_max = 666
+    integer(int32) :: y_ps_max_clip = 684
+    integer(int32) :: y_ps_min = 126
+    integer(int32) :: y_ps_min_clip = 108
 
     x_max = maxval ( g_xy(1,1:g_num) )
     x_min = minval ( g_xy(1,1:g_num) )
@@ -10428,12 +10359,12 @@ contains
 
     do g = 1, g_num
       x_ps = int ( &
-        ( ( x_max - g_xy(1,g) ) * real ( x_ps_min, dp) &
-        + ( g_xy(1,g) - x_min ) * real ( x_ps_max, dp) ) &
+        ( ( x_max - g_xy(1,g) ) * real ( x_ps_min, real64) &
+        + ( g_xy(1,g) - x_min ) * real ( x_ps_max, real64) ) &
         / ( x_max - x_min ) )
       y_ps = int ( &
-        ( ( y_max - g_xy(2,g) ) * real ( y_ps_min, dp) &
-        + ( g_xy(2,g) - y_min ) * real ( y_ps_max, dp) ) &
+        ( ( y_max - g_xy(2,g) ) * real ( y_ps_min, real64) &
+        + ( g_xy(2,g) - y_min ) * real ( y_ps_max, real64) ) &
         / ( y_max - y_min ) )
       write ( file_unit, '(a,i3,2x,i3,2x,a)' ) 'newpath ', x_ps, y_ps, &
         ' 5 0 360 arc closepath fill'
@@ -10458,13 +10389,13 @@ contains
         k = nod_tri(e,t)
 
         x_ps = int ( &
-          ( ( x_max - g_xy(1,k) ) * real ( x_ps_min, dp) &
-          + ( g_xy(1,k) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - g_xy(1,k) ) * real ( x_ps_min, real64) &
+          + ( g_xy(1,k) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - g_xy(2,k) ) * real ( y_ps_min, dp) &
-          + ( g_xy(2,k) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - g_xy(2,k) ) * real ( y_ps_min, real64) &
+          + ( g_xy(2,k) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max - y_min ) )
 
         if ( j == 1 ) then
@@ -10486,10 +10417,9 @@ contains
     write ( file_unit, '(a)' ) '%%Trailer'
     write ( file_unit, '(a)' ) '%%EOF'
     close ( unit = file_unit )
-  end subroutine triangulation_plot_eps
+  end
 
-  subroutine trinbr ( nvc, ntri, til, tnbr, htsiz, maxedg, ht, edge, ierror ) &
-        bind(C, name="trinbr")
+  subroutine trinbr ( nvc, ntri, til, tnbr, htsiz, maxedg, ht, edge, ierror )
 
   !*****************************************************************************80
   !
@@ -10519,49 +10449,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVC, the number of vertices in triangulation.
+  !    Input, integer(int32) NVC, the number of vertices in triangulation.
   !
-  !    Input, integer(ip) NTRI, the number of triangles in triangulation.
+  !    Input, integer(int32) NTRI, the number of triangles in triangulation.
   !
-  !    Input, integer(ip) TIL(1:3,1:NTRI), the triangle incidence list; TIL(1:3,I) 
+  !    Input, integer(int32) TIL(1:3,1:NTRI), the triangle incidence list; TIL(1:3,I) 
   !    contains indices in VCL of 3 vertices of Ith triangle in counter 
   !    clockwise order.
   !
-  !    Input, integer(ip) HTSIZ, the size of hash table HT; should be a prime number
+  !    Input, integer(int32) HTSIZ, the size of hash table HT; should be a prime number
   !    which is about NB where NB is number of boundary edges.
   !
-  !    Input, integer(ip) MAXEDG, the maximum size available for EDGE array; should
+  !    Input, integer(int32) MAXEDG, the maximum size available for EDGE array; should
   !    be about 2*NB.
   !
-  !    Output, integer(ip) TNBR(1:3,1:NTRI), the triangle neighbor list; positive 
+  !    Output, integer(int32) TNBR(1:3,1:NTRI), the triangle neighbor list; positive 
   !    elements are indices of TIL; zero elements indicate boundary edges.
   !
   !    Workspace, integer HT(0:HTSIZ-1), EDGE(1:4,1:MAXEDG), the hash table 
   !    and edge records used to determine matching occurrences of triangle edges
   !    by calling routine EDGHT.
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 1.
   !
-    integer(ip), intent(in), value :: htsiz
-    integer(ip), intent(in), value :: maxedg
-    integer(ip), intent(in), value :: ntri
+    integer(int32) htsiz
+    integer(int32) maxedg
+    integer(int32) ntri
 
-    integer(ip) :: e
-    integer(ip) :: edge(4,maxedg)
-    integer(ip) :: hdfree
-    integer(ip) :: ht(0:htsiz-1)
-    integer(ip) :: i
-    integer(ip) :: i3
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: j
-    integer(ip), save, dimension ( 3 ) :: jp1 = (/ 2, 3, 1 /)
-    integer(ip) :: last
-    integer(ip), intent(in), value :: nvc
-    integer(ip) :: t
-    integer(ip), intent(in) :: til(3,ntri)
-    integer(ip), intent(out) :: tnbr(3,ntri)
-    integer(ip) :: w
+    integer(int32) e
+    integer(int32) edge(4,maxedg)
+    integer(int32) hdfree
+    integer(int32) ht(0:htsiz-1)
+    integer(int32) i
+    integer(int32) i3
+    integer(int32) ierror
+    integer(int32) j
+    integer(int32), save, dimension ( 3 ) :: jp1 = (/ 2, 3, 1 /)
+    integer(int32) last
+    integer(int32) nvc
+    integer(int32) t
+    integer(int32) til(3,ntri)
+    integer(int32) tnbr(3,ntri)
+    integer(int32) w
 
     ierror = 0
     hdfree = 0
@@ -10605,11 +10535,10 @@ contains
       end if
 
     end do
-  end subroutine trinbr
+  end
 
   subroutine tripr2 ( nvc, npolg, nvert, maxvc, maxti, maxiw, maxwk, h, vcl,  &
-    hvl, pvl, iang, ntri, til, vstart, vnum, tstart, iwk, wk, ierror ) &
-        bind(C, name="tripr2")
+    hvl, pvl, iang, ntri, til, vstart, vnum, tstart, iwk, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -10640,103 +10569,103 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) NVC, the number of vertex coordinates or positions
+  !    Input/output, integer(int32) NVC, the number of vertex coordinates or positions
   !    used in VCL array.
   !
-  !    Input, integer(ip) NPOLG, the number of polygonal subregions or positions 
+  !    Input, integer(int32) NPOLG, the number of polygonal subregions or positions 
   !    used in HVL array.
   !
-  !    Input, integer(ip) NVERT, the number of polygon vertices or positions used 
+  !    Input, integer(int32) NVERT, the number of polygon vertices or positions used 
   !    in PVL array.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL array, should 
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL array, should 
   !    be greater than or equal to the number of mesh vertices in the 
   !    triangulation of the region.
   !
-  !    Input, integer(ip) MAXTI, the maximum size available for TIL array, should 
+  !    Input, integer(int32) MAXTI, the maximum size available for TIL array, should 
   !    be greater than or equal to the number of triangles in the triangulation 
   !    of region.
   !
-  !    Input, integer(ip) MAXIW, the maximum size available for IWK array, should 
+  !    Input, integer(int32) MAXIW, the maximum size available for IWK array, should 
   !    be greater than or equal to 5*(NBC+NCW)+2, where NBC is maximum number 
   !    of mesh edges on boundary of a polygon, NCW is maximum number of edges
   !    on boundary of interior triangulation.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK array, should 
+  !    Input, integer(int32) MAXWK, the maximum size available for WK array, should 
   !    be at least 5*NVRT+4 where NVRT is max no. of vertices in a polygon.
   !
-  !    Input, real(dp) H(1:NPOLG), the mesh spacings for the polygons 
+  !    Input, real(real64) H(1:NPOLG), the mesh spacings for the polygons 
   !    of the decomposition.
   !
-  !    Input/output, real(dp) VCL(2,MAXVC), the vertex coordinates.
+  !    Input/output, real(real64) VCL(2,MAXVC), the vertex coordinates.
   !
-  !    Input, integer(ip) HVL(1:NPOLG), the head vertex list.
+  !    Input, integer(int32) HVL(1:NPOLG), the head vertex list.
   !
-  !    Input, integer(ip) PVL(1:4,1:NVERT), real(dp) IANG(1:NVERT), the 
+  !    Input, integer(int32) PVL(1:4,1:NVERT), real(real64) IANG(1:NVERT), the 
   !    polygon vertex list and interior angles; see routine DSPGDC for 
   !    more details.
   !
-  !    Output, integer(ip) NTRI, the number of triangles in triangulation of region.
+  !    Output, integer(int32) NTRI, the number of triangles in triangulation of region.
   !
-  !    Output, integer(ip) TIL(1:3,1:NTRI), the triangle incidence list; TIL(1:3,I) 
+  !    Output, integer(int32) TIL(1:3,1:NTRI), the triangle incidence list; TIL(1:3,I) 
   !    contains indices in VCL of 3 vertices of Ith triangle in counter
   !    clockwise order.
   !
-  !    Output, integer(ip) VSTART(1:NVERT), the start location in VCL for mesh 
+  !    Output, integer(int32) VSTART(1:NVERT), the start location in VCL for mesh 
   !    vertices on each edge in PVL if there are any, else 0.
   !
-  !    Output, integer(ip) VNUM(1:NVERT), the number of mesh vertices on interior
+  !    Output, integer(int32) VNUM(1:NVERT), the number of mesh vertices on interior
   !    of each edge in PVL; entry is negated if mesh vertices are
   !    listed in backward order in VCL.
   !
-  !    Output, integer(ip) TSTART(1:NPOLG), the start location in TIL of triangles in
+  !    Output, integer(int32) TSTART(1:NPOLG), the start location in TIL of triangles in
   !    each polygon; TIL(1:3,I) for I=TSTRT(K),...,TSTRT(K+1)-1
   !    are the triangles in the K-th polygon.
   !
   !    Workspace, integer IWK(1:MAXIW).
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 3, 6, 7, 9, 10, 200, 202, 230, or 231
   !
-    integer(ip), intent(in), value :: maxiw
-    integer(ip), intent(in), value :: maxti
-    integer(ip), intent(inout) :: maxvc
-    integer(ip), intent(in), value :: maxwk
-    integer(ip), intent(in), value :: npolg
-    integer(ip), intent(in), value :: nvert
+    integer(int32) maxiw
+    integer(int32) maxti
+    integer(int32) maxvc
+    integer(int32) maxwk
+    integer(int32) npolg
+    integer(int32) nvert
 
-    integer(ip) :: bndcyc
-    real(dp), intent(in) :: h(npolg)
-    integer(ip), intent(in) :: hvl(npolg)
-    integer(ip) :: i
-    real(dp) :: iang(nvert)
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: iwk(maxiw)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), parameter :: loc = 1
-    integer(ip) :: nbc
-    integer(ip), intent(out) :: ntri
-    integer(ip), intent(inout) :: nvc
-    integer(ip) :: nvrt
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: pimtol
-    integer(ip), intent(in) :: pvl(4,nvert)
-    integer(ip), parameter :: succ = 3
-    integer(ip), intent(out) :: til(3,maxti)
-    real(dp) :: tol
-    integer(ip), intent(out) :: tstart(npolg)
-    real(dp), intent(inout) :: vcl(2,maxvc)
-    integer(ip), intent(out) :: vnum(nvert)
-    integer(ip), intent(out) :: vstart(nvert)
-    real(dp) :: wk(maxwk)
-    integer(ip) :: xc
-    integer(ip) :: yc
+    integer(int32) bndcyc
+    real(real64) h(npolg)
+    integer(int32) hvl(npolg)
+    integer(int32) i
+    real(real64) iang(nvert)
+    integer(int32) ierror
+    integer(int32) iwk(maxiw)
+    integer(int32) j
+    integer(int32) k
+    integer(int32), parameter :: loc = 1
+    integer(int32) nbc
+    integer(int32) ntri
+    integer(int32) nvc
+    integer(int32) nvrt
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) pimtol
+    integer(int32) pvl(4,nvert)
+    integer(int32), parameter :: succ = 3
+    integer(int32) til(3,maxti)
+    real(real64) tol
+    integer(int32) tstart(npolg)
+    real(real64) vcl(2,maxvc)
+    integer(int32) vnum(nvert)
+    integer(int32) vstart(nvert)
+    real(real64) wk(maxwk)
+    integer(int32) xc
+    integer(int32) yc
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     ntri = 0
     pimtol = pi - tol
@@ -10840,10 +10769,9 @@ contains
       end if
 
     end do
-  end subroutine tripr2
+  end
 
-  subroutine trisiz ( ntrid, npolg, hvl, pvl, area, psi, h, indp, loch ) &
-        bind(C, name="trisiz")
+  subroutine trisiz ( ntrid, npolg, hvl, pvl, area, psi, h, indp, loch )
 
   !*****************************************************************************80
   !
@@ -10874,22 +10802,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NTRID, the desired number of triangles in mesh.
+  !    Input, integer(int32) NTRID, the desired number of triangles in mesh.
   !
-  !    Input, integer(ip) NPOLG, the number of polygons or positions used in
+  !    Input, integer(int32) NPOLG, the number of polygons or positions used in
   !    HVL array.
   !
-  !    Input, integer(ip) HVL(1:NPOLG), the head vertex list.
+  !    Input, integer(int32) HVL(1:NPOLG), the head vertex list.
   !
-  !    Input, integer(ip) PVL(1:4,1:*), the polygon vertex list.
+  !    Input, integer(int32) PVL(1:4,1:*), the polygon vertex list.
   !
-  !    Input, real(dp) AREA(1:NPOLG), the area of convex polygons 
+  !    Input, real(real64) AREA(1:NPOLG), the area of convex polygons 
   !    in decomposition.
   !
-  !    Input/output, real(dp) PSI(1:NPOLG), the mean mdf values in 
+  !    Input/output, real(real64) PSI(1:NPOLG), the mean mdf values in 
   !    the convex polygons.
   !
-  !    Output, real(dp) H(1:NPOLG), the triangle size for
+  !    Output, real(real64) H(1:NPOLG), the triangle size for
   !    convex polygons.
   !
   !    Workspace, integer INDP(1:NPOLG), the indices of polygon or PSI which 
@@ -10897,27 +10825,27 @@ contains
   !
   !    Workspace, integer LOCH(1:NPOLG), the location of polygon indices in heap.
   !
-    integer(ip), intent(in), value :: npolg
+    integer(int32) npolg
 
-    real(dp), intent(in) :: area(npolg)
-    integer(ip), parameter :: edgv = 4
-    real(dp) :: factor
-    real(dp), intent(out) :: h(npolg)
-    integer(ip), intent(in) :: hvl(npolg)
-    integer(ip) :: i
-    integer(ip) :: indp(npolg)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip) :: loch(npolg)
-    integer(ip), intent(in), value :: ntrid
-    integer(ip), parameter :: polg = 2
-    real(dp), intent(inout) :: psi(npolg)
-    integer(ip), intent(in) :: pvl(4,*)
-    integer(ip) :: r
-    integer(ip), parameter :: succ = 3
+    real(real64) area(npolg)
+    integer(int32), parameter :: edgv = 4
+    real(real64) factor
+    real(real64) h(npolg)
+    integer(int32) hvl(npolg)
+    integer(int32) i
+    integer(int32) indp(npolg)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) loch(npolg)
+    integer(int32) ntrid
+    integer(int32), parameter :: polg = 2
+    real(real64) psi(npolg)
+    integer(int32) pvl(4,*)
+    integer(int32) r
+    integer(int32), parameter :: succ = 3
 
-    factor = 0.25_dp
+    factor = 0.25e+00_real64
 
     call i4vec_indicator ( npolg, indp )
     call i4vec_indicator ( npolg, loch )
@@ -10963,12 +10891,11 @@ contains
 
     psi(1:npolg) = psi(1:npolg) / dot_product ( psi(1:npolg), area(1:npolg) )
 
-    h(1:npolg) = sqrt ( 2.0_dp  / ( real ( ntrid, dp) * psi(1:npolg) ) )
-  end subroutine trisiz
+    h(1:npolg) = sqrt ( 2.0e+00_real64  / ( real ( ntrid, real64) * psi(1:npolg) ) )
+  end
 
   subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
-    maxti, maxiw, maxwk, vcl, til, iwk, wk, ierror ) &
-        bind(C, name="trpolg")
+    maxti, maxiw, maxwk, vcl, til, iwk, wk, ierror )
 
   !*****************************************************************************80
   !
@@ -10997,99 +10924,99 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVRT, the number of vertices on the boundary of
+  !    Input, integer(int32) NVRT, the number of vertices on the boundary of
   !    convex polygon.
   !
-  !    Input, real(dp) XC(0:NVRT), YC(0:NVRT), the vertex coordinates 
+  !    Input, real(real64) XC(0:NVRT), YC(0:NVRT), the vertex coordinates 
   !    in counter clockwise order; (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)); it is 
   !    assumed that all interior angles are < PI.
   !
-  !    Input, real(dp) H, the spacing of mesh vertices in polygon.
+  !    Input, real(real64) H, the spacing of mesh vertices in polygon.
   !
-  !    Input, integer(ip) NBC, the size of BNDCYC.
+  !    Input, integer(int32) NBC, the size of BNDCYC.
   !
-  !    Input/output, integer(ip) BNDCYC(0:NBC), the indices in VCL of mesh 
+  !    Input/output, integer(int32) BNDCYC(0:NBC), the indices in VCL of mesh 
   !    vertices of boundary cycle; BNDCYC(0) = BNDCYC(NBC); 
   !    contains (XC(I),YC(I)).
   !
-  !    Input, integer(ip) LDV, the leading dimension of VCL in calling routine.
+  !    Input, integer(int32) LDV, the leading dimension of VCL in calling routine.
   !
-  !    Input/output, integer(ip) NVC, the number of coordinates or positions used 
+  !    Input/output, integer(int32) NVC, the number of coordinates or positions used 
   !    in VCL array.
   !
-  !    Input/output, integer(ip) NTRI, the number of triangles or positions used 
+  !    Input/output, integer(int32) NTRI, the number of triangles or positions used 
   !    in TIL.
   !
-  !    Input, integer(ip) MAXVC, the maximum size available for VCL array.
+  !    Input, integer(int32) MAXVC, the maximum size available for VCL array.
   !
-  !    Input, integer(ip) MAXTI, the maximum size available for TIL array.
+  !    Input, integer(int32) MAXTI, the maximum size available for TIL array.
   !
-  !    Input, integer(ip) MAXIW, the maximum size available for IWK array, should 
+  !    Input, integer(int32) MAXIW, the maximum size available for IWK array, should 
   !    be at least 6*(1 + INT(DIAM/H)) + 4*(NBC + NCW) where DIAM is
   !    diameter of polygon, NCW is number of edges on boundary
   !    of interior triangulation.
   !
-  !    Input, integer(ip) MAXWK, the maximum size available for WK array, should 
+  !    Input, integer(int32) MAXWK, the maximum size available for WK array, should 
   !    be at least 3*NVRT+2.
   !
-  !    Input/output, real(dp) VCL(1:2,1:NVC), the vertex coordinate list.
+  !    Input/output, real(real64) VCL(1:2,1:NVC), the vertex coordinate list.
   !
-  !    Input/output, integer(ip) TIL(1:3,1:NTRI), the triangle incidence list.
+  !    Input/output, integer(int32) TIL(1:3,1:NTRI), the triangle incidence list.
   !
   !    Workspace, integer IWK(1:MAXIW).
   !
-  !    Workspace, real(dp) WK(1:MAXWK).
+  !    Workspace, real(real64) WK(1:MAXWK).
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 3, 6, 7, 9, 10, 200, 202, 230, or 231.
   !
-    integer(ip), intent(in), value :: ldv
-    integer(ip), intent(in), value :: maxiw
-    integer(ip), intent(in), value :: maxti
-    integer(ip), intent(in), value :: maxvc
-    integer(ip), intent(in), value :: maxwk
-    integer(ip), intent(in), value :: nbc
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) ldv
+    integer(int32) maxiw
+    integer(int32) maxti
+    integer(int32) maxvc
+    integer(int32) maxwk
+    integer(int32) nbc
+    integer(int32) nvrt
 
-    integer(ip), intent(inout) :: bndcyc(0:nbc)
-    real(dp) :: costh
-    integer(ip) :: cwalk
-    real(dp) :: dist
-    real(dp), intent(in), value :: h
-    real(dp) :: hs
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: ibot
-    integer(ip) :: iedge
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: ind
-    logical :: inter
-    integer(ip) :: iwk(maxiw)
-    integer(ip) :: maxcw
-    integer(ip) :: mbc
-    integer(ip) :: ncw
-    integer(ip) :: nshr
-    integer(ip) :: nt
-    integer(ip), intent(inout) :: ntri
-    integer(ip), intent(inout) :: nvc
-    integer(ip) :: sdist
-    real(dp) :: sinth
-    real(dp) :: smdist
-    integer(ip) :: sptr
-    integer(ip) :: tedg
-    integer(ip), intent(inout) :: til(3,maxti)
-    real(dp), intent(inout) :: vcl(ldv,maxvc)
-    real(dp) :: wk(maxwk)
-    real(dp) :: x0
-    real(dp), intent(in) :: xc(0:nvrt)
-    real(dp) :: xi
-    integer(ip) :: xs
-    real(dp) :: y0
-    real(dp), intent(in) :: yc(0:nvrt)
-    real(dp) :: yi
-    real(dp) :: yr
-    integer(ip) :: ys
+    integer(int32) bndcyc(0:nbc)
+    real(real64) costh
+    integer(int32) cwalk
+    real(real64) dist
+    real(real64) h
+    real(real64) hs
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) ibot
+    integer(int32) iedge
+    integer(int32) ierror
+    integer(int32) ind
+    logical inter
+    integer(int32) iwk(maxiw)
+    integer(int32) maxcw
+    integer(int32) mbc
+    integer(int32) ncw
+    integer(int32) nshr
+    integer(int32) nt
+    integer(int32) ntri
+    integer(int32) nvc
+    integer(int32) sdist
+    real(real64) sinth
+    real(real64) smdist
+    integer(int32) sptr
+    integer(int32) tedg
+    integer(int32) til(3,maxti)
+    real(real64) vcl(ldv,maxvc)
+    real(real64) wk(maxwk)
+    real(real64) x0
+    real(real64) xc(0:nvrt)
+    real(real64) xi
+    integer(int32) xs
+    real(real64) y0
+    real(real64) yc(0:nvrt)
+    real(real64) yi
+    real(real64) yr
+    integer(int32) ys
 
     ierror = 0
 
@@ -11105,7 +11032,7 @@ contains
     ys = xs + nvrt + 1
     sdist = ys + nvrt + 1
     iedge = 1
-    hs = h / sqrt ( 2.0_dp )
+    hs = h / sqrt ( 2.0e+00_real64 )
     wk(sdist:sdist+nvrt-1) = hs
 
     call shrnk2 ( nvrt, xc, yc, wk(sdist), nshr, wk(xs), wk(ys), iwk(iedge), &
@@ -11150,7 +11077,7 @@ contains
         yr = sinth * x0 + costh * y0
       end if
 
-      smdist = 100000.0_dp * h**2
+      smdist = 100000.0e+00_real64 * h**2
 
       do i = 0, nbc-1
 
@@ -11262,10 +11189,9 @@ contains
       ierror )
 
     ntri = ntri + nt
-  end subroutine trpolg
+  end
 
-  function umdf2 ( x, y ) &
-        bind(C, name="umdf2")
+  function umdf2 ( x, y )
 
   !*****************************************************************************80
   !
@@ -11295,20 +11221,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, Y, the coordinates of a point.
+  !    Input, real(real64) X, Y, the coordinates of a point.
   !
-  !    Output, real(dp) UMDF2, the mesh distribution function value 
+  !    Output, real(real64) UMDF2, the mesh distribution function value 
   !    at (X,Y)
   !
-    real(dp) :: umdf2
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    real(real64) umdf2
+    real(real64) x
+    real(real64) y
 
-    umdf2 = 1.0_dp
-  end function umdf2
+    umdf2 = 1.0e+00_real64
+  end
 
-  function urand ( iy ) &
-        bind(C, name="urand")
+  function urand ( iy )
 
   !*****************************************************************************80
   !
@@ -11334,20 +11259,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IY, the seed value.
+  !    Input, integer(int32) IY, the seed value.
   !
-  !    Output, real(dp) URAND, the random value.
+  !    Output, real(real64) URAND, the random value.
   !
-    real(dp) :: halfm
-    integer(ip), save :: ia = 0
-    integer(ip), save :: ic = 0
-    integer(ip), parameter :: itwo = 2
-    integer(ip), intent(in), value :: iy
-    integer(ip) :: m
-    integer(ip), save :: m2 = 0
-    integer(ip), save :: mic = 0
-    real(dp), save :: s = 0.0_dp
-    real(dp) :: urand
+    real(real64) halfm
+    integer(int32), save :: ia = 0
+    integer(int32), save :: ic = 0
+    integer(int32), parameter :: itwo = 2
+    integer(int32) iy
+    integer(int32) m
+    integer(int32), save :: m2 = 0
+    integer(int32), save :: mic = 0
+    real(real64), save :: s = 0.0e+00_real64
+    real(real64) urand
   !
   !  If first entry, compute machine integer word length.
   !
@@ -11370,13 +11295,13 @@ contains
   !
   !  Compute multiplier and increment for linear congruential method.
   !
-      ia = 8 * int ( halfm * atan ( 1.0_dp ) / 8.0_dp ) + 5
-      ic = 2 * int ( halfm * ( 0.5_dp - sqrt ( 3.0_dp ) / 6.0_dp ) ) + 1
+      ia = 8 * int ( halfm * atan ( 1.0e+00_real64 ) / 8.0e+00_real64 ) + 5
+      ic = 2 * int ( halfm * ( 0.5e+00_real64 - sqrt ( 3.0e+00_real64 ) / 6.0e+00_real64 ) ) + 1
       mic = ( m2 - ic ) + m2
   !
   !  S is the scale factor for converting to floating point.
   !
-      s = 0.5_dp / halfm
+      s = 0.5e+00_real64 / halfm
 
     end if
   !
@@ -11407,11 +11332,10 @@ contains
       iy = ( iy + m2 ) + m2
     end if
 
-    urand = real ( iy, dp) * s
-  end function urand
+    urand = real ( iy, real64) * s
+  end
 
-  subroutine vbedg ( x, y, vcl, til, tnbr, ltri, ledg, rtri, redg ) &
-        bind(C, name="vbedg")
+  subroutine vbedg ( x, y, vcl, til, tnbr, ltri, ledg, rtri, redg )
 
   !*****************************************************************************80
   !
@@ -11433,50 +11357,50 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, Y, the coordinates of a 2D point outside
+  !    Input, real(real64) X, Y, the coordinates of a 2D point outside
   !    the convex hull.
   !
-  !    Input, real(dp) VCL(1:2,1:*), the coordinates of 2D vertices.
+  !    Input, real(real64) VCL(1:2,1:*), the coordinates of 2D vertices.
   !
-  !    Input, integer(ip) TIL(1:3,1:*), the triangle incidence list.
+  !    Input, integer(int32) TIL(1:3,1:*), the triangle incidence list.
   !
-  !    Input, integer(ip) TNBR(1:3,1:*), the triangle neighbor list; negative 
+  !    Input, integer(int32) TNBR(1:3,1:*), the triangle neighbor list; negative 
   !    values are used for links of counter clockwise linked list of boundary
   !    edges; LINK = -(3*I + J-1) where I, J = triangle, edge index.
   !
-  !    Input/output, integer(ip) LTRI, LEDG.  On input, if LTRI /= 0 then they 
+  !    Input/output, integer(int32) LTRI, LEDG.  On input, if LTRI /= 0 then they 
   !    are assumed to be as defined below and are not changed, else they are 
   !    updated.  On output, LTRI is the index of the boundary triangle to the
   !    left of leftmost boundary triangle visible from (X,Y), and LEDG is the
   !    boundary edge of triangle LTRI to left of leftmost
   !    boundary edge visible from (X,Y).  1 <= LEDG <= 3.
   !
-  !    Input/output, integer(ip) RTRI, on input, the index of boundary triangle 
+  !    Input/output, integer(int32) RTRI, on input, the index of boundary triangle 
   !    to begin search at.  On output, the index of rightmost boundary triangle 
   !    visible from (X,Y).
   !
-  !    Input/output, integer(ip) REDG.  On input, the edge of triangle RTRI that 
+  !    Input/output, integer(int32) REDG.  On input, the edge of triangle RTRI that 
   !    is visible from (X,Y).  On output, REDG has been updated so that this
   !    is still true. 1 <= REDG <= 3.
   !
-    integer(ip) :: a
-    integer(ip) :: b
-    integer(ip) :: e
-    integer(ip) :: i4_wrap
-    integer(ip) :: l
-    logical :: ldone
-    integer(ip), intent(inout) :: ledg
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip), intent(inout) :: ltri
-    integer(ip), intent(inout) :: redg
-    integer(ip), intent(inout) :: rtri
-    integer(ip) :: t
-    integer(ip), intent(in) :: til(3,*)
-    integer(ip), intent(in) :: tnbr(3,*)
-    real(dp), intent(in) :: vcl(2,*)
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    integer(int32) a
+    integer(int32) b
+    integer(int32) e
+    integer(int32) i4_wrap
+    integer(int32) l
+    logical ldone
+    integer(int32) ledg
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) ltri
+    integer(int32) redg
+    integer(int32) rtri
+    integer(int32) t
+    integer(int32) til(3,*)
+    integer(int32) tnbr(3,*)
+    real(real64) vcl(2,*)
+    real(real64) x
+    real(real64) y
   !
   !  Find rightmost visible boundary edge using links, then possibly
   !  leftmost visible boundary edge using triangle neighbor information.
@@ -11502,7 +11426,7 @@ contains
         b = til(1,t)
       end if
 
-      lr = lrline ( x, y, vcl(1,a), vcl(2,a), vcl(1,b), vcl(2,b), 0.0_dp )
+      lr = lrline ( x, y, vcl(1,a), vcl(2,a), vcl(1,b), vcl(2,b), 0.0e+00_real64 )
 
       if ( lr <= 0 ) then
         exit
@@ -11539,7 +11463,7 @@ contains
       end do
 
       a = til(e,t)
-      lr = lrline ( x, y, vcl(1,a), vcl(2,a), vcl(1,b), vcl(2,b), 0.0_dp )
+      lr = lrline ( x, y, vcl(1,a), vcl(2,a), vcl(1,b), vcl(2,b), 0.0e+00_real64 )
 
       if ( lr <= 0 ) then
         exit
@@ -11549,10 +11473,9 @@ contains
 
     ltri = t
     ledg = e
-  end subroutine vbedg
+  end
 
-  subroutine vispol ( xeye, yeye, nvrt, xc, yc, nvis, ivis, ierror ) &
-        bind(C, name="vispol")
+  subroutine vispol ( xeye, yeye, nvrt, xc, yc, nvis, ivis, ierror )
 
   !*****************************************************************************80
   !
@@ -11592,13 +11515,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XEYE, YEYE, the coordinates of eyepoint; must 
+  !    Input, real(real64) XEYE, YEYE, the coordinates of eyepoint; must 
   !    be a simple vertex if it lies on the boundary (i.e. occurs only once).
   !
-  !    Input, integer(ip) NVRT, the upper subscript of XC, YC (approximate
+  !    Input, integer(int32) NVRT, the upper subscript of XC, YC (approximate
   !    number of vertices).
   !
-  !    Input/output, real(dp) XC(0:NVRT), YC(0:NVRT).  On input, if 
+  !    Input/output, real(real64) XC(0:NVRT), YC(0:NVRT).  On input, if 
   !    eyepoint is interior or blocked exterior then arrays contain coordinates 
   !    in counter clockwise or clockwise order, respectively, with 
   !    (XC(0),YC(0)) = (XC(NVRT),YC(NVRT)); (XC(0),YC(0)) is a vertex visible from
@@ -11612,39 +11535,39 @@ contains
   !    and (XC(NVIS),YC(NVIS)) are the successor and
   !    predecessor vertices of (XEYE,YEYE) in VP.
   !
-  !    Output, integer(ip) NVIS, the upper subscript of XC, YC on output (approximate
+  !    Output, integer(int32) NVIS, the upper subscript of XC, YC on output (approximate
   !    number of vertices of VP); NVIS <= NVRT.
   !
-  !    Output, integer(ip) IVIS(0:NVIS), contains information about the vertices 
+  !    Output, integer(int32) IVIS(0:NVIS), contains information about the vertices 
   !    of VP with respect to the vertices of P; IVIS(I) = K if (XC(I),YC(I))
   !    is the vertex of index K in the input polygon; IVIS(I) = -K if 
   !    (XC(I),YC(I)) is on the interior of the edge joining vertices of index 
   !    K-1 and K in input polygon
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 206, 207, 208, 209, or 210
   !
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    logical :: beye
-    integer(ip) :: cur
-    integer(ip) :: i
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(out) :: ivis(0:nvrt)
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip) :: nv
-    integer(ip), intent(out) :: nvis
-    integer(ip) :: oper
-    integer(ip) :: top
-    real(dp), intent(inout) :: xc(0:nvrt)
-    real(dp) :: xe
-    real(dp), intent(in), value :: xeye
-    real(dp) :: xw
-    real(dp), intent(out) :: yc(0:nvrt)
-    real(dp) :: ye
-    real(dp), intent(in), value :: yeye
-    real(dp) :: yw
+    logical beye
+    integer(int32) cur
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) ivis(0:nvrt)
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) nv
+    integer(int32) nvis
+    integer(int32) oper
+    integer(int32) top
+    real(real64) xc(0:nvrt)
+    real(real64) xe
+    real(real64) xeye
+    real(real64) xw
+    real(real64) yc(0:nvrt)
+    real(real64) ye
+    real(real64) yeye
+    real(real64) yw
 
     common /gvpvar/ nv,oper,cur,top,xe,ye,xw,yw,beye
     save /gvpvar/
@@ -11673,7 +11596,7 @@ contains
 
       do
 
-        lr = lrline ( xc(nv-1), yc(nv-1), xe, ye, xc(nv), yc(nv), 0.0_dp )
+        lr = lrline ( xc(nv-1), yc(nv-1), xe, ye, xc(nv), yc(nv), 0.0e+00_real64 )
 
         if ( lr /= 0 ) then
           exit
@@ -11686,7 +11609,7 @@ contains
 
     do
 
-      lr = lrline ( xc(cur), yc(cur), xe, ye, xc(0), yc(0), 0.0_dp )
+      lr = lrline ( xc(cur), yc(cur), xe, ye, xc(0), yc(0), 0.0e+00_real64 )
 
       if ( lr /= 0 ) then
         exit
@@ -11771,11 +11694,10 @@ contains
     end do
 
     nvis = top
-  end subroutine vispol
+  end
 
   subroutine visvrt ( angspc, xeye, yeye, nvis, xc, yc, ivis, maxn, nvsvrt, &
-    theta ) &
-        bind(C, name="visvrt")
+    theta )
 
   !*****************************************************************************80
   !
@@ -11806,14 +11728,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGSPC, the angle spacing parameter in radians 
+  !    Input, real(real64) ANGSPC, the angle spacing parameter in radians 
   !    which controls how many extra points become visible vertices.
   !
-  !    Input, real(dp) XEYE, YEYE, the coordinates of boundary eyepoint.
+  !    Input, real(real64) XEYE, YEYE, the coordinates of boundary eyepoint.
   !
-  !    Input, integer(ip) NVIS, (number of vertices of visibility polygon) - 2.
+  !    Input, integer(int32) NVIS, (number of vertices of visibility polygon) - 2.
   !
-  !    Input/output, real(dp) XC(0:NVIS), YC(0:NVIS), on input, the 
+  !    Input/output, real(real64) XC(0:NVIS), YC(0:NVIS), on input, the 
   !    coordinates of the vertices of visibility polygon in counter clockwise 
   !    order; (XC(0),YC(0)) and (XC(NVIS),YC(NVIS)) are the successor and 
   !    predecessor vertices of eyepoint in visibility polygon; at most 2
@@ -11831,56 +11753,56 @@ contains
   !    On output, coordinates of visible vertices
   !    which overwrite the input coordinates.
   !
-  !    Input, integer(ip) MAXN, the upper bound on NVSVRT; should be at least
+  !    Input, integer(int32) MAXN, the upper bound on NVSVRT; should be at least
   !    NVIS + INT(PHI/ANGSPC) where PHI is the interior angle at (XEYE,YEYE).
   !
-  !    Output, integer(ip) NVSVRT, (number of visible vertices) - 1.
+  !    Output, integer(int32) NVSVRT, (number of visible vertices) - 1.
   !
-  !    Output, real(dp) THETA(0:NVSVRT), the polar angles of visible 
+  !    Output, real(real64) THETA(0:NVSVRT), the polar angles of visible 
   !    vertices with respect to (XEYE,YEYE) at origin and (XC(0),YC(0))
   !    on positive x-axis.
   !
-    integer(ip), intent(in), value :: maxn
+    integer(int32) maxn
 
-    real(dp) :: alpha
-    real(dp) :: ang
-    real(dp) :: ang1
-    real(dp) :: ang2
-    real(dp) :: angdif
-    real(dp) :: angle
-    real(dp) :: angsp2
-    real(dp), intent(in), value :: angspc
-    real(dp) :: cosang
-    integer(ip) :: cur
-    real(dp) :: diff
-    real(dp) :: dx
-    real(dp) :: dy
-    integer(ip) :: i
-    integer(ip) :: ind
-    integer(ip), intent(inout) :: ivis(0:maxn)
-    integer(ip) :: k
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip) :: n
-    real(dp) :: numer
-    integer(ip), intent(in), value :: nvis
-    integer(ip), intent(out) :: nvsvrt
-    real(dp) :: r
-    real(dp) :: sinang
-    real(dp), intent(out) :: theta(0:maxn)
-    real(dp) :: tol
-    integer(ip) :: top
-    real(dp), intent(inout) :: xc(0:maxn)
-    real(dp), intent(in), value :: xeye
-    real(dp), intent(inout) :: yc(0:maxn)
-    real(dp), intent(in), value :: yeye
+    real(real64) alpha
+    real(real64) ang
+    real(real64) ang1
+    real(real64) ang2
+    real(real64) angdif
+    real(real64) angle
+    real(real64) angsp2
+    real(real64) angspc
+    real(real64) cosang
+    integer(int32) cur
+    real(real64) diff
+    real(real64) dx
+    real(real64) dy
+    integer(int32) i
+    integer(int32) ind
+    integer(int32) ivis(0:maxn)
+    integer(int32) k
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) n
+    real(real64) numer
+    integer(int32) nvis
+    integer(int32) nvsvrt
+    real(real64) r
+    real(real64) sinang
+    real(real64) theta(0:maxn)
+    real(real64) tol
+    integer(int32) top
+    real(real64) xc(0:maxn)
+    real(real64) xeye
+    real(real64) yc(0:maxn)
+    real(real64) yeye
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  Shift input vertices right, and possibly remove first and last
   !  vertices due to collinearity with eyepoint.
   !
-    angsp2 = 2.0_dp * angspc
+    angsp2 = 2.0e+00_real64 * angspc
     cur = maxn + 1
     n = maxn
 
@@ -11891,7 +11813,7 @@ contains
       ivis(cur) = ivis(i)
     end do
 
-    lr = lrline ( xc(cur+1), yc(cur+1), xeye, yeye, xc(cur), yc(cur), 0.0_dp )
+    lr = lrline ( xc(cur+1), yc(cur+1), xeye, yeye, xc(cur), yc(cur), 0.0e+00_real64 )
 
     if ( 0 <= lr ) then
       cur = cur + 1
@@ -11900,15 +11822,15 @@ contains
       ivis(0) = ivis(cur)
     end if
 
-    lr = lrline ( xc(n-1), yc(n-1), xeye, yeye, xc(n), yc(n), 0.0_dp )
+    lr = lrline ( xc(n-1), yc(n-1), xeye, yeye, xc(n), yc(n), 0.0e+00_real64 )
 
     if ( lr <= 0 ) then
       n = n - 1
     end if
 
     alpha = atan2 ( yc(0)-yeye, xc(0)-xeye )
-    ang2 = 0.0_dp
-    theta(0) = 0.0_dp
+    ang2 = 0.0e+00_real64
+    theta(0) = 0.0e+00_real64
     top = 0
     cur = cur + 1
   !
@@ -11925,7 +11847,7 @@ contains
         diff = ( ( xc(cur) - xeye )**2 + ( yc(cur) - yeye)**2 ) - &
                ( ( xc(cur-1) - xeye )**2 + ( yc(cur-1) - yeye )**2 )
 
-        if ( diff < 0.0_dp ) then
+        if ( diff < 0.0e+00_real64 ) then
           xc(top) = xc(cur)
           yc(top) = yc(cur)
           ivis(top) = ivis(cur)
@@ -11938,14 +11860,14 @@ contains
 
           k = int ( angdif / angspc )
           ind = -abs ( ivis(cur))
-          angdif = angdif / real ( k, dp)
+          angdif = angdif / real ( k, real64)
           dx = xc(cur) - xc(cur-1)
           dy = yc(cur) - yc(cur-1)
           numer = ( xc(cur) - xeye ) * dy - ( yc(cur) - yeye ) * dx
 
           do i = 1, k-1
             top = top + 1
-            theta(top) = ang1 + real ( i, dp) * angdif
+            theta(top) = ang1 + real ( i, real64) * angdif
             ang = theta(top) + alpha
             cosang = cos(ang)
             sinang = sin(ang)
@@ -11974,10 +11896,9 @@ contains
     end do
 
     nvsvrt = top
-  end subroutine visvrt
+  end
 
-  subroutine vornbr ( xeye, yeye, nvrt, xc, yc, nvor, ivor, xvor, yvor, ierror ) &
-        bind(C, name="vornbr")
+  subroutine vornbr ( xeye, yeye, nvrt, xc, yc, nvor, ivor, xvor, yvor, ierror )
 
   !*****************************************************************************80
   !
@@ -12005,61 +11926,61 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XEYE, YEYE, the coordinates of the eyepoint.
+  !    Input, real(real64) XEYE, YEYE, the coordinates of the eyepoint.
   !
-  !    Input, integer(ip) NVRT, (number of vertices in list) minus 1.
+  !    Input, integer(int32) NVRT, (number of vertices in list) minus 1.
   !
-  !    Input, real(dp) XC(0:NVRT), YC(0:NVRT), the vertex 
+  !    Input, real(real64) XC(0:NVRT), YC(0:NVRT), the vertex 
   !    coordinates from which Voronoi neighbors are determined; (XC(0),YC(0)),...,
   !    (XC(NVRT),YC(NVRT)) are in increasing angular
   !    displacement order with respect to (XEYE,YEYE).
   !
-  !    Output, integer(ip) NVOR, (number of Voronoi neighbors) minus 1 [<= NVRT].
+  !    Output, integer(int32) NVOR, (number of Voronoi neighbors) minus 1 [<= NVRT].
   !
-  !    Output, integer(ip) IVOR(0:NVOR), the indices of Voronoi neighbors in XC, YC
+  !    Output, integer(int32) IVOR(0:NVOR), the indices of Voronoi neighbors in XC, YC
   !    arrays; 0 <= IVOR(0) < ... < IVOR(NVOR) <= NVRT.
   !
-  !    Workspace, real(dp) XVOR(0:NVRT), YVOR(0:NVRT), arrays for
+  !    Workspace, real(real64) XVOR(0:NVRT), YVOR(0:NVRT), arrays for
   !    storing the vertex coordinates of the Voronoi polygon.
   !
-  !    Output, integer(ip) IERROR, set to 212 if an error occurred.
+  !    Output, integer(int32) IERROR, set to 212 if an error occurred.
   !
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    real(dp) :: a11
-    real(dp) :: a12
-    real(dp) :: a21
-    real(dp) :: a22
-    real(dp) :: b1
-    real(dp) :: b2
-    real(dp) :: det
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: im
-    integer(ip), intent(out) :: ivor(0:nvrt)
-    integer(ip) :: k
-    integer(ip) :: lr
-    integer(ip) :: lrline
-    integer(ip) :: m
-    integer(ip), intent(out) :: nvor
-    real(dp) :: tol
-    real(dp) :: tolabs
-    real(dp), intent(in) :: xc(0:nvrt)
-    real(dp), intent(in), value :: xeye
-    real(dp) :: xi
-    real(dp) :: xvor(0:nvrt)
-    real(dp), intent(out) :: yc(0:nvrt)
-    real(dp), intent(in), value :: yeye
-    real(dp) :: yi
-    real(dp) :: yvor(0:nvrt)
+    real(real64) a11
+    real(real64) a12
+    real(real64) a21
+    real(real64) a22
+    real(real64) b1
+    real(real64) b2
+    real(real64) det
+    integer(int32) ierror
+    integer(int32) im
+    integer(int32) ivor(0:nvrt)
+    integer(int32) k
+    integer(int32) lr
+    integer(int32) lrline
+    integer(int32) m
+    integer(int32) nvor
+    real(real64) tol
+    real(real64) tolabs
+    real(real64) xc(0:nvrt)
+    real(real64) xeye
+    real(real64) xi
+    real(real64) xvor(0:nvrt)
+    real(real64) yc(0:nvrt)
+    real(real64) yeye
+    real(real64) yi
+    real(real64) yvor(0:nvrt)
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     k = 1
     m = 0
     ivor(0) = 0
-    xvor(0) = ( xeye + xc(0) ) * 0.5_dp
-    yvor(0) = ( yeye + yc(0) ) * 0.5_dp
+    xvor(0) = ( xeye + xc(0) ) * 0.5e+00_real64
+    yvor(0) = ( yeye + yc(0) ) * 0.5e+00_real64
   !
   !  Beginning of main loop
   !
@@ -12083,8 +12004,8 @@ contains
          ierror = 212
        end if
 
-       b1 = ( a11**2 + a12**2 ) * 0.5_dp
-       b2 = ( a21**2 + a22**2 ) * 0.5_dp
+       b1 = ( a11**2 + a12**2 ) * 0.5e+00_real64
+       b2 = ( a21**2 + a22**2 ) * 0.5e+00_real64
 
        xi = ( b1 * a22 - b2 * a12 ) / det
        yi = ( b2 * a11 - b1 * a21 ) / det
@@ -12094,7 +12015,7 @@ contains
   !
        xvor(m+1) = xi + xeye
        yvor(m+1) = yi + yeye
-       lr = lrline ( xvor(m+1), yvor(m+1), xeye, yeye, xvor(m), yvor(m), 0.0_dp )
+       lr = lrline ( xvor(m+1), yvor(m+1), xeye, yeye, xvor(m), yvor(m), 0.0e+00_real64 )
 
        if ( lr <= 0 ) then
          m = m + 1
@@ -12119,8 +12040,8 @@ contains
           ierror = 212
         end if
 
-        b1 = ( a11**2 + a12**2 ) * 0.5_dp
-        b2 = 0.0_dp
+        b1 = ( a11**2 + a12**2 ) * 0.5e+00_real64
+        b2 = 0.0e+00_real64
         xi = ( b1 * a22 - b2 * a12 ) / det
         yi = ( b2 * a11 - b1 * a21 ) / det
         xvor(m) = xi + xeye
@@ -12137,7 +12058,7 @@ contains
   !
     do
 
-      lr = lrline ( xvor(m), yvor(m), xeye, yeye, xc(nvrt), yc(nvrt), 0.0_dp )
+      lr = lrline ( xvor(m), yvor(m), xeye, yeye, xc(nvrt), yc(nvrt), 0.0e+00_real64 )
 
       if ( 0 <= lr ) then
         exit
@@ -12151,10 +12072,9 @@ contains
     end do
 
     nvor = m
-  end subroutine vornbr
+  end
 
-  subroutine vpleft ( xc, yc, ivis ) &
-        bind(C, name="vpleft")
+  subroutine vpleft ( xc, yc, ivis )
 
   !*****************************************************************************80
   !
@@ -12175,26 +12095,26 @@ contains
   !
   !        XC,YC,IVIS - see comments in routine VISPOL
   !
-    logical :: beye
-    integer(ip) :: cur
-    logical :: intsct
-    integer(ip) :: ivis(0:*)
-    integer(ip) :: j
-    integer(ip) :: lr
-    integer(ip) :: lr1
-    integer(ip) :: lr2
-    integer(ip) :: lrline
-    integer(ip) :: nv
-    integer(ip) :: oper
-    integer(ip) :: top
-    real(dp) :: xc(0:*)
-    real(dp) :: xe
-    real(dp) :: xu
-    real(dp) :: xw
-    real(dp) :: yc(0:*)
-    real(dp) :: ye
-    real(dp) :: yu
-    real(dp) :: yw
+    logical beye
+    integer(int32) cur
+    logical intsct
+    integer(int32) ivis(0:*)
+    integer(int32) j
+    integer(int32) lr
+    integer(int32) lr1
+    integer(int32) lr2
+    integer(int32) lrline
+    integer(int32) nv
+    integer(int32) oper
+    integer(int32) top
+    real(real64) xc(0:*)
+    real(real64) xe
+    real(real64) xu
+    real(real64) xw
+    real(real64) yc(0:*)
+    real(real64) ye
+    real(real64) yu
+    real(real64) yw
 
     common /gvpvar/ nv,oper,cur,top,xe,ye,xw,yw,beye
     save /gvpvar/
@@ -12223,7 +12143,7 @@ contains
       oper = 4
       xw = xc(cur)
       yw = yc(cur)
-      lr = lrline ( xc(top), yc(top), xe, ye, xc(nv), yc(nv), 0.0_dp )
+      lr = lrline ( xc(top), yc(top), xe, ye, xc(nv), yc(nv), 0.0e+00_real64 )
 
       if ( lr == -1 ) then
         xc(top) = xu
@@ -12236,7 +12156,7 @@ contains
   !
   20 continue
 
-    lr = lrline ( xc(cur+1), yc(cur+1), xe, ye, xc(cur), yc(cur), 0.0_dp )
+    lr = lrline ( xc(cur+1), yc(cur+1), xe, ye, xc(cur), yc(cur), 0.0e+00_real64 )
 
     if ( lr == -1 ) then
 
@@ -12250,7 +12170,7 @@ contains
 
       j = cur + 1
       lr1 = lrline ( xc(j), yc(j), xc(top-1), yc(top-1), xc(cur), yc(cur), &
-        0.0_dp )
+        0.0e+00_real64 )
 
       if ( lr1 == 1 ) then
 
@@ -12267,7 +12187,7 @@ contains
         do
 
           j = j + 1
-          lr2 = lrline ( xc(j), yc(j), xe, ye, xc(cur), yc(cur), 0.0_dp )
+          lr2 = lrline ( xc(j), yc(j), xe, ye, xc(cur), yc(cur), 0.0e+00_real64 )
 
           if ( lr2 /= 0 ) then
             exit
@@ -12301,10 +12221,9 @@ contains
     if ( oper == 1 ) then
       go to 10
     end if
-  end subroutine vpleft
+  end
 
-  subroutine vprght ( xc, yc, ivis, ierror ) &
-        bind(C, name="vprght")
+  subroutine vprght ( xc, yc, ivis, ierror )
 
   !*****************************************************************************80
   !
@@ -12324,31 +12243,31 @@ contains
   !     Input and updated parameters:
   !        XC,YC,IVIS - see comments in routine VISPOL
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 206.
   !
-    logical :: beye
-    integer(ip) :: case
-    integer(ip) :: cur
-    integer(ip), intent(out) :: ierror
-    logical :: intsct
-    integer(ip) :: ivis(0:*)
-    integer(ip) :: j
-    integer(ip) :: lr
-    integer(ip) :: lr1
-    integer(ip) :: lr2
-    integer(ip) :: lrline
-    integer(ip) :: nv
-    integer(ip) :: oper
-    integer(ip) :: top
-    real(dp) :: xc(0:*)
-    real(dp) :: xe
-    real(dp) :: xu
-    real(dp) :: xw
-    real(dp) :: yc(0:*)
-    real(dp) :: ye
-    real(dp) :: yu
-    real(dp) :: yw
+    logical beye
+    integer(int32) case
+    integer(int32) cur
+    integer(int32) ierror
+    logical intsct
+    integer(int32) ivis(0:*)
+    integer(int32) j
+    integer(int32) lr
+    integer(int32) lr1
+    integer(int32) lr2
+    integer(int32) lrline
+    integer(int32) nv
+    integer(int32) oper
+    integer(int32) top
+    real(real64) xc(0:*)
+    real(real64) xe
+    real(real64) xu
+    real(real64) xw
+    real(real64) yc(0:*)
+    real(real64) ye
+    real(real64) yu
+    real(real64) yw
 
     common /gvpvar/ nv,oper,cur,top,xe,ye,xw,yw,beye
     save /gvpvar/
@@ -12372,7 +12291,7 @@ contains
 
     if ( abs ( ivis(j)) <= nv ) then
 
-      lr = lrline ( xc(cur), yc(cur), xe, ye, xc(j-1), yc(j-1), 0.0_dp )
+      lr = lrline ( xc(cur), yc(cur), xe, ye, xc(j-1), yc(j-1), 0.0e+00_real64 )
 
       if ( lr == -1 ) then
 
@@ -12453,7 +12372,7 @@ contains
         ivis(top) = -abs ( ivis(top))
       end if
 
-      lr = lrline ( xc(cur+1), yc(cur+1), xe, ye, xc(cur), yc(cur), 0.0_dp )
+      lr = lrline ( xc(cur+1), yc(cur+1), xe, ye, xc(cur), yc(cur), 0.0e+00_real64 )
 
       if ( lr == 1 ) then
 
@@ -12462,7 +12381,7 @@ contains
       else
 
         j = cur + 1
-        lr1 = lrline ( xc(j), yc(j), xw, yw, xc(cur), yc(cur), 0.0_dp )
+        lr1 = lrline ( xc(j), yc(j), xw, yw, xc(cur), yc(cur), 0.0e+00_real64 )
 
         if ( lr1 == -1 ) then
 
@@ -12479,7 +12398,7 @@ contains
           do
 
             j = j + 1
-            lr2 = lrline ( xc(j), yc(j), xe, ye, xc(cur), yc(cur), 0.0_dp )
+            lr2 = lrline ( xc(j), yc(j), xe, ye, xc(cur), yc(cur), 0.0e+00_real64 )
 
             if ( lr2 /= 0 ) then
               exit
@@ -12514,10 +12433,9 @@ contains
     if ( oper == 2 ) then
       go to 10
     end if
-  end subroutine vprght
+  end
 
-  subroutine vpscna ( xc, yc, ivis, ierror ) &
-        bind(C, name="vpscna")
+  subroutine vpscna ( xc, yc, ivis, ierror )
 
   !*****************************************************************************80
   !
@@ -12537,31 +12455,31 @@ contains
   !    Input and updated parameters:
   !    XC,YC,IVIS - see comments in routine VISPOL
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 207.
   !
-    logical :: beye
-    integer(ip) :: case
-    integer(ip) :: cur
-    integer(ip), intent(out) :: ierror
-    logical :: intsct
-    integer(ip) :: ivis(0:*)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: lr
-    integer(ip) :: lr1
-    integer(ip) :: lr2
-    integer(ip) :: lr3
-    integer(ip) :: lrline
-    integer(ip) :: nv
-    integer(ip) :: oper
-    integer(ip) :: top
-    real(dp) :: xc(0:*)
-    real(dp) :: xe
-    real(dp) :: xw
-    real(dp) :: yc(0:*)
-    real(dp) :: ye
-    real(dp) :: yw
+    logical beye
+    integer(int32) case
+    integer(int32) cur
+    integer(int32) ierror
+    logical intsct
+    integer(int32) ivis(0:*)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) lr
+    integer(int32) lr1
+    integer(int32) lr2
+    integer(int32) lr3
+    integer(int32) lrline
+    integer(int32) nv
+    integer(int32) oper
+    integer(int32) top
+    real(real64) xc(0:*)
+    real(real64) xe
+    real(real64) xw
+    real(real64) yc(0:*)
+    real(real64) ye
+    real(real64) yw
 
     common /gvpvar/ nv,oper,cur,top,xe,ye,xw,yw,beye
     save /gvpvar/
@@ -12590,7 +12508,7 @@ contains
 
       if ( intsct ) then
 
-        lr = lrline ( xc(k+1), yc(k+1), xe, ye, xc(k), yc(k), 0.0_dp )
+        lr = lrline ( xc(k+1), yc(k+1), xe, ye, xc(k), yc(k), 0.0e+00_real64 )
 
         if ( lr == 1 ) then
 
@@ -12604,7 +12522,7 @@ contains
 
           else
 
-            lr1 = lrline ( xc(k), yc(k), xe, ye, xc(top), yc(top), 0.0_dp )
+            lr1 = lrline ( xc(k), yc(k), xe, ye, xc(top), yc(top), 0.0e+00_real64 )
 
             if ( lr1 == -1 ) then
               case = 2
@@ -12615,7 +12533,7 @@ contains
 
         else
 
-          lr1 = lrline ( xc(k+1), yc(k+1), xe, ye, xc(top), yc(top), 0.0_dp )
+          lr1 = lrline ( xc(k+1), yc(k+1), xe, ye, xc(top), yc(top), 0.0e+00_real64 )
 
           if ( lr1 == -1 ) then
             case = 3
@@ -12647,7 +12565,7 @@ contains
 
       oper = 1
       cur = k + 1
-      lr = lrline ( xc(k), yc(k), xe, ye, xc(top), yc(top), 0.0_dp )
+      lr = lrline ( xc(k), yc(k), xe, ye, xc(top), yc(top), 0.0e+00_real64 )
       top = top + 1
 
       if ( lr == 0 ) then
@@ -12668,7 +12586,7 @@ contains
     else if ( case == 1 ) then
 
       cur = k + 1
-      lr = lrline ( xc(cur), yc(cur), xe, ye, xc(top), yc(top), 0.0_dp )
+      lr = lrline ( xc(cur), yc(cur), xe, ye, xc(top), yc(top), 0.0e+00_real64 )
 
       if ( lr == 1 ) then
 
@@ -12677,8 +12595,8 @@ contains
       else
 
         j = cur + 1
-        lr1 = lrline ( xc(j), yc(j), xe, ye, xc(cur), yc(cur), 0.0_dp )
-        lr2 = lrline ( xc(j), yc(j), xc(k), yc(k), xc(cur), yc(cur), 0.0_dp )
+        lr1 = lrline ( xc(j), yc(j), xe, ye, xc(cur), yc(cur), 0.0e+00_real64 )
+        lr2 = lrline ( xc(j), yc(j), xc(k), yc(k), xc(cur), yc(cur), 0.0e+00_real64 )
 
         if ( lr1 <= 0 .and. lr2 == -1 ) then
 
@@ -12697,7 +12615,7 @@ contains
           do
 
             j = j + 1
-            lr3 = lrline ( xc(j), yc(j), xe, ye, xc(cur), yc(cur), 0.0_dp )
+            lr3 = lrline ( xc(j), yc(j), xe, ye, xc(cur), yc(cur), 0.0e+00_real64 )
 
             if ( lr3 /= 0 ) then
               exit
@@ -12731,7 +12649,7 @@ contains
 
       oper = 6
       cur = k + 1
-      lr = lrline ( xc(cur), yc(cur), xe, ye, xc(top), yc(top), 0.0_dp )
+      lr = lrline ( xc(cur), yc(cur), xe, ye, xc(top), yc(top), 0.0e+00_real64 )
 
       if ( lr == 0 ) then
         xw = xc(cur)
@@ -12739,10 +12657,9 @@ contains
       end if
 
     end if
-  end subroutine vpscna
+  end
 
-  subroutine vpscnb ( xc, yc, ivis, ierror ) &
-        bind(C, name="vpscnb")
+  subroutine vpscnb ( xc, yc, ivis, ierror )
 
   !*****************************************************************************80
   !
@@ -12762,37 +12679,37 @@ contains
   !     Input and updated parameters:
   !        XC,YC,IVIS - see comments in routine VISPOL
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 208.
   !
-    logical :: beye
-    integer(ip) :: cur
-    integer(ip), intent(out) :: ierror
-    logical :: intsct
-    integer(ip) :: ivis(0:*)
-    integer(ip) :: k
-    integer(ip) :: lr
-    integer(ip) :: lr1
-    integer(ip) :: lrline
-    integer(ip) :: nv
-    integer(ip) :: oper
-    real(dp) :: tol
-    real(dp) :: tolabs
-    integer(ip) :: top
-    real(dp) :: xc(0:*)
-    real(dp) :: xe
-    real(dp) :: xu
-    real(dp) :: xw
-    real(dp) :: yc(0:*)
-    real(dp) :: ye
-    real(dp) :: yu
-    real(dp) :: yw
+    logical beye
+    integer(int32) cur
+    integer(int32) ierror
+    logical intsct
+    integer(int32) ivis(0:*)
+    integer(int32) k
+    integer(int32) lr
+    integer(int32) lr1
+    integer(int32) lrline
+    integer(int32) nv
+    integer(int32) oper
+    real(real64) tol
+    real(real64) tolabs
+    integer(int32) top
+    real(real64) xc(0:*)
+    real(real64) xe
+    real(real64) xu
+    real(real64) xw
+    real(real64) yc(0:*)
+    real(real64) ye
+    real(real64) yu
+    real(real64) yw
 
     common /gvpvar/ nv,oper,cur,top,xe,ye,xw,yw,beye
     save /gvpvar/
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  EYE-V(CUR-1)-V(CUR) is a left turn, S(TOP) = V(CUR) or S(TOP) is
   !  on interior of edge V(CUR-1)-V(CUR), TOP <= CUR, S(TOP) has
@@ -12809,10 +12726,10 @@ contains
       go to 10
     end if
 
-    lr = lrline ( xc(k+1), yc(k+1), xe, ye, xc(top), yc(top), 0.0_dp )
+    lr = lrline ( xc(k+1), yc(k+1), xe, ye, xc(top), yc(top), 0.0e+00_real64 )
 
     lr1 = lrline ( xc(k+1), yc(k+1), xc(top-1), yc(top-1), xc(top), yc(top), &
-      0.0_dp )
+      0.0e+00_real64 )
 
     if ( lr == 1 .and. lr1  ==  -1 ) then
       oper = 2
@@ -12848,7 +12765,7 @@ contains
            if ( ( xc(top) - xu )**2 + ( yc(top) - yu )**2 <= tolabs ) then
              go to 20
            end if
-           lr = lrline ( xc(k+1), yc(k+1), xe, ye, xc(nv), yc(nv), 0.0_dp )
+           lr = lrline ( xc(k+1), yc(k+1), xe, ye, xc(nv), yc(nv), 0.0e+00_real64 )
            if ( lr == 1 ) then
              oper = 2
              cur = k + 1
@@ -12868,10 +12785,9 @@ contains
   !  Error from unsuccessful scan.
   !
     ierror = 208
-  end subroutine vpscnb
+  end
 
-  subroutine vpscnc ( xc, yc, ivis, ierror ) &
-        bind(C, name="vpscnc")
+  subroutine vpscnc ( xc, yc, ivis, ierror )
 
   !*****************************************************************************80
   !
@@ -12890,33 +12806,33 @@ contains
   !
   !    Input/output, XC, YC, IVIS - see comments in routine VISPOL
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 209.
   !
-    logical :: beye
-    integer(ip) :: cur
-    integer(ip), intent(out) :: ierror
-    logical :: intsct
-    integer(ip), intent(inout) :: ivis(0:*)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: lr
-    integer(ip) :: lr1
-    integer(ip) :: lr2
-    integer(ip) :: lrline
-    integer(ip) :: nv
-    integer(ip) :: oper
-    integer(ip) :: top
-    real(dp), intent(inout) :: xc(0:*)
-    real(dp) :: xe
-    real(dp) :: xp
-    real(dp) :: xu
-    real(dp) :: xw
-    real(dp), intent(inout) :: yc(0:*)
-    real(dp) :: ye
-    real(dp) :: yp
-    real(dp) :: yu
-    real(dp) :: yw
+    logical beye
+    integer(int32) cur
+    integer(int32) ierror
+    logical intsct
+    integer(int32) ivis(0:*)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) lr
+    integer(int32) lr1
+    integer(int32) lr2
+    integer(int32) lrline
+    integer(int32) nv
+    integer(int32) oper
+    integer(int32) top
+    real(real64) xc(0:*)
+    real(real64) xe
+    real(real64) xp
+    real(real64) xu
+    real(real64) xw
+    real(real64) yc(0:*)
+    real(real64) ye
+    real(real64) yp
+    real(real64) yu
+    real(real64) yw
 
     common /gvpvar/ nv,oper,cur,top,xe,ye,xw,yw,beye
     save /gvpvar/
@@ -12942,8 +12858,8 @@ contains
     else if ( xc(k) == xp .and. yc(k) == yp ) then
 
         j = k + 1
-        lr = lrline ( xc(j), yc(j), xe, ye, xp, yp, 0.0_dp )
-        lr1 = lrline ( xc(j), yc(j), xw, yw, xp, yp, 0.0_dp )
+        lr = lrline ( xc(j), yc(j), xe, ye, xp, yp, 0.0e+00_real64 )
+        lr1 = lrline ( xc(j), yc(j), xw, yw, xp, yp, 0.0e+00_real64 )
 
         if ( lr <= 0 .and. lr1 == -1 ) then
           go to 40
@@ -12958,7 +12874,7 @@ contains
           do
 
             j = j + 1
-            lr2 = lrline ( xc(j), yc(j), xe, ye, xp, yp, 0.0_dp )
+            lr2 = lrline ( xc(j), yc(j), xe, ye, xp, yp, 0.0e+00_real64 )
 
             if ( lr2 /= 0 ) then
               exit
@@ -12991,7 +12907,7 @@ contains
           yc(k+1), xu, yu, intsct )
 
         if ( intsct ) then
-          lr = lrline ( xc(k+1), yc(k+1), xe, ye, xp, yp, 0.0_dp )
+          lr = lrline ( xc(k+1), yc(k+1), xe, ye, xp, yp, 0.0e+00_real64 )
           if ( lr == 1 ) then
             oper = 2
             cur = k + 1
@@ -13011,10 +12927,9 @@ contains
   !  Error from unsuccessful scan.
   !
     ierror = 209
-  end subroutine vpscnc
+  end
 
-  subroutine vpscnd ( xc, yc, ivis, ierror ) &
-        bind(C, name="vpscnd")
+  subroutine vpscnd ( xc, yc, ivis, ierror )
 
   !*****************************************************************************80
   !
@@ -13033,32 +12948,32 @@ contains
   !
   !    Input/output, XC,YC,IVIS - see comments in routine VISPOL
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 210
   !
-    logical :: beye
-    integer(ip) :: cur
-    integer(ip), intent(out) :: ierror
-    logical :: intsct
-    integer(ip), intent(inout) :: ivis(0:*)
-    integer(ip) :: k
-    integer(ip) :: lr
-    integer(ip) :: lr1
-    integer(ip) :: lr2
-    integer(ip) :: lrline
-    integer(ip) :: nv
-    integer(ip) :: oper
-    integer(ip) :: top
-    real(dp), intent(inout) :: xc(0:*)
-    real(dp) :: xe
-    real(dp) :: xp
-    real(dp) :: xu
-    real(dp) :: xw
-    real(dp), intent(inout) :: yc(0:*)
-    real(dp) :: ye
-    real(dp) :: yp
-    real(dp) :: yu
-    real(dp) :: yw
+    logical beye
+    integer(int32) cur
+    integer(int32) ierror
+    logical intsct
+    integer(int32) ivis(0:*)
+    integer(int32) k
+    integer(int32) lr
+    integer(int32) lr1
+    integer(int32) lr2
+    integer(int32) lrline
+    integer(int32) nv
+    integer(int32) oper
+    integer(int32) top
+    real(real64) xc(0:*)
+    real(real64) xe
+    real(real64) xp
+    real(real64) xu
+    real(real64) xw
+    real(real64) yc(0:*)
+    real(real64) ye
+    real(real64) yp
+    real(real64) yu
+    real(real64) yw
 
     common /gvpvar/ nv,oper,cur,top,xe,ye,xw,yw,beye
     save /gvpvar/
@@ -13082,8 +12997,8 @@ contains
 
     if ( intsct ) then
 
-      lr = lrline ( xc(k+1), yc(k+1), xe, ye, xc(k), yc(k), 0.0_dp )
-      lr1 = lrline ( xc(k+1), yc(k+1), xe, ye, xc(top), yc(top), 0.0_dp )
+      lr = lrline ( xc(k+1), yc(k+1), xe, ye, xc(k), yc(k), 0.0e+00_real64 )
+      lr1 = lrline ( xc(k+1), yc(k+1), xe, ye, xc(top), yc(top), 0.0e+00_real64 )
 
       if ( lr == -1 .and. lr1  ==  -1 ) then
 
@@ -13091,7 +13006,7 @@ contains
           go to 20
         end if
 
-        lr2 = lrline ( xc(k+1), yc(k+1), xp, yp, xw, yw, 0.0_dp )
+        lr2 = lrline ( xc(k+1), yc(k+1), xp, yp, xw, yw, 0.0e+00_real64 )
 
         if ( lr2 == -1 ) then
           go to 30
@@ -13101,7 +13016,7 @@ contains
 
            oper = 1
            cur = k + 1
-           lr2 = lrline ( xc(k), yc(k), xe, ye, xc(top), yc(top), 0.0_dp )
+           lr2 = lrline ( xc(k), yc(k), xe, ye, xc(top), yc(top), 0.0e+00_real64 )
            top = top + 1
            if ( lr2 == 0 ) then
             xc(top) = xc(k)
@@ -13131,10 +13046,9 @@ contains
   !  Error from unsuccessful scan.
   !
     ierror = 210
-  end subroutine vpscnd
+  end
 
-  subroutine walkt2 ( x, y, ntri, vcl, til, tnbr, itri, iedg, ierror ) &
-        bind(C, name="walkt2")
+  subroutine walkt2 ( x, y, ntri, vcl, til, tnbr, itri, iedg, ierror )
 
   !*****************************************************************************80
   !
@@ -13159,21 +13073,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, Y, the coordinates of a 2D point.
+  !    Input, real(real64) X, Y, the coordinates of a 2D point.
   !
-  !    Input, integer(ip) NTRI, the number of triangles in the triangulation; used 
+  !    Input, integer(int32) NTRI, the number of triangles in the triangulation; used 
   !    to detect cycle.
   !
-  !    Input, real(dp) VCL(2,1:*), the coordinates of 2D vertices.
+  !    Input, real(real64) VCL(2,1:*), the coordinates of 2D vertices.
   !
-  !    Input, integer(ip) TIL(3,NTRI), the triangle incidence list.
+  !    Input, integer(int32) TIL(3,NTRI), the triangle incidence list.
   !
-  !    Input, integer(ip) TNBR(3,NTRI), the triangle neighbor list.
+  !    Input, integer(int32) TNBR(3,NTRI), the triangle neighbor list.
   !
-  !    Input/output, integer(ip) ITRI.  On input, the index of triangle to begin 
+  !    Input/output, integer(int32) ITRI.  On input, the index of triangle to begin 
   !    search at.  On output, the index of triangle that search ends at.
   !
-  !    Output, integer(ip) IEDG, indicates the position of the point (X,Y) in
+  !    Output, integer(int32) IEDG, indicates the position of the point (X,Y) in
   !    triangle ITRI.  A small tolerance is allowed in positions:
   !    0, the interior of the triangle; 
   !    1, interior of edge 1;
@@ -13186,38 +13100,38 @@ contains
   !    -2, outside convex hull, past edge 2;
   !    -3, outside convex hull, past edge 3.
   !
-  !    Output, integer(ip) IERROR, error flag.  On abnormal return,
+  !    Output, integer(int32) IERROR, error flag.  On abnormal return,
   !    IERROR is set to 226.
   !
-    integer(ip), intent(in), value :: ntri
+    integer(int32) ntri
 
-    integer(ip) :: a
-    real(dp) :: alpha
-    integer(ip) :: b
-    real(dp) :: beta
-    integer(ip) :: c
-    integer(ip) :: cnt
-    real(dp) :: det
-    real(dp) :: dx
-    real(dp) :: dxa
-    real(dp) :: dxb
-    real(dp) :: dy
-    real(dp) :: dya
-    real(dp) :: dyb
-    real(dp) :: gamma
-    integer(ip) :: i
-    integer(ip), intent(out) :: iedg
-    integer(ip), intent(out) :: ierror
-    integer(ip), intent(inout) :: itri
-    integer(ip), intent(in) :: til(3,ntri)
-    integer(ip), intent(in) :: tnbr(3,ntri)
-    real(dp) :: tol
-    real(dp), intent(in) :: vcl(2,*)
-    real(dp), intent(in), value :: x
-    real(dp), intent(out) :: y
+    integer(int32) a
+    real(real64) alpha
+    integer(int32) b
+    real(real64) beta
+    integer(int32) c
+    integer(int32) cnt
+    real(real64) det
+    real(real64) dx
+    real(real64) dxa
+    real(real64) dxb
+    real(real64) dy
+    real(real64) dya
+    real(real64) dyb
+    real(real64) gamma
+    integer(int32) i
+    integer(int32) iedg
+    integer(int32) ierror
+    integer(int32) itri
+    integer(int32) til(3,ntri)
+    integer(int32) tnbr(3,ntri)
+    real(real64) tol
+    real(real64) vcl(2,*)
+    real(real64) x
+    real(real64) y
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     cnt = 0
     iedg = 0
@@ -13259,7 +13173,7 @@ contains
   !
       alpha = ( dx * dyb - dy * dxb ) / det
       beta = ( dxa * dy - dya * dx ) / det
-      gamma = 1.0_dp - alpha - beta
+      gamma = 1.0e+00_real64 - alpha - beta
   !
   !  If the barycentric coordinates are all positive, then the point
   !  is inside the triangle.
@@ -13323,10 +13237,9 @@ contains
       itri = i
 
     end do
-  end subroutine walkt2
+  end
 
-  subroutine width2 ( nvrt, xc, yc, i1, i2, widsq, ierror ) &
-        bind(C, name="width2")
+  subroutine width2 ( nvrt, xc, yc, i1, i2, widsq, ierror )
 
   !*****************************************************************************80
   !
@@ -13345,57 +13258,57 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVRT, the number of vertices.
+  !    Input, integer(int32) NVRT, the number of vertices.
   !
-  !    Input, real(dp) XC(1:NVRT), YC(1:NVRT), the vertex coordinates, in
+  !    Input, real(real64) XC(1:NVRT), YC(1:NVRT), the vertex coordinates, in
   !    counter-clockwise order.
   !
-  !    Output, integer(ip) I1, I2, indices in XC, YC such that the width is 
+  !    Output, integer(int32) I1, I2, indices in XC, YC such that the width is 
   !    the distance from vertex (XC(I1),YC(I1)) to the line joining 
   !    (XC(I2),YC(I2)) and (XC(I2+1),YC(I2+1)), where index NVRT+1 
   !    is same as 1.
   !
-  !    Output, real(dp) WIDSQ, the square of the width of the polygon.
+  !    Output, real(real64) WIDSQ, the square of the width of the polygon.
   !
-  !    Output, integer(ip) IERROR, the error flag.
+  !    Output, integer(int32) IERROR, the error flag.
   !    0, no error was detected.
   !    201, an error was detected.
   !
-    integer(ip), intent(in), value :: nvrt
+    integer(int32) nvrt
 
-    integer(ip) :: a
-    real(dp) :: area1
-    real(dp) :: area2
-    real(dp) :: areatr
-    integer(ip) :: b
-    integer(ip) :: c
-    real(dp) :: c1mtol
-    real(dp) :: c1ptol
-    real(dp) :: dist
-    real(dp) :: dx
-    real(dp) :: dy
-    integer(ip) :: i4_wrap
-    integer(ip), intent(out) :: i1
-    integer(ip), intent(out) :: i2
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: j
-    integer(ip) :: jp1
-    integer(ip) :: k
-    integer(ip) :: kp1
-    integer(ip) :: m
-    real(dp) :: tol
-    real(dp), intent(out) :: widsq
-    real(dp), intent(in) :: xc(nvrt)
-    real(dp), intent(out) :: yc(nvrt)
+    integer(int32) a
+    real(real64) area1
+    real(real64) area2
+    real(real64) areatr
+    integer(int32) b
+    integer(int32) c
+    real(real64) c1mtol
+    real(real64) c1ptol
+    real(real64) dist
+    real(real64) dx
+    real(real64) dy
+    integer(int32) i4_wrap
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) ierror
+    integer(int32) j
+    integer(int32) jp1
+    integer(int32) k
+    integer(int32) kp1
+    integer(int32) m
+    real(real64) tol
+    real(real64) widsq
+    real(real64) xc(nvrt)
+    real(real64) yc(nvrt)
 
     ierror = 0
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
   !
   !  Find the first vertex which is farthest from the edge connecting
   !  vertices NVRT and 1.
   !
-    c1mtol = 1.0_dp - tol
-    c1ptol = 1.0_dp + tol
+    c1mtol = 1.0e+00_real64 - tol
+    c1ptol = 1.0e+00_real64 + tol
     j = nvrt
     jp1 = 1
     k = 2
@@ -13415,7 +13328,7 @@ contains
     end do
 
     m = k
-    widsq = 0.0_dp
+    widsq = 0.0e+00_real64
   !
   !  Find width = minimum distance of antipodal edge-vertex pairs.
   !
@@ -13475,7 +13388,7 @@ contains
       dist = ( ( yc(a) - yc(b) ) * dx - ( xc(a) - xc(b) ) * dy )**2 &
         / ( dx**2 + dy**2 )
 
-      if ( dist < widsq .or. widsq <= 0.0_dp ) then
+      if ( dist < widsq .or. widsq <= 0.0e+00_real64 ) then
         widsq = dist
         i1 = a
         i2 = b
@@ -13486,11 +13399,10 @@ contains
       end if
 
     end do
-  end subroutine width2
+  end
 
   subroutine xedge ( mode, xv1, yv1, xv2, yv2, xw1, yw1, xw2, yw2, xu, yu, &
-    intsct ) &
-        bind(C, name="xedge")
+    intsct )
 
   !*****************************************************************************80
   !
@@ -13512,41 +13424,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) MODE, is 0 for two edges, 1 (or nonzero) for a ray 
+  !    Input, integer(int32) MODE, is 0 for two edges, 1 (or nonzero) for a ray 
   !    and an edge.
   !
-  !    Input, real(dp) XV1, YV1, XV2, YV2, XW1, YW1, XW2, YW2, the
+  !    Input, real(real64) XV1, YV1, XV2, YV2, XW1, YW1, XW2, YW2, the
   !    vertex coordinates;  an edge (ray) is from (XV1,YV1) to (thru) (XV2,YV2);
   !    an edge joins vertices (XW1,YW1) and (XW2,YW2).
   !
-  !    Output, real(dp) XU, YU, the coordinates of the point of 
+  !    Output, real(real64) XU, YU, the coordinates of the point of 
   !    intersection iff INTSCT is .TRUE.
   !
   !    Output, logical INTSCT, .TRUE. if the edges/ray are nondegenerate, not
   !    parallel, and intersect, .FALSE. otherwise.
   !
-    real(dp) :: denom
-    real(dp) :: dxv
-    real(dp) :: dxw
-    real(dp) :: dyv
-    real(dp) :: dyw
-    logical, intent(out) :: intsct
-    integer(ip), intent(in), value :: mode
-    real(dp) :: t
-    real(dp) :: tol
-    real(dp) :: tolabs
-    real(dp), intent(out) :: xu
-    real(dp), intent(in), value :: xv1
-    real(dp), intent(in), value :: xv2
-    real(dp), intent(in), value :: xw1
-    real(dp), intent(in), value :: xw2
-    real(dp), intent(out) :: yu
-    real(dp), intent(in), value :: yv1
-    real(dp), intent(in), value :: yv2
-    real(dp), intent(in), value :: yw1
-    real(dp), intent(in), value :: yw2
+    real(real64) denom
+    real(real64) dxv
+    real(real64) dxw
+    real(real64) dyv
+    real(real64) dyw
+    logical intsct
+    integer(int32) mode
+    real(real64) t
+    real(real64) tol
+    real(real64) tolabs
+    real(real64) xu
+    real(real64) xv1
+    real(real64) xv2
+    real(real64) xw1
+    real(real64) xw2
+    real(real64) yu
+    real(real64) yv1
+    real(real64) yv2
+    real(real64) yw1
+    real(real64) yw2
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     intsct = .false.
     dxv = xv2 - xv1
@@ -13561,7 +13473,7 @@ contains
 
     t = ( dyv * ( xv1 - xw1 ) - dxv * ( yv1 - yw1 ) ) / denom
 
-    if ( t < -tol .or. 1.0_dp + tol < t ) then
+    if ( t < -tol .or. 1.0e+00_real64 + tol < t ) then
     end if
 
     xu = xw1 + t * dxw
@@ -13574,7 +13486,7 @@ contains
     end if
 
     if ( mode == 0 ) then
-      if ( -tol <= t .and. t <= 1.0_dp + tol ) then
+      if ( -tol <= t .and. t <= 1.0e+00_real64 + tol ) then
         intsct = .true.
       end if
     else
@@ -13582,11 +13494,10 @@ contains
         intsct = .true.
       end if
     end if
-  end subroutine xedge
+  end
 
   subroutine xline ( xv1, yv1, xv2, yv2, xw1, yw1, xw2, yw2, dv, dw, xu, &
-    yu, parall ) &
-        bind(C, name="xline")
+    yu, parall )
 
   !*****************************************************************************80
   !
@@ -13603,44 +13514,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XV1, YV1, XV2, YV2, XW1, YW1, XW2, YW2, the 
+  !    Input, real(real64) XV1, YV1, XV2, YV2, XW1, YW1, XW2, YW2, the 
   !    vertex coordinates; the first line is parallel to and at signed distance 
   !    DV to the left of directed line from (XV1,YV1) to (XV2,YV2);
   !    second line is parallel to and at signed distance DW to
   !    left of directed line from (XW1,YW1) to (XW2,YW2)
   !
-  !    Input, real(dp) DV, DW, the signed distances (positive for left).
+  !    Input, real(real64) DV, DW, the signed distances (positive for left).
   !
-  !    Output, real(dp) XU, YU, the coordinates of the point of
+  !    Output, real(real64) XU, YU, the coordinates of the point of
   !    intersection, if PARALL is .FALSE.
   !
   !    Output, logical PARALL, is .TRUE. if the lines are parallel, or two 
   !    points for a line are identical, .FALSE. otherwise.
   !
-    real(dp) :: a11
-    real(dp) :: a12
-    real(dp) :: a21
-    real(dp) :: a22
-    real(dp) :: b1
-    real(dp) :: b2
-    real(dp) :: det
-    real(dp), intent(in), value :: dv
-    real(dp), intent(in), value :: dw
-    logical, intent(out) :: parall
-    real(dp) :: tol
-    real(dp) :: tolabs
-    real(dp), intent(out) :: xu
-    real(dp), intent(in), value :: xv1
-    real(dp), intent(in), value :: xv2
-    real(dp), intent(in), value :: xw1
-    real(dp), intent(in), value :: xw2
-    real(dp), intent(out) :: yu
-    real(dp), intent(in), value :: yv1
-    real(dp), intent(in), value :: yv2
-    real(dp), intent(in), value :: yw1
-    real(dp), intent(in), value :: yw2
+    real(real64) a11
+    real(real64) a12
+    real(real64) a21
+    real(real64) a22
+    real(real64) b1
+    real(real64) b2
+    real(real64) det
+    real(real64) dv
+    real(real64) dw
+    logical parall
+    real(real64) tol
+    real(real64) tolabs
+    real(real64) xu
+    real(real64) xv1
+    real(real64) xv2
+    real(real64) xw1
+    real(real64) xw2
+    real(real64) yu
+    real(real64) yv1
+    real(real64) yv2
+    real(real64) yw1
+    real(real64) yw2
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     parall = .true.
 
@@ -13661,6 +13572,6 @@ contains
     yu = ( b2 * a11 - b1 * a21 ) / det
 
     parall = .false.
-  end subroutine xline
+  end
 
 end module geompack2_mod

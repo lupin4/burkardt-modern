@@ -1,23 +1,17 @@
-!> line_grid -- Modern Fortran 2018
+!> line_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module line_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: line_grid
 
 contains
 
-  pure subroutine line_grid ( n, a, b, c, x ) &
-        bind(C, name="line_grid")
+  subroutine line_grid ( n, a, b, c, x )
 
   !*****************************************************************************80
   !
@@ -36,7 +30,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -48,53 +42,54 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) A, B, the endpoints.
+  !    Input, real(real64) A, B, the endpoints.
   !
-  !    Input, integer(ip) C, the grid centering.
+  !    Input, integer(int32) C, the grid centering.
   !    1 <= C <= 5.
   !
-  !    Output, real(dp) X(N), the points.
+  !    Output, real(real64) X(N), the points.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    integer(ip), intent(in), value :: c
-    integer(ip) :: j
-    real(dp), intent(out) :: x(n)
+    integer(int32) n
+
+    real(real64) a
+    real(real64) b
+    integer(int32) c
+    integer(int32) j
+    real(real64) x(n)
 
     do j = 1, n
 
       if ( c == 1 ) then
 
         if ( n == 1 ) then
-          x(j) = 0.5_dp * ( a + b )
+          x(j) = 0.5e+00_real64 * ( a + b )
         else
-          x(j) = (   real ( n - j, dp) * a   &
-                   + real (     j - 1, dp) * b ) &
-                   / real ( n     - 1, dp)
+          x(j) = (   real ( n - j, real64) * a   &
+                   + real (     j - 1, real64) * b ) & 
+                   / real ( n     - 1, real64)
         end if
       else if ( c == 2 ) then
-        x(j) = (   real ( n - j + 1, dp) * a   &
-                 + real (     j, dp) * b ) &
-                 / real ( n     + 1, dp)
+        x(j) = (   real ( n - j + 1, real64) * a   &
+                 + real (     j, real64) * b ) & 
+                 / real ( n     + 1, real64)
       else if ( c == 3 ) then
-        x(j) = (   real ( n - j + 1, dp) * a   &
-                 + real (     j - 1, dp) * b ) &
-                 / real ( n, dp)
+        x(j) = (   real ( n - j + 1, real64) * a   &
+                 + real (     j - 1, real64) * b ) & 
+                 / real ( n, real64)
       else if ( c == 4 ) then
-        x(j) = (   real ( n - j, dp) * a   &
-                 + real (     j, dp) * b ) &
-                 / real ( n, dp)
+        x(j) = (   real ( n - j, real64) * a   &
+                 + real (     j, real64) * b ) & 
+                 / real ( n, real64)
       else if ( c == 5 ) then
-        x(j) = (   real ( 2 * n - 2 * j + 1, dp) * a   &
-                 + real (         2 * j - 1, dp) * b ) &
-                 / real ( 2 * n, dp)
+        x(j) = (   real ( 2 * n - 2 * j + 1, real64) * a   &
+                 + real (         2 * j - 1, real64) * b ) & 
+                 / real ( 2 * n, real64)
       end if
 
     end do
-  end subroutine line_grid
+  end
 
 end module line_grid_mod

@@ -1,16 +1,11 @@
-!> bezier_surface — Modern Fortran 2018
+!> bezier_surface â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module bezier_surface_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: bezier_patch_evaluate, bezier_surface_neighbors, bezier_surface_node_print, bezier_surface_node_read, bezier_surface_node_size, bezier_surface_node_write
   public :: bezier_surface_rectangle_print, bezier_surface_rectangle_read, bezier_surface_rectangle_size, bezier_surface_rectangle_write, i4row_compare, i4row_sort_a
@@ -18,9 +13,8 @@ module bezier_surface_mod
 
 contains
 
-  pure subroutine bezier_patch_evaluate ( node_num, node_xyz, rectangle_num, &
-    rectangle_node, patch, point_num, point_uv, point_xyz ) &
-        bind(C, name="bezier_patch_evaluate")
+  subroutine bezier_patch_evaluate ( node_num, node_xyz, rectangle_num, &
+    rectangle_node, patch, point_num, point_uv, point_xyz )
 
   !*****************************************************************************80
   !
@@ -65,31 +59,31 @@ contains
   !    Input, integer POINT_NUM, the number of points at which evaluation
   !    is desired.
   !
-  !    Input, real(dp) POINT_UV(2,POINT_NUM), the (U,V) parameter
+  !    Input, real(real64) POINT_UV(2,POINT_NUM), the (U,V) parameter
   !    coordinates of the points.
   !
-  !    Output, real(dp) POINT_XYZ(3,POINT_NUM), the (X,Y,Z)
+  !    Output, real(real64) POINT_XYZ(3,POINT_NUM), the (X,Y,Z)
   !    physical coordinates of the points.
   !
 
-    integer(ip), intent(in), value :: node_num
-    integer(ip), intent(in), value :: point_num
-    integer(ip), intent(in), value :: rectangle_num
+    integer(int32) node_num
+    integer(int32) point_num
+    integer(int32) rectangle_num
 
-    integer(ip) :: i
-    real(dp), intent(in) :: node_xyz(3,node_num)
-    integer(ip), intent(in), value :: patch
-    real(dp) :: patch_xmat(4,4)
-    real(dp) :: patch_ymat(4,4)
-    real(dp) :: patch_zmat(4,4)
-    integer(ip) :: point
-    real(dp), intent(in) :: point_uv(2,point_num)
-    real(dp), intent(out) :: point_xyz(3,point_num)
-    integer(ip), intent(in) :: rectangle_node(16,rectangle_num)
-    real(dp) :: u
-    real(dp) :: uvec(4)
-    real(dp) :: v
-    real(dp) :: vvec(4)
+    integer(int32) i
+    real(real64) node_xyz(3,node_num)
+    integer(int32) patch
+    real(real64) patch_xmat(4,4)
+    real(real64) patch_ymat(4,4)
+    real(real64) patch_zmat(4,4)
+    integer(int32) point
+    real(real64) point_uv(2,point_num)
+    real(real64) point_xyz(3,point_num)
+    integer(int32) rectangle_node(16,rectangle_num)
+    real(real64) u
+    real(real64) uvec(4)
+    real(real64) v
+    real(real64) vvec(4)
 
     patch_xmat(1:4,1:4) = reshape ( node_xyz(1,rectangle_node(1:16,patch)), &
       (/ 4, 4 /) )
@@ -103,14 +97,14 @@ contains
       u = point_uv(1,point)
       v = point_uv(2,point)
 
-      uvec(1:4) = (/                  ( 1.0_dp - u )**3, &
-                     3.0_dp * u    * ( 1.0_dp - u )**2, &
-                     3.0_dp * u**2 * ( 1.0_dp - u ),    &
+      uvec(1:4) = (/                  ( 1.0e+00_real64 - u )**3, &
+                     3.0e+00_real64 * u    * ( 1.0e+00_real64 - u )**2, &
+                     3.0e+00_real64 * u**2 * ( 1.0e+00_real64 - u ),    &
                                u**3 /)
 
-      vvec(1:4) = (/                  ( 1.0_dp - v )**3, &
-                     3.0_dp * v    * ( 1.0_dp - v )**2, &
-                     3.0_dp * v**2 * ( 1.0_dp - v ),    &
+      vvec(1:4) = (/                  ( 1.0e+00_real64 - v )**3, &
+                     3.0e+00_real64 * v    * ( 1.0e+00_real64 - v )**2, &
+                     3.0e+00_real64 * v**2 * ( 1.0e+00_real64 - v ),    &
                                v**3 /)
 
       point_xyz(1,point) = dot_product ( uvec(1:4), &
@@ -123,11 +117,10 @@ contains
         matmul ( patch_zmat(1:4,1:4), vvec(1:4) ) )
 
     end do
-  end subroutine bezier_patch_evaluate
+  end
 
   subroutine bezier_surface_neighbors ( rectangle_num, &
-    rectangle_node, rectangle_neighbor ) &
-        bind(C, name="bezier_surface_neighbors")
+    rectangle_node, rectangle_neighbor )
 
   !*****************************************************************************80
   !
@@ -222,21 +215,21 @@ contains
   !    is negative if there is no neighbor on that side.
   !
 
-    integer(ip), intent(in), value :: rectangle_num
+    integer(int32) rectangle_num
 
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip) :: i4
-    integer(ip) :: irow
-    integer(ip) :: rectangle
-    integer(ip) :: rectangle1
-    integer(ip) :: rectangle2
-    integer(ip) :: row(4*rectangle_num,4)
-    integer(ip), intent(in) :: rectangle_node(16,rectangle_num)
-    integer(ip), intent(out) :: rectangle_neighbor(4,rectangle_num)
-    integer(ip) :: side1
-    integer(ip) :: side2
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) i4
+    integer(int32) irow
+    integer(int32) rectangle
+    integer(int32) rectangle1
+    integer(int32) rectangle2
+    integer(int32) row(4*rectangle_num,4)
+    integer(int32) rectangle_node(16,rectangle_num)
+    integer(int32) rectangle_neighbor(4,rectangle_num)
+    integer(int32) side1
+    integer(int32) side2
   !
   !  Step 1.
   !  From the list of vertices for rectangle T,
@@ -319,10 +312,9 @@ contains
       irow = irow + 2
 
     end do
-  end subroutine bezier_surface_neighbors
+  end
 
-  subroutine bezier_surface_node_print ( node_num, node_xyz ) &
-        bind(C, name="bezier_surface_node_print")
+  subroutine bezier_surface_node_print ( node_num, node_xyz )
 
   !*****************************************************************************80
   !
@@ -344,21 +336,20 @@ contains
   !
   !    Input, integer NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the coordinates of the
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the coordinates of the
   !    nodes.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
 
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
+    real(real64) node_xyz(dim_num,node_num)
 
     call r8mat_transpose_print ( dim_num, node_num, node_xyz, &
       '  Bezier Surface Nodes:' )
-  end subroutine bezier_surface_node_print
+  end
 
-  subroutine bezier_surface_node_read ( node_file_name, node_num, node_xyz ) &
-        bind(C, name="bezier_surface_node_read")
+  subroutine bezier_surface_node_read ( node_file_name, node_num, node_xyz )
 
   !*****************************************************************************80
   !
@@ -382,21 +373,20 @@ contains
   !
   !    Input, integer NODE_NUM, the number of nodes.
   !
-  !    Output, real(dp) NODE_XYZ(3,NODE_NUM), the coordinates of the
+  !    Output, real(real64) NODE_XYZ(3,NODE_NUM), the coordinates of the
   !    nodes.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
 
-    character ( len = * ), intent(in) :: node_file_name
-    real(dp), intent(out) :: node_xyz(dim_num,node_num)
+    character ( len = * ) node_file_name
+    real(real64) node_xyz(dim_num,node_num)
 
     call r8mat_data_read ( node_file_name, dim_num, node_num, node_xyz )
-  end subroutine bezier_surface_node_read
+  end
 
-  subroutine bezier_surface_node_size ( node_file_name, node_num ) &
-        bind(C, name="bezier_surface_node_size")
+  subroutine bezier_surface_node_size ( node_file_name, node_num )
 
   !*****************************************************************************80
   !
@@ -426,14 +416,13 @@ contains
   !    Output, integer NODE_NUM, the number of nodes.
   !
 
-    character ( len = * ), intent(in) :: node_file_name
-    integer(ip), intent(out) :: node_num
+    character ( len = * ) node_file_name
+    integer(int32) node_num
 
     call file_row_count ( node_file_name, node_num )
-  end subroutine bezier_surface_node_size
+  end
 
-  subroutine bezier_surface_node_write ( node_file_name, node_num, node_xyz ) &
-        bind(C, name="bezier_surface_node_write")
+  subroutine bezier_surface_node_write ( node_file_name, node_num, node_xyz )
 
   !*****************************************************************************80
   !
@@ -457,22 +446,21 @@ contains
   !
   !    Input, integer NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XYZ(3,NODE_NUM), the coordinates of the
+  !    Input, real(real64) NODE_XYZ(3,NODE_NUM), the coordinates of the
   !    nodes.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
 
     logical, parameter :: header = .true.
-    character ( len = * ), intent(in) :: node_file_name
-    real(dp), intent(in) :: node_xyz(dim_num,node_num)
+    character ( len = * ) node_file_name
+    real(real64) node_xyz(dim_num,node_num)
 
     call r8mat_write ( node_file_name, dim_num, node_num, node_xyz, header )
-  end subroutine bezier_surface_node_write
+  end
 
-  subroutine bezier_surface_rectangle_print ( rectangle_num, rectangle_node ) &
-        bind(C, name="bezier_surface_rectangle_print")
+  subroutine bezier_surface_rectangle_print ( rectangle_num, rectangle_node )
 
   !*****************************************************************************80
   !
@@ -498,18 +486,17 @@ contains
   !    that make up each rectangle.
   !
 
-    integer(ip), parameter :: dim_num = 16
-    integer(ip), intent(in), value :: rectangle_num
+    integer(int32), parameter :: dim_num = 16
+    integer(int32) rectangle_num
 
-    integer(ip), intent(in) :: rectangle_node(dim_num,rectangle_num)
+    integer(int32) rectangle_node(dim_num,rectangle_num)
 
     call i4mat_transpose_print ( dim_num, rectangle_num, rectangle_node, &
       '  Bezier Rectangles:' )
-  end subroutine bezier_surface_rectangle_print
+  end
 
   subroutine bezier_surface_rectangle_read ( rectangle_file_name, &
-    rectangle_num, rectangle_node ) &
-        bind(C, name="bezier_surface_rectangle_read")
+    rectangle_num, rectangle_node )
 
   !*****************************************************************************80
   !
@@ -534,22 +521,21 @@ contains
   !
   !    Input, integer RECTANGLE_NUM, the number of rectangles.
   !
-  !    Output, real(dp) RECTANGLE_NODE(16,RECTANGLE_NUM),
+  !    Output, real(real64) RECTANGLE_NODE(16,RECTANGLE_NUM),
   !    the nodes that make up each rectangle.
   !
 
-    integer(ip), parameter :: dim_num = 16
-    integer(ip), intent(in), value :: rectangle_num
+    integer(int32), parameter :: dim_num = 16
+    integer(int32) rectangle_num
 
-    character ( len = * ), intent(in) :: rectangle_file_name
-    integer(ip), intent(out) :: rectangle_node(dim_num,rectangle_num)
+    character ( len = * ) rectangle_file_name
+    integer(int32) rectangle_node(dim_num,rectangle_num)
 
     call i4mat_data_read ( rectangle_file_name, dim_num, rectangle_num, &
       rectangle_node )
-  end subroutine bezier_surface_rectangle_read
+  end
 
-  subroutine bezier_surface_rectangle_size ( rectangle_file_name, rectangle_num ) &
-        bind(C, name="bezier_surface_rectangle_size")
+  subroutine bezier_surface_rectangle_size ( rectangle_file_name, rectangle_num )
 
   !*****************************************************************************80
   !
@@ -580,15 +566,14 @@ contains
   !    Output, integer NODE_NUM, the number of rectangles.
   !
 
-    character ( len = * ), intent(in) :: rectangle_file_name
-    integer(ip), intent(in), value :: rectangle_num
+    character ( len = * ) rectangle_file_name
+    integer(int32) rectangle_num
 
     call file_row_count ( rectangle_file_name, rectangle_num )
-  end subroutine bezier_surface_rectangle_size
+  end
 
   subroutine bezier_surface_rectangle_write ( rectangle_file_name, &
-    rectangle_num, rectangle_node ) &
-        bind(C, name="bezier_surface_rectangle_write")
+    rectangle_num, rectangle_node )
 
   !*****************************************************************************80
   !
@@ -617,19 +602,18 @@ contains
   !    make up each rectangle.
   !
 
-    integer(ip), parameter :: dim_num = 16
-    integer(ip), intent(in), value :: rectangle_num
+    integer(int32), parameter :: dim_num = 16
+    integer(int32) rectangle_num
 
     logical, parameter :: header = .true.
-    character ( len = * ), intent(in) :: rectangle_file_name
-    integer(ip), intent(in) :: rectangle_node(dim_num,rectangle_num)
+    character ( len = * ) rectangle_file_name
+    integer(int32) rectangle_node(dim_num,rectangle_num)
 
     call i4mat_write ( rectangle_file_name, dim_num, rectangle_num, &
       rectangle_node, header )
-  end subroutine bezier_surface_rectangle_write
+  end
 
-  subroutine i4row_compare ( m, n, a, i, j, isgn ) &
-        bind(C, name="i4row_compare")
+  subroutine i4row_compare ( m, n, a, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -682,14 +666,14 @@ contains
   !    +1, row J < row I.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(m,n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
-    integer(ip) :: k
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) k
   !
   !  Check that I and J are legal.
   !
@@ -742,10 +726,9 @@ contains
       k = k + 1
 
     end do
-  end subroutine i4row_compare
+  end
 
-  subroutine i4row_sort_a ( m, n, a ) &
-        bind(C, name="i4row_sort_a")
+  subroutine i4row_sort_a ( m, n, a )
 
   !*****************************************************************************80
   !
@@ -813,14 +796,14 @@ contains
   !    lexicographic order.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
 
     if ( m <= 1 ) then
     end if
@@ -860,10 +843,9 @@ contains
       end if
 
     end do
-  end subroutine i4row_sort_a
+  end
 
-  subroutine i4row_swap ( m, n, a, i1, i2 ) &
-        bind(C, name="i4row_swap")
+  subroutine i4row_swap ( m, n, a, i1, i2 )
 
   !*****************************************************************************80
   !
@@ -895,13 +877,13 @@ contains
   !    Input, integer I1, I2, the two rows to swap.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a(m,n)
-    integer(ip), intent(in), value :: i1
-    integer(ip), intent(in), value :: i2
-    integer(ip) :: row(n)
+    integer(int32) a(m,n)
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) row(n)
   !
   !  Check.
   !
@@ -925,10 +907,9 @@ contains
     row(1:n)  = a(i1,1:n)
     a(i1,1:n) = a(i2,1:n)
     a(i2,1:n) = row(1:n)
-  end subroutine i4row_swap
+  end
 
-  subroutine sort_heap_external ( n, indx, i, j, isgn ) &
-        bind(C, name="sort_heap_external")
+  subroutine sort_heap_external ( n, indx, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -996,16 +977,16 @@ contains
   !    0 <= ISGN means I is greater than or equal to J.
   !
 
-    integer(ip), intent(out) :: i
-    integer(ip), save :: i_save = 0
-    integer(ip), intent(inout) :: indx
-    integer(ip), intent(in), value :: isgn
-    integer(ip), intent(out) :: j
-    integer(ip), save :: j_save = 0
-    integer(ip), save :: k = 0
-    integer(ip), save :: k1 = 0
-    integer(ip), intent(in), value :: n
-    integer(ip), save :: n1 = 0
+    integer(int32) i
+    integer(int32), save :: i_save = 0
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32), save :: j_save = 0
+    integer(int32), save :: k = 0
+    integer(int32), save :: k1 = 0
+    integer(int32) n
+    integer(int32), save :: n1 = 0
   !
   !  INDX = 0: This is the first call.
   !
@@ -1109,6 +1090,6 @@ contains
       i = i_save
       j = j_save
     end if
-  end subroutine sort_heap_external
+  end
 
 end module bezier_surface_mod

@@ -1,23 +1,17 @@
-!> naca -- Modern Fortran 2018
+!> naca — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module naca_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: naca4_cambered, naca4_symmetric, r8vec_linspace, r8vec_max, r8vec_min
 
 contains
 
-  pure subroutine naca4_cambered ( m, p, t, c, n, xc, xu, yu, xl, yl ) &
-        bind(C, name="naca4_cambered")
+  subroutine naca4_cambered ( m, p, t, c, n, xc, xu, yu, xl, yl )
 
   !*****************************************************************************80
   !
@@ -44,74 +38,75 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) M, the maximum camber.
+  !    Input, real(real64) M, the maximum camber.
   !    0.0 < M.
   !
-  !    Input, real(dp) P, the location of maximum camber.
+  !    Input, real(real64) P, the location of maximum camber.
   !    0.0 < P < 1.0
   !
-  !    Input, real(dp) T, the maximum relative thickness.
+  !    Input, real(real64) T, the maximum relative thickness.
   !    0.0 < T <= 1.0
   !
-  !    Input, real(dp) C, the chord length.
+  !    Input, real(real64) C, the chord length.
   !    0.0 < C.
   !
-  !    Input, integer(ip) N, the number of sample points.
+  !    Input, integer(int32) N, the number of sample points.
   !
-  !    Input, real(dp) XC(N), points along the chord length.
+  !    Input, real(real64) XC(N), points along the chord length.  
   !    0.0 <= XC(*) <= C.
   !
-  !    Output, real(dp) XU(N), YU(N), XL(N), YL(N), for each value of
-  !    XC, measured along the camber line, the corresponding values (XU,YU)
+  !    Output, real(real64) XU(N), YU(N), XL(N), YL(N), for each value of 
+  !    XC, measured along the camber line, the corresponding values (XU,YU) 
   !    on the upper airfoil surface and (XL,YL) on the lower airfoil surface.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: m
-    real(dp), intent(in), value :: p
-    real(dp), intent(in), value :: t
-    real(dp), intent(in) :: xc(n)
-    real(dp), intent(out) :: xl(n)
-    real(dp), intent(out) :: xu(n)
-    real(dp), intent(out) :: yl(n)
-    real(dp), intent(out) :: yu(n)
-    real(dp) :: divisor
-    real(dp) :: dycdx
-    integer(ip) :: i
-    real(dp) :: theta
-    real(dp) :: yc
-    real(dp) :: yt
+    integer(int32) n
+
+    real(real64) c
+    real(real64) divisor
+    real(real64) dycdx
+    integer(int32) i
+    real(real64) m
+    real(real64) p
+    real(real64) t
+    real(real64) theta
+    real(real64) xc(n)
+    real(real64) xl(n)
+    real(real64) xu(n)
+    real(real64) yc
+    real(real64) yl(n)
+    real(real64) yt
+    real(real64) yu(n)
 
     do i = 1, n
 
-      if ( 0.0_dp <= xc(i) / c .and. xc(i) / c <= p ) then
+      if ( 0.0e+00_real64 <= xc(i) / c .and. xc(i) / c <= p ) then
         divisor = p ** 2
-      else if ( p <= xc(i) / c .and. xc(i) / c <= 1.0_dp ) then
-        divisor = ( 1.0_dp - p ) ** 2
+      else if ( p <= xc(i) / c .and. xc(i) / c <= 1.0e+00_real64 ) then
+        divisor = ( 1.0e+00_real64 - p ) ** 2
       else
-        divisor = 1.0_dp
+        divisor = 1.0e+00_real64
       end if
 
-      dycdx = 2.0_dp * m * ( p - xc(i) / c ) / divisor
+      dycdx = 2.0e+00_real64 * m * ( p - xc(i) / c ) / divisor
 
       theta = atan ( dycdx )
 
-      yt = 5.0_dp * t * c * ( &
-         0.2969_dp * sqrt ( xc(i) / c ) &
+      yt = 5.0e+00_real64 * t * c * ( &
+         0.2969e+00_real64 * sqrt ( xc(i) / c ) &
          + (((( &
-           - 0.1015_dp ) * ( xc(i) / c ) &
-           + 0.2843_dp ) * ( xc(i) / c ) &
-           - 0.3516_dp ) * ( xc(i) / c ) &
-           - 0.1260_dp ) * ( xc(i) / c ) )
+           - 0.1015e+00_real64 ) * ( xc(i) / c ) &
+           + 0.2843e+00_real64 ) * ( xc(i) / c ) &
+           - 0.3516e+00_real64 ) * ( xc(i) / c ) &
+           - 0.1260e+00_real64 ) * ( xc(i) / c ) )
 
-      if ( 0.0_dp <= xc(i) / c .and. xc(i) / c <= p ) then
-        yc = m * xc(i) * ( 2.0_dp * p - xc(i) / c ) / p ** 2
-      else if ( p <= xc(i) / c .and. xc(i) / c <= 1.0_dp ) then
-        yc = m * ( xc(i) - c ) * ( 2.0_dp * p - xc(i) / c - 1.0_dp ) &
-          / ( 1.0_dp - p ) ** 2
+      if ( 0.0e+00_real64 <= xc(i) / c .and. xc(i) / c <= p ) then
+        yc = m * xc(i) * ( 2.0e+00_real64 * p - xc(i) / c ) / p ** 2
+      else if ( p <= xc(i) / c .and. xc(i) / c <= 1.0e+00_real64 ) then
+        yc = m * ( xc(i) - c ) * ( 2.0e+00_real64 * p - xc(i) / c - 1.0e+00_real64 ) &
+          / ( 1.0e+00_real64 - p ) ** 2
       else
-        yc = 0.0_dp
+        yc = 0.0e+00_real64
       end if
 
       xu(i) = xc(i) - yt * sin ( theta )
@@ -120,10 +115,9 @@ contains
       yl(i) = yc - yt * cos ( theta )
 
     end do
-  end subroutine naca4_cambered
+  end
 
-  pure subroutine naca4_symmetric ( t, c, n, x, y ) &
-        bind(C, name="naca4_symmetric")
+  subroutine naca4_symmetric ( t, c, n, x, y )
 
   !*****************************************************************************80
   !
@@ -150,37 +144,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T, the maximum relative thickness.
+  !    Input, real(real64) T, the maximum relative thickness.
   !
-  !    Input, real(dp) C, the chord length.
+  !    Input, real(real64) C, the chord length.
   !
-  !    Input, integer(ip) N, the number of sample points.
+  !    Input, integer(int32) N, the number of sample points.
   !
-  !    Input, real(dp) X(N), points along the chord length.
+  !    Input, real(real64) X(N), points along the chord length.  
   !    0.0 <= X(*) <= C.
   !
-  !    Output, real(dp) Y(N), for each value of X, the corresponding
+  !    Output, real(real64) Y(N), for each value of X, the corresponding
   !    value of Y so that (X,Y) is on the upper wing surface, and (X,-Y) is on the
   !    lower wing surface.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: t
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(out) :: y(n)
+    integer(int32) n
 
-    y(1:n) = 5.0_dp * t * c * ( &
-      0.2969_dp * sqrt ( x(1:n) / c ) &
+    real(real64) c
+    real(real64) t
+    real(real64) x(n)
+    real(real64) y(n)
+
+    y(1:n) = 5.0e+00_real64 * t * c * ( &
+      0.2969e+00_real64 * sqrt ( x(1:n) / c ) &
       + (((( &
-        - 0.1015_dp ) * ( x(1:n) / c ) &
-        + 0.2843_dp ) * ( x(1:n) / c ) &
-        - 0.3516_dp ) * ( x(1:n) / c ) &
-        - 0.1260_dp ) * ( x(1:n) / c ) )
-  end subroutine naca4_symmetric
+        - 0.1015e+00_real64 ) * ( x(1:n) / c ) &
+        + 0.2843e+00_real64 ) * ( x(1:n) / c ) &
+        - 0.3516e+00_real64 ) * ( x(1:n) / c ) &
+        - 0.1260e+00_real64 ) * ( x(1:n) / c ) )
+  end
 
-  pure subroutine r8vec_linspace ( n, a, b, x ) &
-        bind(C, name="r8vec_linspace")
+  subroutine r8vec_linspace ( n, a, b, x )
 
   !*****************************************************************************80
   !
@@ -209,36 +203,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input, real(dp) A, B, the first and last entries.
+  !    Input, real(real64) A, B, the first and last entries.
   !
-  !    Output, real(dp) X(N), a vector of linearly spaced data.
+  !    Output, real(real64) X(N), a vector of linearly spaced data.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(out) :: x(n)
-    integer(ip) :: i
+    integer(int32) n
+
+    real(real64) a
+    real(real64) b
+    integer(int32) i
+    real(real64) x(n)
 
     if ( n == 1 ) then
 
-      x(1) = ( a + b ) / 2.0_dp
+      x(1) = ( a + b ) / 2.0e+00_real64
 
     else
 
       do i = 1, n
-        x(i) = ( real ( n - i, dp) * a   &
-               + real (     i - 1, dp) * b ) &
-               / real ( n     - 1, dp)
+        x(i) = ( real ( n - i, real64) * a   &
+               + real (     i - 1, real64) * b ) &
+               / real ( n     - 1, real64)
       end do
 
     end if
-  end subroutine r8vec_linspace
+  end
 
-  pure function r8vec_max ( n, a ) &
-        bind(C, name="r8vec_max")
+  function r8vec_max ( n, a )
 
   !*****************************************************************************80
   !
@@ -262,25 +256,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, real(dp) A(N), the array.
+  !    Input, real(real64) A(N), the array.
   !
-  !    Output, real(dp) R8VEC_MAX, the value of the largest entry.
+  !    Output, real(real64) R8VEC_MAX, the value of the largest entry.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a(n)
-    real(dp) :: r8vec_max
-    real(dp) :: value
+    integer(int32) n
+
+    real(real64) a(n)
+    real(real64) r8vec_max
+    real(real64) value
 
     value = maxval ( a(1:n) )
 
     r8vec_max = value
-  end function r8vec_max
+  end
 
-  pure function r8vec_min ( n, a ) &
-        bind(C, name="r8vec_min")
+  function r8vec_min ( n, a )
 
   !*****************************************************************************80
   !
@@ -304,21 +298,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, real(dp) A(N), the array.
+  !    Input, real(real64) A(N), the array.
   !
-  !    Output, real(dp) R8VEC_MIN, the value of the smallest entry.
+  !    Output, real(real64) R8VEC_MIN, the value of the smallest entry.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a(n)
-    real(dp) :: r8vec_min
-    real(dp) :: value
+    integer(int32) n
+
+    real(real64) a(n)
+    real(real64) r8vec_min
+    real(real64) value
 
     value = minval ( a(1:n) )
 
     r8vec_min = value
-  end function r8vec_min
+  end
 
 end module naca_mod

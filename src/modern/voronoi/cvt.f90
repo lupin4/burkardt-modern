@@ -1,16 +1,11 @@
-!> cvt — Modern Fortran 2018
+!> cvt â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module cvt_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: cvt, cvt_energy, cvt_iterate, cvt_sample, data_read, find_closest
   public :: halham_leap_check, halham_n_check, halham_dim_num_check, halham_seed_check, halham_step_check, halton_base_check
@@ -20,8 +15,7 @@ module cvt_mod
 contains
 
   subroutine cvt ( dim_num, n, batch, init, sample, sample_num, it_max, &
-    it_fixed, seed, r, it_num, it_diff, energy ) &
-        bind(C, name="cvt")
+    it_fixed, seed, r, it_num, it_diff, energy )
 
   !*****************************************************************************80
   !
@@ -63,17 +57,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of Voronoi cells.
+  !    Input, integer(int32) N, the number of Voronoi cells.
   !
-  !    Input, integer(ip) BATCH, sets the maximum number of sample points
+  !    Input, integer(int32) BATCH, sets the maximum number of sample points
   !    generated at one time.  It is inefficient to generate the sample
   !    points 1 at a time, but memory intensive to generate them all
   !    at once.  You might set BATCH to min ( SAMPLE_NUM, 10000 ), for instance.
   !    BATCH must be at least 1.
   !
-  !    Input, integer(ip) INIT, specifies how the points are to be 
+  !    Input, integer(int32) INIT, specifies how the points are to be 
   !    initialized.
   !    -1, 'RANDOM', using FORTRAN RANDOM function;
   !     0, 'UNIFORM', using a simple uniform RNG;
@@ -82,56 +76,56 @@ contains
   !     3, 'USER', call "user" routine;
   !     4, points are already initialized on input.
   !
-  !    Input, integer(ip) SAMPLE, specifies how the sampling is done.
+  !    Input, integer(int32) SAMPLE, specifies how the sampling is done.
   !    -1, 'RANDOM', using FORTRAN RANDOM function;
   !     0, 'UNIFORM', using a simple uniform RNG;
   !     1, 'HALTON', from a Halton sequence;
   !     2, 'GRID', points from a grid;
   !     3, 'USER', call "user" routine.
   !
-  !    Input, integer(ip) SAMPLE_NUM, the number of sample points.
+  !    Input, integer(int32) SAMPLE_NUM, the number of sample points.
   !
-  !    Input, integer(ip) IT_MAX, the maximum number of iterations.
+  !    Input, integer(int32) IT_MAX, the maximum number of iterations.
   !
-  !    Input, integer(ip) IT_FIXED, the maximum number of iterations to 
+  !    Input, integer(int32) IT_FIXED, the maximum number of iterations to 
   !    take with a fixed set of sample points.
   !
-  !    Input/output, integer(ip) SEED, the current random number seed.
+  !    Input/output, integer(int32) SEED, the current random number seed.
   !
-  !    Input/output, real(dp) R(DIM_NUM,N), the approximate CVT points.
+  !    Input/output, real(real64) R(DIM_NUM,N), the approximate CVT points.
   !    If INIT = 4 on input, then it is assumed that these values have been
   !    initialized.  On output, the CVT iteration has been applied to improve
   !    the value of the points.
   !
-  !    Output, integer(ip) IT_NUM, the number of iterations taken.  
+  !    Output, integer(int32) IT_NUM, the number of iterations taken.  
   !    Generally, this will be equal to IT_MAX, unless the iteration tolerance was
   !    satisfied early.
   !
-  !    Output, real(dp) IT_DIFF, the L2 norm of the difference
+  !    Output, real(real64) IT_DIFF, the L2 norm of the difference
   !    between the iterates.
   !
-  !    Output, real(dp) ENERGY, the discrete "energy", divided
+  !    Output, real(real64) ENERGY, the discrete "energy", divided
   !    by the number of sample points.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
+    integer(int32) dim_num
+    integer(int32) n
 
-    integer(ip), intent(in), value :: batch
+    integer(int32) batch
     logical, parameter :: DEBUG = .true.
-    real(dp), intent(out) :: energy
-    integer(ip), intent(in), value :: init
-    logical :: initialize
-    real(dp), intent(out) :: it_diff
-    integer(ip), intent(in), value :: it_fixed
-    integer(ip), intent(in), value :: it_max
-    integer(ip), intent(out) :: it_num
-    real(dp), intent(inout) :: r(dim_num,n)
-    integer(ip), intent(in), value :: sample
-    integer(ip), intent(in), value :: sample_num
-    integer(ip), intent(inout) :: seed
-    integer(ip) :: seed_base
-    integer(ip) :: seed_init
+    real(real64) energy
+    integer(int32) init
+    logical initialize
+    real(real64) it_diff
+    integer(int32) it_fixed
+    integer(int32) it_max
+    integer(int32) it_num
+    real(real64) r(dim_num,n)
+    integer(int32) sample
+    integer(int32) sample_num
+    integer(int32) seed
+    integer(int32) seed_base
+    integer(int32) seed_init
 
     if ( batch < 1 ) then
       write ( *, '(a)' ) ' '
@@ -154,8 +148,8 @@ contains
     end if
 
     it_num = 0
-    it_diff = 0.0_dp
-    energy = 0.0_dp
+    it_diff = 0.0e+00_real64
+    energy = 0.0e+00_real64
     seed_init = seed
   !
   !  Initialize the data unless the user has already done that.
@@ -217,11 +211,10 @@ contains
       end if
 
     end do
-  end subroutine cvt
+  end
 
   subroutine cvt_energy ( dim_num, n, batch, sample, initialize, sample_num, &
-    seed, r, energy ) &
-        bind(C, name="cvt_energy")
+    seed, r, energy )
 
   !*****************************************************************************80
   !
@@ -249,14 +242,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of generators.
+  !    Input, integer(int32) N, the number of generators.
   !
-  !    Input, integer(ip) BATCH, the maximum number of sample points 
+  !    Input, integer(int32) BATCH, the maximum number of sample points 
   !    to generate at one time.
   !
-  !    Input, integer(ip) SAMPLE, specifies how the sampling is done.
+  !    Input, integer(int32) SAMPLE, specifies how the sampling is done.
   !    -1, 'RANDOM', using FORTRAN RANDOM function;
   !     0, 'UNIFORM', using a simple uniform RNG;
   !     1, 'HALTON', from a Halton sequence;
@@ -266,34 +259,34 @@ contains
   !    Input, logical INITIALIZE, is TRUE if the pseudorandom process should be
   !    reinitialized.
   !
-  !    Input, integer(ip) SAMPLE_NUM, the number of sample points to use.
+  !    Input, integer(int32) SAMPLE_NUM, the number of sample points to use.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Input, real(dp) R(DIM_NUM,N), the coordinates of the points.
+  !    Input, real(real64) R(DIM_NUM,N), the coordinates of the points.
   !
-  !    Output, real(dp) ENERGY, the estimated CVT energy.
+  !    Output, real(real64) ENERGY, the estimated CVT energy.
   !
 
-    integer(ip), intent(in), value :: batch
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
+    integer(int32) batch
+    integer(int32) dim_num
+    integer(int32) n
 
-    real(dp), intent(out) :: energy
-    integer(ip) :: get
-    integer(ip) :: have
-    logical, intent(in), value :: initialize
-    integer(ip) :: j
-    integer(ip) :: nearest(batch)
-    real(dp), intent(in) :: r(dim_num,n)
-    real(dp) :: s(dim_num,batch)
-    integer(ip), intent(in), value :: sample
-    integer(ip), intent(in), value :: sample_num
-    integer(ip), intent(inout) :: seed
+    real(real64) energy
+    integer(int32) get
+    integer(int32) have
+    logical initialize
+    integer(int32) j
+    integer(int32) nearest(batch)
+    real(real64) r(dim_num,n)
+    real(real64) s(dim_num,batch)
+    integer(int32) sample
+    integer(int32) sample_num
+    integer(int32) seed
 
     have = 0
-    energy = 0.0_dp
+    energy = 0.0e+00_real64
 
     do while ( have < sample_num )
 
@@ -313,12 +306,11 @@ contains
 
     end do
 
-    energy = energy / real ( sample_num, dp)
-  end subroutine cvt_energy
+    energy = energy / real ( sample_num, real64)
+  end
 
   subroutine cvt_iterate ( dim_num, n, batch, sample, initialize, sample_num, &
-    seed, r, it_diff, energy ) &
-        bind(C, name="cvt_iterate")
+    seed, r, it_diff, energy )
 
   !*****************************************************************************80
   !
@@ -367,17 +359,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points to generate.
+  !    Input, integer(int32) N, the number of points to generate.
   !
-  !    Input, integer(ip) BATCH, sets the maximum number of sample points
+  !    Input, integer(int32) BATCH, sets the maximum number of sample points
   !    generated at one time.  It is inefficient to generate the sample
   !    points 1 at a time, but memory intensive to generate them all
   !    at once.  You might set BATCH to min ( SAMPLE_NUM, 10000 ), for instance.
   !    BATCH must be at least 1.
   !
-  !    Input, integer(ip) SAMPLE, specifies how the sampling is done.
+  !    Input, integer(int32) SAMPLE, specifies how the sampling is done.
   !    -1, 'RANDOM', using FORTRAN RANDOM function;
   !     0, 'UNIFORM', using a simple uniform RNG;
   !     1, 'HALTON', from a Halton sequence;
@@ -387,45 +379,45 @@ contains
   !    Input, logical INITIALIZE, is TRUE if the random number generator
   !    should be initialized, because this is the first call to it.
   !
-  !    Input, integer(ip) SAMPLE_NUM, the number of sample points.
+  !    Input, integer(int32) SAMPLE_NUM, the number of sample points.
   !
-  !    Input/output, integer(ip) SEED, the random number seed.
+  !    Input/output, integer(int32) SEED, the random number seed.
   !
-  !    Input/output, real(dp) R(DIM_NUM,N), the Voronoi
+  !    Input/output, real(real64) R(DIM_NUM,N), the Voronoi
   !    cell generators.  On output, these have been modified
   !
-  !    Output, real(dp) IT_DIFF, the L2 norm of the difference
+  !    Output, real(real64) IT_DIFF, the L2 norm of the difference
   !    between the iterates.
   !
-  !    Output, real(dp) ENERGY, the discrete "energy", divided
+  !    Output, real(real64) ENERGY, the discrete "energy", divided
   !    by the number of sample points.
   !
 
-    integer(ip), intent(in), value :: batch
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: sample_num
+    integer(int32) batch
+    integer(int32) dim_num
+    integer(int32) n
+    integer(int32) sample_num
 
-    integer(ip) :: count(n)
-    real(dp), intent(out) :: energy
-    integer(ip) :: get
-    integer(ip) :: have
-    logical, intent(out) :: initialize
-    real(dp), intent(out) :: it_diff
-    integer(ip) :: j
-    integer(ip) :: nearest(batch)
-    real(dp), intent(inout) :: r(dim_num,n)
-    real(dp) :: r2(dim_num,n)
-    real(dp) :: s(dim_num,batch)
-    integer(ip), intent(in), value :: sample
-    integer(ip), intent(inout) :: seed
+    integer(int32) count(n)
+    real(real64) energy
+    integer(int32) get
+    integer(int32) have
+    logical initialize
+    real(real64) it_diff
+    integer(int32) j
+    integer(int32) nearest(batch)
+    real(real64) r(dim_num,n)
+    real(real64) r2(dim_num,n)
+    real(real64) s(dim_num,batch)
+    integer(int32) sample
+    integer(int32) seed
   !
   !  Take each generator as the first sample point for its region.
   !  This can slightly slow the convergence, but it simplifies the
   !  algorithm by guaranteeing that no region is completely missed
   !  by the sampling.
   !
-    energy = 0.0_dp
+    energy = 0.0e+00_real64
     r2(1:dim_num,1:n) = r(1:dim_num,1:n)
     count(1:n) = 1
   !
@@ -459,13 +451,13 @@ contains
   !  Estimate the centroids.
   !
     do j = 1, n
-      r2(1:dim_num,j) = r2(1:dim_num,j) / real ( count(j), dp)
+      r2(1:dim_num,j) = r2(1:dim_num,j) / real ( count(j), real64)
     end do
   !
   !  Determine the sum of the distances between the old generators 
   !  and the estimated centroids.
   !
-    it_diff = 0.0_dp
+    it_diff = 0.0e+00_real64
     do j = 1, n
       it_diff = it_diff + sqrt ( sum ( ( r2(1:dim_num,j) - r(1:dim_num,j) )**2 ) )
     end do
@@ -476,11 +468,10 @@ contains
   !
   !  Normalize the discrete energy estimate.
   !
-    energy = energy / real ( sample_num, dp) 
-  end subroutine cvt_iterate
+    energy = energy / real ( sample_num, real64) 
+  end
 
-  subroutine cvt_sample ( dim_num, n, n_now, sample, initialize, seed, r ) &
-        bind(C, name="cvt_sample")
+  subroutine cvt_sample ( dim_num, n, n_now, sample, initialize, seed, r )
 
   !*****************************************************************************80
   !
@@ -515,14 +506,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of sample points to be generated.
+  !    Input, integer(int32) N, the number of sample points to be generated.
   !
-  !    Input, integer(ip) N_NOW, the number of sample points to be 
+  !    Input, integer(int32) N_NOW, the number of sample points to be 
   !    generated on this call.  N_NOW must be at least 1.
   !
-  !    Input, integer(ip) SAMPLE, specifies how the sampling is done.
+  !    Input, integer(int32) SAMPLE, specifies how the sampling is done.
   !    -1, 'RANDOM', using FORTRAN RANDOM function;
   !     0, 'UNIFORM', using a simple uniform RNG;
   !     1, 'HALTON', from a Halton sequence;
@@ -532,31 +523,31 @@ contains
   !    Input, logical INITIALIZE, is TRUE if the pseudorandom process should be
   !    reinitialized.
   !
-  !    Input/output, integer(ip) SEED, the random number seed.
+  !    Input/output, integer(int32) SEED, the random number seed.
   !
-  !    Output, real(dp) R(DIM_NUM,N_NOW), the sample points.
+  !    Output, real(real64) R(DIM_NUM,N_NOW), the sample points.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n_now
+    integer(int32) dim_num
+    integer(int32) n_now
 
-    real(dp) :: exponent
-    integer(ip), allocatable, dimension ( : ) :: halton_base
-    integer(ip), allocatable, dimension ( : ) :: halton_leap
-    integer(ip), allocatable, dimension ( : ) :: halton_seed
-    integer(ip) :: halton_step
-    integer(ip) :: i
-    logical, intent(in), value :: initialize
-    integer(ip) :: j
-    integer(ip), intent(in), value :: n
-    integer(ip) :: ngrid
-    integer(ip) :: prime
-    real(dp), intent(out) :: r(dim_num,n_now)
-    integer(ip) :: rank
-    integer(ip) :: rank_max
-    integer(ip), intent(in), value :: sample
-    integer(ip), intent(inout) :: seed
-    integer(ip), allocatable, dimension ( : ) :: tuple
+    real(real64) exponent
+    integer(int32), allocatable, dimension ( : ) :: halton_base
+    integer(int32), allocatable, dimension ( : ) :: halton_leap
+    integer(int32), allocatable, dimension ( : ) :: halton_seed
+    integer(int32) halton_step
+    integer(int32) i
+    logical initialize
+    integer(int32) j
+    integer(int32) n
+    integer(int32) ngrid
+    integer(int32) prime
+    real(real64) r(dim_num,n_now)
+    integer(int32) rank
+    integer(int32) rank_max
+    integer(int32) sample
+    integer(int32) seed
+    integer(int32), allocatable, dimension ( : ) :: tuple
 
     if ( n_now < 1 ) then
       write ( *, '(a)' ) ' '
@@ -606,8 +597,8 @@ contains
 
       allocate ( tuple(1:dim_num) )
 
-      exponent = 1.0_dp / real ( dim_num, dp)
-      ngrid = int ( ( real ( n, dp) )**exponent )
+      exponent = 1.0e+00_real64 / real ( dim_num, real64)
+      ngrid = int ( ( real ( n, real64) )**exponent )
       rank_max = ngrid**dim_num
 
       if ( rank_max < n ) then
@@ -626,8 +617,8 @@ contains
         call tuple_next_fast ( ngrid, dim_num, rank, tuple )
         rank = rank + 1
         rank = mod ( rank, rank_max )
-        r(1:dim_num,j) = real ( 2 * tuple(1:dim_num) - 1, dp) &
-          / real ( 2 * ngrid, dp)
+        r(1:dim_num,j) = real ( 2 * tuple(1:dim_num) - 1, real64) &
+          / real ( 2 * ngrid, real64)
       end do
 
       seed = seed + n_now
@@ -646,10 +637,9 @@ contains
       stop
 
     end if
-  end subroutine cvt_sample
+  end
 
-  subroutine data_read ( file_in_name, dim_num, n, r, success ) &
-        bind(C, name="data_read")
+  subroutine data_read ( file_in_name, dim_num, n, r, success )
 
   !*****************************************************************************80
   !
@@ -683,28 +673,28 @@ contains
   !
   !    Input, character ( len = * ) FILE_IN_NAME, the name of the input file.
   !
-  !    Input, integer(ip) DIM_NUM, the number of spatial dimensions.
+  !    Input, integer(int32) DIM_NUM, the number of spatial dimensions.
   !
-  !    Input, integer(ip) N, the number of points.  The program
+  !    Input, integer(int32) N, the number of points.  The program
   !    will stop reading data once N values have been read.
   !
-  !    Output, real(dp) R(DIM_NUM,N), the point coordinates.
+  !    Output, real(real64) R(DIM_NUM,N), the point coordinates.
   !
   !    Output, logical SUCCESS, is TRUE if the data was read properly.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
+    integer(int32) dim_num
+    integer(int32) n
 
-    character ( len = * ), intent(in) :: file_in_name
-    integer(ip) :: file_in_unit
-    integer(ip) :: i
-    integer(ip) :: ierror
-    integer(ip) :: ios
-    character ( len = 255 ) :: line
-    real(dp), intent(out) :: r(dim_num,n)
-    logical, intent(out) :: success
-    real(dp) :: x(dim_num)
+    character ( len = * ) file_in_name
+    integer(int32) file_in_unit
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) ios
+    character ( len = 255 ) line
+    real(real64) r(dim_num,n)
+    logical success
+    real(real64) x(dim_num)
 
     success = .true.
 
@@ -752,10 +742,9 @@ contains
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'DATA_READ:'
     write ( *, '(a,i6)' ) '  Read coordinate data from file.'
-  end subroutine data_read
+  end
 
-  pure subroutine find_closest ( dim_num, n, sample_num, s, r, nearest ) &
-        bind(C, name="find_closest")
+  subroutine find_closest ( dim_num, n, sample_num, s, r, nearest )
 
   !*****************************************************************************80
   !
@@ -782,31 +771,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of cell generators.
+  !    Input, integer(int32) N, the number of cell generators.
   !
-  !    Input, integer(ip) SAMPLE_NUM, the number of sample points.
+  !    Input, integer(int32) SAMPLE_NUM, the number of sample points.
   !
-  !    Input, real(dp) S(DIM_NUM,SAMPLE_NUM), the points to be checked.
+  !    Input, real(real64) S(DIM_NUM,SAMPLE_NUM), the points to be checked.
   !
-  !    Input, real(dp) R(DIM_NUM,N), the cell generators.
+  !    Input, real(real64) R(DIM_NUM,N), the cell generators.
   !
-  !    Output, integer(ip) NEAREST(SAMPLE_NUM), the index of the nearest 
+  !    Output, integer(int32) NEAREST(SAMPLE_NUM), the index of the nearest 
   !    cell generators.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: sample_num
+    integer(int32) dim_num
+    integer(int32) n
+    integer(int32) sample_num
 
-    real(dp) :: dist_sq_min
-    real(dp) :: dist_sq
-    integer(ip) :: jr
-    integer(ip) :: js
-    integer(ip), intent(out) :: nearest(sample_num)
-    real(dp), intent(in) :: r(dim_num,n)
-    real(dp), intent(in) :: s(dim_num,sample_num)
+    real(real64) dist_sq_min
+    real(real64) dist_sq
+    integer(int32) jr
+    integer(int32) js
+    integer(int32) nearest(sample_num)
+    real(real64) r(dim_num,n)
+    real(real64) s(dim_num,sample_num)
 
     do js = 1, sample_num
 
@@ -825,10 +814,9 @@ contains
       end do
 
     end do
-  end subroutine find_closest
+  end
 
-  function halham_leap_check ( dim_num, leap ) &
-        bind(C, name="halham_leap_check")
+  function halham_leap_check ( dim_num, leap )
 
   !*****************************************************************************80
   !
@@ -848,17 +836,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) LEAP(DIM_NUM), the leap vector.
+  !    Input, integer(int32) LEAP(DIM_NUM), the leap vector.
   !
   !    Output, logical, HALHAM_LEAP_CHECK, true if LEAP is legal.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    logical :: halham_leap_check
-    integer(ip), intent(in) :: leap(dim_num)
+    logical halham_leap_check
+    integer(int32) leap(dim_num)
 
     if ( any ( leap(1:dim_num) < 1 ) ) then
       write ( *, '(a)' ) ' '
@@ -870,10 +858,9 @@ contains
     else
       halham_leap_check = .true.
     end if
-  end function halham_leap_check
+  end
 
-  function halham_n_check ( n ) &
-        bind(C, name="halham_n_check")
+  function halham_n_check ( n )
 
   !*****************************************************************************80
   !
@@ -893,13 +880,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
   !    Output, logical HALHAM_N_CHECK, true if N is legal.
   !
 
-    logical :: halham_n_check
-    integer(ip), intent(in), value :: n
+    logical halham_n_check
+    integer(int32) n
 
     if ( n < 1 ) then
       write ( *, '(a)' ) ' '
@@ -910,10 +897,9 @@ contains
     else
       halham_n_check = .true.
     end if
-  end function halham_n_check
+  end
 
-  function halham_dim_num_check ( dim_num ) &
-        bind(C, name="halham_dim_num_check")
+  function halham_dim_num_check ( dim_num )
 
   !*****************************************************************************80
   !
@@ -933,13 +919,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
   !    Output, logical HALHAM_DIM_NUM_CHECK, true if DIM_NUM is legal.
   !
 
-    logical :: halham_dim_num_check
-    integer(ip), intent(in), value :: dim_num
+    logical halham_dim_num_check
+    integer(int32) dim_num
 
     if ( dim_num < 1 ) then
       write ( *, '(a)' ) ' '
@@ -950,10 +936,9 @@ contains
     else
       halham_dim_num_check = .true.
     end if
-  end function halham_dim_num_check
+  end
 
-  function halham_seed_check ( dim_num, seed ) &
-        bind(C, name="halham_seed_check")
+  function halham_seed_check ( dim_num, seed )
 
   !*****************************************************************************80
   !
@@ -973,17 +958,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) SEED(DIM_NUM), the seed vector.
+  !    Input, integer(int32) SEED(DIM_NUM), the seed vector.
   !
   !    Output, logical, HALHAM_SEED_CHECK, true if SEED is legal.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    logical :: halham_seed_check
-    integer(ip), intent(in) :: seed(dim_num)
+    logical halham_seed_check
+    integer(int32) seed(dim_num)
 
     if ( any ( seed(1:dim_num) < 0 ) ) then
       write ( *, '(a)' ) ' '
@@ -995,10 +980,9 @@ contains
     else
       halham_seed_check = .true.
     end if
-  end function halham_seed_check
+  end
 
-  function halham_step_check ( step ) &
-        bind(C, name="halham_step_check")
+  function halham_step_check ( step )
 
   !*****************************************************************************80
   !
@@ -1018,13 +1002,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) STEP, the index of the subsequence element.
+  !    Input, integer(int32) STEP, the index of the subsequence element.
   !
   !    Output, logical HALHAM_STEP_CHECK, true if STEP is legal.
   !
 
-    logical :: halham_step_check
-    integer(ip), intent(in), value :: step
+    logical halham_step_check
+    integer(int32) step
 
     if ( step < 0 ) then
       write ( *, '(a)' ) ' '
@@ -1035,10 +1019,9 @@ contains
     else
       halham_step_check = .true.
     end if
-  end function halham_step_check
+  end
 
-  function halton_base_check ( dim_num, base ) &
-        bind(C, name="halton_base_check")
+  function halton_base_check ( dim_num, base )
 
   !*****************************************************************************80
   !
@@ -1058,17 +1041,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) BASE(DIM_NUM), the bases.
+  !    Input, integer(int32) BASE(DIM_NUM), the bases.
   !
   !    Output, logical, HALTON_BASE_CHECK, true if BASE is legal.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    integer(ip), intent(in) :: base(dim_num)
-    logical :: halton_base_check
+    integer(int32) base(dim_num)
+    logical halton_base_check
 
     if ( any ( base(1:dim_num) <= 1 ) ) then
       write ( *, '(a)' ) ' '
@@ -1080,10 +1063,9 @@ contains
     else
       halton_base_check = .true.
     end if
-  end function halton_base_check
+  end
 
-  subroutine i4_to_halton_sequence ( dim_num, n, step, seed, leap, base, r ) &
-        bind(C, name="i4_to_halton_sequence")
+  subroutine i4_to_halton_sequence ( dim_num, n, step, seed, leap, base, r )
 
   !*****************************************************************************80
   !
@@ -1135,45 +1117,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !    1 <= DIM_NUM is required.
   !
-  !    Input, integer(ip) N, the number of elements of the sequence.
+  !    Input, integer(int32) N, the number of elements of the sequence.
   !
-  !    Input, integer(ip) STEP, the index of the subsequence element.
+  !    Input, integer(int32) STEP, the index of the subsequence element.
   !    0 <= STEP is required.
   !
-  !    Input, integer(ip) SEED(DIM_NUM), the Halton sequence index 
+  !    Input, integer(int32) SEED(DIM_NUM), the Halton sequence index 
   !    corresponding to STEP = 0.
   !
-  !    Input, integer(ip) LEAP(DIM_NUM), the succesive jumps in the 
+  !    Input, integer(int32) LEAP(DIM_NUM), the succesive jumps in the 
   !    Halton sequence.
   !
-  !    Input, integer(ip) BASE(DIM_NUM), the Halton bases.
+  !    Input, integer(int32) BASE(DIM_NUM), the Halton bases.
   !
-  !    Output, real(dp) R(DIM_NUM,N), the next N elements of the
+  !    Output, real(real64) R(DIM_NUM,N), the next N elements of the
   !    leaped Halton subsequence, beginning with element STEP.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
+    integer(int32) dim_num
+    integer(int32) n
 
-    integer(ip), intent(in) :: base(dim_num)
-    real(dp) :: base_inv
-    integer(ip) :: digit(n)
-    logical :: halham_leap_check
-    logical :: halham_n_check
-    logical :: halham_dim_num_check
-    logical :: halham_seed_check
-    logical :: halham_step_check
-    logical :: halton_base_check
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in) :: leap(dim_num)
-    real(dp), intent(out) :: r(dim_num,n)
-    integer(ip), intent(in) :: seed(dim_num)
-    integer(ip) :: seed2(n)
-    integer(ip), intent(in), value :: step
+    integer(int32) base(dim_num)
+    real(real64) base_inv
+    integer(int32) digit(n)
+    logical halham_leap_check
+    logical halham_n_check
+    logical halham_dim_num_check
+    logical halham_seed_check
+    logical halham_step_check
+    logical halton_base_check
+    integer(int32) i
+    integer(int32) j
+    integer(int32) leap(dim_num)
+    real(real64) r(dim_num,n)
+    integer(int32) seed(dim_num)
+    integer(int32) seed2(n)
+    integer(int32) step
   !
   !  Check the input.
   !
@@ -1203,7 +1185,7 @@ contains
   !
   !  Calculate the data.
   !
-    r(1:dim_num,1:n) = 0.0_dp
+    r(1:dim_num,1:n) = 0.0e+00_real64
 
     do i = 1, dim_num
 
@@ -1211,20 +1193,19 @@ contains
         seed2(j) = seed(i) + ( step + j - 1 ) * leap(i)
       end do
 
-      base_inv = real ( 1.0_dp, dp) / real ( base(i), dp)
+      base_inv = real ( 1.0e+00_real64, real64) / real ( base(i), real64)
 
       do while ( any ( seed2(1:n) /= 0 ) )
         digit(1:n) = mod ( seed2(1:n), base(i) )
-        r(i,1:n) = r(i,1:n) + real ( digit(1:n), dp) * base_inv
-        base_inv = base_inv / real ( base(i), dp)
+        r(i,1:n) = r(i,1:n) + real ( digit(1:n), real64) * base_inv
+        base_inv = base_inv / real ( base(i), real64)
         seed2(1:n) = seed2(1:n) / base(i)
       end do
 
     end do
-  end subroutine i4_to_halton_sequence
+  end
 
-  subroutine i4vec_transpose_print ( n, a, title ) &
-        bind(C, name="i4vec_transpose_print")
+  subroutine i4vec_transpose_print ( n, a, title )
 
   !*****************************************************************************80
   !
@@ -1253,22 +1234,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of components of the vector.
+  !    Input, integer(int32) N, the number of components of the vector.
   !
-  !    Input, integer(ip) A(N), the vector to be printed.
+  !    Input, integer(int32) A(N), the vector to be printed.
   !
   !    Input, character ( len = * ) TITLE, a title to be printed first.
   !    TITLE may be blank.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in) :: a(n)
-    integer(ip) :: ihi
-    integer(ip) :: ilo
-    character ( len = 11 ) :: string
-    character ( len = * ), intent(in) :: title
-    integer(ip) :: title_len
+    integer(int32) a(n)
+    integer(int32) ihi
+    integer(int32) ilo
+    character ( len = 11 ) string
+    character ( len = * ) title
+    integer(int32) title_len
 
     if ( 0 < len_trim ( title ) ) then
 
@@ -1293,10 +1274,9 @@ contains
       end do
 
     end if
-  end subroutine i4vec_transpose_print
+  end
 
-  function prime ( n ) &
-        bind(C, name="prime")
+  function prime ( n )
 
   !*****************************************************************************80
   !
@@ -1333,21 +1313,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the index of the desired prime number.
+  !    Input, integer(int32) N, the index of the desired prime number.
   !    In general, is should be true that 0 <= N <= PRIME_MAX.
   !    N = -1 returns PRIME_MAX, the index of the largest prime available.
   !    N = 0 is legal, returning PRIME = 1.
   !
-  !    Output, integer(ip) PRIME, the N-th prime.  If N is out of range,
+  !    Output, integer(int32) PRIME, the N-th prime.  If N is out of range,
   !    PRIME is returned as -1.
   !
 
-    integer(ip), parameter :: prime_max = 1600
+    integer(int32), parameter :: prime_max = 1600
 
-    integer(ip), save :: icall = 0
-    integer(ip), intent(in), value :: n
-    integer(ip), save, dimension ( prime_max ) :: npvec
-    integer(ip) :: prime
+    integer(int32), save :: icall = 0
+    integer(int32) n
+    integer(int32), save, dimension ( prime_max ) :: npvec
+    integer(int32) prime
 
     if ( icall == 0 ) then
 
@@ -1561,10 +1541,9 @@ contains
       write ( *, '(a,i6)' ) '  N should be between 1 and PRIME_MAX =', prime_max
       stop
     end if
-  end function prime
+  end
 
-  pure subroutine r8mat_uniform_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_uniform_01")
+  subroutine r8mat_uniform_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -1597,23 +1576,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip)M, N, the number of rows and columns in 
+  !    Input, integer(int32)M, N, the number of rows and columns in 
   !    the array.
   !
-  !    Input/output, integer(ip)SEED, the "seed" value, which should 
+  !    Input/output, integer(int32)SEED, the "seed" value, which should 
   !    NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudorandom values.
+  !    Output, real(real64) R(M,N), the array of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32)m
+    integer(int32)n
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(out) :: seed
-    real(dp), intent(out) :: r(m,n)
+    integer(int32)i
+    integer(int32)j
+    integer(int32)k
+    integer(int32)seed
+    real(real64) r(m,n)
 
     do j = 1, n
 
@@ -1627,14 +1606,13 @@ contains
           seed = seed + 2147483647
         end if
 
-        r(i,j) = real ( seed, dp) * 4.656612875E-10
+        r(i,j) = real ( seed, real64) * 4.656612875E-10
 
       end do
     end do
-  end subroutine r8mat_uniform_01
+  end
 
-  subroutine s_cap ( s ) &
-        bind(C, name="s_cap")
+  subroutine s_cap ( s )
 
   !*****************************************************************************80
   !
@@ -1657,10 +1635,10 @@ contains
   !    Input/output, character ( len = * ) S, the string to be transformed.
   !
 
-    character :: c
-    integer(ip) :: i
-    integer :: nchar
-    character ( len = * ), intent(inout) :: s
+    character c
+    integer(int32) i
+    integer nchar
+    character ( len = * ) s
 
     nchar = len_trim ( s )
 
@@ -1671,10 +1649,9 @@ contains
       s(i:i) = c
 
     end do
-  end subroutine s_cap
+  end
 
-  function s_eqi ( s1, s2 ) &
-        bind(C, name="s_eqi")
+  function s_eqi ( s1, s2 )
 
   !*****************************************************************************80
   !
@@ -1703,15 +1680,15 @@ contains
   !    Output, logical S_EQI, the result of the comparison.
   !
 
-    character :: c1
-    character :: c2
-    integer(ip) :: i
-    integer(ip) :: len1
-    integer(ip) :: len2
-    integer(ip) :: lenc
-    logical :: s_eqi
-    character ( len = * ), intent(in) :: s1
-    character ( len = * ), intent(in) :: s2
+    character c1
+    character c2
+    integer(int32) i
+    integer(int32) len1
+    integer(int32) len2
+    integer(int32) lenc
+    logical s_eqi
+    character ( len = * ) s1
+    character ( len = * ) s2
 
     len1 = len ( s1 )
     len2 = len ( s2 )
@@ -1742,10 +1719,9 @@ contains
     end do
 
     s_eqi = .true.
-  end function s_eqi
+  end
 
-  subroutine tuple_next_fast ( m, n, rank, x ) &
-        bind(C, name="tuple_next_fast")
+  subroutine tuple_next_fast ( m, n, rank, x )
 
   !*****************************************************************************80
   !
@@ -1799,30 +1775,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the maximum entry in any component.
+  !    Input, integer(int32) M, the maximum entry in any component.
   !    M must be greater than 0.
   !
-  !    Input, integer(ip) N, the number of components.
+  !    Input, integer(int32) N, the number of components.
   !    N must be greater than 0.
   !
-  !    Input, integer(ip) RANK, indicates the rank of the tuple.
+  !    Input, integer(int32) RANK, indicates the rank of the tuple.
   !    Typically, 0 <= RANK < N**M.  Values of RANK greater than
   !    N**M are legal and meaningful; they are equivalent to the
   !    corresponding value mod (N**M).  If RANK < 0, this indicates 
   !    that this is the first call for the given values of (M,N).  
   !    Initialization is done, and X is set to a dummy value.
   !
-  !    Output, integer(ip) X(N), the next tuple, or a dummy value if
+  !    Output, integer(int32) X(N), the next tuple, or a dummy value if
   !    initialization has just been done.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), save, allocatable, dimension ( : ) :: base
-    integer(ip) :: i
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: rank
-    integer(ip), intent(out) :: x(n)
+    integer(int32), save, allocatable, dimension ( : ) :: base
+    integer(int32) i
+    integer(int32) m
+    integer(int32) rank
+    integer(int32) x(n)
 
     if ( rank < 0 ) then
 
@@ -1859,10 +1835,9 @@ contains
       x(1:n) = mod ( rank / base(1:n), m ) + 1
 
     end if
-  end subroutine tuple_next_fast
+  end
 
-  subroutine user ( dim_num, n, seed, r ) &
-        bind(C, name="user")
+  subroutine user ( dim_num, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -1898,39 +1873,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of sample points desired.
+  !    Input, integer(int32) N, the number of sample points desired.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value.  The meaning and
+  !    Input/output, integer(int32) SEED, the "seed" value.  The meaning and
   !    use of this variable is up to the user.
   !
-  !    Output, real(dp) R(DIM_NUM,N), an array of sample points from
+  !    Output, real(real64) R(DIM_NUM,N), an array of sample points from
   !    the region.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
+    integer(int32) dim_num
+    integer(int32) n
 
-    real(dp) :: angle(n)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(dim_num,n)
-    real(dp) :: radius(n)
+    real(real64) angle(n)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) r(dim_num,n)
+    real(real64) radius(n)
   !
   !  We sample points in the unit circle uniformly.
   !
     call random_number ( harvest = angle(1:n) )
-    angle(1:n) = 2.0_dp * pi * angle(1:n)
+    angle(1:n) = 2.0e+00_real64 * pi * angle(1:n)
 
     call random_number ( harvest = radius(1:n) )
     radius(1:n) = sqrt ( radius(1:n) )
 
     r(1,1:n) = radius(1:n) * cos ( angle(1:n) )
     r(2,1:n) = radius(1:n) * sin ( angle(1:n) )
-  end subroutine user
+  end
 
 end module cvt_mod

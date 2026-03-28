@@ -4,21 +4,15 @@
 
 module triangulation_quality_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: alpha_measure, arc_cosine, area_measure, bandwidth_mesh, mesh_base_one, q_measure
 
 contains
 
   subroutine alpha_measure ( n, z, element_order, element_num, element_node, &
-    alpha_min, alpha_ave, alpha_area ) &
-        bind(C, name="alpha_measure")
+    alpha_min, alpha_ave, alpha_area )
 
   !*****************************************************************************80
   !
@@ -40,7 +34,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -52,62 +46,62 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Z(2,N), the points.
+  !    Input, real(real64) Z(2,N), the points.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) TRIANGLE_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) TRIANGLE_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) TRIANGLE_NODE(TRIANGLE_ORDER,TRIANGLE_NUM), 
   !    the triangulation.
   !
-  !    Output, real(dp) ALPHA_MIN, the minimum value of ALPHA over all
+  !    Output, real(real64) ALPHA_MIN, the minimum value of ALPHA over all
   !    triangles.
   !
-  !    Output, real(dp) ALPHA_AVE, the value of ALPHA averaged over
+  !    Output, real(real64) ALPHA_AVE, the value of ALPHA averaged over
   !    all triangles.
   !
-  !    Output, real(dp) ALPHA_AREA, the value of ALPHA averaged over
+  !    Output, real(real64) ALPHA_AREA, the value of ALPHA averaged over
   !    all triangles and weighted by area.
   !
 
-    integer(ip), intent(in), value :: n                                  !! number of points
-    integer(ip), intent(in), value :: element_num                        !! number of triangles
-    integer(ip), intent(in), value :: element_order                      !! order of the triangles
+    integer(int32) n
+    integer(int32) element_num
+    integer(int32) element_order
 
-    real(dp) :: a_angle
-    integer(ip) :: a_index
-    real(dp) :: a_x
-    real(dp) :: a_y
-    real(dp) :: ab_len
-    real(dp) :: alpha
-    real(dp), intent(out) :: alpha_area
-    real(dp), intent(out) :: alpha_ave
-    real(dp), intent(out) :: alpha_min
-    real(dp) :: arc_cosine
-    real(dp) :: area
-    real(dp) :: area_total
-    real(dp) :: b_angle
-    integer(ip) :: b_index
-    real(dp) :: b_x
-    real(dp) :: b_y
-    real(dp) :: bc_len
-    real(dp) :: c_angle
-    integer(ip) :: c_index
-    real(dp) :: c_x
-    real(dp) :: c_y
-    real(dp) :: ca_len
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp), intent(in) :: z(2,n)
+    real(real64) a_angle
+    integer(int32) a_index
+    real(real64) a_x
+    real(real64) a_y
+    real(real64) ab_len
+    real(real64) alpha
+    real(real64) alpha_area
+    real(real64) alpha_ave
+    real(real64) alpha_min
+    real(real64) arc_cosine
+    real(real64) area
+    real(real64) area_total
+    real(real64) b_angle
+    integer(int32) b_index
+    real(real64) b_x
+    real(real64) b_y
+    real(real64) bc_len
+    real(real64) c_angle
+    integer(int32) c_index
+    real(real64) c_x
+    real(real64) c_y
+    real(real64) ca_len
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    real(real64) z(2,n)
 
     alpha_min = huge ( alpha )
-    alpha_ave = 0.0_dp
-    alpha_area = 0.0_dp
-    area_total = 0.0_dp
+    alpha_ave = 0.0e+00_real64
+    alpha_area = 0.0e+00_real64
+    area_total = 0.0e+00_real64
 
     do triangle = 1, element_num
 
@@ -122,7 +116,7 @@ contains
       c_x = z(1,c_index)
       c_y = z(2,c_index)
 
-      area = 0.5_dp * abs ( a_x * ( b_y - c_y ) &
+      area = 0.5e+00_real64 * abs ( a_x * ( b_y - c_y ) &
                            + b_x * ( c_y - a_y ) &
                            + c_x * ( a_y - b_y ) )
 
@@ -132,35 +126,35 @@ contains
   !
   !  Take care of a ridiculous special case.
   !
-      if ( ab_len == 0.0_dp .and. &
-           bc_len == 0.0_dp .and. &
-           ca_len == 0.0_dp ) then
+      if ( ab_len == 0.0e+00_real64 .and. &
+           bc_len == 0.0e+00_real64 .and. &
+           ca_len == 0.0e+00_real64 ) then
 
-        a_angle = 2.0_dp * pi / 3.0_dp
-        b_angle = 2.0_dp * pi / 3.0_dp
-        c_angle = 2.0_dp * pi / 3.0_dp
+        a_angle = 2.0e+00_real64 * pi / 3.0e+00_real64
+        b_angle = 2.0e+00_real64 * pi / 3.0e+00_real64
+        c_angle = 2.0e+00_real64 * pi / 3.0e+00_real64
 
       else
 
-        if ( ca_len == 0.0_dp .or. ab_len == 0.0_dp ) then
+        if ( ca_len == 0.0e+00_real64 .or. ab_len == 0.0e+00_real64 ) then
           a_angle = pi
         else
           a_angle = arc_cosine ( ( ca_len**2 + ab_len**2 - bc_len**2 ) &
-            / ( 2.0_dp * ca_len * ab_len ) )
+            / ( 2.0e+00_real64 * ca_len * ab_len ) )
         end if
 
-        if ( ab_len == 0.0_dp .or. bc_len == 0.0_dp ) then
+        if ( ab_len == 0.0e+00_real64 .or. bc_len == 0.0e+00_real64 ) then
           b_angle = pi
         else
           b_angle = arc_cosine ( ( ab_len**2 + bc_len**2 - ca_len**2 ) &
-            / ( 2.0_dp * ab_len * bc_len ) )
+            / ( 2.0e+00_real64 * ab_len * bc_len ) )
         end if
 
-        if ( bc_len == 0.0_dp .or. ca_len == 0.0_dp ) then
+        if ( bc_len == 0.0e+00_real64 .or. ca_len == 0.0e+00_real64 ) then
           c_angle = pi
         else
           c_angle = arc_cosine ( ( bc_len**2 + ca_len**2 - ab_len**2 ) &
-            / ( 2.0_dp * bc_len * ca_len ) )
+            / ( 2.0e+00_real64 * bc_len * ca_len ) )
         end if
 
       end if
@@ -177,18 +171,17 @@ contains
 
     end do
 
-    alpha_ave = alpha_ave / real ( element_num, dp)
+    alpha_ave = alpha_ave / real ( element_num, real64)
     alpha_area = alpha_area / area_total
   !
   !  Normalize angles from [0,pi/3] radians into qualities in [0,1].
   !
-    alpha_min = alpha_min * 3.0_dp / pi
-    alpha_ave = alpha_ave * 3.0_dp / pi
-    alpha_area = alpha_area * 3.0_dp / pi
-  end subroutine alpha_measure
+    alpha_min = alpha_min * 3.0e+00_real64 / pi
+    alpha_ave = alpha_ave * 3.0e+00_real64 / pi
+    alpha_area = alpha_area * 3.0e+00_real64 / pi
+  end
 
-  function arc_cosine ( c ) &
-        bind(C, name="arc_cosine")
+  function arc_cosine ( c )
 
   !*****************************************************************************80
   !
@@ -204,7 +197,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -216,25 +209,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) C, the argument.
+  !    Input, real(real64) C, the argument.
   !
-  !    Output, real(dp) ARC_COSINE, an angle whose cosine is C.
+  !    Output, real(real64) ARC_COSINE, an angle whose cosine is C.
   !
 
-    real(dp) :: arc_cosine
-    real(dp), intent(in), value :: c                                     !! argument
-    real(dp) :: c2
+    real(real64) arc_cosine
+    real(real64) c
+    real(real64) c2
 
     c2 = c
-    c2 = max ( c2, -1.0_dp )
-    c2 = min ( c2, +1.0_dp )
+    c2 = max ( c2, -1.0e+00_real64 )
+    c2 = min ( c2, +1.0e+00_real64 )
 
     arc_cosine = acos ( c2 )
-  end function arc_cosine
+  end
 
   subroutine area_measure ( n, z, element_order, element_num, element_node, &
-    area_min, area_max, area_ratio, area_ave, area_std, area_negative, area_zero ) &
-        bind(C, name="area_measure")
+    area_min, area_max, area_ratio, area_ave, area_std, area_negative, area_zero )
 
   !*****************************************************************************80
   !
@@ -259,7 +251,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -271,59 +263,59 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Z(2,N), the points.
+  !    Input, real(real64) Z(2,N), the points.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) TRIANGLE_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) TRIANGLE_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) TRIANGLE_NODE(TRIANGLE_ORDER,TRIANGLE_NUM), 
   !    the triangulation.
   !
-  !    Output, real(dp) AREA_MIN, AREA_MAX, the minimum and maximum
+  !    Output, real(real64) AREA_MIN, AREA_MAX, the minimum and maximum 
   !    areas.
   !
-  !    Output, real(dp) AREA_RATIO, the ratio of the minimum to the
+  !    Output, real(real64) AREA_RATIO, the ratio of the minimum to the
   !    maximum area.
   !
-  !    Output, real(dp) AREA_AVE, the average area.
+  !    Output, real(real64) AREA_AVE, the average area.
   !
-  !    Output, real(dp) AREA_STD, the standard deviation of the areas.
+  !    Output, real(real64) AREA_STD, the standard deviation of the areas.
   !
-  !    Output, integer(ip) AREA_NEGATIVE, the number of triangles with
+  !    Output, integer(int32) AREA_NEGATIVE, the number of triangles with
   !    negative area.  This suggests an orientation error.
   !
-  !    Output, integer(ip) AREA_ZERO, the number of triangles with zero
+  !    Output, integer(int32) AREA_ZERO, the number of triangles with zero
   !    area.
   !
 
-    integer(ip), intent(in), value :: n                                  !! number of points
-    integer(ip), intent(in), value :: element_num                        !! number of triangles
-    integer(ip), intent(in), value :: element_order                      !! order of the triangles
+    integer(int32) n
+    integer(int32) element_num
+    integer(int32) element_order
 
-    real(dp) :: area
-    real(dp), intent(out) :: area_ave
-    real(dp), intent(out) :: area_max
-    real(dp), intent(out) :: area_min
-    integer(ip), intent(out) :: area_negative
-    real(dp), intent(out) :: area_ratio
-    real(dp), intent(out) :: area_std
-    integer(ip), intent(out) :: area_zero
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp) :: x3
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp) :: y3
-    real(dp), intent(in) :: z(2,n)
+    real(real64) area
+    real(real64) area_ave
+    real(real64) area_max
+    real(real64) area_min
+    integer(int32) area_negative
+    real(real64) area_ratio
+    real(real64) area_std
+    integer(int32) area_zero
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) z(2,n)
 
-    area_max = 0.0_dp
+    area_max = 0.0e+00_real64
     area_min = huge ( area_min )
-    area_ave = 0.0_dp
+    area_ave = 0.0
 
     area_negative = 0
     area_zero = 0
@@ -337,15 +329,15 @@ contains
       x3 = z(1,element_node(3,triangle))
       y3 = z(2,element_node(3,triangle))
 
-      area = 0.5_dp * ( x1 * ( y2 - y3 ) &
+      area = 0.5e+00_real64 * ( x1 * ( y2 - y3 ) &
                        + x2 * ( y3 - y1 ) &
                        + x3 * ( y1 - y2 ) )
 
-      if ( area == 0.0_dp ) then
+      if ( area == 0.0e+00_real64 ) then
         area_zero = area_zero + 1
       end if
 
-      if ( area < 0.0_dp ) then
+      if ( area < 0.0e+00_real64 ) then
         area_negative = area_negative + 1
       end if
 
@@ -355,9 +347,9 @@ contains
 
     end do
 
-    area_ave = area_ave / real ( element_num, dp)
+    area_ave = area_ave / real ( element_num, real64)
 
-    area_std = 0.0_dp
+    area_std = 0.0e+00_real64
     do triangle = 1, element_num
 
       x1 = z(1,element_node(1,triangle))
@@ -367,24 +359,23 @@ contains
       x3 = z(1,element_node(3,triangle))
       y3 = z(2,element_node(3,triangle))
 
-      area = 0.5_dp * abs ( x1 * ( y2 - y3 ) &
+      area = 0.5e+00_real64 * abs ( x1 * ( y2 - y3 ) &
                            + x2 * ( y3 - y1 ) &
                            + x3 * ( y1 - y2 ) )
 
       area_std = area_std + ( area - area_ave )**2
     end do
-    area_std = sqrt ( area_std / real ( element_num, dp) )
+    area_std = sqrt ( area_std / real ( element_num, real64) )
 
-    if ( 0.0_dp < area_max ) then
+    if ( 0.0e+00_real64 < area_max ) then
       area_ratio = area_min / area_max
     else
-      area_ratio = 0.0_dp
+      area_ratio = 0.0e+00_real64
     end if
-  end subroutine area_measure
+  end
 
   subroutine bandwidth_mesh ( element_order, element_num, element_node, &
-    ml, mu, m ) &
-        bind(C, name="bandwidth_mesh")
+    ml, mu, m )
 
   !*****************************************************************************80
   !
@@ -417,7 +408,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -429,31 +420,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the elements.
+  !    Input, integer(int32) ELEMENT_ORDER, the order of the elements.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of elements.
+  !    Input, integer(int32) ELEMENT_NUM, the number of elements.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM);
+  !    Input, integer(int32) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM);
   !    ELEMENT_NODE(I,J) is the global index of local node I in element J.
   !
-  !    Output, integer(ip) ML, MU, the lower and upper bandwidths
+  !    Output, integer(int32) ML, MU, the lower and upper bandwidths 
   !    of the matrix.
   !
-  !    Output, integer(ip) M, the bandwidth of the matrix.
+  !    Output, integer(int32) M, the bandwidth of the matrix.
   !
 
-    integer(ip), intent(in), value :: element_num                        !! number of elements
-    integer(ip), intent(in), value :: element_order                      !! order of the elements
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    integer(ip) :: global_i
-    integer(ip) :: global_j
-    integer(ip) :: local_i
-    integer(ip) :: local_j
-    integer(ip), intent(out) :: m
-    integer(ip), intent(out) :: ml
-    integer(ip), intent(out) :: mu
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) global_i
+    integer(int32) global_j
+    integer(int32) local_i
+    integer(int32) local_j
+    integer(int32) m
+    integer(int32) ml
+    integer(int32) mu
 
     ml = 0
     mu = 0
@@ -474,10 +465,9 @@ contains
     end do
 
     m = ml + 1 + mu
-  end subroutine bandwidth_mesh
+  end
 
-  subroutine mesh_base_one ( node_num, element_order, element_num, element_node ) &
-        bind(C, name="mesh_base_one")
+  subroutine mesh_base_one ( node_num, element_order, element_num, element_node )
 
   !*****************************************************************************80
   !
@@ -495,7 +485,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -517,16 +507,16 @@ contains
   !    definitions.
   !
 
-    integer(ip), intent(in), value :: element_num                        !! number of elements
-    integer(ip), intent(in), value :: element_order                      !! order of the elements
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: element
-    integer(ip), intent(inout) :: element_node(element_order,element_num)
-    integer(ip) :: node
-    integer(ip) :: node_max
-    integer(ip) :: node_min
-    integer(ip), intent(in), value :: node_num                           !! number of nodes
-    integer(ip) :: order
+    integer(int32) element
+    integer(int32) element_node(element_order,element_num)
+    integer(int32) node
+    integer(int32) node_max
+    integer(int32) node_min
+    integer(int32) node_num
+    integer(int32) order
 
     node_min = node_num + 1
     node_max = -1
@@ -554,11 +544,10 @@ contains
       write ( *, '(a,i8)' ) '  NODE_MAX = ', node_max
       write ( *, '(a,i8)' ) '  NODE_NUM = ', node_num
     end if
-  end subroutine mesh_base_one
+  end
 
   subroutine q_measure ( n, z, element_order, element_num, element_node, &
-    q_min, q_max, q_ave, q_area ) &
-        bind(C, name="q_measure")
+    q_min, q_max, q_ave, q_area )
 
   !*****************************************************************************80
   !
@@ -574,7 +563,7 @@ contains
   !      TAU_IN = radius of the inscribed circle,
   !      TAU_OUT = radius of the circumscribed circle,
   !
-  !      Q(T) = 2 * TAU_IN / TAU_OUT
+  !      Q(T) = 2 * TAU_IN / TAU_OUT 
   !        = ( B + C - A ) * ( C + A - B ) * ( A + B - C ) / ( A * B * C )
   !
   !    where A, B and C are the lengths of the sides of the triangle T.
@@ -603,7 +592,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -625,58 +614,58 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) Z(2,N), the points.
+  !    Input, real(real64) Z(2,N), the points.
   !
-  !    Input, integer(ip) ELEMENT_ORDER, the order of the triangles.
+  !    Input, integer(int32) TRIANGLE_ORDER, the order of the triangles.
   !
-  !    Input, integer(ip) ELEMENT_NUM, the number of triangles.
+  !    Input, integer(int32) TRIANGLE_NUM, the number of triangles.
   !
-  !    Input, integer(ip) ELEMENT_NODE(ELEMENT_ORDER,ELEMENT_NUM),
+  !    Input, integer(int32) TRIANGLE_NODE(TRIANGLE_ORDER,TRIANGLE_NUM), 
   !    the triangulation.
   !
-  !    Output, real(dp) Q_MIN, Q_MAX, the minimum and maximum values
+  !    Output, real(real64) Q_MIN, Q_MAX, the minimum and maximum values
   !    of Q over all triangles.
   !
-  !    Output, real(dp) Q_AVE, the average value of Q.
+  !    Output, real(real64) Q_AVE, the average value of Q.
   !
-  !    Output, real(dp) Q_AREA, the average value of Q, weighted by
+  !    Output, real(real64) Q_AREA, the average value of Q, weighted by
   !    the area of each triangle.
   !
 
-    integer(ip), intent(in), value :: n                                  !! number of points
-    integer(ip), intent(in), value :: element_num                        !! number of triangles
-    integer(ip), intent(in), value :: element_order                      !! order of the triangles
+    integer(int32) n
+    integer(int32) element_num
+    integer(int32) element_order
 
-    integer(ip) :: a_index
-    real(dp) :: ab_length
-    real(dp) :: area
-    real(dp) :: area_total
-    integer(ip) :: b_index
-    real(dp) :: bc_length
-    integer(ip) :: c_index
-    real(dp) :: ca_length
-    real(dp) :: q
-    real(dp), intent(out) :: q_area
-    real(dp), intent(out) :: q_ave
-    real(dp), intent(out) :: q_max
-    real(dp), intent(out) :: q_min
-    integer(ip) :: triangle
-    integer(ip), intent(in) :: element_node(element_order,element_num)
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp) :: x3
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp) :: y3
-    real(dp), intent(in) :: z(2,n)
+    integer(int32) a_index
+    real(real64) ab_length
+    real(real64) area
+    real(real64) area_total
+    integer(int32) b_index
+    real(real64) bc_length
+    integer(int32) c_index
+    real(real64) ca_length
+    real(real64) q
+    real(real64) q_area
+    real(real64) q_ave
+    real(real64) q_max
+    real(real64) q_min
+    integer(int32) triangle
+    integer(int32) element_node(element_order,element_num)
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) z(2,n)
 
     q_min =   huge ( q_min )
     q_max = - huge ( q_max )
-    q_ave = 0.0_dp
-    q_area = 0.0_dp
-    area_total = 0.0_dp
+    q_ave = 0.0e+00_real64
+    q_area = 0.0e+00_real64
+    area_total = 0.0e+00_real64
 
     do triangle = 1, element_num
 
@@ -708,7 +697,7 @@ contains
       x3 = z(1,element_node(3,triangle))
       y3 = z(2,element_node(3,triangle))
 
-      area = 0.5_dp * abs ( x1 * ( y2 - y3 ) &
+      area = 0.5e+00_real64 * abs ( x1 * ( y2 - y3 ) &
                            + x2 * ( y3 - y1 ) &
                            + x3 * ( y1 - y2 ) )
 
@@ -721,13 +710,13 @@ contains
 
     end do
 
-    q_ave = q_ave / real ( element_num, dp)
+    q_ave = q_ave / real ( element_num, real64)
 
-    if ( 0.0_dp < area_total ) then
+    if ( 0.0e+00_real64 < area_total ) then
       q_area = q_area / area_total
     else
-      q_area = 0.0_dp
+      q_area = 0.0e+00_real64
     end if
-  end subroutine q_measure
+  end
 
 end module triangulation_quality_mod

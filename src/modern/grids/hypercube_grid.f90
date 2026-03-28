@@ -1,23 +1,17 @@
-!> hypercube_grid -- Modern Fortran 2018
+!> hypercube_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module hypercube_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: hypercube_grid, i4vec_product, r8vec_direct_product
 
 contains
 
-  subroutine hypercube_grid ( m, n, ns, a, b, c, x ) &
-        bind(C, name="hypercube_grid")
+  subroutine hypercube_grid ( m, n, ns, a, b, c, x )
 
   !*****************************************************************************80
   !
@@ -27,7 +21,7 @@ contains
   !
   !    In M dimensional space, a logically rectangular grid is to be created.
   !    In the I-th dimension, the grid will use S(I) points.
-  !    The total number of grid points is
+  !    The total number of grid points is 
   !      N = product ( 1 <= I <= M ) S(I)
   !
   !    Over the interval [A(i),B(i)], we have 5 choices for grid centering:
@@ -39,7 +33,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -51,33 +45,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !    N = product ( 1 <= I <= M ) NS(I).
   !
-  !    Input, integer(ip) NS(M), the number of points along
+  !    Input, integer(int32) NS(M), the number of points along 
   !    each dimension.
   !
-  !    Input, real(dp) A(M), B(M), the endpoints for each dimension.
+  !    Input, real(real64) A(M), B(M), the endpoints for each dimension.
   !
-  !    Input, integer(ip) C(M), the grid centering for each dimension.
+  !    Input, integer(int32) C(M), the grid centering for each dimension.
   !    1 <= C(*) <= 5.
   !
-  !    Output, real(dp) X(M,N) = X(M*S(1),S(2),...,S(M)), the points.
+  !    Output, real(real64) X(M,N) = X(M*S(1),S(2),...,S(M)), the points.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a(m)
-    real(dp), intent(in) :: b(m)
-    integer(ip), intent(in) :: c(m)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(in) :: ns(m)
-    integer(ip) :: s
-    real(dp), intent(out) :: x(m,n)
-    real(dp), allocatable :: xs(:)
+    integer(int32) m
+    integer(int32) n
+
+    real(real64) a(m)
+    real(real64) b(m)
+    integer(int32) c(m)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) ns(m)
+    integer(int32) s
+    real(real64) x(m,n)
+    real(real64), allocatable :: xs(:)
   !
   !  Create the 1D grids in each dimension.
   !
@@ -92,28 +87,28 @@ contains
         if ( c(i) == 1 ) then
 
           if ( s == 1 ) then
-            xs(j) = 0.5_dp * ( a(i) + b(i) )
+            xs(j) = 0.5e+00_real64 * ( a(i) + b(i) )
           else
-            xs(j) = (   real ( s - j, dp) * a(i)   &
-                      + real (     j - 1, dp) * b(i) ) &
-                      / real ( s     - 1, dp)
+            xs(j) = (   real ( s - j, real64) * a(i)   &
+                      + real (     j - 1, real64) * b(i) ) & 
+                      / real ( s     - 1, real64)
           end if
         else if ( c(i) == 2 ) then
-          xs(j) = (   real ( s - j + 1, dp) * a(i)   &
-                    + real (     j, dp) * b(i) ) &
-                    / real ( s     + 1, dp)
+          xs(j) = (   real ( s - j + 1, real64) * a(i)   &
+                    + real (     j, real64) * b(i) ) & 
+                    / real ( s     + 1, real64)
         else if ( c(i) == 3 ) then
-          xs(j) = (   real ( s - j + 1, dp) * a(i)   &
-                    + real (     j - 1, dp) * b(i) ) &
-                    / real ( s, dp)
+          xs(j) = (   real ( s - j + 1, real64) * a(i)   &
+                    + real (     j - 1, real64) * b(i) ) & 
+                    / real ( s, real64)
         else if ( c(i) == 4 ) then
-          xs(j) = (   real ( s - j, dp) * a(i)   &
-                    + real (     j, dp) * b(i) ) &
-                    / real ( s, dp)
+          xs(j) = (   real ( s - j, real64) * a(i)   &
+                    + real (     j, real64) * b(i) ) & 
+                    / real ( s, real64)
         else if ( c(i) == 5 ) then
-          xs(j) = (   real ( 2 * s - 2 * j + 1, dp) * a(i)   &
-                    + real (         2 * j - 1, dp) * b(i) ) &
-                    / real ( 2 * s, dp)
+          xs(j) = (   real ( 2 * s - 2 * j + 1, real64) * a(i)   &
+                    + real (         2 * j - 1, real64) * b(i) ) & 
+                    / real ( 2 * s, real64)
         end if
 
       end do
@@ -123,10 +118,9 @@ contains
       deallocate ( xs )
 
     end do
-  end subroutine hypercube_grid
+  end
 
-  pure function i4vec_product ( n, a ) &
-        bind(C, name="i4vec_product")
+  function i4vec_product ( n, a )
 
   !*****************************************************************************80
   !
@@ -160,23 +154,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, integer(ip) A(N), the array.
+  !    Input, integer(int32) A(N), the array.
   !
-  !    Output, integer(ip) I4VEC_PRODUCT, the product of the entries.
+  !    Output, integer(int32) I4VEC_PRODUCT, the product of the entries.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in) :: a(n)
-    integer(ip) :: i4vec_product
+    integer(int32) n
+
+    integer(int32) a(n)
+    integer(int32) i4vec_product
 
     i4vec_product = product ( a(1:n) )
-  end function i4vec_product
+  end
 
   subroutine r8vec_direct_product ( factor_index, factor_order, factor_value, &
-    factor_num, point_num, x ) &
-        bind(C, name="r8vec_direct_product")
+    factor_num, point_num, x )
 
   !*****************************************************************************80
   !
@@ -270,54 +264,55 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR_INDEX, the index of the factor being
+  !    Input, integer(int32) FACTOR_INDEX, the index of the factor being
   !    processed.  The first factor processed must be factor 1!
   !
-  !    Input, integer(ip) FACTOR_ORDER, the order of the factor.
+  !    Input, integer(int32) FACTOR_ORDER, the order of the factor.
   !
-  !    Input, real(dp) FACTOR_VALUE(FACTOR_ORDER), the factor values
+  !    Input, real(real64) FACTOR_VALUE(FACTOR_ORDER), the factor values
   !    for factor FACTOR_INDEX.
   !
-  !    Input, integer(ip) FACTOR_NUM, the number of factors.
+  !    Input, integer(int32) FACTOR_NUM, the number of factors.
   !
-  !    Input, integer(ip) POINT_NUM, the number of elements in the
+  !    Input, integer(int32) POINT_NUM, the number of elements in the
   !    direct product.
   !
-  !    Input/output, real(dp) X(FACTOR_NUM,POINT_NUM), the elements of
+  !    Input/output, real(real64) X(FACTOR_NUM,POINT_NUM), the elements of
   !    the direct product, which are built up gradually.
   !
   !  Local Parameters:
   !
-  !    Local, integer(ip) START, the first location of a block of
+  !    Local, integer(int32) START, the first location of a block of 
   !    values to set.
   !
-  !    Local, integer(ip) CONTIG, the number of consecutive values
+  !    Local, integer(int32) CONTIG, the number of consecutive values 
   !    to set.
   !
-  !    Local, integer(ip) SKIP, the distance from the current value
+  !    Local, integer(int32) SKIP, the distance from the current value 
   !    of START to the next location of a block of values to set.
   !
-  !    Local, integer(ip) REP, the number of blocks of values to set.
+  !    Local, integer(int32) REP, the number of blocks of values to set.
   !
 
-    integer(ip), intent(in), value :: factor_num
-    integer(ip), intent(in), value :: factor_order
-    integer(ip), intent(in), value :: point_num
-    integer(ip), save :: contig
-    integer(ip), intent(in), value :: factor_index
-    real(dp), intent(in) :: factor_value(factor_order)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), save :: rep
-    integer(ip), save :: skip
-    integer(ip) :: start
-    real(dp), intent(inout) :: x(factor_num,point_num)
+    integer(int32) factor_num
+    integer(int32) factor_order
+    integer(int32) point_num
+
+    integer(int32), save :: contig
+    integer(int32) factor_index
+    real(real64) factor_value(factor_order)
+    integer(int32) j
+    integer(int32) k
+    integer(int32), save :: rep
+    integer(int32), save :: skip
+    integer(int32) start
+    real(real64) x(factor_num,point_num)
 
     if ( factor_index == 1 ) then
       contig = 1
       skip = 1
       rep = point_num
-      x(1:factor_num,1:point_num) = 0.0_dp
+      x(1:factor_num,1:point_num) = 0.0e+00_real64
     end if
 
     rep = rep / factor_order
@@ -335,6 +330,6 @@ contains
     end do
 
     contig = contig * factor_order
-  end subroutine r8vec_direct_product
+  end
 
 end module hypercube_grid_mod

@@ -4,20 +4,14 @@
 
 module polygon_integrals_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: moment, moment_central, moment_normalized, r8_choose, r8_mop
 
 contains
 
-  subroutine moment ( n, x, y, p, q, nu_pq ) &
-        bind(C, name="moment")
+  subroutine moment ( n, x, y, p, q, nu_pq )
 
   !*****************************************************************************80
   !
@@ -49,33 +43,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) X(N), Y(N), the vertex coordinates.
+  !    Input, real(real64) X(N), Y(N), the vertex coordinates.
   !
-  !    Input, integer(ip) P, Q, the indices of the moment.
+  !    Input, integer(int32) P, Q, the indices of the moment.
   !
-  !    Output, real(dp) NU_PQ, the unnormalized moment Nu(P,Q).
+  !    Output, real(real64) NU_PQ, the unnormalized moment Nu(P,Q).
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
-    integer(ip), intent(in), value :: p
-    integer(ip), intent(in), value :: q
-    real(dp), intent(out) :: nu_pq
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip) :: l
-    real(dp) :: r8_choose
-    real(dp) :: s_pq
-    real(dp) :: xi
-    real(dp) :: xj
-    real(dp) :: yi
-    real(dp) :: yj
+    integer(int32) i
+    integer(int32) k
+    integer(int32) l
+    real(real64) nu_pq
+    integer(int32) p
+    integer(int32) q
+    real(real64) r8_choose
+    real(real64) s_pq
+    real(real64) x(n)
+    real(real64) xi
+    real(real64) xj
+    real(real64) y(n)
+    real(real64) yi
+    real(real64) yj
 
-    nu_pq = 0.0_dp
+    nu_pq = 0.0e+00_real64
 
     xj = x(n)
     yj = y(n)
@@ -85,7 +79,7 @@ contains
       xi = x(i)
       yi = y(i)
 
-      s_pq = 0.0_dp
+      s_pq = 0.0e+00_real64
       do k = 0, p
         do l = 0, q
           s_pq = s_pq &
@@ -102,13 +96,12 @@ contains
 
     end do
 
-    nu_pq = nu_pq / real ( p + q + 2, dp) &
-      / real ( p + q + 1, dp) &
+    nu_pq = nu_pq / real ( p + q + 2, real64) &
+      / real ( p + q + 1, real64) &
       / r8_choose ( p + q, p )
-  end subroutine moment
+  end
 
-  subroutine moment_central ( n, x, y, p, q, mu_pq ) &
-        bind(C, name="moment_central")
+  subroutine moment_central ( n, x, y, p, q, mu_pq )
 
   !*****************************************************************************80
   !
@@ -121,7 +114,7 @@ contains
   !      Mu(P,Q) = Integral ( polygon ) (x-Alpha(1,0))^p (y-Alpha(0,1))^q dx dy
   !              / Area ( polygon )
   !
-  !    where
+  !    where 
   !
   !      Alpha(1,0) = Integral ( polygon ) x dx dy / Area ( polygon )
   !      Alpha(0,1) = Integral ( polygon ) y dx dy / Area ( polygon )
@@ -148,34 +141,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) X(N), Y(N), the vertex coordinates.
+  !    Input, real(real64) X(N), Y(N), the vertex coordinates.
   !
-  !    Input, integer(ip) P, Q, the indices of the moment.
+  !    Input, integer(int32) P, Q, the indices of the moment.
   !
-  !    Output, real(dp) MU_PQ, the unnormalized moment Mu(P,Q).
+  !    Output, real(real64) MU_PQ, the unnormalized moment Mu(P,Q).
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
-    integer(ip), intent(in), value :: p
-    integer(ip), intent(in), value :: q
-    real(dp), intent(out) :: mu_pq
+    integer(int32) n
 
-    real(dp) :: alpha_01
-    real(dp) :: alpha_10
-    real(dp) :: alpha_ij
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp) :: r8_choose
-    real(dp) :: r8_mop
+    real(real64) alpha_01
+    real(real64) alpha_10
+    real(real64) alpha_ij
+    integer(int32) i
+    integer(int32) j
+    real(real64) mu_pq
+    integer(int32) p
+    integer(int32) q
+    real(real64) r8_choose
+    real(real64) r8_mop
+    real(real64) x(n)
+    real(real64) y(n)
 
     call moment_normalized ( n, x, y, 1, 0, alpha_10 )
     call moment_normalized ( n, x, y, 0, 1, alpha_01 )
 
-    mu_pq = 0.0_dp
+    mu_pq = 0.0e+00_real64
 
     do i = 0, p
       do j = 0, q
@@ -188,10 +181,9 @@ contains
 
       end do
     end do
-  end subroutine moment_central
+  end
 
-  subroutine moment_normalized ( n, x, y, p, q, alpha_pq ) &
-        bind(C, name="moment_normalized")
+  subroutine moment_normalized ( n, x, y, p, q, alpha_pq )
 
   !*****************************************************************************80
   !
@@ -223,33 +215,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) X(N), Y(N), the vertex coordinates.
+  !    Input, real(real64) X(N), Y(N), the vertex coordinates.
   !
-  !    Input, integer(ip) P, Q, the indices of the moment.
+  !    Input, integer(int32) P, Q, the indices of the moment.
   !
-  !    Output, real(dp) ALPHA_PQ, the normalized moment Alpha(P,Q).
+  !    Output, real(real64) ALPHA_PQ, the normalized moment Alpha(P,Q).
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in) :: y(n)
-    integer(ip), intent(in), value :: p
-    integer(ip), intent(in), value :: q
-    real(dp), intent(out) :: alpha_pq
+    integer(int32) n
 
-    real(dp) :: nu_00
-    real(dp) :: nu_pq
+    real(real64) alpha_pq
+    real(real64) nu_00
+    real(real64) nu_pq
+    integer(int32) p
+    integer(int32) q
+    real(real64) x(n)
+    real(real64) y(n)
 
     call moment ( n, x, y, p, q, nu_pq )
     call moment ( n, x, y, 0, 0, nu_00 )
 
     alpha_pq = nu_pq / nu_00
-  end subroutine moment_normalized
+  end
 
-  pure function r8_choose ( n, k ) &
-        bind(C, name="r8_choose")
+  function r8_choose ( n, k )
 
   !*****************************************************************************80
   !
@@ -286,47 +277,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, K, are the values of N and K.
+  !    Input, integer(int32) N, K, are the values of N and K.
   !
-  !    Output, real(dp) R8_CHOOSE, the number of combinations of N
+  !    Output, real(real64) R8_CHOOSE, the number of combinations of N
   !    things taken K at a time.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: k
-    real(dp) :: r8_choose
-
-    integer(ip) :: i
-    integer(ip) :: mn
-    integer(ip) :: mx
-    real(dp) :: value
+    integer(int32) i
+    integer(int32) k
+    integer(int32) mn
+    integer(int32) mx
+    integer(int32) n
+    real(real64) r8_choose
+    real(real64) value
 
     mn = min ( k, n - k )
 
     if ( mn < 0 ) then
 
-      value = 0.0_dp
+      value = 0.0e+00_real64
 
     else if ( mn == 0 ) then
 
-      value = 1.0_dp
+      value = 1.0e+00_real64
 
     else
 
       mx = max ( k, n - k )
-      value = real ( mx + 1, dp)
+      value = real ( mx + 1, real64)
 
       do i = 2, mn
-        value = ( value * real ( mx + i, dp) ) / real ( i, dp)
+        value = ( value * real ( mx + i, real64) ) / real ( i, real64)
       end do
 
     end if
 
     r8_choose = value
-  end function r8_choose
+  end
 
-  pure function r8_mop ( i ) &
-        bind(C, name="r8_mop")
+  function r8_mop ( i )
 
   !*****************************************************************************80
   !
@@ -334,7 +323,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
   !  Licensing:
   !
@@ -350,19 +339,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the power of -1.
+  !    Input, integer(int32) I, the power of -1.
   !
-  !    Output, real(dp) R8_MOP, the I-th power of -1.
+  !    Output, real(real64) R8_MOP, the I-th power of -1.
   !
 
-    integer(ip), intent(in), value :: i
-    real(dp) :: r8_mop
+    integer(int32) i
+    real(real64) r8_mop
 
     if ( mod ( i, 2 ) == 0 ) then
-      r8_mop = + 1.0_dp
+      r8_mop = + 1.0e+00_real64
     else
-      r8_mop = - 1.0_dp
+      r8_mop = - 1.0e+00_real64
     end if
-  end function r8_mop
+  end
 
 end module polygon_integrals_mod

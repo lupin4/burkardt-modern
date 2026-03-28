@@ -1,23 +1,17 @@
-!> simplex_coordinates -- Modern Fortran 2018
+!> simplex_coordinates — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module simplex_coordinates_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: r8_factorial, r8mat_det, simplex_coordinates1, simplex_coordinates2, simplex_volume
 
 contains
 
-  pure function r8_factorial ( n ) &
-        bind(C, name="r8_factorial")
+  function r8_factorial ( n )
 
   !*****************************************************************************80
   !
@@ -29,7 +23,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -41,25 +35,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the argument of the factorial function.
+  !    Input, integer(int32) N, the argument of the factorial function.
   !    If N is less than 1, the function value is returned as 1.
   !
-  !    Output, real(dp) R8_FACTORIAL, the factorial of N.
+  !    Output, real(real64) R8_FACTORIAL, the factorial of N.
   !
 
-    real(dp) :: r8_factorial
-    integer(ip), intent(in), value :: n
-    integer(ip) :: i
+    real(real64) r8_factorial
+    integer(int32) i
+    integer(int32) n
 
-    r8_factorial = 1.0_dp
+    r8_factorial = 1.0e+00_real64
 
     do i = 1, n
-      r8_factorial = r8_factorial * real ( i, dp)
+      r8_factorial = r8_factorial * real ( i, real64)
     end do
-  end function r8_factorial
+  end
 
-  pure subroutine r8mat_det ( n, a, det ) &
-        bind(C, name="r8mat_det")
+  subroutine r8mat_det ( n, a, det )
 
   !*****************************************************************************80
   !
@@ -71,7 +64,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -91,26 +84,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !
-  !    Input, real(dp) A(N,N), the matrix whose determinant is desired.
+  !    Input, real(real64) A(N,N), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) DET, the determinant of the matrix.
+  !    Output, real(real64) DET, the determinant of the matrix.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a(n,n)
-    real(dp), intent(out) :: det
-    real(dp) :: b(n,n)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: m
-    integer(ip) :: piv(1)
-    real(dp) :: t
+    integer(int32) n
+
+    real(real64) a(n,n)
+    real(real64) b(n,n)
+    real(real64) det
+    integer(int32) j
+    integer(int32) k
+    integer(int32) m
+    integer(int32) piv(1)
+    real(real64) t
 
     b(1:n,1:n) = a(1:n,1:n)
 
-    det = 1.0_dp
+    det = 1.0e+00_real64
 
     do k = 1, n
 
@@ -127,7 +121,7 @@ contains
 
       det = det * b(k,k)
 
-      if ( b(k,k) /= 0.0_dp ) then
+      if ( b(k,k) /= 0.0e+00_real64 ) then
 
         b(k+1:n,k) = -b(k+1:n,k) / b(k,k)
 
@@ -143,10 +137,9 @@ contains
       end if
 
     end do
-  end subroutine r8mat_det
+  end
 
-  pure subroutine simplex_coordinates1 ( n, x ) &
-        bind(C, name="simplex_coordinates1")
+  subroutine simplex_coordinates1 ( n, x )
 
   !*****************************************************************************80
   !
@@ -180,37 +173,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
-  !    Output, real(dp) X(N,N+1), the coordinates of the vertices
-  !    of a simplex in N dimensions.
+  !    Output, real(real64) X(N,N+1), the coordinates of the vertices
+  !    of a simplex in N dimensions.  
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(out) :: x(n,n+1)
-    integer(ip) :: i
-    integer(ip) :: j
+    integer(int32) n
 
-    x(1:n,1:n+1) = 0.0_dp
+    integer(int32) i
+    integer(int32) j
+    real(real64) x(n,n+1)
+
+    x(1:n,1:n+1) = 0.0e+00_real64
 
     do i = 1, n
   !
   !  Set X(I,I) so that sum ( X(1:I,I)**2 ) = 1.
   !
-      x(i,i) = sqrt ( 1.0_dp - sum ( x(1:i-1,i)**2 ) )
+      x(i,i) = sqrt ( 1.0e+00_real64 - sum ( x(1:i-1,i)**2 ) )
   !
-  !  Set X(I,J) for J = I+1 to N+1 by using the fact that XI dot XJ = - 1 / N
+  !  Set X(I,J) for J = I+1 to N+1 by using the fact that XI dot XJ = - 1 / N 
   !
       do j = i + 1, n + 1
-        x(i,j) = ( - 1.0_dp / real ( n, dp) &
+        x(i,j) = ( - 1.0e+00_real64 / real ( n, real64) &
           - dot_product ( x(1:i-1,i), x(1:i-1,j) ) ) / x(i,i)
       end do
 
     end do
-  end subroutine simplex_coordinates1
+  end
 
-  pure subroutine simplex_coordinates2 ( n, x ) &
-        bind(C, name="simplex_coordinates2")
+  subroutine simplex_coordinates2 ( n, x )
 
   !*****************************************************************************80
   !
@@ -237,9 +230,9 @@ contains
   !    must have all entries equal to some value A.  Because the square of the
   !    distance between the last column and any other column must be 2 (because
   !    that's the distance between any pair of columns), we deduce that
-  !    (A-1)^2 + (N-1)*A^2 = 2, hence A = (1-sqrt(1+N))/N.  Now compute the
-  !    centroid C of the vertices, and subtract that, to center the simplex
-  !    around the origin.  Finally, compute the norm of one column, and rescale
+  !    (A-1)^2 + (N-1)*A^2 = 2, hence A = (1-sqrt(1+N))/N.  Now compute the 
+  !    centroid C of the vertices, and subtract that, to center the simplex 
+  !    around the origin.  Finally, compute the norm of one column, and rescale 
   !    the matrix of coordinates so each vertex has unit distance from the origin.
   !
   !    This approach devised by John Burkardt, 19 September 2010.  What,
@@ -259,33 +252,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
-  !    Output, real(dp) X(N,N+1), the coordinates of the vertices
-  !    of a simplex in N dimensions.
+  !    Output, real(real64) X(N,N+1), the coordinates of the vertices
+  !    of a simplex in N dimensions.  
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(out) :: x(n,n+1)
-    real(dp) :: a
-    real(dp) :: c(n)
-    integer(ip) :: j
-    real(dp) :: s
+    integer(int32) n
 
-    x(1:n,1:n+1) = 0.0_dp
+    real(real64) a
+    real(real64) c(n)
+    integer(int32) j
+    real(real64) s
+    real(real64) x(n,n+1)
+
+    x(1:n,1:n+1) = 0.0e+00_real64
 
     do j = 1, n
-      x(j,j) = 1.0_dp
+      x(j,j) = 1.0e+00_real64
     end do
 
-    a = ( 1.0_dp - sqrt ( 1.0_dp + real ( n, dp) ) ) &
-      / real ( n, dp)
+    a = ( 1.0e+00_real64 - sqrt ( 1.0e+00_real64 + real ( n, real64) ) ) &
+      / real ( n, real64)
 
     x(1:n,n+1) = a
   !
   !  Now adjust coordinates so the centroid is at zero.
   !
-    c(1:n) = sum ( x(1:n,1:n+1), dim = 2 ) / real ( n + 1, dp)
+    c(1:n) = sum ( x(1:n,1:n+1), dim = 2 ) / real ( n + 1, real64)
 
     do j = 1, n + 1
       x(1:n,j) = x(1:n,j) - c(1:n)
@@ -296,10 +290,9 @@ contains
     s = sqrt ( sum ( x(1:n,1)**2 ) )
 
     x(1:n,1:n+1) = x(1:n,1:n+1) / s
-  end subroutine simplex_coordinates2
+  end
 
-  pure subroutine simplex_volume ( n, x, volume ) &
-        bind(C, name="simplex_volume")
+  subroutine simplex_volume ( n, x, volume )
 
   !*****************************************************************************80
   !
@@ -319,21 +312,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
-  !    Input, real(dp) X(N,N+1), the coordinates of the vertices
-  !    of a simplex in N dimensions.
+  !    Input, real(real64) X(N,N+1), the coordinates of the vertices
+  !    of a simplex in N dimensions.  
   !
-  !    Output, real(dp) VOLUME, the volume of the simplex.
+  !    Output, real(real64) VOLUME, the volume of the simplex.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: x(n,n+1)
-    real(dp), intent(out) :: volume
-    real(dp) :: a(n,n)
-    real(dp) :: det
-    integer(ip) :: i
-    integer(ip) :: j
+    integer(int32) n
+
+    real(real64) a(n,n)
+    real(real64) det
+    integer(int32) i
+    integer(int32) j
+    real(real64) volume
+    real(real64) x(n,n+1)
 
     a(1:n,1:n) = x(1:n,1:n)
     do j = 1, n
@@ -344,8 +338,8 @@ contains
 
     volume = abs ( det )
     do i = 1, n
-      volume = volume / real ( i, dp)
+      volume = volume / real ( i, real64)
     end do
-  end subroutine simplex_volume
+  end
 
 end module simplex_coordinates_mod

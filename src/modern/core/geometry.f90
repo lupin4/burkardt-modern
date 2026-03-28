@@ -1,16 +1,11 @@
-!> geometry � Modern Fortran 2018
+!> geometry — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module geometry_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: angle_box_2d, angle_contains_point_2d, angle_deg_2d, angle_half_2d, angle_rad_2d, angle_rad_3d
   public :: angle_rad_nd, angle_turn_2d, annulus_area_2d, annulus_sector_area_2d, annulus_sector_centroid_2d, ball01_sample_2d
@@ -103,8 +98,7 @@ module geometry_mod
 
 contains
 
-  subroutine angle_box_2d ( dist, p1, p2, p3, p4, p5 ) &
-        bind(C, name="angle_box_2d")
+  subroutine angle_box_2d ( dist, p1, p2, p3, p4, p5 )
 
   !*****************************************************************************80
   !
@@ -165,33 +159,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DIST, the nonnegative distance from P1
+  !    Input, real(real64) DIST, the nonnegative distance from P1
   !    to the computed points P4 and P5.
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2).
+  !    Input, real(real64) P1(2), P2(2), P3(2).
   !    P1 and P2 are distinct points that define a line.
   !    P2 and P3 are distinct points that define a line.
   !
-  !    Output, real(dp) P4(2), P5(2), points which lie DIST units from
+  !    Output, real(real64) P4(2), P5(2), points which lie DIST units from
   !    the line between P1 and P2, and from the line between P2 and P3.
   !
 
-    real(dp), intent(in), value :: dist
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: p3(2)
-    real(dp), intent(out) :: p4(2)
-    real(dp), intent(out) :: p5(2)
-    real(dp) :: stheta
-    real(dp) :: temp1
-    real(dp) :: temp2
-    real(dp) :: u(2)
-    real(dp) :: u1(2)
-    real(dp) :: u2(2)
+    real(real64) dist
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) p3(2)
+    real(real64) p4(2)
+    real(real64) p5(2)
+    real(real64) stheta
+    real(real64) temp1
+    real(real64) temp2
+    real(real64) u(2)
+    real(real64) u1(2)
+    real(real64) u2(2)
   !
   !  If DIST = 0, assume the user knows best.
   !
-    if ( dist == 0.0_dp ) then
+    if ( dist == 0.0e+00_real64 ) then
       p4(1:2) = p2(1:2)
       p5(1:2) = p2(1:2)
     end if
@@ -240,7 +234,7 @@ contains
 
     temp1 = dot_product ( u1(1:2), p3(1:2) - p2(1:2) )
 
-    if ( temp1 < 0.0_dp ) then
+    if ( temp1 < 0.0e+00_real64 ) then
       u1(1:2) = -u1(1:2)
     end if
 
@@ -250,7 +244,7 @@ contains
     u2(1:2) = u2(1:2) / temp1
 
     temp1 = dot_product ( u2(1:2), p1(1:2) - p2(1:2) )
-    if ( temp1 < 0.0_dp ) then
+    if ( temp1 < 0.0e+00_real64 ) then
       u2(1:2) = -u2(1:2)
     end if
   !
@@ -261,9 +255,9 @@ contains
     temp1 = dot_product ( u1(1:2), p3(1:2) - p2(1:2) )
     temp2 = dot_product ( u2(1:2), p1(1:2) - p2(1:2) )
 
-    if ( temp1 == 0.0_dp .or. temp2 == 0.0_dp ) then
+    if ( temp1 == 0.0e+00_real64 .or. temp2 == 0.0e+00_real64 ) then
 
-      if ( dot_product ( u1(1:2), u2(1:2) ) < 0.0_dp ) then
+      if ( dot_product ( u1(1:2), u2(1:2) ) < 0.0e+00_real64 ) then
         u1(1:2) = -u1(1:2)
       end if
 
@@ -279,7 +273,7 @@ contains
           ( sqrt ( sum ( ( p3(1:2) - p2(1:2) )**2 ) ) &
           * sqrt ( sum ( ( p2(1:2) - p1(1:2) )**2 ) ) )
 
-    if ( temp1 < -0.99_dp ) then
+    if ( temp1 < -0.99e+00_real64 ) then
       temp1 = sqrt ( sum ( ( p2(1:2) - p1(1:2) )**2 ) )
       p4(1:2) = p2(1:2) + dist * ( p2(1:2) - p1(1:2) ) &
         / temp1 + dist * u1(1:2)
@@ -297,11 +291,11 @@ contains
   !  P1 = P2, which I now treat specially just to guarantee I
   !  avoid this problem!
   !
-    if ( dot_product ( u1(1:2), u2(1:2) ) < 0.0_dp ) then
+    if ( dot_product ( u1(1:2), u2(1:2) ) < 0.0e+00_real64 ) then
       u2(1:2) = -u2(1:2)
     end if
 
-    u(1:2) = 0.5_dp * ( u1(1:2) + u2(1:2) )
+    u(1:2) = 0.5e+00_real64 * ( u1(1:2) + u2(1:2) )
     temp1 = sqrt ( sum ( u(1:2)**2 ) )
     u(1:2) = u(1:2) / temp1
   !
@@ -312,10 +306,9 @@ contains
 
     p4(1:2) = p2(1:2) + dist * u(1:2) / stheta
     p5(1:2) = p2(1:2) - dist * u(1:2) / stheta
-  end subroutine angle_box_2d
+  end
 
-  subroutine angle_contains_point_2d ( p1, p2, p3, p, inside ) &
-        bind(C, name="angle_contains_point_2d")
+  subroutine angle_contains_point_2d ( p1, p2, p3, p, inside )
 
   !*****************************************************************************80
   !
@@ -350,31 +343,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), the coordinates of
+  !    Input, real(real64) P1(2), P2(2), P3(2), the coordinates of
   !    three points that define the angle.  The order of these points matters!
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside
   !    the angle.
   !
 
-    real(dp) :: angle_rad_2d
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: p3(2)
+    real(real64) angle_rad_2d
+    logical inside
+    real(real64) p(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) p3(2)
 
     if ( angle_rad_2d ( p1, p2, p ) <= angle_rad_2d ( p1, p2, p3 ) ) then
       inside = .true.
     else
       inside = .false.
     end if
-  end subroutine angle_contains_point_2d
+  end
 
-  function angle_deg_2d ( p1, p2, p3 ) &
-        bind(C, name="angle_deg_2d")
+  function angle_deg_2d ( p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -407,24 +399,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), define the rays
+  !    Input, real(real64) P1(2), P2(2), P3(2), define the rays
   !    P1 - P2 and P3 - P2 which define the angle.
   !
-  !    Output, real(dp) ANGLE_DEG_2D, the angle swept out by the 
+  !    Output, real(real64) ANGLE_DEG_2D, the angle swept out by the 
   !    rays, measured in degrees.  0 <= ANGLE_DEG_2D < 360.  If either ray 
   !    has zero length, then ANGLE_DEG_2D is set to 0.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle_deg_2d
-    real(dp) :: angle_rad_2d
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: radians_to_degrees
-    real(dp) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
+    real(real64) angle_deg_2d
+    real(real64) angle_rad_2d
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radians_to_degrees
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
 
     p(1) = ( p3(1) - p2(1) ) * ( p1(1) - p2(1) ) &
          + ( p3(2) - p2(2) ) * ( p1(2) - p2(2) )
@@ -432,21 +424,20 @@ contains
     p(2) = ( p3(1) - p2(1) ) * ( p1(2) - p2(2) ) &
          - ( p3(2) - p2(2) ) * ( p1(1) - p2(1) )
 
-    if ( p(1) == 0.0_dp .and. p(2) == 0.0_dp ) then
-      angle_deg_2d = 0.0_dp
+    if ( p(1) == 0.0e+00_real64 .and. p(2) == 0.0e+00_real64 ) then
+      angle_deg_2d = 0.0e+00_real64
     end if
 
     angle_rad_2d = atan2 ( p(2), p(1) )
 
-    if ( angle_rad_2d < 0.0_dp ) then
-      angle_rad_2d = angle_rad_2d + 2.0_dp * r8_pi
+    if ( angle_rad_2d < 0.0e+00_real64 ) then
+      angle_rad_2d = angle_rad_2d + 2.0e+00_real64 * r8_pi
     end if
 
     angle_deg_2d = radians_to_degrees ( angle_rad_2d )
-  end function angle_deg_2d
+  end
 
-  subroutine angle_half_2d ( p1, p2, p3, p4 ) &
-        bind(C, name="angle_half_2d")
+  subroutine angle_half_2d ( p1, p2, p3, p4 )
 
   !*****************************************************************************80
   !
@@ -481,26 +472,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), points defining the angle. 
+  !    Input, real(real64) P1(2), P2(2), P3(2), points defining the angle. 
   !
-  !    Input, real(dp) P4(2), a point defining the half angle.
+  !    Input, real(real64) P4(2), a point defining the half angle.
   !    The vector P4 - P2 will have unit norm.
   !
 
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: p3(2)
-    real(dp), intent(in) :: p4(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) p3(2)
+    real(real64) p4(2)
 
-    p4(1:2) = 0.5_dp * ( &
+    p4(1:2) = 0.5e+00_real64 * ( &
         ( p1(1:2) - p2(1:2) ) / sqrt ( sum ( ( p1(1:2) - p2(1:2) )**2 ) ) &
       + ( p3(1:2) - p2(1:2) ) / sqrt ( sum ( ( p3(1:2) - p2(1:2) )**2 ) ) )
 
      p4(1:2) = p2(1:2) + p4(1:2) / sqrt ( sum ( p4(1:2)**2 ) )
-  end subroutine angle_half_2d
+  end
 
-  function angle_rad_2d ( p1, p2, p3 ) &
-        bind(C, name="angle_rad_2d")
+  function angle_rad_2d ( p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -533,20 +523,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), define the rays
+  !    Input, real(real64) P1(2), P2(2), P3(2), define the rays
   !    P1 - P2 and P3 - P2 which define the angle.
   !
-  !    Output, real(dp) ANGLE_RAD_2D, the angle swept out by the rays,
+  !    Output, real(real64) ANGLE_RAD_2D, the angle swept out by the rays,
   !    in radians.  0 <= ANGLE_RAD_2D < 2 * PI.  If either ray has zero
   !    length, then ANGLE_RAD_2D is set to 0.
   !
 
-    real(dp) :: angle_rad_2d
-    real(dp) :: p(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: p3(2)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) angle_rad_2d
+    real(real64) p(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) p3(2)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     p(1) = ( p3(1) - p2(1) ) * ( p1(1) - p2(1) ) &
          + ( p3(2) - p2(2) ) * ( p1(2) - p2(2) )
@@ -554,19 +544,18 @@ contains
     p(2) = ( p3(1) - p2(1) ) * ( p1(2) - p2(2) ) &
          - ( p3(2) - p2(2) ) * ( p1(1) - p2(1) )
 
-    if ( all ( p(1:2) == 0.0_dp)  ) then
-      angle_rad_2d = 0.0_dp
+    if ( all ( p(1:2) == 0.0e+00_real64)  ) then
+      angle_rad_2d = 0.0e+00_real64
     end if
 
     angle_rad_2d = atan2 ( p(2), p(1) )
 
-    if ( angle_rad_2d < 0.0_dp ) then
-      angle_rad_2d = angle_rad_2d + 2.0_dp * r8_pi
+    if ( angle_rad_2d < 0.0e+00_real64 ) then
+      angle_rad_2d = angle_rad_2d + 2.0e+00_real64 * r8_pi
     end if
-  end function angle_rad_2d
+  end
 
-  function angle_rad_3d ( p1, p2, p3 ) &
-        bind(C, name="angle_rad_3d")
+  function angle_rad_3d ( p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -594,45 +583,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), points defining an angle.
+  !    Input, real(real64) P1(3), P2(3), P3(3), points defining an angle.
   !    The rays are P1 - P2 and P3 - P2.
   !
-  !    Output, real(dp) ANGLE_RAD_3D, the angle between the two rays,
+  !    Output, real(real64) ANGLE_RAD_3D, the angle between the two rays,
   !    in radians.  This value will always be between 0 and PI.  If either ray has
   !    zero length, then the angle is returned as zero.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: angle_rad_3d
-    real(dp) :: dot
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp) :: r8_acos
-    real(dp) :: v1norm
-    real(dp) :: v2norm
+    real(real64) angle_rad_3d
+    real(real64) dot
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) r8_acos
+    real(real64) v1norm
+    real(real64) v2norm
 
     v1norm = sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
 
-    if ( v1norm == 0.0_dp ) then
-      angle_rad_3d = 0.0_dp
+    if ( v1norm == 0.0e+00_real64 ) then
+      angle_rad_3d = 0.0e+00_real64
     end if
 
     v2norm = sqrt ( sum ( ( p3(1:dim_num) - p2(1:dim_num) )**2 ) )
 
-    if ( v2norm == 0.0_dp ) then
-      angle_rad_3d = 0.0_dp
+    if ( v2norm == 0.0e+00_real64 ) then
+      angle_rad_3d = 0.0e+00_real64
     end if
 
     dot = sum ( ( p1(1:dim_num) - p2(1:dim_num) ) &
               * ( p3(1:dim_num) - p2(1:dim_num) ) )
 
     angle_rad_3d = r8_acos ( dot / ( v1norm * v2norm ) )
-  end function angle_rad_3d
+  end
 
-  function angle_rad_nd ( dim_num, v1, v2 ) &
-        bind(C, name="angle_rad_nd")
+  function angle_rad_nd ( dim_num, v1, v2 )
 
   !*****************************************************************************80
   !
@@ -660,43 +648,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) V1(DIM_NUM), V2(DIM_NUM), the two rays.
+  !    Input, real(real64) V1(DIM_NUM), V2(DIM_NUM), the two rays.
   !
-  !    Output, real(dp) ANGLE_RAD_ND, the angle between the rays,
+  !    Output, real(real64) ANGLE_RAD_ND, the angle between the rays,
   !    in radians.  This value will always be between 0 and PI.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: angle_rad_nd
-    real(dp) :: dot
-    real(dp) :: r8_acos
-    real(dp), intent(in) :: v1(dim_num)
-    real(dp) :: v1norm
-    real(dp), intent(in) :: v2(dim_num)
-    real(dp) :: v2norm
+    real(real64) angle_rad_nd
+    real(real64) dot
+    real(real64) r8_acos
+    real(real64) v1(dim_num)
+    real(real64) v1norm
+    real(real64) v2(dim_num)
+    real(real64) v2norm
 
     dot = dot_product ( v1(1:dim_num), v2(1:dim_num) )
 
     v1norm = sqrt ( sum ( v1(1:dim_num)**2 ) )
 
-    if ( v1norm == 0.0_dp ) then
-      angle_rad_nd = 0.0_dp
+    if ( v1norm == 0.0e+00_real64 ) then
+      angle_rad_nd = 0.0e+00_real64
     end if
 
     v2norm = sqrt ( sum ( v2(1:dim_num)**2 ) )
 
-    if ( v2norm == 0.0_dp ) then
-      angle_rad_nd = 0.0_dp
+    if ( v2norm == 0.0e+00_real64 ) then
+      angle_rad_nd = 0.0e+00_real64
     end if
 
     angle_rad_nd = r8_acos ( dot / ( v1norm * v2norm ) )
-  end function angle_rad_nd
+  end
 
-  subroutine angle_turn_2d ( p1, p2, p3, turn ) &
-        bind(C, name="angle_turn_2d")
+  subroutine angle_turn_2d ( p1, p2, p3, turn )
 
   !*****************************************************************************80
   !
@@ -744,21 +731,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), the points that form
+  !    Input, real(real64) P1(2), P2(2), P3(2), the points that form
   !    the angle.
   !
-  !    Output, real(dp) TURN, the turn angle, between -PI and PI.
+  !    Output, real(real64) TURN, the turn angle, between -PI and PI.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp) :: r8_atan
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: turn
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) r8_atan
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) turn
 
     p(1) = ( p3(1) - p2(1) ) * ( p1(1) - p2(1) ) &
          + ( p3(2) - p2(2) ) * ( p1(2) - p2(2) )
@@ -766,15 +753,14 @@ contains
     p(2) = ( p3(1) - p2(1) ) * ( p1(2) - p2(2) ) &
          - ( p3(2) - p2(2) ) * ( p1(1) - p2(1) )
 
-    if ( p(1) == 0.0_dp .and. p(2) == 0.0_dp ) then
-      turn = 0.0_dp
+    if ( p(1) == 0.0e+00_real64 .and. p(2) == 0.0e+00_real64 ) then
+      turn = 0.0e+00_real64
     else
       turn = r8_pi - r8_atan ( p(2), p(1) )
     end if
-  end subroutine angle_turn_2d
+  end
 
-  subroutine annulus_area_2d ( r1, r2, area ) &
-        bind(C, name="annulus_area_2d")
+  subroutine annulus_area_2d ( r1, r2, area )
 
   !*****************************************************************************80
   !
@@ -801,21 +787,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, the inner and outer radii.
+  !    Input, real(real64) R1, R2, the inner and outer radii.
   !
-  !    Output, real(dp) AREA, the area.
+  !    Output, real(real64) AREA, the area.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) r1
+    real(real64) r2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     area = r8_pi * ( r2 + r1 ) * ( r2 - r1 )
-  end subroutine annulus_area_2d
+  end
 
-  subroutine annulus_sector_area_2d ( r1, r2, theta1, theta2, area ) &
-        bind(C, name="annulus_sector_area_2d")
+  subroutine annulus_sector_area_2d ( r1, r2, theta1, theta2, area )
 
   !*****************************************************************************80
   !
@@ -843,24 +828,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, the inner and outer radii.
+  !    Input, real(real64) R1, R2, the inner and outer radii.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles.
+  !    Input, real(real64) THETA1, THETA2, the angles.
   !
-  !    Output, real(dp) AREA, the area.
+  !    Output, real(real64) AREA, the area.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) area
+    real(real64) r1
+    real(real64) r2
+    real(real64) theta1
+    real(real64) theta2
 
-    area = 0.5_dp * ( theta2 - theta1 ) * ( r2 + r1 ) * ( r2 - r1 )
-  end subroutine annulus_sector_area_2d
+    area = 0.5e+00_real64 * ( theta2 - theta1 ) * ( r2 + r1 ) * ( r2 - r1 )
+  end
 
-  subroutine annulus_sector_centroid_2d ( pc, r1, r2, theta1, theta2, centroid ) &
-        bind(C, name="annulus_sector_centroid_2d")
+  subroutine annulus_sector_centroid_2d ( pc, r1, r2, theta1, theta2, centroid )
 
   !*****************************************************************************80
   !
@@ -901,35 +885,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PC(2), the center.
+  !    Input, real(real64) PC(2), the center.
   !
-  !    Input, real(dp) R1, R2, the inner and outer radii.
+  !    Input, real(real64) R1, R2, the inner and outer radii.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles.
+  !    Input, real(real64) THETA1, THETA2, the angles.
   !
-  !    Output, real(dp) CENTROID(2), the centroid.
+  !    Output, real(real64) CENTROID(2), the centroid.
   !
 
-    real(dp), intent(out) :: centroid(2)
-    real(dp), intent(in) :: pc(2)
-    real(dp) :: r
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp) :: theta
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) centroid(2)
+    real(real64) pc(2)
+    real(real64) r
+    real(real64) r1
+    real(real64) r2
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
 
     theta = theta2 - theta1
 
-    r = 4.0_dp * sin ( theta / 2.0_dp ) / ( 3.0_dp * theta ) &
+    r = 4.0e+00_real64 * sin ( theta / 2.0e+00_real64 ) / ( 3.0e+00_real64 * theta ) &
       * ( r1 * r1 + r1 * r2 + r2 * r2 ) / ( r1 + r2 )
 
-    centroid(1) = pc(1) + r * cos ( theta1 + theta / 2.0_dp )
-    centroid(2) = pc(2) + r * sin ( theta1 + theta / 2.0_dp )
-  end subroutine annulus_sector_centroid_2d
+    centroid(1) = pc(1) + r * cos ( theta1 + theta / 2.0e+00_real64 )
+    centroid(2) = pc(2) + r * sin ( theta1 + theta / 2.0e+00_real64 )
+  end
 
-  subroutine ball01_sample_2d ( seed, p ) &
-        bind(C, name="ball01_sample_2d")
+  subroutine ball01_sample_2d ( seed, p )
 
   !*****************************************************************************80
   !
@@ -955,32 +938,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) P(2), a random point in the unit ball.
+  !    Output, real(real64) P(2), a random point in the unit ball.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: p(dim_num)
-    real(dp) :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta
-    real(dp) :: u(dim_num)
+    real(real64) p(dim_num)
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) theta
+    real(real64) u(dim_num)
 
     call r8vec_uniform_01 ( dim_num, seed, u )
 
     r = sqrt ( u(1) )
-    theta = 2.0_dp * r8_pi * u(2)
+    theta = 2.0e+00_real64 * r8_pi * u(2)
 
     p(1) = r * cos ( theta )
     p(2) = r * sin ( theta )
-  end subroutine ball01_sample_2d
+  end
 
-  subroutine ball01_sample_3d ( seed, p ) &
-        bind(C, name="ball01_sample_3d")
+  subroutine ball01_sample_3d ( seed, p )
 
   !*****************************************************************************80
   !
@@ -1000,23 +982,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) P(3), the sample point.
+  !    Output, real(real64) P(3), the sample point.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: p(dim_num)
-    real(dp) :: phi
-    real(dp) :: r
-    real(dp) :: r8_acos
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta
-    real(dp) :: u(dim_num)
-    real(dp) :: vdot
+    real(real64) p(dim_num)
+    real(real64) phi
+    real(real64) r
+    real(real64) r8_acos
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) theta
+    real(real64) u(dim_num)
+    real(real64) vdot
 
     call r8vec_uniform_01 ( dim_num, seed, u )
   !
@@ -1027,26 +1009,25 @@ contains
   !  Z and Z + dZ is independent of Z.  So choosing Z uniformly chooses
   !  a patch of area uniformly.
   !
-    vdot = 2.0_dp * u(1) - 1.0_dp
+    vdot = 2.0e+00_real64 * u(1) - 1.0e+00_real64
 
     phi = r8_acos ( vdot )
   !
   !  Pick a uniformly random rotation between 0 and 2 Pi around the
   !  axis of the Z vector.
   !
-    theta = 2.0_dp * r8_pi * u(2)
+    theta = 2.0e+00_real64 * r8_pi * u(2)
   !
   !  Pick a random radius R.
   !
-    r = u(3) ** ( 1.0_dp / 3.0_dp )
+    r = u(3) ** ( 1.0e+00_real64 / 3.0e+00_real64 )
 
     p(1) = r * cos ( theta ) * sin ( phi )
     p(2) = r * sin ( theta ) * sin ( phi )
     p(3) = r * cos ( phi )
-  end subroutine ball01_sample_3d
+  end
 
-  subroutine ball01_sample_nd ( dim_num, seed, p ) &
-        bind(C, name="ball01_sample_nd")
+  subroutine ball01_sample_nd ( dim_num, seed, p )
 
   !*****************************************************************************80
   !
@@ -1079,37 +1060,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) P(N), the random point.
+  !    Output, real(real64) P(N), the random point.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    integer(ip) :: i
-    real(dp), intent(out) :: p(dim_num)
-    real(dp) :: pi
-    real(dp) :: r
-    real(dp) :: r8_uniform_01
-    real(dp) :: random_cosine
-    real(dp) :: random_sign
-    real(dp) :: random_sine
-    integer(ip), intent(inout) :: seed
+    integer(int32) i
+    real(real64) p(dim_num)
+    real(real64) pi
+    real(real64) r
+    real(real64) r8_uniform_01
+    real(real64) random_cosine
+    real(real64) random_sign
+    real(real64) random_sine
+    integer(int32) seed
 
-    p(1) = 1.0_dp
-    p(2:dim_num) = 0.0_dp
+    p(1) = 1.0e+00_real64
+    p(2:dim_num) = 0.0e+00_real64
 
     do i = 1, dim_num-1
 
       r = r8_uniform_01 ( seed )
-      random_cosine = 2.0_dp * r - 1.0_dp
+      random_cosine = 2.0e+00_real64 * r - 1.0e+00_real64
       r = r8_uniform_01 ( seed )
-      random_sign = real ( 2 * int ( 2.0_dp * r ) - 1, dp)
+      random_sign = real ( 2 * int ( 2.0e+00_real64 * r ) - 1, real64)
       r = r8_uniform_01 ( seed )
-      random_sine = random_sign * sqrt ( 1.0_dp - random_cosine * random_cosine )
+      random_sine = random_sign * sqrt ( 1.0e+00_real64 - random_cosine * random_cosine )
 
       pi = p(i)
       p(i  ) = random_cosine * pi
@@ -1119,13 +1100,12 @@ contains
 
     r = r8_uniform_01 ( seed )
 
-    r = r ** ( 1.0_dp / real ( dim_num, dp) )
+    r = r ** ( 1.0e+00_real64 / real ( dim_num, real64) )
 
     p(1:dim_num) = r * p(1:dim_num)
-  end subroutine ball01_sample_nd
+  end
 
-  function ball01_volume ( ) &
-        bind(C, name="ball01_volume")
+  function ball01_volume ( )
 
   !*****************************************************************************80
   !
@@ -1145,19 +1125,18 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) BALL01_VOLUME_3D, the volume.
+  !    Output, real(real64) BALL01_VOLUME_3D, the volume.
   !
 
-    real(dp) :: ball01_volume
-    real(dp) :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) ball01_volume
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
-    r = 1.0_dp
-    ball01_volume = 4.0_dp * r8_pi * r ** 3 / 3.0_dp
-  end function ball01_volume
+    r = 1.0e+00_real64
+    ball01_volume = 4.0e+00_real64 * r8_pi * r ** 3 / 3.0e+00_real64
+  end
 
-  subroutine basis_map_3d ( u, v, a, ierror ) &
-        bind(C, name="basis_map_3d")
+  subroutine basis_map_3d ( u, v, a, ierror )
 
   !*****************************************************************************80
   !
@@ -1187,27 +1166,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) U(3,3), the columns of U are the three 
+  !    Input, real(real64) U(3,3), the columns of U are the three 
   !    "domain" or "preimage" vectors, which should be linearly independent.
   !
-  !    Input, real(dp) V(3,3), the columns of V are the three 
+  !    Input, real(real64) V(3,3), the columns of V are the three 
   !    "range" or "image" vectors.
   !
-  !    Output, real(dp) A(3,3), a matrix with the property that 
+  !    Output, real(real64) A(3,3), a matrix with the property that 
   !    A * U1 = V1, A * U2 = V2 and A * U3 = V3.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    0, no error occurred.
   !    nonzero, the matrix [ U1 | U2 | U3 ] is exactly singular.
   !
 
-    real(dp) :: a(3,3)
-    real(dp) :: b(3,3)
-    real(dp) :: c(3,3)
-    real(dp) :: det
-    integer(ip), intent(out) :: ierror
-    real(dp), intent(in) :: u(3,3)
-    real(dp), intent(in) :: v(3,3)
+    real(real64) a(3,3)
+    real(real64) b(3,3)
+    real(real64) c(3,3)
+    real(real64) det
+    integer(int32) ierror
+    real(real64) u(3,3)
+    real(real64) v(3,3)
 
     ierror = 0
   !
@@ -1217,17 +1196,16 @@ contains
 
     call r8mat_inverse_3d ( b, c, det )
 
-    if ( det == 0.0_dp ) then
+    if ( det == 0.0e+00_real64 ) then
       ierror = 1
     end if
   !
   !  A = [ V1 | V2 | V3 ] * inverse [ U1 | U2 | U3 ].
   !
     a(1:3,1:3) = matmul ( v(1:3,1:3), c(1:3,1:3) )
-  end subroutine basis_map_3d
+  end
 
-  function box_contains_point_2d ( p1, p2, p ) &
-        bind(C, name="box_contains_point_2d")
+  function box_contains_point_2d ( p1, p2, p )
 
   !*****************************************************************************80
   !
@@ -1255,19 +1233,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the low and high 
+  !    Input, real(real64) P1(2), P2(2), the low and high 
   !    corners of the box.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical BOX_CONTAINS_POINT_2D, is TRUE if the point 
   !    is inside the box.
   !
 
-    logical :: box_contains_point_2d
-    real(dp), intent(in) :: p(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
+    logical box_contains_point_2d
+    real(real64) p(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
 
     if ( p(1)  < p1(1) .or. &
          p2(1) < p(1)  .or. &
@@ -1277,10 +1255,9 @@ contains
     else
       box_contains_point_2d = .true.
     end if
-  end function box_contains_point_2d
+  end
 
-  function box_contains_point_nd ( dim_num, p1, p2, p ) &
-        bind(C, name="box_contains_point_nd")
+  function box_contains_point_nd ( dim_num, p1, p2, p )
 
   !*****************************************************************************80
   !
@@ -1308,24 +1285,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) P1(DIM_NUM), P2(DIM_NUM), the low and high 
+  !    Input, real(real64) P1(DIM_NUM), P2(DIM_NUM), the low and high 
   !    corners of the box.
   !
-  !    Input, real(dp) P(DIM_NUM), the point to be checked.
+  !    Input, real(real64) P(DIM_NUM), the point to be checked.
   !
   !    Output, logical BOX_CONTAINS_POINT_ND, is TRUE if the point 
   !    is inside the box.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    logical :: box_contains_point_nd
-    integer(ip) :: i
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
+    logical box_contains_point_nd
+    integer(int32) i
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
     box_contains_point_nd = .false.
 
@@ -1335,10 +1312,9 @@ contains
     end do
 
     box_contains_point_nd = .true.
-  end function box_contains_point_nd
+  end
 
-  function box_contains_segment_nd ( dim_num, p1, p2, pa, pb  ) &
-        bind(C, name="box_contains_segment_nd")
+  function box_contains_segment_nd ( dim_num, p1, p2, pa, pb  )
 
   !*****************************************************************************80
   !
@@ -1369,26 +1345,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) P1(DIM_NUM), P2(DIM_NUM), the low and high corners
+  !    Input, real(real64) P1(DIM_NUM), P2(DIM_NUM), the low and high corners
   !    of the box.
   !
-  !    Input, real(dp) PA(DIM_NUM), PB(DIM_NUM), the endpoints of the 
+  !    Input, real(real64) PA(DIM_NUM), PB(DIM_NUM), the endpoints of the 
   !    line segment.
   !
   !    Output, logical BOX_CONTAINS_SEGMENT_ND, is TRUE if the box 
   !    contains the line segment.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    logical :: box_contains_segment_nd
-    logical :: box_contains_point_nd
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: pa(dim_num)
-    real(dp), intent(in) :: pb(dim_num)
+    logical box_contains_segment_nd
+    logical box_contains_point_nd
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pa(dim_num)
+    real(real64) pb(dim_num)
 
     box_contains_segment_nd = .false.
 
@@ -1399,10 +1375,9 @@ contains
     end if
 
     box_contains_segment_nd = .true.
-  end function box_contains_segment_nd
+  end
 
-  subroutine box_ray_int_2d ( p1, p2, pa, pb, pint ) &
-        bind(C, name="box_ray_int_2d")
+  subroutine box_ray_int_2d ( p1, p2, pa, pb, pint )
 
   !*****************************************************************************80
   !
@@ -1433,29 +1408,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the low and high corners of the box.
+  !    Input, real(real64) P1(2), P2(2), the low and high corners of the box.
   !
-  !    Input, real(dp) PA(2), the origin of the ray, which should be
+  !    Input, real(real64) PA(2), the origin of the ray, which should be
   !    inside the box.
   !
-  !    Input, real(dp) PB(2), a second point on the ray.
+  !    Input, real(real64) PB(2), a second point on the ray.
   !
-  !    Output, real(dp) PINT(2), the point on the box intersected 
+  !    Output, real(real64) PINT(2), the point on the box intersected 
   !    by the ray.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical :: inside
-    integer(ip) :: ival
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: pa(2)
-    real(dp), intent(in) :: pb(2)
-    real(dp) :: pc(2)
-    real(dp) :: pd(2)
-    real(dp), intent(out) :: pint(2)
-    integer(ip) :: side
+    logical inside
+    integer(int32) ival
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) pa(2)
+    real(real64) pb(2)
+    real(real64) pc(2)
+    real(real64) pd(2)
+    real(real64) pint(2)
+    integer(int32) side
 
     do side = 1, 4
 
@@ -1489,10 +1464,9 @@ contains
     end do
 
     call lines_exp_int_2d ( pa, pb, pc, pd, ival, pint )
-  end subroutine box_ray_int_2d
+  end
 
-  subroutine box_segment_clip_2d ( p1, p2, pa, pb, ival ) &
-        bind(C, name="box_segment_clip_2d")
+  subroutine box_segment_clip_2d ( p1, p2, pa, pb, ival )
 
   !*****************************************************************************80
   !
@@ -1523,15 +1497,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the low and high corners of the box.
+  !    Input, real(real64) P1(2), P2(2), the low and high corners of the box.
   !
-  !    Input/output, real(dp) PA(2), PB(2); on input, the endpoints 
+  !    Input/output, real(real64) PA(2), PB(2); on input, the endpoints 
   !    of a line segment.  On output, the endpoints of the portion of the
   !    line segment that lies inside the box.  However, if no part of the
   !    initial line segment lies inside the box, the output value is the
   !    same as the input value.
   !
-  !    Output, integer(ip) IVAL:
+  !    Output, integer(int32) IVAL:
   !    -1, no part of the line segment is within the box.
   !     0, no clipping was necessary.
   !     1, PA was clipped.
@@ -1539,16 +1513,16 @@ contains
   !     3, PA and PB were clipped.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical :: clip_a
-    logical :: clip_b
-    integer(ip) :: ival
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(inout) :: pa(dim_num)
-    real(dp) :: pb(dim_num)
-    real(dp) :: q(dim_num)
+    logical clip_a
+    logical clip_b
+    integer(int32) ival
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pa(dim_num)
+    real(real64) pb(dim_num)
+    real(real64) q(dim_num)
 
     clip_a = .false.
     clip_b = .false.
@@ -1634,10 +1608,9 @@ contains
     if ( clip_b ) then
       ival = ival + 2
     end if
-  end subroutine box_segment_clip_2d
+  end
 
-  function box01_contains_point_2d ( p ) &
-        bind(C, name="box01_contains_point_2d")
+  function box01_contains_point_2d ( p )
 
   !*****************************************************************************80
   !
@@ -1666,21 +1639,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical BOX01_CONTAINS_POINT_2D, is TRUE if the
   !    point is  inside the box.
   !
 
-    logical :: box01_contains_point_2d
-    real(dp), intent(in) :: p(2)
+    logical box01_contains_point_2d
+    real(real64) p(2)
 
     box01_contains_point_2d = &
-      all ( 0.0_dp <= p(1:2) ) .and. all ( p(1:2) <= 1.0_dp )
-  end function box01_contains_point_2d
+      all ( 0.0e+00_real64 <= p(1:2) ) .and. all ( p(1:2) <= 1.0e+00_real64 )
+  end
 
-  function box01_contains_point_nd ( dim_num, p ) &
-        bind(C, name="box01_contains_point_nd")
+  function box01_contains_point_nd ( dim_num, p )
 
   !*****************************************************************************80
   !
@@ -1707,26 +1679,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) P(DIM_NUM), the point to be checked.
+  !    Input, real(real64) P(DIM_NUM), the point to be checked.
   !
   !    Output, logical BOX_01_CONTAINS_POINT_ND, is TRUE 
   !    if the point is inside the box.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    logical :: box01_contains_point_nd
-    real(dp), intent(in) :: p(dim_num)
+    logical box01_contains_point_nd
+    real(real64) p(dim_num)
 
     box01_contains_point_nd = &
-      all ( 0.0_dp <= p(1:dim_num) ) .and. all ( p(1:dim_num) <= 1.0_dp )
-  end function box01_contains_point_nd
+      all ( 0.0e+00_real64 <= p(1:dim_num) ) .and. all ( p(1:dim_num) <= 1.0e+00_real64 )
+  end
 
   subroutine circle_arc_point_near_2d ( r, pc, theta1, theta2, p, pn, &
-    dist ) &
-        bind(C, name="circle_arc_point_near_2d")
+    dist )
 
   !*****************************************************************************80
   !
@@ -1760,39 +1731,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles defining the arc,
+  !    Input, real(real64) THETA1, THETA2, the angles defining the arc,
   !    in radians.  Normally, THETA1 < THETA2.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) PN(2), a point on the circular arc which is
+  !    Output, real(real64) PN(2), a point on the circular arc which is
   !    nearest to the point.
   !
-  !    Output, real(dp) DIST, the distance to the nearest point.
+  !    Output, real(real64) DIST, the distance to the nearest point.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: r2
-    real(dp) :: r8_atan
-    real(dp) :: r8_modp
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) r
+    real(real64) r2
+    real(real64) r8_atan
+    real(real64) r8_modp
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
   !
   !  Special case, the zero circle.
   !
-    if ( r == 0.0_dp ) then
+    if ( r == 0.0e+00_real64 ) then
       pn(1:dim_num) = pc(1:dim_num)
       dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
     end if
@@ -1804,8 +1775,8 @@ contains
   !  If the angle is between THETA1 and THETA2, then you can
   !  simply project the point onto the arc.
   !
-    if ( r8_modp ( theta  - theta1,  2.0_dp * r8_pi ) <= &
-         r8_modp ( theta2 - theta1,  2.0_dp * r8_pi ) ) then
+    if ( r8_modp ( theta  - theta1,  2.0e+00_real64 * r8_pi ) <= &
+         r8_modp ( theta2 - theta1,  2.0e+00_real64 * r8_pi ) ) then
 
       r2 = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
 
@@ -1815,7 +1786,7 @@ contains
   !  average of THETA1 and THETA2, it's on the side of the arc
   !  where the endpoint associated with THETA2 is closest.
   !
-    else if ( r8_modp ( theta - 0.5_dp * ( theta1 + theta2 ), 2.0_dp * r8_pi ) &
+    else if ( r8_modp ( theta - 0.5e+00_real64 * ( theta1 + theta2 ), 2.0e+00_real64 * r8_pi ) &
       <= r8_pi ) then
 
       pn(1:dim_num) = pc(1:dim_num) + r * (/ cos ( theta2 ), sin ( theta2 ) /)
@@ -1829,10 +1800,9 @@ contains
     end if
 
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine circle_arc_point_near_2d
+  end
 
-  subroutine circle_area_2d ( r, area ) &
-        bind(C, name="circle_area_2d")
+  subroutine circle_area_2d ( r, area )
 
   !*****************************************************************************80
   !
@@ -1852,20 +1822,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Output, real(dp) AREA, the area of the circle.
+  !    Output, real(real64) AREA, the area of the circle.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     area = r8_pi * r * r
-  end subroutine circle_area_2d
+  end
 
-  subroutine circle_dia2imp_2d ( p1, p2, r, pc ) &
-        bind(C, name="circle_dia2imp_2d")
+  subroutine circle_dia2imp_2d ( p1, p2, r, pc )
 
   !*****************************************************************************80
   !
@@ -1895,28 +1864,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points that are the 
+  !    Input, real(real64) P1(2), P2(2), two points that are the 
   !    endpoints of a diameter of the circle.
   !
-  !    Output, real(dp) R, the radius of the circle.
+  !    Output, real(real64) R, the radius of the circle.
   !
-  !    Output, real(dp) PC(2), the center of the circle.
+  !    Output, real(real64) PC(2), the center of the circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(out) :: r
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
 
-    r = 0.5_dp * sqrt ( sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 ) )
+    r = 0.5e+00_real64 * sqrt ( sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 ) )
 
-    pc(1:dim_num) = 0.5_dp * ( p1(1:dim_num) + p2(1:dim_num) )
-  end subroutine circle_dia2imp_2d
+    pc(1:dim_num) = 0.5e+00_real64 * ( p1(1:dim_num) + p2(1:dim_num) )
+  end
 
-  subroutine circle_exp_contains_point_2d ( p1, p2, p3, p, inside ) &
-        bind(C, name="circle_exp_contains_point_2d")
+  subroutine circle_exp_contains_point_2d ( p1, p2, p3, p, inside )
 
   !*****************************************************************************80
   !
@@ -1942,11 +1910,11 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), three points on a circle.
+  !    Input, real(real64) P1(2), P2(2), P3(2), three points on a circle.
   !
-  !    Input, real(dp) P(2), the point to test.
+  !    Input, real(real64) P(2), the point to test.
   !
-  !    Output, integer(ip) INSIDE, reports the result:
+  !    Output, integer(int32) INSIDE, reports the result:
   !   -1, the three points are distinct and noncolinear,
   !    and P lies inside the circle.
   !    0, the three points are distinct and noncolinear,
@@ -1963,16 +1931,16 @@ contains
   !    7, all three points are equal, and P is not equal to them.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a(4,4)
-    real(dp) :: det
-    real(dp) :: r8mat_det_4d
-    integer(ip), intent(out) :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
+    real(real64) a(4,4)
+    real(real64) det
+    real(real64) r8mat_det_4d
+    integer(int32) inside
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
   !
   !  P1 = P2?
   !
@@ -1991,7 +1959,7 @@ contains
         det = ( p1(1) - p3(1) ) * ( p(2)  - p3(2) ) &
             - ( p(1)  - p3(1) ) * ( p1(2) - p3(2) )
 
-        if ( det == 0.0_dp ) then
+        if ( det == 0.0e+00_real64 ) then
           inside = 4
         else
           inside = 5
@@ -2006,7 +1974,7 @@ contains
       det = ( p1(1) - p2(1) ) * ( p(2)  - p2(2) ) &
           - ( p(1)  - p2(1) ) * ( p1(2) - p2(2) )
 
-      if ( det == 0.0_dp ) then
+      if ( det == 0.0e+00_real64 ) then
         inside = 4
       else
         inside = 5
@@ -2018,12 +1986,12 @@ contains
     det = ( p1(1) - p2(1) ) * ( p3(2) - p2(2) ) &
         - ( p3(1) - p2(1) ) * ( p1(2) - p2(2) )
 
-    if ( det == 0.0_dp ) then
+    if ( det == 0.0e+00_real64 ) then
 
       det = ( p1(1) - p2(1) ) * ( p(2)  - p2(2) ) &
           - ( p(1)  - p2(1) ) * ( p1(2) - p2(2) )
 
-      if ( det == 0.0_dp ) then
+      if ( det == 0.0e+00_real64 ) then
         inside = 2
       else
         inside = 3
@@ -2037,36 +2005,35 @@ contains
     a(1,1) = p1(1)
     a(1,2) = p1(2)
     a(1,3) = p1(1) * p1(1) + p1(2) * p1(2)
-    a(1,4) = 1.0_dp
+    a(1,4) = 1.0e+00_real64
 
     a(2,1) = p2(1)
     a(2,2) = p2(2)
     a(2,3) = p2(1) * p2(1) + p2(2) * p2(2)
-    a(2,4) = 1.0_dp
+    a(2,4) = 1.0e+00_real64
 
     a(3,1) = p3(1)
     a(3,2) = p3(2)
     a(3,3) = p3(1) * p3(1) + p3(2) * p3(2)
-    a(3,4) = 1.0_dp
+    a(3,4) = 1.0e+00_real64
 
     a(4,1) = p(1)
     a(4,2) = p(2)
     a(4,3) = p(1) * p(1) + p(2) * p(2)
-    a(4,4) = 1.0_dp
+    a(4,4) = 1.0e+00_real64
 
     det = r8mat_det_4d ( a )
 
-    if ( det < 0.0_dp ) then
+    if ( det < 0.0e+00_real64 ) then
       inside = 1
-    else if ( det == 0.0_dp ) then
+    else if ( det == 0.0e+00_real64 ) then
       inside = 0
     else
       inside = -1
     end if
-  end subroutine circle_exp_contains_point_2d
+  end
 
-  subroutine circle_exp2imp_2d ( p1, p2, p3, r, pc ) &
-        bind(C, name="circle_exp2imp_2d")
+  subroutine circle_exp2imp_2d ( p1, p2, p3, r, pc )
 
   !*****************************************************************************80
   !
@@ -2119,39 +2086,39 @@ contains
   !    Second Edition,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), three points on the circle.
+  !    Input, real(real64) P1(2), P2(2), P3(2), three points on the circle.
   !
-  !    Output, real(dp) R, the radius of the circle.  Normally, R will
+  !    Output, real(real64) R, the radius of the circle.  Normally, R will
   !    be positive.  R will be (meaningfully) zero if all three points are 
   !    equal.  If two points are equal, R is returned as the distance between
   !    two nonequal points.  R is returned as -1 in the unlikely event that 
   !    the points are numerically collinear; philosophically speaking, R 
   !    should actually be "infinity" in this case.
   !
-  !    Output, real(dp) PC(2), the center of the circle.
+  !    Output, real(real64) PC(2), the center of the circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: e
-    real(dp) :: f
-    real(dp) :: g
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(out) :: r
+    real(real64) e
+    real(real64) f
+    real(real64) g
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
   !
   !  If all three points are equal, then the
   !  circle of radius 0 and center P1 passes through the points.
   !
     if ( all ( p1(1:dim_num) == p2(1:dim_num) ) .and. &
          all ( p1(1:dim_num) == p3(1:dim_num) ) ) then
-      r = 0.0_dp
+      r = 0.0e+00_real64
       pc(1:dim_num) = p1(1:dim_num)
     end if
   !
@@ -2160,20 +2127,20 @@ contains
   !
          if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
 
-      r = 0.5_dp * sqrt ( sum ( ( p1(1:dim_num) - p3(1:dim_num) )**2 ) )
-      pc(1:dim_num) = 0.5_dp * ( p1(1:dim_num) + p3(1:dim_num)  )
+      r = 0.5e+00_real64 * sqrt ( sum ( ( p1(1:dim_num) - p3(1:dim_num) )**2 ) )
+      pc(1:dim_num) = 0.5e+00_real64 * ( p1(1:dim_num) + p3(1:dim_num)  )
       return
 
     else if ( all ( p1(1:dim_num) == p3(1:dim_num) ) ) then
 
-      r = 0.5_dp * sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
-      pc(1:dim_num) = 0.5_dp * ( p1(1:dim_num) + p2(1:dim_num)  )
+      r = 0.5e+00_real64 * sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
+      pc(1:dim_num) = 0.5e+00_real64 * ( p1(1:dim_num) + p2(1:dim_num)  )
       return
 
     else if ( all ( p2(1:dim_num) == p3(1:dim_num) ) ) then
 
-      r = 0.5_dp * sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
-      pc(1:dim_num) = 0.5_dp * ( p1(1:dim_num) + p2(1:dim_num)  )
+      r = 0.5e+00_real64 * sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
+      pc(1:dim_num) = 0.5e+00_real64 * ( p1(1:dim_num) + p2(1:dim_num)  )
     end if
   !
   !  We check for collinearity.  A more useful check would compare the
@@ -2188,23 +2155,22 @@ contains
     g = ( p2(1) - p1(1) ) * ( p3(2) - p2(2) ) &
       - ( p2(2) - p1(2) ) * ( p3(1) - p2(1) )
 
-    if ( g == 0.0_dp ) then
-      pc(1:2) = (/ 0.0_dp, 0.0_dp /)
-      r = -1.0_dp
+    if ( g == 0.0e+00_real64 ) then
+      pc(1:2) = (/ 0.0e+00_real64, 0.0e+00_real64 /)
+      r = -1.0e+00_real64
     end if
   !
   !  The center is halfway along the diameter vector from P1.
   !
-    pc(1) = 0.5_dp * ( ( p3(2) - p1(2) ) * e - ( p2(2) - p1(2) ) * f ) / g
-    pc(2) = 0.5_dp * ( ( p2(1) - p1(1) ) * f - ( p3(1) - p1(1) ) * e ) / g
+    pc(1) = 0.5e+00_real64 * ( ( p3(2) - p1(2) ) * e - ( p2(2) - p1(2) ) * f ) / g
+    pc(2) = 0.5e+00_real64 * ( ( p2(1) - p1(1) ) * f - ( p3(1) - p1(1) ) * e ) / g
   !
   !  Knowing the center, the radius is now easy to compute.
   !
     r = sqrt ( sum ( ( p1(1:dim_num) - pc(1:dim_num) )**2 ) )
-  end subroutine circle_exp2imp_2d
+  end
 
-  subroutine circle_imp_contains_point_2d ( r, pc, p, inside ) &
-        bind(C, name="circle_imp_contains_point_2d")
+  subroutine circle_imp_contains_point_2d ( r, pc, p, inside )
 
   !*****************************************************************************80
   !
@@ -2230,22 +2196,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside or
   !    on the circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
+    logical inside
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
 
     if ( ( p(1) - pc(1) ) * ( p(1) - pc(1) ) &
        + ( p(2) - pc(2) ) * ( p(2) - pc(2) ) <= r * r ) then
@@ -2253,10 +2219,9 @@ contains
     else
       inside = .false.
     end if
-  end subroutine circle_imp_contains_point_2d
+  end
 
-  subroutine circle_imp_line_exp_dist_2d ( r, pc, p1, p2, dist ) &
-        bind(C, name="circle_imp_line_exp_dist_2d")
+  subroutine circle_imp_line_exp_dist_2d ( r, pc, p1, p2, dist )
 
   !*****************************************************************************80
   !
@@ -2291,34 +2256,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the line.
+  !    Input, real(real64) P1(2), P2(2), two points on the line.
   !
-  !    Output, real(dp) DIST, the distance of the line to the circle.
+  !    Output, real(real64) DIST, the distance of the line to the circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
+    real(real64) dist
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
 
     call line_exp_point_dist_2d ( p1, p2, pc, dist )
 
     dist = dist - r
 
-    if ( dist < 0.0_dp ) then
-      dist = 0.0_dp
+    if ( dist < 0.0e+00_real64 ) then
+      dist = 0.0e+00_real64
     end if
-  end subroutine circle_imp_line_exp_dist_2d
+  end
 
-  subroutine circle_imp_line_par_int_2d ( r, pc, x0, y0, f, g, int_num, p ) &
-        bind(C, name="circle_imp_line_par_int_2d")
+  subroutine circle_imp_line_par_int_2d ( r, pc, x0, y0, f, g, int_num, p )
 
   !*****************************************************************************80
   !
@@ -2351,40 +2315,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) F, G, X0, Y0, the parametric parameters of 
+  !    Input, real(real64) F, G, X0, Y0, the parametric parameters of 
   !    the line.
   !
-  !    Output, integer(ip) INT_NUM, the number of intersecting 
+  !    Output, integer(int32) INT_NUM, the number of intersecting 
   !    points found.  INT_NUM will be 0, 1 or 2.
   !
-  !    Output, real(dp) P(2,INT_NUM), the intersecting points.
+  !    Output, real(real64) P(2,INT_NUM), the intersecting points.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    integer(ip), intent(out) :: int_num
-    real(dp), intent(out) :: p(dim_num,2)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: root
-    real(dp) :: t
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
+    real(real64) f
+    real(real64) g
+    integer(int32) int_num
+    real(real64) p(dim_num,2)
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) root
+    real(real64) t
+    real(real64) x0
+    real(real64) y0
 
     root = r * r * ( f * f + g * g ) - ( f * ( pc(2) - y0 ) &
       - g * ( pc(1) - x0 ) )**2
 
-    if ( root < 0.0_dp ) then
+    if ( root < 0.0e+00_real64 ) then
 
       int_num = 0
 
-    else if ( root == 0.0_dp ) then
+    else if ( root == 0.0e+00_real64 ) then
 
       int_num = 1
 
@@ -2392,7 +2356,7 @@ contains
       p(1,1) = x0 + f * t
       p(2,1) = y0 + g * t
 
-    else if ( 0.0_dp < root ) then
+    else if ( 0.0e+00_real64 < root ) then
 
       int_num = 2
 
@@ -2409,10 +2373,9 @@ contains
       p(2,2) = y0 + g * t
 
     end if
-  end subroutine circle_imp_line_par_int_2d
+  end
 
-  subroutine circle_imp_point_dist_2d ( r, pc, p, dist ) &
-        bind(C, name="circle_imp_point_dist_2d")
+  subroutine circle_imp_point_dist_2d ( r, pc, p, dist )
 
   !*****************************************************************************80
   !
@@ -2440,30 +2403,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) DIST, the distance of the point to the circle.
+  !    Output, real(real64) DIST, the distance of the point to the circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: r2
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) r2
 
     r2 = sqrt ( sum ( ( p(1:2) - pc(1:2) )**2 ) )
 
     dist = abs ( r2 - r )
-  end subroutine circle_imp_point_dist_2d
+  end
 
-  subroutine circle_imp_point_dist_signed_2d ( r, pc, p, dist ) &
-        bind(C, name="circle_imp_point_dist_signed_2d")
+  subroutine circle_imp_point_dist_signed_2d ( r, pc, p, dist )
 
   !*****************************************************************************80
   !
@@ -2492,32 +2454,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) DIST, the signed distance of the point
+  !    Output, real(real64) DIST, the signed distance of the point
   !    to the circle.  If the point is inside the circle, the signed distance
   !    is negative.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: r2
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) r2
 
     r2 = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
 
     dist = r2 - r
-  end subroutine circle_imp_point_dist_signed_2d
+  end
 
-  subroutine circle_imp_point_near_2d ( r, pc, p, pn, dist ) &
-        bind(C, name="circle_imp_point_near_2d")
+  subroutine circle_imp_point_near_2d ( r, pc, p, pn, dist )
 
   !*****************************************************************************80
   !
@@ -2550,29 +2511,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) PN(2), the nearest point on the circle.
+  !    Output, real(real64) PN(2), the nearest point on the circle.
   !
-  !    Output, real(dp) DIST, the distance of the point to the circle.
+  !    Output, real(real64) DIST, the distance of the point to the circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: r2
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) r
+    real(real64) r2
 
     if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
       dist = r
-      pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num, dp) )
+      pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num, real64) )
     end if
 
     r2 = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
@@ -2580,10 +2541,9 @@ contains
     dist = abs (  r2 - r )
 
     pn(1:dim_num) = pc(1:dim_num) + r * ( p(1:dim_num) - pc(1:dim_num) ) / r2
-  end subroutine circle_imp_point_near_2d
+  end
 
-  subroutine circle_imp_points_2d ( r, pc, n, p ) &
-        bind(C, name="circle_imp_points_2d")
+  subroutine circle_imp_points_2d ( r, pc, n, p )
 
   !*****************************************************************************80
   !
@@ -2612,35 +2572,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, integer(ip) N, the number of points desired.  
+  !    Input, integer(int32) N, the number of points desired.  
   !    N must be at least 1.
   !
-  !    Output, real(dp) P(2,N), the coordinates of points 
+  !    Output, real(real64) P(2,N), the coordinates of points 
   !    on the circle.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: j
-    real(dp), intent(out) :: p(2,n)
-    real(dp), intent(in) :: pc(2)
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
+    integer(int32) j
+    real(real64) p(2,n)
+    real(real64) pc(2)
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
 
     do j = 1, n
-      theta = 2.0_dp * r8_pi * real ( j - 1, dp) / real ( n, dp)
+      theta = 2.0e+00_real64 * r8_pi * real ( j - 1, real64) / real ( n, real64)
       p(1:dim_num,j) = pc(1:dim_num) + r * (/ cos ( theta ), sin ( theta ) /)
     end do
-  end subroutine circle_imp_points_2d
+  end
 
-  subroutine circle_imp_points_3d ( r, pc, nc, n, p ) &
-        bind(C, name="circle_imp_points_3d")
+  subroutine circle_imp_points_3d ( r, pc, nc, n, p )
 
   !*****************************************************************************80
   !
@@ -2674,33 +2633,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(3), the center of the circle.
+  !    Input, real(real64) PC(3), the center of the circle.
   !
-  !    Input, real(dp) NC(3), a nonzero vector that is normal to
+  !    Input, real(real64) NC(3), a nonzero vector that is normal to
   !    the plane of the circle.  It is customary, but not necessary,
   !    that this vector have unit norm.
   !
-  !    Input, integer(ip) N, the number of points desired.  
+  !    Input, integer(int32) N, the number of points desired.  
   !    N must be at least 1.
   !
-  !    Output, real(dp) P(3,N), the coordinates of points 
+  !    Output, real(real64) P(3,N), the coordinates of points 
   !    on the circle.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 3
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 3
 
-    integer(ip) :: j
-    real(dp) :: n1(dim_num)
-    real(dp) :: n2(dim_num)
-    real(dp), intent(in) :: nc(dim_num)
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
+    integer(int32) j
+    real(real64) n1(dim_num)
+    real(real64) n2(dim_num)
+    real(real64) nc(dim_num)
+    real(real64) p(dim_num,n)
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
   !
   !  Get two unit vectors N1 and N2 which are orthogonal to each other,
   !  and to NC.
@@ -2711,18 +2670,17 @@ contains
   !
     do j = 1, n
 
-      theta = ( 2.0_dp * r8_pi * real ( j - 1, dp) ) &
-        / real ( n, dp)
+      theta = ( 2.0e+00_real64 * r8_pi * real ( j - 1, real64) ) &
+        / real ( n, real64)
 
       p(1:dim_num,j) = pc(1:dim_num) &
         + r * ( cos ( theta ) * n1(1:dim_num) &
               + sin ( theta ) * n2(1:dim_num) )
 
     end do
-  end subroutine circle_imp_points_3d
+  end
 
-  subroutine circle_imp_points_arc_2d ( r, pc, theta1, theta2, n, p ) &
-        bind(C, name="circle_imp_points_arc_2d")
+  subroutine circle_imp_points_arc_2d ( r, pc, theta1, theta2, n, p )
 
   !*****************************************************************************80
   !
@@ -2755,55 +2713,54 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the angular coordinates of 
+  !    Input, real(real64) THETA1, THETA2, the angular coordinates of 
   !    the first and last points to be drawn, in radians.
   !
-  !    Input, integer(ip) N, the number of points desired.  
+  !    Input, integer(int32) N, the number of points desired.  
   !    N must be at least 1.
   !
-  !    Output, real(dp) P(2,N), the points on the circle.
+  !    Output, real(real64) P(2,N), the points on the circle.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_modp
-    real(dp) :: theta
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
-    real(dp) :: theta3
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) pc(dim_num)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) r8_modp
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
+    real(real64) theta3
   !
   !  THETA3 is the smallest angle, no less than THETA1, which
   !  coincides with THETA2.
   !
-    theta3 = theta1 + r8_modp ( theta2 - theta1, 2.0_dp * r8_pi )
+    theta3 = theta1 + r8_modp ( theta2 - theta1, 2.0e+00_real64 * r8_pi )
 
     do i = 1, n
 
       if ( 1 < n ) then
-        theta = ( real ( n - i, dp) * theta1   &
-                + real (     i - 1, dp) * theta3 ) &
-                / real ( n     - 1, dp)
+        theta = ( real ( n - i, real64) * theta1   &
+                + real (     i - 1, real64) * theta3 ) &
+                / real ( n     - 1, real64)
       else
-        theta = 0.5_dp * ( theta1 + theta3 )
+        theta = 0.5e+00_real64 * ( theta1 + theta3 )
       end if
 
       p(1:dim_num,i) = pc(1:dim_num) + r * (/ cos ( theta ), sin ( theta ) /)
 
     end do
-  end subroutine circle_imp_points_arc_2d
+  end
 
-  subroutine circle_imp_print_2d ( r, pc, title ) &
-        bind(C, name="circle_imp_print_2d")
+  subroutine circle_imp_print_2d ( r, pc, title )
 
   !*****************************************************************************80
   !
@@ -2829,28 +2786,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
   !    Input, character ( length = * ) TITLE, a title.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    character ( len = * ), intent(in), value :: title
+    real(real64) pc(dim_num)
+    real(real64) r
+    character ( len = * ) title
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) trim ( title )
     write ( *, '(a)'        ) ' '
     write ( *, '(a,g14.6)'  ) '  Radius = ', r
     write ( *, '(a,2g14.6)' ) '  Center = ', pc(1:dim_num)
-  end subroutine circle_imp_print_2d
+  end
 
-  subroutine circle_imp_print_3d ( r, pc, nc, title ) &
-        bind(C, name="circle_imp_print_3d")
+  subroutine circle_imp_print_3d ( r, pc, nc, title )
 
   !*****************************************************************************80
   !
@@ -2884,21 +2840,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(3), the center of the circle.
+  !    Input, real(real64) PC(3), the center of the circle.
   !
-  !    Input, real(dp) NC(3), the normal vector to the circle.
+  !    Input, real(real64) NC(3), the normal vector to the circle.
   !
   !    Input, character ( length = * ) TITLE, a title.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in) :: nc(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    character ( len = * ), intent(in), value :: title
+    real(real64) nc(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
+    character ( len = * )  title
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) trim ( title )
@@ -2906,10 +2862,9 @@ contains
     write ( *, '(a,g14.6)'  ) '  Radius = ', r
     write ( *, '(a,3g14.6)' ) '  Center = ', pc(1:dim_num)
     write ( *, '(a,3g14.6)' ) '  Normal = ', nc(1:dim_num)
-  end subroutine circle_imp_print_3d
+  end
 
-  subroutine circle_imp2exp_2d ( r, pc, p1, p2, p3 ) &
-        bind(C, name="circle_imp2exp_2d")
+  subroutine circle_imp2exp_2d ( r, pc, p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -2944,40 +2899,39 @@ contains
   !    Second Edition,
   !    Cambridge, 1998,
   !    ISBN: 0521649765,
-  !    LC: QA448.e38_dp.
+  !    LC: QA448.e38_real64.
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, PC(2), the radius and center of the circle.
+  !    Input, real(real64) R, PC(2), the radius and center of the circle.
   !
-  !    Output, real(dp) P1(2), P2(2), P3(2), three points on the circle.
+  !    Output, real(real64) P1(2), P2(2), P3(2), three points on the circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: p1(dim_num)
-    real(dp), intent(out) :: p2(dim_num)
-    real(dp), intent(out) :: p3(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pc(dim_num)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r
+    real(real64) theta
 
-    theta = 0.0_dp
+    theta = 0.0e+00_real64
     p1(1) = pc(1) + r * cos ( theta )
     p1(2) = pc(2) + r * sin ( theta )
 
-    theta = 2.0_dp * r8_pi / 3.0_dp
+    theta = 2.0e+00_real64 * r8_pi / 3.0e+00_real64
     p2(1) = pc(1) + r * cos ( theta )
     p2(2) = pc(2) + r * sin ( theta )
 
-    theta = 4.0_dp * r8_pi / 3.0_dp
+    theta = 4.0e+00_real64 * r8_pi / 3.0e+00_real64
     p3(1) = pc(1) + r * cos ( theta )
     p3(2) = pc(2) + r * sin ( theta )
-  end subroutine circle_imp2exp_2d
+  end
 
-  subroutine circle_llr2imp_2d ( p1, p2, q1, q2, r, pc ) &
-        bind(C, name="circle_llr2imp_2d")
+  subroutine circle_llr2imp_2d ( p1, p2, q1, q2, r, pc )
 
   !*****************************************************************************80
   !
@@ -3029,29 +2983,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on line 1.
+  !    Input, real(real64) P1(2), P2(2), two points on line 1.
   !
-  !    Input, real(dp) Q1(2), Q2(2), two points on line 2.
+  !    Input, real(real64) Q1(2), Q2(2), two points on line 2.
   !
-  !    Input, real(dp) R, the radius of the circle.  
+  !    Input, real(real64) R, the radius of the circle.  
   !
-  !    Output, real(dp) PC(2,4), the centers of the circles.
+  !    Output, real(real64) PC(2,4), the centers of the circles.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a(2,2)
-    real(dp) :: b(2)
-    real(dp) :: det
-    real(dp) :: n1(dim_num)
-    real(dp) :: n2(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pc(dim_num,4)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: x(dim_num)
+    real(real64) a(2,2)
+    real(real64) b(2)
+    real(real64) det
+    real(real64) n1(dim_num)
+    real(real64) n2(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pc(dim_num,4)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) r
+    real(real64) x(dim_num)
   !
   !  Compute the normals N1 and N2.
   !
@@ -3090,10 +3044,9 @@ contains
     call r8mat_solve_2d ( a, b, det, x )
 
     pc(1:2,4) = p1(1:2) + ( p2(1:2) - p1(1:2) ) * x(1) + r * n1(1:2) 
-  end subroutine circle_llr2imp_2d
+  end
 
-  subroutine circle_lune_angle_by_height_2d ( r, h, angle ) &
-        bind(C, name="circle_lune_angle_by_height_2d")
+  subroutine circle_lune_angle_by_height_2d ( r, h, angle )
 
   !*****************************************************************************80
   !
@@ -3126,26 +3079,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) H, the height of the lune.
+  !    Input, real(real64) H, the height of the lune.
   !
-  !    Output, real(dp) ANGLE, the angle of the lune.
+  !    Output, real(real64) ANGLE, the angle of the lune.
   !
 
-    real(dp), intent(out) :: angle
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
+    real(real64) angle
+    real(real64) h
+    real(real64) r
 
     if ( -r <= h .and. h <= r ) then
-      angle = 2.0_dp * acos ( h / r );
+      angle = 2.0e+00_real64 * acos ( h / r );
     else
-      angle = 0.0_dp
+      angle = 0.0e+00_real64
     end if
-  end subroutine circle_lune_angle_by_height_2d
+  end
 
-  subroutine circle_lune_area_by_angle_2d ( r, pc, theta1, theta2, area ) &
-        bind(C, name="circle_lune_area_by_angle_2d")
+  subroutine circle_lune_area_by_angle_2d ( r, pc, theta1, theta2, area )
 
   !*****************************************************************************80
   !
@@ -3169,34 +3121,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles defining the arc,
+  !    Input, real(real64) THETA1, THETA2, the angles defining the arc,
   !    in radians.  Normally, THETA1 < THETA2.
   !
-  !    Output, real(dp) AREA, the area of the lune.
+  !    Output, real(real64) AREA, the area of the lune.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: area
-    real(dp) :: area_sector
-    real(dp) :: area_triangle
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) area
+    real(real64) area_sector
+    real(real64) area_triangle
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) theta1
+    real(real64) theta2
 
     call circle_sector_area_2d ( r, pc, theta1, theta2, area_sector )
     call circle_triangle_area_2d ( r, pc, theta1, theta2, area_triangle )
 
     area = area_sector - area_triangle
-  end subroutine circle_lune_area_by_angle_2d
+  end
 
-  subroutine circle_lune_area_by_height_2d ( r, h ) &
-        bind(C, name="circle_lune_area_by_height_2d")
+  subroutine circle_lune_area_by_height_2d ( r, h )
 
   !*****************************************************************************80
   !
@@ -3229,28 +3180,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) H, the height of the lune.
+  !    Input, real(real64) H, the height of the lune.
   !
-  !    Output, real(dp) AREA, the area of the lune.
+  !    Output, real(real64) AREA, the area of the lune.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: area
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
+    real(real64) area
+    real(real64) h
+    real(real64) r
 
     if ( -r <= h .and. h <= r ) then
       area = r ** 2 * acos ( h / r ) - h * sqrt ( r ** 2 - h ** 2 )
     else
-      area = 0.0_dp
+      area = 0.0e+00_real64
     end if
-  end subroutine circle_lune_area_by_height_2d
+  end
 
-  subroutine circle_lune_centroid_2d ( r, pc, theta1, theta2, centroid ) &
-        bind(C, name="circle_lune_centroid_2d")
+  subroutine circle_lune_centroid_2d ( r, pc, theta1, theta2, centroid )
 
   !*****************************************************************************80
   !
@@ -3281,42 +3231,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles defining the arc,
+  !    Input, real(real64) THETA1, THETA2, the angles defining the arc,
   !    in radians.  Normally, THETA1 < THETA2.
   !
-  !    Output, real(dp) CENTROID(2), the coordinates of the centroid
+  !    Output, real(real64) CENTROID(2), the coordinates of the centroid
   !    of the lune.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: centroid(dim_num)
-    real(dp) :: d
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) centroid(dim_num)
+    real(real64) d
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
 
     theta = theta2 - theta1
 
-    if ( theta == 0.0_dp ) then
+    if ( theta == 0.0e+00_real64 ) then
       d = r
     else
-      d = 4.0_dp * r * ( sin ( 0.5_dp * theta ) )**3 / &
-        ( 3.0_dp * ( theta - sin ( theta ) ) )
+      d = 4.0e+00_real64 * r * ( sin ( 0.5e+00_real64 * theta ) )**3 / &
+        ( 3.0e+00_real64 * ( theta - sin ( theta ) ) )
     end if
 
     centroid(1:2) = (/ pc(1) + d * cos ( theta ), &
                        pc(2) + d * sin ( theta ) /)
-  end subroutine circle_lune_centroid_2d
+  end
 
-  subroutine circle_lune_height_by_angle_2d ( r, angle, height ) &
-        bind(C, name="circle_lune_height_by_angle_2d")
+  subroutine circle_lune_height_by_angle_2d ( r, angle, height )
 
   !*****************************************************************************80
   !
@@ -3345,22 +3294,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) ANGLE, the angle subtended by the lune.
+  !    Input, real(real64) ANGLE, the angle subtended by the lune.
   !
-  !    Output, real(dp) HEIGHT, the height of the lune
+  !    Output, real(real64) HEIGHT, the height of the lune
   !
 
-    real(dp), intent(in), value :: angle
-    real(dp), intent(out) :: height
-    real(dp), intent(in), value :: r
+    real(real64) angle
+    real(real64) height
+    real(real64) r
 
-    height = r * cos ( angle / 2.0_dp )
-  end subroutine circle_lune_height_by_angle_2d
+    height = r * cos ( angle / 2.0e+00_real64 )
+  end
 
-  subroutine circle_pppr2imp_3d ( p1, p2, p3, r, pc, normal ) &
-        bind(C, name="circle_pppr2imp_3d")
+  subroutine circle_pppr2imp_3d ( p1, p2, p3, r, pc, normal )
 
   !*****************************************************************************80
   !
@@ -3408,31 +3356,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the circle.
+  !    Input, real(real64) P1(3), P2(3), two points on the circle.
   !
-  !    Input, real(dp) P3(3), a third point.
+  !    Input, real(real64) P3(3), a third point.
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Output, real(dp) PC(3,2), the centers of the two circles.
+  !    Output, real(real64) PC(3,2), the centers of the two circles.
   !
-  !    Output, real(dp) NORMAL(3), the normal to the circles.
+  !    Output, real(real64) NORMAL(3), the normal to the circles.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: dist
-    real(dp) :: dot
-    real(dp) :: h
-    integer(ip) :: j
-    real(dp) :: length
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(out) :: pc(dim_num,2)
-    real(dp), intent(in), value :: r
-    real(dp) :: v(dim_num)
+    real(real64) dist
+    real(real64) dot
+    real(real64) h
+    integer(int32) j
+    real(real64) length
+    real(real64) normal(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pc(dim_num,2)
+    real(real64) r
+    real(real64) v(dim_num)
   !
   !  Compute the distance from P1 to P2.
   !
@@ -3440,15 +3388,15 @@ contains
   !
   !  If R is smaller than DIST, we don't have a circle.
   !
-    if ( 2.0_dp * r < dist ) then
+    if ( 2.0e+00_real64 * r < dist ) then
       do j = 1, 2
-        pc(1:dim_num,j) = 0.5_dp * ( p1(1:dim_num) + p2(1:dim_num) )
+        pc(1:dim_num,j) = 0.5e+00_real64 * ( p1(1:dim_num) + p2(1:dim_num) )
       end do
     end if
   !
   !  H is the distance from the midpoint of (P1,P2) to the center.
   !
-    h = sqrt ( ( r + 0.5_dp * dist ) * ( r - 0.5_dp * dist ) )
+    h = sqrt ( ( r + 0.5e+00_real64 * dist ) * ( r - 0.5e+00_real64 * dist ) )
   !
   !  Define a unit direction V that is normal to P2-P1, and lying
   !  in the plane (P1,P2,P3).
@@ -3467,17 +3415,16 @@ contains
   !
   !  We can go with or against the given normal direction.
   !
-    pc(1:dim_num,1) = 0.5_dp * ( p2(1:dim_num) + p1(1:dim_num) ) &
+    pc(1:dim_num,1) = 0.5e+00_real64 * ( p2(1:dim_num) + p1(1:dim_num) ) &
       + h * v(1:dim_num)
 
-    pc(1:dim_num,2) = 0.5_dp * ( p2(1:dim_num) + p1(1:dim_num) ) &
+    pc(1:dim_num,2) = 0.5e+00_real64 * ( p2(1:dim_num) + p1(1:dim_num) ) &
       - h * v(1:dim_num)
 
     call plane_exp_normal_3d ( p1, p2, p3, normal )
-  end subroutine circle_pppr2imp_3d
+  end
 
-  subroutine circle_ppr2imp_2d ( p1, p2, r, pc ) &
-        bind(C, name="circle_ppr2imp_2d")
+  subroutine circle_ppr2imp_2d ( p1, p2, r, pc )
 
   !*****************************************************************************80
   !
@@ -3521,23 +3468,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the circle.
+  !    Input, real(real64) P1(2), P2(2), two points on the circle.
   !
-  !    Input, real(dp) R, the radius of the circle.  
+  !    Input, real(real64) R, the radius of the circle.  
   !
-  !    Output, real(dp) PC(2,2), the centers of the two circles.
+  !    Output, real(real64) PC(2,2), the centers of the two circles.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: dist
-    real(dp) :: h
-    integer(ip) :: j
-    real(dp) :: normal(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pc(dim_num,2)
-    real(dp), intent(in), value :: r
+    real(real64) dist
+    real(real64) h
+    integer(int32) j
+    real(real64) normal(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pc(dim_num,2)
+    real(real64) r
   !
   !  Compute the distance from P1 to P2.
   !
@@ -3545,15 +3492,15 @@ contains
   !
   !  If R is smaller than DIST, we don't have a circle.
   !
-    if ( 2.0_dp * r < dist ) then
+    if ( 2.0e+00_real64 * r < dist ) then
       do j = 1, 2
-        pc(1:dim_num,j) = 0.5_dp * ( p1(1:dim_num) + p2(1:dim_num) )
+        pc(1:dim_num,j) = 0.5e+00_real64 * ( p1(1:dim_num) + p2(1:dim_num) )
       end do
     end if
   !
   !  H is the distance from the midpoint of (P1,P2) to the center.
   !
-    h = sqrt ( ( r + 0.5_dp * dist ) * ( r - 0.5_dp * dist ) )
+    h = sqrt ( ( r + 0.5e+00_real64 * dist ) * ( r - 0.5e+00_real64 * dist ) )
   !
   !  Determine the unit normal direction.
   !
@@ -3562,15 +3509,14 @@ contains
   !
   !  We can go with or against the given normal direction.
   !
-    pc(1:dim_num,1) = 0.5_dp * ( p2(1:dim_num) + p1(1:dim_num) ) &
+    pc(1:dim_num,1) = 0.5e+00_real64 * ( p2(1:dim_num) + p1(1:dim_num) ) &
       + h * normal(1:dim_num)
 
-    pc(1:dim_num,2) = 0.5_dp * ( p2(1:dim_num) + p1(1:dim_num) ) &
+    pc(1:dim_num,2) = 0.5e+00_real64 * ( p2(1:dim_num) + p1(1:dim_num) ) &
       - h * normal(1:dim_num)
-  end subroutine circle_ppr2imp_2d
+  end
 
-  subroutine circle_sector_area_2d ( r, pc, theta1, theta2, area ) &
-        bind(C, name="circle_sector_area_2d")
+  subroutine circle_sector_area_2d ( r, pc, theta1, theta2, area )
 
   !*****************************************************************************80
   !
@@ -3603,29 +3549,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the two angles defining the
+  !    Input, real(real64) THETA1, THETA2, the two angles defining the
   !    sector, in radians.  Normally, THETA1 < THETA2.
   !
-  !    Output, real(dp) AREA, the area of the circle.
+  !    Output, real(real64) AREA, the area of the circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) area
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) theta1
+    real(real64) theta2
 
-    area = 0.5_dp * r * r * ( theta2 - theta1 )
-  end subroutine circle_sector_area_2d
+    area = 0.5e+00_real64 * r * r * ( theta2 - theta1 )
+  end
 
-  subroutine circle_sector_centroid_2d ( r, pc, theta1, theta2, centroid ) &
-        bind(C, name="circle_sector_centroid_2d")
+  subroutine circle_sector_centroid_2d ( r, pc, theta1, theta2, centroid )
 
   !*****************************************************************************80
   !
@@ -3665,43 +3610,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles defining the arc,
+  !    Input, real(real64) THETA1, THETA2, the angles defining the arc,
   !    in radians.  Normally, THETA1 < THETA2.
   !
-  !    Output, real(dp) CENTROID(2), the coordinates of the centroid
+  !    Output, real(real64) CENTROID(2), the coordinates of the centroid
   !    of the sector.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: centroid(dim_num)
-    real(dp) :: d
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) centroid(dim_num)
+    real(real64) d
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
 
     theta = theta2 - theta1
 
-    if ( theta == 0.0_dp ) then
-      d = 2.0_dp * r / 3.0_dp
+    if ( theta == 0.0e+00_real64 ) then
+      d = 2.0e+00_real64 * r / 3.0e+00_real64
     else
-      d = 4.0_dp * r * sin ( 0.5_dp * theta ) / &
-        ( 3.0_dp * theta )
+      d = 4.0e+00_real64 * r * sin ( 0.5e+00_real64 * theta ) / &
+        ( 3.0e+00_real64 * theta )
     end if
 
     centroid(1:2) = (/ pc(1) + d * cos ( theta ), &
                        pc(2) + d * sin ( theta ) /)
-  end subroutine circle_sector_centroid_2d
+  end
 
   subroutine circle_sector_contains_point_2d ( r, pc, theta1, theta2, &
-    p, inside ) &
-        bind(C, name="circle_sector_contains_point_2d")
+    p, inside )
 
   !*****************************************************************************80
   !
@@ -3734,31 +3678,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles defining the arc,
+  !    Input, real(real64) THETA1, THETA2, the angles defining the arc,
   !    in radians.  Normally, THETA1 < THETA2.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside or 
   !    on the circular sector.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_atan
-    real(dp) :: r8_modp
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    logical inside
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) r8_atan
+    real(real64) r8_modp
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
 
     inside = .false.
   !
@@ -3772,18 +3716,17 @@ contains
   !
       theta = r8_atan ( p(2) - pc(2), p(1) - pc(1) )
 
-      if ( r8_modp ( theta  - theta1,  2.0_dp * r8_pi ) <= &
-           r8_modp ( theta2 - theta1,  2.0_dp * r8_pi ) ) then
+      if ( r8_modp ( theta  - theta1,  2.0e+00_real64 * r8_pi ) <= &
+           r8_modp ( theta2 - theta1,  2.0e+00_real64 * r8_pi ) ) then
 
         inside = .true.
 
       end if
 
     end if
-  end subroutine circle_sector_contains_point_2d
+  end
 
-  subroutine circle_sector_print_2d ( r, pc, theta1, theta2 ) &
-        bind(C, name="circle_sector_print_2d")
+  subroutine circle_sector_print_2d ( r, pc, theta1, theta2 )
 
   !*****************************************************************************80
   !
@@ -3816,20 +3759,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles defining the arc,
+  !    Input, real(real64) THETA1, THETA2, the angles defining the arc,
   !    in radians.  Normally, THETA1 < THETA2.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) theta1
+    real(real64) theta2
 
     write ( *, '(a)'        ) ' '
     write ( *, '(a)'        ) '  Circular sector definition:'
@@ -3837,10 +3780,9 @@ contains
     write ( *, '(a,g14.6)'  ) '    Radius = ', r
     write ( *, '(a,2g14.6)' ) '    Center = ', pc(1:2)
     write ( *, '(a,2g14.6)' ) '    Theta  = ', theta1, theta2
-  end subroutine circle_sector_print_2d
+  end
 
-  subroutine circle_triangle_area_2d ( r, pc, theta1, theta2, area ) &
-        bind(C, name="circle_triangle_area_2d")
+  subroutine circle_triangle_area_2d ( r, pc, theta1, theta2, area )
 
   !*****************************************************************************80
   !
@@ -3869,29 +3811,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) PC(2), the center of the circle.
+  !    Input, real(real64) PC(2), the center of the circle.
   !
-  !    Input, real(dp) THETA1, THETA2, the angles defining the arc,
+  !    Input, real(real64) THETA1, THETA2, the angles defining the arc,
   !    in radians.  Normally, THETA1 < THETA2.
   !
-  !    Output, real(dp) AREA, the (signed) area of the triangle.
+  !    Output, real(real64) AREA, the (signed) area of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) area
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) theta1
+    real(real64) theta2
 
-    area = 0.5_dp * r * r * sin ( theta2 - theta1 )
-  end subroutine circle_triangle_area_2d
+    area = 0.5e+00_real64 * r * r * sin ( theta2 - theta1 )
+  end
 
-  subroutine circle_triple_angles_2d ( r1, r2, r3, angle1, angle2, angle3 ) &
-        bind(C, name="circle_triple_angles_2d")
+  subroutine circle_triple_angles_2d ( r1, r2, r3, angle1, angle2, angle3 )
 
   !*****************************************************************************80
   !
@@ -3924,35 +3865,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, R3, the radii of the circles.
+  !    Input, real(real64) R1, R2, R3, the radii of the circles.
   !
-  !    Input, real(dp) ANGLE1, ANGLE2, ANGLE3, the angles
+  !    Input, real(real64) ANGLE1, ANGLE2, ANGLE3, the angles
   !    in the triangle.
   !
 
-    real(dp), intent(in), value :: angle1
-    real(dp), intent(in), value :: angle2
-    real(dp), intent(in), value :: angle3
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), intent(in), value :: r3
-    real(dp) :: r8_acos
+    real(real64) angle1
+    real(real64) angle2
+    real(real64) angle3
+    real(real64) r1
+    real(real64) r2
+    real(real64) r3
+    real(real64) r8_acos
 
     angle1 = r8_acos ( &
       ( r1 + r2 )**2 + ( r1 + r3 )**2 - ( r2 + r3 )**2 ) / &
-      ( 2.0_dp * ( r1 + r2 ) * ( r1 + r3 ) ) 
+      ( 2.0e+00_real64 * ( r1 + r2 ) * ( r1 + r3 ) ) 
 
     angle2 = r8_acos ( &
       ( r2 + r3 )**2 + ( r2 + r1 )**2 - ( r3 + r1 )**2 ) / &
-      ( 2.0_dp * ( r2 + r3 ) * ( r2 + r1 ) ) 
+      ( 2.0e+00_real64 * ( r2 + r3 ) * ( r2 + r1 ) ) 
 
     angle3 = r8_acos ( &
       ( r3 + r1 )**2 + ( r3 + r2 )**2 - ( r1 + r2 )**2 ) / &
-      ( 2.0_dp * ( r3 + r1 ) * ( r3 + r2 ) ) 
-  end subroutine circle_triple_angles_2d
+      ( 2.0e+00_real64 * ( r3 + r1 ) * ( r3 + r2 ) ) 
+  end
 
-  subroutine circles_intersect_points_2d ( r1, pc1, r2, pc2, int_num, p ) &
-        bind(C, name="circles_intersect_points_2d")
+  subroutine circles_intersect_points_2d ( r1, pc1, r2, pc2, int_num, p )
 
   !*****************************************************************************80
   !
@@ -3984,54 +3924,54 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, the radius of the first circle.
+  !    Input, real(real64) R1, the radius of the first circle.
   !
-  !    Input, real(dp) PC1(2), the center of the first circle.
+  !    Input, real(real64) PC1(2), the center of the first circle.
   !
-  !    Input, real(dp) R2, the radius of the second circle.
+  !    Input, real(real64) R2, the radius of the second circle.
   !
-  !    Input, real(dp) PC2(2), the center of the second circle.
+  !    Input, real(real64) PC2(2), the center of the second circle.
   !
-  !    Output, integer(ip) INT_NUM, the number of intersecting points 
+  !    Output, integer(int32) INT_NUM, the number of intersecting points 
   !    found.  INT_NUM will be 0, 1, 2 or 3.  3 indicates that there are an 
   !    infinite number of intersection points.
   !
-  !    Output, real(dp) P(2,2), if INT_NUM is 1 or 2,
+  !    Output, real(real64) P(2,2), if INT_NUM is 1 or 2,
   !    the coordinates of the intersecting points.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: distsq
-    integer(ip), intent(out) :: int_num
-    real(dp), intent(out) :: p(dim_num,2)
-    real(dp), intent(in) :: pc1(dim_num)
-    real(dp), intent(in) :: pc2(dim_num)
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp) :: root
-    real(dp) :: sc1
-    real(dp) :: sc2
-    real(dp) :: t1
-    real(dp) :: t2
-    real(dp) :: tol
+    real(real64) distsq
+    integer(int32) int_num
+    real(real64) p(dim_num,2)
+    real(real64) pc1(dim_num)
+    real(real64) pc2(dim_num)
+    real(real64) r1
+    real(real64) r2
+    real(real64) root
+    real(real64) sc1
+    real(real64) sc2
+    real(real64) t1
+    real(real64) t2
+    real(real64) tol
 
     tol = epsilon ( tol )
 
-    p(1:dim_num,1:2) = 0.0_dp
+    p(1:dim_num,1:2) = 0.0e+00_real64
   !
   !  Take care of the case in which the circles have the same center.
   !
     t1 = ( abs ( pc1(1) - pc2(1) ) &
-         + abs ( pc1(2) - pc2(2) ) ) / 2.0_dp
+         + abs ( pc1(2) - pc2(2) ) ) / 2.0e+00_real64
 
     t2 = ( abs ( pc1(1) ) + abs ( pc2(1) ) &
-         + abs ( pc1(2) ) + abs ( pc2(2) ) + 1.0_dp ) / 5.0_dp
+         + abs ( pc1(2) ) + abs ( pc2(2) ) + 1.0e+00_real64 ) / 5.0e+00_real64
 
     if ( t1 <= tol * t2 ) then
 
       t1 = abs ( r1 - r2 )
-      t2 = ( abs ( r1 ) + abs ( r2 ) + 1.0_dp ) / 3.0_dp
+      t2 = ( abs ( r1 ) + abs ( r2 ) + 1.0e+00_real64 ) / 3.0e+00_real64
 
       if ( t1 <= tol * t2 ) then
         int_num = 3
@@ -4042,7 +3982,7 @@ contains
 
     distsq = ( pc1(1) - pc2(1) )**2 + ( pc1(2) - pc2(2) )**2
 
-    root = 2.0_dp * ( r1**2 + r2**2 ) * distsq - distsq**2 &
+    root = 2.0e+00_real64 * ( r1**2 + r2**2 ) * distsq - distsq**2 &
       - ( r1 - r2 )**2 * ( r1 + r2 )**2
 
     if ( root < -tol ) then
@@ -4054,26 +3994,25 @@ contains
     if ( root < tol ) then
       int_num = 1
       p(1:dim_num,1) = pc1(1:dim_num) &
-        + 0.5_dp * sc1 * ( pc2(1:dim_num) - pc1(1:dim_num) )
+        + 0.5e+00_real64 * sc1 * ( pc2(1:dim_num) - pc1(1:dim_num) )
     end if
 
     sc2 = sqrt ( root ) / distsq
 
     int_num = 2
 
-    p(1,1) = pc1(1) + 0.5_dp * sc1 * ( pc2(1) - pc1(1) ) &
-                    - 0.5_dp * sc2 * ( pc2(2) - pc1(2) )
-    p(2,1) = pc1(2) + 0.5_dp * sc1 * ( pc2(2) - pc1(2) ) &
-                    + 0.5_dp * sc2 * ( pc2(1) - pc1(1) )
+    p(1,1) = pc1(1) + 0.5e+00_real64 * sc1 * ( pc2(1) - pc1(1) ) &
+                    - 0.5e+00_real64 * sc2 * ( pc2(2) - pc1(2) )
+    p(2,1) = pc1(2) + 0.5e+00_real64 * sc1 * ( pc2(2) - pc1(2) ) &
+                    + 0.5e+00_real64 * sc2 * ( pc2(1) - pc1(1) )
 
-    p(1,2) = pc1(1) + 0.5_dp * sc1 * ( pc2(1) - pc1(1) ) &
-                    + 0.5_dp * sc2 * ( pc2(2) - pc1(2) )
-    p(2,2) = pc1(2) + 0.5_dp * sc1 * ( pc2(2) - pc1(2) ) &
-                    - 0.5_dp * sc2 * ( pc2(1) - pc1(1) )
-  end subroutine circles_intersect_points_2d
+    p(1,2) = pc1(1) + 0.5e+00_real64 * sc1 * ( pc2(1) - pc1(1) ) &
+                    + 0.5e+00_real64 * sc2 * ( pc2(2) - pc1(2) )
+    p(2,2) = pc1(2) + 0.5e+00_real64 * sc1 * ( pc2(2) - pc1(2) ) &
+                    - 0.5e+00_real64 * sc2 * ( pc2(1) - pc1(1) )
+  end
 
-  subroutine combin2 ( n, k, icnk ) &
-        bind(C, name="combin2")
+  subroutine combin2 ( n, k, icnk )
 
   !*****************************************************************************80
   !
@@ -4110,18 +4049,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, K, are the values of N and K.
+  !    Input, integer(int32) N, K, are the values of N and K.
   !
-  !    Output, integer(ip) ICNK, the number of combinations of N
+  !    Output, integer(int32) ICNK, the number of combinations of N
   !    things taken K at a time.
   !
 
-    integer(ip) :: i
-    integer(ip), intent(out) :: icnk
-    integer(ip), intent(in), value :: k
-    integer(ip) :: mn
-    integer(ip) :: mx
-    integer(ip), intent(in), value :: n
+    integer(int32) i
+    integer(int32) icnk
+    integer(int32) k
+    integer(int32) mn
+    integer(int32) mx
+    integer(int32) n
 
     mn = min ( k, n - k )
 
@@ -4143,10 +4082,9 @@ contains
       end do
 
     end if
-  end subroutine combin2
+  end
 
-  subroutine cone_area_3d ( h, r, area ) &
-        bind(C, name="cone_area_3d")
+  subroutine cone_area_3d ( h, r, area )
 
   !*****************************************************************************80
   !
@@ -4166,22 +4104,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) H, R, the height of the cone, and the radius
+  !    Input, real(real64) H, R, the height of the cone, and the radius
   !    of the circle that forms the base of the cone.
   !
-  !    Output, real(dp) AREA, the surface area of the cone.
+  !    Output, real(real64) AREA, the surface area of the cone.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) h
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     area = r8_pi * r * sqrt ( h * h + r * r )
-  end subroutine cone_area_3d
+  end
 
-  subroutine cone_centroid_3d ( r, pc, pt, centroid ) &
-        bind(C, name="cone_centroid_3d")
+  subroutine cone_centroid_3d ( r, pc, pt, centroid )
 
   !*****************************************************************************80
   !
@@ -4208,29 +4145,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle at the base of
+  !    Input, real(real64) R, the radius of the circle at the base of
   !    the cone.
   !
-  !    Input, real(dp) PC(3), the center of the circle.
+  !    Input, real(real64) PC(3), the center of the circle.
   !
-  !    Input, real(dp) PT(3), the coordinates of the tip of the cone.
+  !    Input, real(real64) PT(3), the coordinates of the tip of the cone.
   !
-  !    Output, real(dp) CENTROID(3), the coordinates of the centroid
+  !    Output, real(real64) CENTROID(3), the coordinates of the centroid
   !    of the cone.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: centroid(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in) :: pt(dim_num)
-    real(dp), intent(in), value :: r
+    real(real64) centroid(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) pt(dim_num)
+    real(real64) r
 
-    centroid(1:dim_num) = 0.75_dp * pc(1:dim_num) + 0.25_dp * pt(1:dim_num)
-  end subroutine cone_centroid_3d
+    centroid(1:dim_num) = 0.75e+00_real64 * pc(1:dim_num) + 0.25e+00_real64 * pt(1:dim_num)
+  end
 
-  subroutine cone_volume_3d ( h, r, volume ) &
-        bind(C, name="cone_volume_3d")
+  subroutine cone_volume_3d ( h, r, volume )
 
   !*****************************************************************************80
   !
@@ -4250,22 +4186,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) H, R, the height of the cone, and the radius
+  !    Input, real(real64) H, R, the height of the cone, and the radius
   !    of the circle that forms the base of the cone.
   !
-  !    Output, real(dp) VOLUME, the volume of the cone.
+  !    Output, real(real64) VOLUME, the volume of the cone.
   !
 
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: volume
+    real(real64) h
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) volume
 
-    volume = r8_pi * r * r * h / 3.0_dp
-  end subroutine cone_volume_3d
+    volume = r8_pi * r * r * h / 3.0e+00_real64
+  end
 
-  subroutine conv3d ( axis, theta, n, cor3, cor2 ) &
-        bind(C, name="conv3d")
+  subroutine conv3d ( axis, theta, n, cor3, cor2 )
 
   !*****************************************************************************80
   !
@@ -4298,23 +4233,23 @@ contains
   !    Input, character AXIS, the coordinate axis to be projected.
   !    AXIS should be 'X', 'Y', or 'Z'.
   !
-  !    Input, real(dp) THETA, the presentation angle in degrees.
+  !    Input, real(real64) THETA, the presentation angle in degrees.
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) COR3(3,N), the 3D points.
+  !    Input, real(real64) COR3(3,N), the 3D points.
   !
-  !    Output, real(dp) COR2(2,N), the 2D projections.
+  !    Output, real(real64) COR2(2,N), the 2D projections.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    character, intent(in), value :: axis
-    real(dp), intent(out) :: cor2(2,n)
-    real(dp), intent(in) :: cor3(3,n)
-    real(dp) :: degrees_to_radians
-    real(dp) :: stheta
-    real(dp), intent(in), value :: theta
+    character axis
+    real(real64) cor2(2,n)
+    real(real64) cor3(3,n)
+    real(real64) degrees_to_radians
+    real(real64) stheta
+    real(real64) theta
 
     stheta = sin ( degrees_to_radians ( theta ) )
 
@@ -4341,10 +4276,9 @@ contains
       stop 1
 
     end if
-  end subroutine conv3d
+  end
 
-  function cot_rad ( angle_rad ) &
-        bind(C, name="cot_rad")
+  function cot_rad ( angle_rad )
 
   !*****************************************************************************80
   !
@@ -4364,20 +4298,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE_RAD, the angle, in radians.
+  !    Input, real(real64) ANGLE_RAD, the angle, in radians.
   !
-  !    Output, real(dp) COT_RAD, the cotangent of the angle.
+  !    Output, real(real64) COT_RAD, the cotangent of the angle.
   !
 
-    real(dp), intent(in), value :: angle_rad
-    real(dp) :: cot_rad
+    real(real64) angle_rad
+    real(real64) cot_rad
 
     cot_rad  = cos ( angle_rad ) / sin ( angle_rad )
-  end function cot_rad
+  end
 
   subroutine cube_shape_3d ( point_num, face_num, face_order_max, &
-    point_coord, face_order, face_point ) &
-        bind(C, name="cube_shape_3d")
+    point_coord, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -4403,38 +4336,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of vertices
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of vertices
   !    in a face.
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM),
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM),
   !    the vertices.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    per face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) contains the index of the I-th point in the J-th face.  The
   !    points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: point_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) point_num
 
-    real(dp) :: a
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    real(dp), intent(out) :: point_coord(dim_num,point_num)
+    real(real64) a
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) point_coord(dim_num,point_num)
   !
   !  Set point coordinates.
   !
-    a = sqrt ( 1.0_dp / 3.0_dp )
+    a = sqrt ( 1.0e+00_real64 / 3.0e+00_real64 )
 
     point_coord(1:dim_num,1:point_num) = reshape ( (/ &
        -a, -a, -a, &
@@ -4460,10 +4393,9 @@ contains
        3, 4, 8, 7, &
        1, 5, 8, 4, &
        5, 6, 7, 8 /), (/ face_order_max, face_num /) )
-  end subroutine cube_shape_3d
+  end
 
-  subroutine cube_size_3d ( point_num, edge_num, face_num, face_order_max ) &
-        bind(C, name="cube_size_3d")
+  subroutine cube_size_3d ( point_num, edge_num, face_num, face_order_max )
 
   !*****************************************************************************80
   !
@@ -4483,28 +4415,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of points.
+  !    Output, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 8
     edge_num = 12
     face_num = 6
     face_order_max = 4
-  end subroutine cube_size_3d
+  end
 
-  function cube01_volume ( ) &
-        bind(C, name="cube01_volume")
+  function cube01_volume ( )
 
   !*****************************************************************************80
   !
@@ -4524,16 +4455,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) CUBE01_VOLUME, the volume.
+  !    Output, real(real64) CUBE01_VOLUME, the volume.
   !
 
-    real(dp) :: cube01_volume
+    real(real64) cube01_volume
 
-    cube01_volume = 1.0_dp
-  end function cube01_volume
+    cube01_volume = 1.0e+00_real64
+  end
 
-  subroutine cylinder_point_dist_3d ( p1, p2, r, p, distance ) &
-        bind(C, name="cylinder_point_dist_3d")
+  subroutine cylinder_point_dist_3d ( p1, p2, r, p, distance )
 
   !*****************************************************************************80
   !
@@ -4567,35 +4497,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the first and last points
+  !    Input, real(real64) P1(3), P2(3), the first and last points
   !    on the axis line of the cylinder.
   !
-  !    Input, real(dp) R, the radius of the cylinder.
+  !    Input, real(real64) R, the radius of the cylinder.
   !
-  !    Input, real(dp) P(3), the point.
+  !    Input, real(real64) P(3), the point.
   !
-  !    Output, real(dp) DISTANCE, the distance from the point 
+  !    Output, real(real64) DISTANCE, the distance from the point 
   !    to the cylinder.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: axis(dim_num)
-    real(dp) :: axis_length
-    real(dp), intent(out) :: distance
-    real(dp) :: r8vec_norm
-    real(dp) :: off_axis_component
-    real(dp), intent(in) :: p(3)
-    real(dp) :: p_dot_axis
-    real(dp) :: p_length
-    real(dp), intent(in) :: p1(3)
-    real(dp), intent(in) :: p2(3)
-    real(dp), intent(in), value :: r
+    real(real64) axis(dim_num)
+    real(real64) axis_length
+    real(real64) distance
+    real(real64) r8vec_norm
+    real(real64) off_axis_component
+    real(real64) p(3)
+    real(real64) p_dot_axis
+    real(real64) p_length
+    real(real64) p1(3)
+    real(real64) p2(3)
+    real(real64) r
 
     axis(1:dim_num) = p2(1:dim_num) - p1(1:dim_num)
     axis_length = r8vec_norm ( dim_num, axis )
 
-    if ( axis_length == 0.0_dp ) then
+    if ( axis_length == 0.0e+00_real64 ) then
       distance = -huge ( distance )
     end if
 
@@ -4605,7 +4535,7 @@ contains
   !
   !  Case 1: Below bottom cap.
   !
-    if ( p_dot_axis <= 0.0_dp ) then
+    if ( p_dot_axis <= 0.0e+00_real64 ) then
 
       call disk_point_dist_3d ( p1, r, axis, p, distance )
   !
@@ -4630,10 +4560,9 @@ contains
       call disk_point_dist_3d ( p2, r, axis, p, distance )
 
     end if
-  end subroutine cylinder_point_dist_3d
+  end
 
-  subroutine cylinder_point_dist_signed_3d ( p1, p2, r, p, distance ) &
-        bind(C, name="cylinder_point_dist_signed_3d")
+  subroutine cylinder_point_dist_signed_3d ( p1, p2, r, p, distance )
 
   !*****************************************************************************80
   !
@@ -4671,35 +4600,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the first and last points
+  !    Input, real(real64) P1(3), P2(3), the first and last points
   !    on the axis line of the cylinder.
   !
-  !    Input, real(dp) R, the radius of the cylinder.
+  !    Input, real(real64) R, the radius of the cylinder.
   !
-  !    Input, real(dp) P(3), the point.
+  !    Input, real(real64) P(3), the point.
   !
-  !    Output, real(dp) DISTANCE, the signed distance from the point 
+  !    Output, real(real64) DISTANCE, the signed distance from the point 
   !    to the cylinder.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: axis(dim_num)
-    real(dp) :: axis_length
-    real(dp), intent(out) :: distance
-    real(dp) :: r8vec_norm
-    real(dp) :: off_axis_component
-    real(dp), intent(in) :: p(dim_num)
-    real(dp) :: p_dot_axis
-    real(dp) :: p_length
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in), value :: r
+    real(real64) axis(dim_num)
+    real(real64) axis_length
+    real(real64) distance
+    real(real64) r8vec_norm
+    real(real64) off_axis_component
+    real(real64) p(dim_num)
+    real(real64) p_dot_axis
+    real(real64) p_length
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) r
 
     axis(1:dim_num) = p2(1:dim_num) - p1(1:dim_num)
     axis_length = r8vec_norm ( dim_num, axis )
 
-    if ( axis_length == 0.0_dp ) then
+    if ( axis_length == 0.0e+00_real64 ) then
       distance = -huge ( distance )
     end if
 
@@ -4709,7 +4638,7 @@ contains
   !
   !  Case 1: Below bottom cap.
   !
-    if ( p_dot_axis <= 0.0_dp ) then
+    if ( p_dot_axis <= 0.0e+00_real64 ) then
 
       call disk_point_dist_3d ( p1, r, axis, p, distance )
   !
@@ -4722,7 +4651,7 @@ contains
 
       distance = off_axis_component - r 
 
-      if ( distance < 0.0_dp ) then
+      if ( distance < 0.0e+00_real64 ) then
         distance = max ( distance, p_dot_axis - axis_length )
         distance = max ( distance, -p_dot_axis )
       end if
@@ -4734,10 +4663,9 @@ contains
       call disk_point_dist_3d ( p2, r, axis, p, distance )
 
     end if
-  end subroutine cylinder_point_dist_signed_3d
+  end
 
-  subroutine cylinder_point_inside_3d ( p1, p2, r, p, inside ) &
-        bind(C, name="cylinder_point_inside_3d")
+  subroutine cylinder_point_inside_3d ( p1, p2, r, p, inside )
 
   !*****************************************************************************80
   !
@@ -4766,35 +4694,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the first and last points
+  !    Input, real(real64) P1(3), P2(3), the first and last points
   !    on the axis line of the cylinder.
   !
-  !    Input, real(dp) R, the radius of the cylinder.
+  !    Input, real(real64) R, the radius of the cylinder.
   !
-  !    Input, real(dp) P(3), the point.
+  !    Input, real(real64) P(3), the point.
   !
   !    Output, logical INSIDE, is TRUE if the point is 
   !    inside the cylinder.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: axis(dim_num)
-    real(dp) :: axis_length
-    logical, intent(out) :: inside
-    real(dp) :: off_axis_component
-    real(dp), intent(in) :: p(dim_num)
-    real(dp) :: p_dot_axis
-    real(dp) :: p_length
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp) :: r8vec_norm
+    real(real64) axis(dim_num)
+    real(real64) axis_length
+    logical inside
+    real(real64) off_axis_component
+    real(real64) p(dim_num)
+    real(real64) p_dot_axis
+    real(real64) p_length
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) r
+    real(real64) r8vec_norm
 
     axis(1:dim_num) = p2(1:dim_num) - p1(1:dim_num)
     axis_length = r8vec_norm ( dim_num, axis )
 
-    if ( axis_length == 0.0_dp ) then
+    if ( axis_length == 0.0e+00_real64 ) then
       inside = .false.
     end if
 
@@ -4804,7 +4732,7 @@ contains
   !
   !  If the point lies below or above the "caps" of the cylinder, we're done.
   !
-    if ( p_dot_axis < 0.0_dp .or. axis_length < p_dot_axis ) then
+    if ( p_dot_axis < 0.0e+00_real64 .or. axis_length < p_dot_axis ) then
 
       inside = .false.
   !
@@ -4823,10 +4751,9 @@ contains
       end if
 
     end if
-  end subroutine cylinder_point_inside_3d
+  end
 
-  subroutine cylinder_point_near_3d ( p1, p2, r, p, pn ) &
-        bind(C, name="cylinder_point_near_3d")
+  subroutine cylinder_point_near_3d ( p1, p2, r, p, pn )
 
   !*****************************************************************************80
   !
@@ -4860,30 +4787,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the first and last points
+  !    Input, real(real64) P1(3), P2(3), the first and last points
   !    on the axis line of the cylinder.
   !
-  !    Input, real(dp) R, the radius of the cylinder.
+  !    Input, real(real64) R, the radius of the cylinder.
   !
-  !    Input, real(dp) P(3), the point.
+  !    Input, real(real64) P(3), the point.
   !
-  !    Output, real(dp) PN(3), the nearest point on the cylinder.
+  !    Output, real(real64) PN(3), the nearest point on the cylinder.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: axial_component
-    real(dp) :: axis(dim_num)
-    real(dp) :: axis_length
-    real(dp) :: distance
-    real(dp) :: r8vec_norm
-    real(dp) :: off_axis(dim_num)
-    real(dp) :: off_axis_component
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(in), value :: r
+    real(real64) axial_component
+    real(real64) axis(dim_num)
+    real(real64) axis_length
+    real(real64) distance
+    real(real64) r8vec_norm
+    real(real64) off_axis(dim_num)
+    real(real64) off_axis_component
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) r
 
     axis(1:dim_num) = p2(1:dim_num) - p1(1:dim_num)
     axis_length = r8vec_norm ( dim_num, axis )
@@ -4898,7 +4825,7 @@ contains
   !
   !  Case 1: Below bottom cap.
   !
-    if ( axial_component <= 0.0_dp ) then
+    if ( axial_component <= 0.0e+00_real64 ) then
 
       if ( off_axis_component <= r ) then
         pn(1:dim_num) = p1(1:dim_num) + off_axis(1:dim_num)
@@ -4911,7 +4838,7 @@ contains
   !
     else if ( axial_component <= axis_length ) then
 
-      if ( off_axis_component == 0.0_dp ) then
+      if ( off_axis_component == 0.0e+00_real64 ) then
 
         call r8vec_any_normal ( dim_num, axis, off_axis )
 
@@ -4952,10 +4879,9 @@ contains
       end if
 
     end if
-  end subroutine cylinder_point_near_3d
+  end
 
-  subroutine cylinder_sample_3d ( p1, p2, r, n, seed, p ) &
-        bind(C, name="cylinder_sample_3d")
+  subroutine cylinder_sample_3d ( p1, p2, r, n, seed, p )
 
   !*****************************************************************************80
   !
@@ -4986,36 +4912,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the first and last points
+  !    Input, real(real64) P1(3), P2(3), the first and last points
   !    on the axis line of the cylinder.
   !
-  !    Input, real(dp) R, the radius of the cylinder.
+  !    Input, real(real64) R, the radius of the cylinder.
   !
-  !    Input, integer(ip) N, the number of sample points to compute.
+  !    Input, integer(int32) N, the number of sample points to compute.
   !
-  !    Input/output, integer(ip) SEED, the random number seed.
+  !    Input/output, integer(int32) SEED, the random number seed.
   !
-  !    Input, real(dp) P(3,N), the sample points.
+  !    Input, real(real64) P(3,N), the sample points.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) n
 
-    real(dp) :: axis(dim_num)
-    real(dp) :: axis_length
-    real(dp) :: r8vec_norm
-    integer(ip) :: i
-    real(dp), intent(in) :: p(dim_num,n)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: radius(n)
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta(n)
-    real(dp) :: v2(dim_num)
-    real(dp) :: v3(dim_num)
-    real(dp) :: z(n)
+    real(real64) axis(dim_num)
+    real(real64) axis_length
+    real(real64) r8vec_norm
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radius(n)
+    integer(int32) seed
+    real(real64) theta(n)
+    real(real64) v2(dim_num)
+    real(real64) v3(dim_num)
+    real(real64) z(n)
   !
   !  Compute the axis vector.
   !
@@ -5033,7 +4959,7 @@ contains
     radius(1:n) = r * sqrt ( radius(1:n) )
 
     call random_number ( harvest = theta(1:n) )
-    theta(1:n) = 2.0_dp * r8_pi * theta(1:n)
+    theta(1:n) = 2.0e+00_real64 * r8_pi * theta(1:n)
 
     call random_number ( harvest = z(1:n) )
     z(1:n) = axis_length * z(1:n)
@@ -5046,10 +4972,9 @@ contains
                 + radius(1:n) * sin ( theta(1:n) )   * v3(i)
 
     end do
-  end subroutine cylinder_sample_3d
+  end
 
-  subroutine cylinder_volume_3d ( p1, p2, r, volume ) &
-        bind(C, name="cylinder_volume_3d")
+  subroutine cylinder_volume_3d ( p1, p2, r, volume )
 
   !*****************************************************************************80
   !
@@ -5078,30 +5003,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the first and last points
+  !    Input, real(real64) P1(3), P2(3), the first and last points
   !    on the axis line of the cylinder.
   !
-  !    Input, real(dp) R, the radius of the cylinder.
+  !    Input, real(real64) R, the radius of the cylinder.
   !
-  !    Output, real(dp) VOLUME, the volume of the cylinder.
+  !    Output, real(real64) VOLUME, the volume of the cylinder.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: h
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: volume
+    real(real64) h
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) volume
 
     h = sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
 
     volume = r8_pi * r * r * h
-  end subroutine cylinder_volume_3d
+  end
 
-  function degrees_to_radians ( angle_deg ) &
-        bind(C, name="degrees_to_radians")
+  function degrees_to_radians ( angle_deg )
 
   !*****************************************************************************80
   !
@@ -5121,21 +5045,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE_DEG, an angle in degrees.
+  !    Input, real(real64) ANGLE_DEG, an angle in degrees.
   !
-  !    Output, real(dp) DEGREES_TO_RADIANS, the equivalent angle
+  !    Output, real(real64) DEGREES_TO_RADIANS, the equivalent angle
   !    in radians.
   !
 
-    real(dp), intent(in), value :: angle_deg
-    real(dp) :: degrees_to_radians
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) angle_deg
+    real(real64) degrees_to_radians
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
-    degrees_to_radians = ( angle_deg / 180.0_dp ) * r8_pi
-  end function degrees_to_radians
+    degrees_to_radians = ( angle_deg / 180.0e+00_real64 ) * r8_pi
+  end
 
-  subroutine direction_pert_3d ( sigma, vbase, seed, vran ) &
-        bind(C, name="direction_pert_3d")
+  subroutine direction_pert_3d ( sigma, vbase, seed, vran )
 
   !*****************************************************************************80
   !
@@ -5155,56 +5078,56 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) SIGMA, determines the strength of the
+  !    Input, real(real64) SIGMA, determines the strength of the
   !    perturbation.
   !    SIGMA <= 0 results in a completely random direction.
   !    1 <= SIGMA results in VBASE.
   !    0 < SIGMA < 1 results in a perturbation from VBASE, which is
   !    large when SIGMA is near 0, and small when SIGMA is near 1.
   !
-  !    Input, real(dp) VBASE(3), the base direction vector, which
+  !    Input, real(real64) VBASE(3), the base direction vector, which
   !    should have unit norm.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number 
+  !    Input/output, integer(int32) SEED, a seed for the random number 
   !    generator.
   !
-  !    Output, real(dp) VRAN(3), the perturbed vector, which will
+  !    Output, real(real64) VRAN(3), the perturbed vector, which will
   !    have unit norm.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8_uniform_01
-    real(dp) :: dphi
-    real(dp) :: phi
-    real(dp) :: psi
-    real(dp) :: r
-    real(dp) :: r8_acos
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(in), value :: sigma
-    real(dp) :: theta
-    real(dp) :: v(dim_num)
-    real(dp), intent(in) :: vbase(dim_num)
-    real(dp) :: vdot
-    real(dp), intent(out) :: vran(dim_num)
-    real(dp) :: x
+    real(real64) r8_uniform_01
+    real(real64) dphi
+    real(real64) phi
+    real(real64) psi
+    real(real64) r
+    real(real64) r8_acos
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) sigma
+    real(real64) theta
+    real(real64) v(dim_num)
+    real(real64) vbase(dim_num)
+    real(real64) vdot
+    real(real64) vran(dim_num)
+    real(real64) x
   !
   !  1 <= SIGMA, just use the base vector.
   !
-    if ( 1.0_dp <= sigma ) then
+    if ( 1.0e+00_real64 <= sigma ) then
 
       vran(1:dim_num) = vbase(1:dim_num)
 
-    else if ( sigma <= 0.0_dp ) then
+    else if ( sigma <= 0.0e+00_real64 ) then
 
       vdot = r8_uniform_01 ( seed )
-      vdot = 2.0_dp * vdot - 1.0_dp
+      vdot = 2.0e+00_real64 * vdot - 1.0e+00_real64
 
       phi = r8_acos ( vdot )
 
       theta = r8_uniform_01 ( seed )
-      theta = 2.0_dp * r8_pi * theta
+      theta = 2.0e+00_real64 * r8_pi * theta
 
       vran(1) = cos ( theta ) * sin ( phi )
       vran(2) = sin ( theta ) * sin ( phi )
@@ -5226,8 +5149,8 @@ contains
   !  SIGMA, we want biased towards 1.
   !
       r = r8_uniform_01 ( seed )
-      x = exp ( ( 1.0_dp - sigma ) * log ( r ) )
-      dphi = r8_acos ( 2.0_dp * x - 1.0_dp )
+      x = exp ( ( 1.0e+00_real64 - sigma ) * log ( r ) )
+      dphi = r8_acos ( 2.0e+00_real64 * x - 1.0e+00_real64 )
   !
   !  Now we know enough to write down a vector that is rotated DPHI
   !  from the base vector.
@@ -5240,17 +5163,16 @@ contains
   !  axis of the base vector.
   !
       psi = r8_uniform_01 ( seed )
-      psi = 2.0_dp * r8_pi * psi
+      psi = 2.0e+00_real64 * r8_pi * psi
   !
   !  Carry out the rotation.
   !
       call rotation_axis_vector_3d ( vbase, psi, v, vran )
 
     end if
-  end subroutine direction_pert_3d
+  end
 
-  subroutine direction_uniform_2d ( seed, vran ) &
-        bind(C, name="direction_uniform_2d")
+  subroutine direction_uniform_2d ( seed, vran )
 
   !*****************************************************************************80
   !
@@ -5270,30 +5192,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number 
+  !    Input/output, integer(int32) SEED, a seed for the random number 
   !    generator.
   !
-  !    Output, real(dp) VRAN(2), the random direction vector, with
+  !    Output, real(real64) VRAN(2), the random direction vector, with
   !    unit norm.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta
-    real(dp), intent(out) :: vran(dim_num)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r8_uniform_01
+    integer(int32) seed
+    real(real64) theta
+    real(real64) vran(dim_num)
 
     theta = r8_uniform_01 ( seed )
-    theta = 2.0_dp * r8_pi * theta
+    theta = 2.0e+00_real64 * r8_pi * theta
 
     vran(1) = cos ( theta )
     vran(2) = sin ( theta )
-  end subroutine direction_uniform_2d
+  end
 
-  subroutine direction_uniform_3d ( seed, vran ) &
-        bind(C, name="direction_uniform_3d")
+  subroutine direction_uniform_3d ( seed, vran )
 
   !*****************************************************************************80
   !
@@ -5313,23 +5234,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) VRAN(3), the random direction vector,
+  !    Output, real(real64) VRAN(3), the random direction vector,
   !    with unit norm.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8_uniform_01
-    real(dp) :: phi
-    real(dp) :: r8_acos
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta
-    real(dp) :: vdot
-    real(dp), intent(out) :: vran(dim_num)
+    real(real64) r8_uniform_01
+    real(real64) phi
+    real(real64) r8_acos
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) theta
+    real(real64) vdot
+    real(real64) vran(dim_num)
   !
   !  Pick a uniformly random VDOT, which must be between -1 and 1.
   !  This represents the dot product of the random vector with the Z unit vector.
@@ -5339,7 +5260,7 @@ contains
   !  a patch of area uniformly.
   !
     vdot = r8_uniform_01 ( seed )
-    vdot = 2.0_dp * vdot - 1.0_dp
+    vdot = 2.0e+00_real64 * vdot - 1.0e+00_real64
 
     phi = r8_acos ( vdot )
   !
@@ -5347,15 +5268,14 @@ contains
   !  axis of the Z vector.
   !
     theta = r8_uniform_01 ( seed )
-    theta = 2.0_dp * r8_pi * theta
+    theta = 2.0e+00_real64 * r8_pi * theta
 
     vran(1) = cos ( theta ) * sin ( phi )
     vran(2) = sin ( theta ) * sin ( phi )
     vran(3) = cos ( phi )
-  end subroutine direction_uniform_3d
+  end
 
-  subroutine direction_uniform_nd ( dim_num, seed, w ) &
-        bind(C, name="direction_uniform_nd")
+  subroutine direction_uniform_nd ( dim_num, seed, w )
 
   !*****************************************************************************80
   !
@@ -5375,20 +5295,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number 
+  !    Input/output, integer(int32) SEED, a seed for the random number 
   !    generator.
   !
-  !    Output, real(dp) W(DIM_NUM), a random direction vector,
+  !    Output, real(real64) W(DIM_NUM), a random direction vector,
   !    with unit norm.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: norm
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: w(dim_num)
+    real(real64) norm
+    integer(int32) seed
+    real(real64) w(dim_num)
   !
   !  Get N values from a standard normal distribution.
   !
@@ -5401,10 +5321,9 @@ contains
   !  Normalize the vector.
   !
     w(1:dim_num) = w(1:dim_num) / norm
-  end subroutine direction_uniform_nd
+  end
 
-  subroutine disk_point_dist_3d ( pc, r, axis, p, dist ) &
-        bind(C, name="disk_point_dist_3d")
+  subroutine disk_point_dist_3d ( pc, r, axis, p, dist )
 
   !*****************************************************************************80
   !
@@ -5434,39 +5353,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PC(3), the center of the disk.
+  !    Input, real(real64) PC(3), the center of the disk.
   !
-  !    Input, real(dp) R, the radius of the disk.
+  !    Input, real(real64) R, the radius of the disk.
   !
-  !    Input, real(dp) AXIS(3), the axis vector.
+  !    Input, real(real64) AXIS(3), the axis vector.
   !
-  !    Input, real(dp) P(3), the point to be checked.
+  !    Input, real(real64) P(3), the point to be checked.
   !
-  !    Output, real(dp) DIST, the distance of the point to the disk.
+  !    Output, real(real64) DIST, the distance of the point to the disk.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: axial_component
-    real(dp), intent(in) :: axis(dim_num)
-    real(dp) :: axis_length
-    real(dp), intent(out) :: dist
-    real(dp) :: r8vec_norm
-    real(dp) :: off_axis_component
-    real(dp) :: off_axis(dim_num)
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: r
+    real(real64) axial_component
+    real(real64) axis(dim_num)
+    real(real64) axis_length
+    real(real64) dist
+    real(real64) r8vec_norm
+    real(real64) off_axis_component
+    real(real64) off_axis(dim_num)
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
   !
   !  Special case: the point is the center.
   !
     if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
-      dist = 0.0_dp
+      dist = 0.0e+00_real64
     end if
 
     axis_length = r8vec_norm ( dim_num, axis(1:dim_num) )
 
-    if ( axis_length == 0.0_dp ) then
+    if ( axis_length == 0.0e+00_real64 ) then
       dist = -huge ( dist )
     end if
 
@@ -5476,8 +5395,8 @@ contains
   !  Special case: the point satisfies the disk equation exactly.
   !
     if ( sum ( p(1:dim_num) - pc(1:dim_num) )**2 <= r * r .and. &
-          axial_component == 0.0_dp ) then
-      dist = 0.0_dp
+          axial_component == 0.0e+00_real64 ) then
+      dist = 0.0e+00_real64
     end if
   !
   !  Decompose P-PC into axis component and off-axis component.
@@ -5498,10 +5417,9 @@ contains
   !  Otherwise, the nearest point is along the perimeter of the disk.
   !
     dist = sqrt ( axial_component**2 + ( off_axis_component - r )**2 )
-  end subroutine disk_point_dist_3d
+  end
 
-  subroutine dms_to_radians ( degrees, minutes, seconds, radians ) &
-        bind(C, name="dms_to_radians")
+  subroutine dms_to_radians ( degrees, minutes, seconds, radians )
 
   !*****************************************************************************80
   !
@@ -5521,29 +5439,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREES, MINUTES, SECONDS, an angle in 
+  !    Input, integer(int32) DEGREES, MINUTES, SECONDS, an angle in 
   !    degrees, minutes, and seconds.
   !
-  !    Output, real(dp) RADIANS, the equivalent angle in radians.
+  !    Output, real(real64) RADIANS, the equivalent angle in radians.
   !
 
-    real(dp) :: angle
-    integer(ip), intent(in), value :: degrees
-    integer(ip), intent(in), value :: minutes
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: radians
-    integer(ip), intent(in), value :: seconds
+    real(real64) angle
+    integer(int32) degrees
+    integer(int32) minutes
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radians
+    integer(int32) seconds
 
-    angle =   real ( degrees, dp) &
-          + ( real ( minutes, dp) &
-          + ( real ( seconds, dp) / 60.0_dp ) ) / 60.0_dp
+    angle =   real ( degrees, real64) &
+          + ( real ( minutes, real64) &
+          + ( real ( seconds, real64) / 60.0e+00_real64 ) ) / 60.0e+00_real64
 
-    radians = ( angle / 180.0_dp ) * r8_pi
-  end subroutine dms_to_radians
+    radians = ( angle / 180.0e+00_real64 ) * r8_pi
+  end
 
   subroutine dodec_shape_3d ( point_num, face_num, face_order_max, &
-    point_coord, face_order, face_point ) &
-        bind(C, name="dodec_shape_3d")
+    point_coord, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -5569,46 +5486,46 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of vertices
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of vertices
   !    per face.
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the vertices.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the vertices.
   !
-  !    Output, integer(ip) FACE_ORDER[FACE_NUM], the number of vertices
+  !    Output, integer(int32) FACE_ORDER[FACE_NUM], the number of vertices
   !    per face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,POINT_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,POINT_NUM); 
   !    FACE_POINT(I,J) contains the index of the I-th point in the J-th face.  
   !    The points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(in), value :: point_num
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    integer(ip) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    real(dp) :: phi
-    real(dp), intent(out) :: point_coord(dim_num,point_num)
-    real(dp) :: z
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) phi
+    real(real64) point_coord(dim_num,point_num)
+    real(real64) z
   !
   !  Set point coordinates.
   !
-    phi = 0.5_dp * ( sqrt ( 5.0_dp ) + 1.0_dp )
+    phi = 0.5e+00_real64 * ( sqrt ( 5.0e+00_real64 ) + 1.0e+00_real64 )
 
-    a = 1.0_dp / sqrt ( 3.0_dp )
-    b = phi / sqrt ( 3.0_dp )
-    c = ( phi - 1.0_dp ) / sqrt ( 3.0_dp )
-    z = 0.0_dp
+    a = 1.0e+00_real64 / sqrt ( 3.0e+00_real64 )
+    b = phi / sqrt ( 3.0e+00_real64 )
+    c = ( phi - 1.0e+00_real64 ) / sqrt ( 3.0e+00_real64 )
+    z = 0.0e+00_real64
 
     point_coord(1:dim_num,1:point_num) = reshape ( (/ &
         a,  a,  a, &
@@ -5652,10 +5569,9 @@ contains
         3, 18,  7, 12, 11, &
         2, 19,  6, 10,  9, &
         8, 20,  4, 11, 12 /), (/ face_order_max, face_num /) )
-  end subroutine dodec_shape_3d
+  end
 
-  subroutine dodec_size_3d ( point_num, edge_num, face_num, face_order_max ) &
-        bind(C, name="dodec_size_3d")
+  subroutine dodec_size_3d ( point_num, edge_num, face_num, face_order_max )
 
   !*****************************************************************************80
   !
@@ -5675,30 +5591,29 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of points.
+  !    Output, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 20
     edge_num = 30
     face_num = 12
     face_order_max = 5
-  end subroutine dodec_size_3d
+  end
 
   subroutine dual_shape_3d ( point_num, face_num, face_order_max, &
     point_coord, face_order, face_point, point_num2, face_num2, &
-    face_order_max2, point_coord2, face_order2, face_point2 ) &
-        bind(C, name="dual_shape_3d")
+    face_order_max2, point_coord2, face_order2, face_point2 )
 
   !*****************************************************************************80
   !
@@ -5718,65 +5633,65 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of vertices
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of vertices
   !    per face.
   !
-  !    Input, real(dp) POINT_COORD(3,POINT_NUM), the points.
+  !    Input, real(real64) POINT_COORD(3,POINT_NUM), the points.
   !
-  !    Input, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Input, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    per face.
   !
-  !    Input, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Input, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) is the index of the I-th point in the J-th face.  The
   !    points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
-  !    Input, integer(ip) POINT_NUM2, the number of points in the dual.
+  !    Input, integer(int32) POINT_NUM2, the number of points in the dual.
   !
-  !    Input, integer(ip) FACE_NUM2, the number of faces in the dual.
+  !    Input, integer(int32) FACE_NUM2, the number of faces in the dual.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX2, the maximum number of 
+  !    Input, integer(int32) FACE_ORDER_MAX2, the maximum number of 
   !    vertices per face in the dual.
   !
-  !    Output, real(dp) POINT_COORD2(3,POINT_NUM2), the point 
+  !    Output, real(real64) POINT_COORD2(3,POINT_NUM2), the point 
   !    coordinates of the dual.
   !
-  !    Output, integer(ip) FACE_ORDER2(FACE_NUM2), the number of 
+  !    Output, integer(int32) FACE_ORDER2(FACE_NUM2), the number of 
   !    vertices per face.
   !
-  !    Output, integer(ip) FACE_POINT2(FACE_ORDER_MAX2,FACE_NUM2), 
+  !    Output, integer(int32) FACE_POINT2(FACE_ORDER_MAX2,FACE_NUM2), 
   !    the vertices of each face in the dual.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(in), value :: face_num2
-    integer(ip), intent(in), value :: face_order_max
-    integer(ip), intent(in), value :: face_order_max2
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: point_num
-    integer(ip), intent(in), value :: point_num2
+    integer(int32) face_num
+    integer(int32) face_num2
+    integer(int32) face_order_max
+    integer(int32) face_order_max2
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) point_num
+    integer(int32) point_num2
 
-    integer(ip) :: col
-    integer(ip) :: face
-    integer(ip), intent(in) :: face_order(face_num)
-    integer(ip), intent(out) :: face_order2(face_num2)
-    integer(ip) :: face_point(face_order_max,face_num)
-    integer(ip), intent(out) :: face_point2(face_order_max2,face_num2)
-    integer(ip) :: i
-    integer(ip) :: inext
-    integer(ip) :: iprev
-    integer(ip) :: istop
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp) :: norm
-    real(dp) :: p(dim_num)
-    real(dp), intent(in) :: point_coord(dim_num,point_num)
-    real(dp), intent(out) :: point_coord2(dim_num,point_num2)
-    integer(ip) :: row
+    integer(int32) col
+    integer(int32) face
+    integer(int32) face_order(face_num)
+    integer(int32) face_order2(face_num2)
+    integer(int32) face_point(face_order_max,face_num)
+    integer(int32) face_point2(face_order_max2,face_num2)
+    integer(int32) i
+    integer(int32) inext
+    integer(int32) iprev
+    integer(int32) istop
+    integer(int32) j
+    integer(int32) k
+    real(real64) norm
+    real(real64) p(dim_num)
+    real(real64) point_coord(dim_num,point_num)
+    real(real64) point_coord2(dim_num,point_num2)
+    integer(int32) row
   !
   !  This computation should really compute the center of gravity
   !  of the face, in the general case.
@@ -5787,7 +5702,7 @@ contains
   !
     do face = 1, face_num
 
-      p(1:dim_num) = 0.0_dp
+      p(1:dim_num) = 0.0e+00_real64
 
       do j = 1, face_order(face)
         k = face_point(j,face)
@@ -5871,12 +5786,11 @@ contains
       end do
 
     end do
-  end subroutine dual_shape_3d
+  end
 
   subroutine dual_size_3d ( point_num, edge_num, face_num, face_order_max, &
     point_coord, face_order, face_point, point_num2, edge_num2, face_num2, &
-    face_order_max2 ) &
-        bind(C, name="dual_size_3d")
+    face_order_max2 )
 
   !*****************************************************************************80
   !
@@ -5902,52 +5816,52 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) EDGE_NUM, the number of edges.
+  !    Input, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of vertices
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of vertices
   !    per face.
   !
-  !    Input, real(dp) POINT_COORD(3,POINT_NUM), the points.
+  !    Input, real(real64) POINT_COORD(3,POINT_NUM), the points.
   !
-  !    Input, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Input, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    per face.
   !
-  !    Input, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Input, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) is the index of the I-th point in the J-th face.  The
   !    points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
-  !    Output, integer(ip) POINT_NUM2, the number of points in the dual.
+  !    Output, integer(int32) POINT_NUM2, the number of points in the dual.
   !
-  !    Output, integer(ip) EDGE_NUM2, the number of edges in the dual.
+  !    Output, integer(int32) EDGE_NUM2, the number of edges in the dual.
   !
-  !    Output, integer(ip) FACE_NUM2, the number of faces in the dual.
+  !    Output, integer(int32) FACE_NUM2, the number of faces in the dual.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX2, the maximum number of 
+  !    Output, integer(int32) FACE_ORDER_MAX2, the maximum number of 
   !    vertices per face in the dual.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(in), value :: face_order_max
-    integer(ip), intent(in), value :: point_num
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
-    integer(ip), intent(in), value :: edge_num
-    integer(ip), intent(out) :: edge_num2
-    integer(ip) :: face
-    integer(ip), intent(out) :: face_num2
-    integer(ip), intent(in) :: face_order(face_num)
-    integer(ip) :: face_order2(point_num)
-    integer(ip), intent(out) :: face_order_max2
-    integer(ip) :: face_point(face_order_max,face_num)
-    integer(ip) :: face2
-    integer(ip) :: i
-    integer(ip), intent(out) :: point_num2
-    real(dp), intent(in) :: point_coord(dim_num,point_num)
+    integer(int32) edge_num
+    integer(int32) edge_num2
+    integer(int32) face
+    integer(int32) face_num2
+    integer(int32) face_order(face_num)
+    integer(int32) face_order2(point_num)
+    integer(int32) face_order_max2
+    integer(int32) face_point(face_order_max,face_num)
+    integer(int32) face2
+    integer(int32) i
+    integer(int32) point_num2
+    real(real64) point_coord(dim_num,point_num)
   !
   !  These values are easy to compute:
   !
@@ -5972,10 +5886,9 @@ contains
     end do
 
     face_order_max2 = maxval ( face_order2(1:face_num2) )
-  end subroutine dual_size_3d
+  end
 
-  function ellipse_area1 ( a, r ) &
-        bind(C, name="ellipse_area1")
+  function ellipse_area1 ( a, r )
 
   !*****************************************************************************80
   !
@@ -6001,24 +5914,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(2,2), the matrix that describes
+  !    Input, real(real64) A(2,2), the matrix that describes
   !    the ellipse.  A must be symmetric and positive definite.
   !
-  !    Input, real(dp) R, the "radius" of the ellipse.
+  !    Input, real(real64) R, the "radius" of the ellipse.
   !
-  !    Output, real(dp) ELLIPSE_AREA1, the area of the ellipse.
+  !    Output, real(real64) ELLIPSE_AREA1, the area of the ellipse.
   !
 
-    real(dp) :: a(2,2)
-    real(dp) :: ellipse_area1
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) a(2,2)
+    real(real64) ellipse_area1
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     ellipse_area1 = r ** 2 * r8_pi / sqrt ( a(1,1) * a(2,2) - a(2,1) * a(1,2) )
-  end function ellipse_area1
+  end
 
-  function ellipse_area2 ( a, b, c, d ) &
-        bind(C, name="ellipse_area2")
+  function ellipse_area2 ( a, b, c, d )
 
   !*****************************************************************************80
   !
@@ -6043,25 +5955,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, coefficients on the left hand side.
+  !    Input, real(real64) A, B, C, coefficients on the left hand side.
   !
-  !    Input, real(dp) D, the right hand side.
+  !    Input, real(real64) D, the right hand side.
   !
-  !    Output, real(dp) ELLIPSE_AREA2, the area of the ellipse.
+  !    Output, real(real64) ELLIPSE_AREA2, the area of the ellipse.
   !
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp) :: ellipse_area2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) ellipse_area2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
-    ellipse_area2 = 2.0_dp * d * d * r8_pi / sqrt ( 4.0_dp * a * c - b * b )
-  end function ellipse_area2
+    ellipse_area2 = 2.0e+00_real64 * d * d * r8_pi / sqrt ( 4.0e+00_real64 * a * c - b * b )
+  end
 
-  function ellipse_area3 ( r1, r2 ) &
-        bind(C, name="ellipse_area3")
+  function ellipse_area3 ( r1, r2 )
 
   !*****************************************************************************80
   !
@@ -6089,22 +6000,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, the "radius" of the ellipse in the major
+  !    Input, real(real64) R1, R2, the "radius" of the ellipse in the major
   !    and minor axis directions.  A circle has these values equal.
   !
-  !    Output, real(dp) ELLIPSE_AREA3, the area of the ellipse.
+  !    Output, real(real64) ELLIPSE_AREA3, the area of the ellipse.
   !
 
-    real(dp) :: ellipse_area3
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) ellipse_area3
+    real(real64) r1
+    real(real64) r2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     ellipse_area3 = r8_pi * r1 * r2
-  end function ellipse_area3
+  end
 
-  subroutine ellipse_point_dist_2d ( r1, r2, p, dist ) &
-        bind(C, name="ellipse_point_dist_2d")
+  subroutine ellipse_point_dist_2d ( r1, r2, p, dist )
 
   !*****************************************************************************80
   !
@@ -6140,30 +6050,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, the ellipse parameters.  Normally,
+  !    Input, real(real64) R1, R2, the ellipse parameters.  Normally,
   !    these are both positive quantities.  Generally, they are also
   !    distinct.
   !
-  !    Input, real(dp) P(2), the point.
+  !    Input, real(real64) P(2), the point.
   !
-  !    Output, real(dp) DIST, the distance to the ellipse.
+  !    Output, real(real64) DIST, the distance to the ellipse.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) r1
+    real(real64) r2
 
     call ellipse_point_near_2d ( r1, r1, p, pn )
 
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine ellipse_point_dist_2d
+  end
 
-  subroutine ellipse_point_near_2d ( r1, r2, p, pn ) &
-        bind(C, name="ellipse_point_near_2d")
+  subroutine ellipse_point_near_2d ( r1, r2, p, pn )
 
   !*****************************************************************************80
   !
@@ -6209,51 +6118,51 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, the ellipse parameters.  Normally,
+  !    Input, real(real64) R1, R2, the ellipse parameters.  Normally,
   !    these are both positive quantities.  Generally, they are also
   !    distinct.
   !
-  !    Input, real(dp) P(2), the point.
+  !    Input, real(real64) P(2), the point.
   !
-  !    Output, real(dp) PN(2), the point on the ellipse which
+  !    Output, real(real64) PN(2), the point on the ellipse which
   !    is closest to P.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: ct
-    real(dp) :: f
-    real(dp) :: fp
-    integer(ip) :: iteration
-    integer(ip), parameter :: iteration_max = 100
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: st
-    real(dp) :: t
-    real(dp) :: x
-    real(dp) :: y
+    real(real64) ct
+    real(real64) f
+    real(real64) fp
+    integer(int32) iteration
+    integer(int32), parameter :: iteration_max = 100
+    real(real64) p(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) r1
+    real(real64) r2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) st
+    real(real64) t
+    real(real64) x
+    real(real64) y
 
     x = abs ( p(1) )
     y = abs ( p(2) )
 
-    if ( y == 0.0_dp .and. r1 * r1 - r2 * r2 <= r1 * x ) then
+    if ( y == 0.0e+00_real64 .and. r1 * r1 - r2 * r2 <= r1 * x ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
-    else if ( x == 0.0_dp .and. r2 * r2 - r1 * r1 <= r2 * y ) then
+    else if ( x == 0.0e+00_real64 .and. r2 * r2 - r1 * r1 <= r2 * y ) then
 
-      t = r8_pi / 2.0_dp
+      t = r8_pi / 2.0e+00_real64
 
     else
 
-      if ( y == 0.0_dp ) then
+      if ( y == 0.0e+00_real64 ) then
         y = sqrt ( epsilon ( y ) ) * abs ( r2 )
       end if
 
-      if ( x == 0.0_dp ) then
+      if ( x == 0.0e+00_real64 ) then
         x = sqrt ( epsilon ( x ) ) * abs ( r1 )
       end if
   !
@@ -6271,7 +6180,7 @@ contains
         f = ( x - abs ( r1 ) * ct ) * abs ( r1 ) * st &
           - ( y - abs ( r2 ) * st ) * abs ( r2 ) * ct
 
-        if ( abs ( f ) <= 100.0_dp * epsilon ( f ) ) then
+        if ( abs ( f ) <= 100.0e+00_real64 * epsilon ( f ) ) then
           exit
         end if
 
@@ -6303,12 +6212,11 @@ contains
   !
   !  Take care of case where the point was in another quadrant.
   !
-    pn(1) = sign ( 1.0_dp, p(1) ) * pn(1)
-    pn(2) = sign ( 1.0_dp, p(2) ) * pn(2)
-  end subroutine ellipse_point_near_2d
+    pn(1) = sign ( 1.0e+00_real64, p(1) ) * pn(1)
+    pn(2) = sign ( 1.0e+00_real64, p(2) ) * pn(2)
+  end
 
-  subroutine ellipse_points_2d ( pc, r1, r2, psi, n, p ) &
-        bind(C, name="ellipse_points_2d")
+  subroutine ellipse_points_2d ( pc, r1, r2, psi, n, p )
 
   !*****************************************************************************80
   !
@@ -6339,38 +6247,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PC(2), the center of the ellipse.
+  !    Input, real(real64) PC(2), the center of the ellipse.
   !
-  !    Input, real(dp) R1, R2, the "radius" of the ellipse in the major
+  !    Input, real(real64) R1, R2, the "radius" of the ellipse in the major
   !    and minor axis directions.  A circle has these values equal.
   !
-  !    Input, real(dp) PSI, the angle that the major axis of the ellipse
+  !    Input, real(real64) PSI, the angle that the major axis of the ellipse
   !    makes with the X axis.  A value of 0.0 means that the major and
   !    minor axes of the ellipse will be the X and Y coordinate axes.
   !
-  !    Input, integer(ip) N, the number of points desired.  N must 
+  !    Input, integer(int32) N, the number of points desired.  N must 
   !    be at least 1.
   !
-  !    Output, real(dp) P(2,N), points on the ellipse.
+  !    Output, real(real64) P(2,N), points on the ellipse.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: psi
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) pc(dim_num)
+    real(real64) psi
+    real(real64) r1
+    real(real64) r2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
 
     do i = 1, n
 
-      theta = ( 2.0_dp * r8_pi * real ( i - 1, dp) ) &
-        / real ( n, dp)
+      theta = ( 2.0e+00_real64 * r8_pi * real ( i - 1, real64) ) &
+        / real ( n, real64)
 
       p(1,i) = pc(1) + r1 * cos ( psi ) * cos ( theta ) &
                      - r2 * sin ( psi ) * sin ( theta )
@@ -6379,10 +6287,9 @@ contains
                      + r2 * cos ( psi ) * sin ( theta )
 
     end do
-  end subroutine ellipse_points_2d
+  end
 
-  subroutine ellipse_points_arc_2d ( pc, r1, r2, psi, theta1, theta2, n, p ) &
-        bind(C, name="ellipse_points_arc_2d")
+  subroutine ellipse_points_arc_2d ( pc, r1, r2, psi, theta1, theta2, n, p )
 
   !*****************************************************************************80
   !
@@ -6413,55 +6320,55 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PC(2), the coordinates of the center of
+  !    Input, real(real64) PC(2), the coordinates of the center of
   !    the ellipse.
   !
-  !    Input, real(dp) R1, R2, the "radius" of the ellipse in the major
+  !    Input, real(real64) R1, R2, the "radius" of the ellipse in the major
   !    and minor axis directions.  A circle has these values equal.
   !
-  !    Input, real(dp) PSI, the angle that the major axis of the ellipse
+  !    Input, real(real64) PSI, the angle that the major axis of the ellipse
   !    makes with the X axis.  A value of 0.0 means that the major and
   !    minor axes of the ellipse will be the X and Y coordinate axes.
   !
-  !    Input, real(dp) THETA1, THETA2, the angular coordinates of
+  !    Input, real(real64) THETA1, THETA2, the angular coordinates of
   !    the first and last points to be drawn, in radians.  This angle is measured
   !    with respect to the (possibly tilted) major axis.
   !
-  !    Input, integer(ip) N, the number of points desired.  N must 
+  !    Input, integer(int32) N, the number of points desired.  N must 
   !    be at least 1.
   !
-  !    Output, real(dp) P(2,N), points on the ellipse.
+  !    Output, real(real64) P(2,N), points on the ellipse.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: r8_modp
-    integer(ip) :: i
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: psi
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
-    real(dp) :: theta3
+    real(real64) r8_modp
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) pc(dim_num)
+    real(real64) psi
+    real(real64) r1
+    real(real64) r2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
+    real(real64) theta3
   !
   !  THETA3 is the smallest angle, no less than THETA1, which
   !  coincides with THETA2.
   !
-    theta3 = theta1 + r8_modp ( theta2 - theta1, 2.0_dp * r8_pi )
+    theta3 = theta1 + r8_modp ( theta2 - theta1, 2.0e+00_real64 * r8_pi )
 
     do i = 1, n
 
       if ( 1 < n ) then
-        theta = ( real ( n - i, dp) * theta1 &
-                + real (     i - 1, dp) * theta3 ) &
-                / real ( n     - 1, dp)
+        theta = ( real ( n - i, real64) * theta1 &
+                + real (     i - 1, real64) * theta3 ) &
+                / real ( n     - 1, real64)
       else
-        theta = 0.5_dp * ( theta1 + theta3 )
+        theta = 0.5e+00_real64 * ( theta1 + theta3 )
       end if
 
       p(1,i) = pc(1) + r1 * cos ( psi ) * cos ( theta ) &
@@ -6471,11 +6378,10 @@ contains
                      + r2 * cos ( psi ) * sin ( theta )
 
     end do
-  end subroutine ellipse_points_arc_2d
+  end
 
   subroutine glob2loc_3d ( cospitch, cosroll, cosyaw, sinpitch, sinroll, sinyaw, &
-    globas, glopts, locpts ) &
-        bind(C, name="glob2loc_3d")
+    globas, glopts, locpts )
 
   !*****************************************************************************80
   !
@@ -6524,32 +6430,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) COSPITCH, COSROLL, COSYAW, the cosines of
+  !    Input, real(real64) COSPITCH, COSROLL, COSYAW, the cosines of
   !    the pitch, roll and yaw angles.
   !
-  !    Input, real(dp) SINPITCH, SINROLL, SINYAW, the sines of the pitch,
+  !    Input, real(real64) SINPITCH, SINROLL, SINYAW, the sines of the pitch,
   !    roll and yaw angles.
   !
-  !    Input, real(dp) GLOBAS(3), the global base vector.
+  !    Input, real(real64) GLOBAS(3), the global base vector.
   !
-  !    Input, real(dp) GLOPTS(3), the global coordinates
+  !    Input, real(real64) GLOPTS(3), the global coordinates
   !    of the point whose coordinates are to be transformed.
   !
-  !    Output, real(dp) LOCPTS(3), the local coordinates of the point
+  !    Output, real(real64) LOCPTS(3), the local coordinates of the point
   !    whose global coordinates were given in GLOPTS.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: cospitch
-    real(dp), intent(in), value :: cosroll
-    real(dp), intent(in), value :: cosyaw
-    real(dp), intent(in) :: globas(dim_num)
-    real(dp), intent(in) :: glopts(dim_num)
-    real(dp), intent(out) :: locpts(dim_num)
-    real(dp), intent(in), value :: sinpitch
-    real(dp), intent(in), value :: sinroll
-    real(dp), intent(in), value :: sinyaw
+    real(real64) cospitch
+    real(real64) cosroll
+    real(real64) cosyaw
+    real(real64) globas(dim_num)
+    real(real64) glopts(dim_num)
+    real(real64) locpts(dim_num)
+    real(real64) sinpitch
+    real(real64) sinroll
+    real(real64) sinyaw
 
     locpts(1) = ( cosyaw * cospitch ) * ( glopts(1) - globas(1) ) &
               + ( sinyaw * cospitch ) * ( glopts(2) - globas(2) ) &
@@ -6566,10 +6472,9 @@ contains
       + ( sinyaw * sinpitch * cosroll - cosyaw * sinroll  ) &
       * ( glopts(2) - globas(2) ) &
       + ( cospitch * cosroll ) * ( glopts(3) - globas(3) )
-  end subroutine glob2loc_3d
+  end
 
-  function halfplane_contains_point_2d ( p1, p2, p ) &
-        bind(C, name="halfplane_contains_point_2d")
+  function halfplane_contains_point_2d ( p1, p2, p )
 
   !*****************************************************************************80
   !
@@ -6601,33 +6506,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two distinct points
+  !    Input, real(real64) P1(2), P2(2), two distinct points
   !    on the line defining the half plane.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical HALFPLANE_CONTAINS_POINT_2D, is TRUE if 
   !    the halfplane contains the point.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: area_signed
-    logical :: halfplane_contains_point_2d
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
+    real(real64) area_signed
+    logical halfplane_contains_point_2d
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
-    area_signed = 0.5_dp *       &
+    area_signed = 0.5e+00_real64 *       &
       ( p1(1) * ( p2(2) - p(2)  ) &
       + p2(1) * ( p(2)  - p1(2) ) &
       + p(1)  * ( p1(2) - p2(2) ) )
 
-    halfplane_contains_point_2d = ( 0.0_dp <= area_signed )
-  end function halfplane_contains_point_2d
+    halfplane_contains_point_2d = ( 0.0e+00_real64 <= area_signed )
+  end
 
-  subroutine halfspace_imp_triangle_int_3d ( a, b, c, d, t, int_num, pint ) &
-        bind(C, name="halfspace_imp_triangle_int_3d")
+  subroutine halfspace_imp_triangle_int_3d ( a, b, c, d, t, int_num, pint )
 
   !*****************************************************************************80
   !
@@ -6669,31 +6573,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, D, the parameters that define the
+  !    Input, real(real64) A, B, C, D, the parameters that define the
   !    implicit plane, which in turn define the implicit halfspace.
   !
-  !    Input, real(dp) T(3,3), the vertices of the triangle.
+  !    Input, real(real64) T(3,3), the vertices of the triangle.
   !
-  !    Output, integer(ip) INT_NUM, the number of intersection points 
+  !    Output, integer(int32) INT_NUM, the number of intersection points 
   !    returned, which will always be between 0 and 4.
   !
-  !    Output, real(dp) PINT(3,4), the coordinates of the INT_NUM
+  !    Output, real(real64) PINT(3,4), the coordinates of the INT_NUM
   !    intersection points.  The points will lie in sequence on the triangle.
   !    Some points will be vertices, and some may be separators.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp) :: dist1
-    real(dp) :: dist2
-    real(dp) :: dist3
-    integer(ip), intent(out) :: int_num
-    real(dp), intent(out) :: pint(dim_num,4)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) dist1
+    real(real64) dist2
+    real(real64) dist3
+    integer(int32) int_num
+    real(real64) pint(dim_num,4)
+    real(real64) t(dim_num,3)
   !
   !  Compute the signed distances between the vertices and the plane.
   !
@@ -6704,10 +6608,9 @@ contains
   !  Now we can find the intersections.
   !
     call halfspace_triangle_int_3d ( dist1, dist2, dist3, t, int_num, pint )
-  end subroutine halfspace_imp_triangle_int_3d
+  end
 
-  subroutine halfspace_normal_triangle_int_3d ( pp, normal, t, int_num, pint ) &
-        bind(C, name="halfspace_normal_triangle_int_3d")
+  subroutine halfspace_normal_triangle_int_3d ( pp, normal, t, int_num, pint )
 
   !*****************************************************************************80
   !
@@ -6751,34 +6654,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the bounding plane
+  !    Input, real(real64) PP(3), a point on the bounding plane
   !    that defines the halfspace.
   !
-  !    Input, real(dp) NORMAL(3), the components of the normal vector
+  !    Input, real(real64) NORMAL(3), the components of the normal vector
   !    to the bounding plane that defines the halfspace.  By convention, the
   !    normal vector points "outwards" from the halfspace.
   !
-  !    Input, real(dp) T(3,3), the vertices of the triangle.
+  !    Input, real(real64) T(3,3), the vertices of the triangle.
   !
-  !    Output, integer(ip) INT_NUM, the number of intersection points 
+  !    Output, integer(int32) INT_NUM, the number of intersection points 
   !    returned, which will always be between 0 and 4.
   !
-  !    Output, real(dp) PINT(3,4), the coordinates of the INT_NUM
+  !    Output, real(real64) PINT(3,4), the coordinates of the INT_NUM
   !    intersection points.  The points will lie in sequence on the triangle.
   !    Some points will be vertices, and some may be separators.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: d
-    real(dp) :: dist1
-    real(dp) :: dist2
-    real(dp) :: dist3
-    real(dp), intent(in) :: normal(dim_num)
-    integer(ip), intent(out) :: int_num
-    real(dp), intent(in) :: pp(dim_num)
-    real(dp), intent(out) :: pint(dim_num,4)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) d
+    real(real64) dist1
+    real(real64) dist2
+    real(real64) dist3
+    real(real64) normal(dim_num)
+    integer(int32) int_num
+    real(real64) pp(dim_num)
+    real(real64) pint(dim_num,4)
+    real(real64) t(dim_num,3)
   !
   !  Compute the signed distances between the vertices and the plane.
   !
@@ -6793,10 +6696,9 @@ contains
   !  Now we can find the intersections.
   !
     call halfspace_triangle_int_3d ( dist1, dist2, dist3, t, int_num, pint )
-  end subroutine halfspace_normal_triangle_int_3d
+  end
 
-  subroutine halfspace_triangle_int_3d ( dist1, dist2, dist3, t, int_num, pint ) &
-        bind(C, name="halfspace_triangle_int_3d")
+  subroutine halfspace_triangle_int_3d ( dist1, dist2, dist3, t, int_num, pint )
 
   !*****************************************************************************80
   !
@@ -6836,44 +6738,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DIST1, DIST2, DIST3, the distances from each of
+  !    Input, real(real64) DIST1, DIST2, DIST3, the distances from each of
   !    the three vertices of the triangle to the halfspace.  The distance is
   !    zero if a vertex lies within the halfspace, or on the plane that
   !    defines the boundary of the halfspace.  Otherwise, it is the
   !    distance from that vertex to the bounding plane.
   !
-  !    Input, real(dp) T(3,3), the vertices of the triangle.
+  !    Input, real(real64) T(3,3), the vertices of the triangle.
   !
-  !    Output, integer(ip) INT_NUM, the number of intersection points
+  !    Output, integer(int32) INT_NUM, the number of intersection points
   !    returned, which will always be between 0 and 4.
   !
-  !    Output, real(dp) PINT(3,4), the coordinates of the INT_NUM
+  !    Output, real(real64) PINT(3,4), the coordinates of the INT_NUM
   !    intersection points.  The points will lie in sequence on the triangle.
   !    Some points will be vertices, and some may be separators.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: dist1
-    real(dp), intent(in), value :: dist2
-    real(dp), intent(in), value :: dist3
-    integer(ip), intent(out) :: int_num
-    real(dp), intent(out) :: pint(dim_num,4)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) dist1
+    real(real64) dist2
+    real(real64) dist3
+    integer(int32) int_num
+    real(real64) pint(dim_num,4)
+    real(real64) t(dim_num,3)
   !
   !  Walk around the triangle, looking for vertices that are included,
   !  and points of separation.
   !
     int_num = 0
 
-    if ( dist1 <= 0.0_dp ) then
+    if ( dist1 <= 0.0e+00_real64 ) then
 
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,1)
 
     end if
 
-    if ( dist1 * dist2 < 0.0_dp ) then
+    if ( dist1 * dist2 < 0.0e+00_real64 ) then
 
       int_num = int_num + 1
       pint(1:dim_num,int_num) = &
@@ -6882,14 +6784,14 @@ contains
 
     end if
 
-    if ( dist2 <= 0.0_dp ) then
+    if ( dist2 <= 0.0e+00_real64 ) then
 
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,2)
 
     end if
 
-    if ( dist2 * dist3 < 0.0_dp ) then
+    if ( dist2 * dist3 < 0.0e+00_real64 ) then
 
       int_num = int_num + 1
 
@@ -6899,14 +6801,14 @@ contains
 
     end if
 
-    if ( dist3 <= 0.0_dp ) then
+    if ( dist3 <= 0.0e+00_real64 ) then
 
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,3)
 
     end if
 
-    if ( dist3 * dist1 < 0.0_dp ) then
+    if ( dist3 * dist1 < 0.0e+00_real64 ) then
 
       int_num = int_num + 1
       pint(1:dim_num,int_num) = &
@@ -6914,10 +6816,9 @@ contains
         / ( dist3 - dist1 )
 
     end if
-  end subroutine halfspace_triangle_int_3d
+  end
 
-  function haversine ( a ) &
-        bind(C, name="haversine")
+  function haversine ( a )
 
   !*****************************************************************************80
   !
@@ -6943,19 +6844,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, the angle.
+  !    Input, real(real64) A, the angle.
   !
-  !    Output, real(dp) HAVERSINE, the haversine of the angle.
+  !    Output, real(real64) HAVERSINE, the haversine of the angle.
   !
 
-    real(dp), intent(in), value :: a
-    real(dp) :: haversine
+    real(real64) a
+    real(real64) haversine
 
-    haversine = ( 1.0_dp - cos ( a ) ) / 2.0_dp
-  end function haversine
+    haversine = ( 1.0e+00_real64 - cos ( a ) ) / 2.0e+00_real64
+  end
 
-  subroutine helix_shape_3d ( a, n, r, theta1, theta2, p ) &
-        bind(C, name="helix_shape_3d")
+  subroutine helix_shape_3d ( a, n, r, theta1, theta2, p )
 
   !*****************************************************************************80
   !
@@ -6985,39 +6885,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, the rate at which Z advances with THETA.
+  !    Input, real(real64) A, the rate at which Z advances with THETA.
   !
-  !    Input, integer(ip) N, the number of points to compute on 
+  !    Input, integer(int32) N, the number of points to compute on 
   !    the helix.
   !
-  !    Input, real(dp) R, the radius of the helix.
+  !    Input, real(real64) R, the radius of the helix.
   !
-  !    Input, real(dp) THETA1, THETA2, the first and last THETA values at
+  !    Input, real(real64) THETA1, THETA2, the first and last THETA values at
   !    which to compute points on the helix.  THETA is measured in
   !    radians.
   !
-  !    Output, real(dp) P(3,N), the coordinates of points on the helix.
+  !    Output, real(real64) P(3,N), the coordinates of points on the helix.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 3
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    integer(ip) :: i
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp), intent(in), value :: r
-    real(dp) :: theta
-    real(dp), intent(in), value :: theta1
-    real(dp), intent(in), value :: theta2
+    real(real64) a
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) r
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
 
     do i = 1, n
 
       if ( n == 1 ) then
-        theta = 0.5_dp * ( theta1 + theta2 )
+        theta = 0.5e+00_real64 * ( theta1 + theta2 )
       else
-        theta = ( real ( n - i, dp) * theta1 &
-                + real (     i - 1, dp) * theta2 ) &
-                / real ( n     - 1, dp)
+        theta = ( real ( n - i, real64) * theta1 &
+                + real (     i - 1, real64) * theta2 ) &
+                / real ( n     - 1, real64)
       end if
 
       p(1,i) = r * cos ( theta )
@@ -7025,10 +6925,9 @@ contains
       p(3,i) = a * theta
 
     end do
-  end subroutine helix_shape_3d
+  end
 
-  function hexagon_area_2d ( r ) &
-        bind(C, name="hexagon_area_2d")
+  function hexagon_area_2d ( r )
 
   !*****************************************************************************80
   !
@@ -7054,20 +6953,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the hexagon.
+  !    Input, real(real64) R, the radius of the hexagon.
   !
-  !    Output, real(dp) HEXAGON_AREA_2D, the area of the hexagon.
+  !    Output, real(real64) HEXAGON_AREA_2D, the area of the hexagon.
   !
 
-    real(dp) :: hexagon_area_2d
-    real(dp) :: hexagon01_area_2d
-    real(dp), intent(in), value :: r
+    real(real64) hexagon_area_2d
+    real(real64) hexagon01_area_2d
+    real(real64) r
 
     hexagon_area_2d = r * r * hexagon01_area_2d ( )
-  end function hexagon_area_2d
+  end
 
-  function hexagon_contains_point_2d ( v, p ) &
-        bind(C, name="hexagon_contains_point_2d")
+  function hexagon_contains_point_2d ( v, p )
 
   !*****************************************************************************80
   !
@@ -7091,22 +6989,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V(2,6), the vertices, in counter clockwise order.
+  !    Input, real(real64) V(2,6), the vertices, in counter clockwise order.
   !
-  !    Input, real(dp) P(2), the point to be tested.
+  !    Input, real(real64) P(2), the point to be tested.
   !
   !    Output, logical HEXAGON_CONTAINS_POINT_2D, is TRUE 
   !    if X is in the hexagon.
   !
 
-    integer(ip), parameter :: n = 6
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: n = 6
+    integer(int32), parameter :: dim_num = 2
 
-    logical :: hexagon_contains_point_2d
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: v(dim_num,n)
+    logical hexagon_contains_point_2d
+    integer(int32) i
+    integer(int32) j
+    real(real64) p(dim_num)
+    real(real64) v(dim_num,n)
   !
   !  A point is inside a convex hexagon if and only if it is "inside"
   !  each of the 6 halfplanes defined by lines through consecutive
@@ -7118,7 +7016,7 @@ contains
 
       if (  v(1,i) * ( v(2,j) - p(2  ) ) &
           + v(1,j) * ( p(2  ) - v(2,i) ) &
-          + p(1  ) * ( v(2,i) - v(2,j) ) < 0.0_dp ) then
+          + p(1  ) * ( v(2,i) - v(2,j) ) < 0.0e+00_real64 ) then
 
         hexagon_contains_point_2d = .false.
       end if
@@ -7126,10 +7024,9 @@ contains
     end do
 
     hexagon_contains_point_2d = .true.
-  end function hexagon_contains_point_2d
+  end
 
-  subroutine hexagon_shape_2d ( angle_deg, p ) &
-        bind(C, name="hexagon_shape_2d")
+  subroutine hexagon_shape_2d ( angle_deg, p )
 
   !*****************************************************************************80
   !
@@ -7171,71 +7068,70 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE_DEG, the angle, in degrees, of the point.
+  !    Input, real(real64) ANGLE_DEG, the angle, in degrees, of the point.
   !
-  !    Output, real(dp) P(2), the coordinates of the point.
+  !    Output, real(real64) P(2), the coordinates of the point.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: angle_deg
-    real(dp) :: angle2
-    real(dp), intent(out) :: p(dim_num)
-    real(dp) :: r8_cotd
-    real(dp) :: r8_modp
-    real(dp) :: r8_tand
+    real(real64) angle_deg
+    real(real64) angle2
+    real(real64) p(dim_num)
+    real(real64) r8_cotd
+    real(real64) r8_modp
+    real(real64) r8_tand
   !
   !  Ensure that 0 <= ANGLE < 360.
   !
-    angle2 = r8_modp ( angle_deg, 360.0_dp )
+    angle2 = r8_modp ( angle_deg, 360.0e+00_real64 )
   !
   !  y = - sqrt(3) * x + sqrt(3)
   !
-    if ( 0.0_dp <= angle2 .and. angle2 <= 60.0_dp ) then
+    if ( 0.0e+00_real64 <= angle2 .and. angle2 <= 60.0e+00_real64 ) then
 
-      p(1) = sqrt ( 3.0_dp ) / ( r8_tand ( angle2 ) + sqrt ( 3.0_dp ) )
+      p(1) = sqrt ( 3.0e+00_real64 ) / ( r8_tand ( angle2 ) + sqrt ( 3.0e+00_real64 ) )
       p(2) = r8_tand ( angle2 ) * p(1)
   !
   !  y = sqrt(3) / 2
   !
-    else if ( angle2 <= 120.0_dp ) then
+    else if ( angle2 <= 120.0e+00_real64 ) then
 
-      p(2) = sqrt ( 3.0_dp ) / 2.0_dp
+      p(2) = sqrt ( 3.0e+00_real64 ) / 2.0e+00_real64
       p(1) = r8_cotd ( angle2 ) * p(2)
   !
   !  y = sqrt(3) * x + sqrt(3)
   !
-    else if ( angle2 <= 180.0_dp ) then
+    else if ( angle2 <= 180.0e+00_real64 ) then
 
-      p(1) = sqrt ( 3.0_dp ) / ( r8_tand ( angle2 ) - sqrt ( 3.0_dp ) )
+      p(1) = sqrt ( 3.0e+00_real64 ) / ( r8_tand ( angle2 ) - sqrt ( 3.0e+00_real64 ) )
       p(2) = r8_tand ( angle2 ) * p(1)
   !
   !  y = - sqrt(3) * x - sqrt(3)
   !
-    else if ( angle2 <= 240.0_dp ) then
+    else if ( angle2 <= 240.0e+00_real64 ) then
 
-      p(1) = - sqrt ( 3.0_dp ) / ( r8_tand ( angle2 ) + sqrt ( 3.0_dp ) )
+      p(1) = - sqrt ( 3.0e+00_real64 ) / ( r8_tand ( angle2 ) + sqrt ( 3.0e+00_real64 ) )
       p(2) = r8_tand ( angle2 ) * p(1)
   !
   !  y = - sqrt(3) / 2
   !
-    else if ( angle2 <= 300.0_dp ) then
+    else if ( angle2 <= 300.0e+00_real64 ) then
 
-      p(2) = - sqrt ( 3.0_dp ) / 2.0_dp
+      p(2) = - sqrt ( 3.0e+00_real64 ) / 2.0e+00_real64
       p(1) = r8_cotd ( angle2 ) * p(2)
   !
   !  y = sqrt(3) * x - sqrt(3)
   !
-    else if ( angle2 <= 360.0_dp ) then
+    else if ( angle2 <= 360.0e+00_real64 ) then
 
-      p(1) = - sqrt ( 3.0_dp ) / ( r8_tand ( angle2 ) - sqrt ( 3.0_dp ) )
+      p(1) = - sqrt ( 3.0e+00_real64 ) / ( r8_tand ( angle2 ) - sqrt ( 3.0e+00_real64 ) )
       p(2) = r8_tand ( angle2 ) * p(1)
 
     end if
-  end subroutine hexagon_shape_2d
+  end
 
-  subroutine hexagon_vertices_2d ( p ) &
-        bind(C, name="hexagon_vertices_2d")
+  subroutine hexagon_vertices_2d ( p )
 
   !*****************************************************************************80
   !
@@ -7275,25 +7171,24 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) P(2,6), the coordinates of the vertices.
+  !    Output, real(real64) P(2,6), the coordinates of the vertices.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), parameter :: a = 0.8660254037844386_dp
-    real(dp), intent(out) :: p(dim_num,6)
+    real(real64), parameter :: a = 0.8660254037844386e+00_real64
+    real(real64) p(dim_num,6)
 
     p(1:2,1:6) = reshape ( (/ &
-       1.0_dp,  0.0_dp, &
-       0.5_dp,  a, &
-      -0.5_dp,  a, &
-      -1.0_dp,  0.0_dp, &
-      -0.5_dp, -a, &
-       0.5_dp, -a /), (/ dim_num, 6 /) )
-  end subroutine hexagon_vertices_2d
+       1.0e+00_real64,  0.0e+00_real64, &
+       0.5e+00_real64,  a, &
+      -0.5e+00_real64,  a, &
+      -1.0e+00_real64,  0.0e+00_real64, &
+      -0.5e+00_real64, -a, &
+       0.5e+00_real64, -a /), (/ dim_num, 6 /) )
+  end
 
-  function hexagon01_area_2d ( ) &
-        bind(C, name="hexagon01_area_2d")
+  function hexagon01_area_2d ( )
 
   !*****************************************************************************80
   !
@@ -7318,16 +7213,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) HEXAGON01_AREA_2D, the area of the hexagon.
+  !    Output, real(real64) HEXAGON01_AREA_2D, the area of the hexagon.
   !
 
-    real(dp) :: hexagon01_area_2d
+    real(real64) hexagon01_area_2d
 
-    hexagon01_area_2d = 3.0_dp * sqrt ( 3.0_dp ) / 2.0_dp
-  end function hexagon01_area_2d
+    hexagon01_area_2d = 3.0e+00_real64 * sqrt ( 3.0e+00_real64 ) / 2.0e+00_real64
+  end
 
-  function hyperball01_volume ( m ) &
-        bind(C, name="hyperball01_volume")
+  function hyperball01_volume ( m )
 
   !*****************************************************************************80
   !
@@ -7362,37 +7256,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Output, real(dp) HYPERBALL01_VOLUME, the volume of the unit ball.
+  !    Output, real(real64) HYPERBALL01_VOLUME, the volume of the unit ball.
   !
 
-    real(dp) :: hyperball01_volume
-    integer(ip) :: i
-    integer(ip), intent(in), value :: m
-    integer(ip) :: m_half
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: volume
+    real(real64) hyperball01_volume
+    integer(int32) i
+    integer(int32) m
+    integer(int32) m_half
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) volume
 
     if ( mod ( m, 2 ) == 0 ) then
       m_half = ( m / 2 )
       volume = r8_pi ** m_half
       do i = 1, m_half
-        volume = volume / real ( i, dp)
+        volume = volume / real ( i, real64)
       end do
     else
       m_half = ( ( m - 1 ) / 2 )
-      volume = r8_pi ** m_half * 2.0_dp ** m
+      volume = r8_pi ** m_half * 2.0e+00_real64 ** m
       do i = m_half + 1, 2 * m_half + 1
-        volume = volume / real ( i, dp)
+        volume = volume / real ( i, real64)
       end do
     end if
 
     hyperball01_volume = volume
-  end function hyperball01_volume
+  end
 
-  function i4_dedekind_factor ( p, q ) &
-        bind(C, name="i4_dedekind_factor")
+  function i4_dedekind_factor ( p, q )
 
   !*****************************************************************************80
   !
@@ -7419,25 +7312,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) P, Q, two positive integers.
+  !    Input, integer(int32) P, Q, two positive integers.
   !
-  !    Input, real(dp) I4_DEDEKIND_FACTOR, the Dedekind factor of P / Q.
+  !    Input, real(real64) I4_DEDEKIND_FACTOR, the Dedekind factor of P / Q.
   !
 
-    real(dp) :: i4_dedekind_factor
-    integer(ip), intent(in), value :: p
-    integer(ip), intent(in), value :: q
+    real(real64) i4_dedekind_factor
+    integer(int32) p
+    integer(int32) q
 
     if ( mod ( p, q ) == 0 ) then
-      i4_dedekind_factor = 0.0_dp
+      i4_dedekind_factor = 0.0e+00_real64
     else
-      i4_dedekind_factor = real ( p, dp) / real ( q, dp) &
-        - real ( ( p / q ), dp) - 0.5_dp
+      i4_dedekind_factor = real ( p, real64) / real ( q, real64) &
+        - real ( ( p / q ), real64) - 0.5e+00_real64
     end if
-  end function i4_dedekind_factor
+  end
 
-  subroutine i4_dedekind_sum ( p, q, s ) &
-        bind(C, name="i4_dedekind_sum")
+  subroutine i4_dedekind_sum ( p, q, s )
 
   !*****************************************************************************80
   !
@@ -7464,26 +7356,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) P, Q, two positive integers.
+  !    Input, integer(int32) P, Q, two positive integers.
   !
-  !    Output, real(dp) S, the Dedekind sum of P and Q.
+  !    Output, real(real64) S, the Dedekind sum of P and Q.
   !
 
-    integer(ip) :: i
-    real(dp) :: i4_dedekind_factor
-    integer(ip), intent(in), value :: p
-    integer(ip), intent(out) :: q
-    real(dp), intent(out) :: s
+    integer(int32) i
+    real(real64) i4_dedekind_factor
+    integer(int32) p
+    integer(int32) q
+    real(real64) s
 
-    s = 0.0_dp
+    s = 0.0e+00_real64
 
     do i = 1, q
       s = s + i4_dedekind_factor ( i, q ) * i4_dedekind_factor ( p * i, q )
     end do
-  end subroutine i4_dedekind_sum
+  end
 
-  function i4_factorial2 ( n ) &
-        bind(C, name="i4_factorial2")
+  function i4_factorial2 ( n )
 
   !*****************************************************************************80
   !
@@ -7508,15 +7399,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the argument of the double factorial 
+  !    Input, integer(int32) N, the argument of the double factorial 
   !    function.  If N is less than 1, I4_FACTORIAL2 is returned as 1.
   !
-  !    Output, integer(ip) I4_FACTORIAL2, the value of N!!.
+  !    Output, integer(int32) I4_FACTORIAL2, the value of N!!.
   !
 
-    integer(ip) :: i4_factorial2
-    integer(ip), intent(in), value :: n
-    integer(ip) :: n_copy
+    integer(int32) i4_factorial2
+    integer(int32) n
+    integer(int32) n_copy
 
     if ( n < 1 ) then
       i4_factorial2 = 1
@@ -7529,10 +7420,9 @@ contains
       i4_factorial2 = i4_factorial2 * n_copy
       n_copy = n_copy - 2
     end do
-  end function i4_factorial2
+  end
 
-  function i4_gcd ( i, j ) &
-        bind(C, name="i4_gcd")
+  function i4_gcd ( i, j )
 
   !*****************************************************************************80
   !
@@ -7550,7 +7440,7 @@ contains
   !    Otherwise, using the Euclidean algorithm, I4_GCD is the
   !    greatest common divisor of I and J.
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !  Licensing:
   !
@@ -7566,18 +7456,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, J, two numbers whose GCD is desired.
+  !    Input, integer(int32) I, J, two numbers whose GCD is desired.
   !
-  !    Output, integer(ip) I4_GCD, the greatest common divisor
+  !    Output, integer(int32) I4_GCD, the greatest common divisor
   !    of I and J.
   !
 
-    integer(ip), intent(in), value :: i
-    integer(ip) :: i4_gcd
-    integer(ip), intent(in), value :: j
-    integer(ip) :: p
-    integer(ip) :: q
-    integer(ip) :: r
+    integer(int32) i
+    integer(int32) i4_gcd
+    integer(int32) j
+    integer(int32) p
+    integer(int32) q
+    integer(int32) r
 
     i4_gcd = 1
   !
@@ -7612,10 +7502,9 @@ contains
     end do
 
     i4_gcd = q
-  end function i4_gcd
+  end
 
-  function i4_huge ( ) &
-        bind(C, name="i4_huge")
+  function i4_huge ( )
 
   !*****************************************************************************80
   !
@@ -7644,7 +7533,7 @@ contains
   !    So HUGE ( 1 ) = a very very huge integer indeed, whereas
   !    I4_HUGE ( ) = the same old 32 bit big value.
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !  Licensing:
   !
@@ -7660,16 +7549,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) I4_HUGE, a "huge" I4.
+  !    Output, integer(int32) I4_HUGE, a "huge" I4.
   !
 
-    integer(ip) :: i4_huge
+    integer(int32) i4_huge
 
     i4_huge = 2147483647
-  end function i4_huge
+  end
 
-  function i4_lcm ( i, j ) &
-        bind(C, name="i4_lcm")
+  function i4_lcm ( i, j )
 
   !*****************************************************************************80
   !
@@ -7683,7 +7571,7 @@ contains
   !
   !    where GCD(I,J) is the greatest common divisor of I and J.
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !  Licensing:
   !
@@ -7699,22 +7587,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, J, the integers whose I4_LCM is desired.
+  !    Input, integer(int32) I, J, the integers whose I4_LCM is desired.
   !
-  !    Output, integer(ip) I4_LCM, the least common multiple of I and J.
+  !    Output, integer(int32) I4_LCM, the least common multiple of I and J.
   !    I4_LCM is never negative.  I4_LCM is 0 if either I or J is zero.
   !
 
-    integer(ip), intent(in), value :: i
-    integer(ip) :: i4_gcd
-    integer(ip), intent(out) :: j
-    integer(ip) :: i4_lcm
+    integer(int32) i
+    integer(int32) i4_gcd
+    integer(int32) j
+    integer(int32) i4_lcm
 
     i4_lcm = abs ( i * ( j / i4_gcd ( i, j ) ) )
-  end function i4_lcm
+  end
 
-  function i4_modp ( i, j ) &
-        bind(C, name="i4_modp")
+  function i4_modp ( i, j )
 
   !*****************************************************************************80
   !
@@ -7760,17 +7647,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the number to be divided.
+  !    Input, integer(int32) I, the number to be divided.
   !
-  !    Input, integer(ip) J, the number that divides I.
+  !    Input, integer(int32) J, the number that divides I.
   !
-  !    Output, integer(ip) I4_MODP, the nonnegative remainder when I is
+  !    Output, integer(int32) I4_MODP, the nonnegative remainder when I is
   !    divided by J.
   !
 
-    integer(ip), intent(in), value :: i
-    integer(ip) :: i4_modp
-    integer(ip), intent(in), value :: j
+    integer(int32) i
+    integer(int32) i4_modp
+    integer(int32) j
 
     if ( j == 0 ) then
       write ( *, '(a)' ) ' '
@@ -7784,10 +7671,9 @@ contains
     if ( i4_modp < 0 ) then
       i4_modp = i4_modp + abs ( j )
     end if
-  end function i4_modp
+  end
 
-  subroutine i4_swap ( i, j ) &
-        bind(C, name="i4_swap")
+  subroutine i4_swap ( i, j )
 
   !*****************************************************************************80
   !
@@ -7807,21 +7693,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) I, J.  On output, the values of I and
+  !    Input/output, integer(int32) I, J.  On output, the values of I and
   !    J have been interchanged.
   !
 
-    integer(ip), intent(inout) :: i
-    integer(ip), intent(inout) :: j
-    integer(ip) :: k
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
 
     k = i
     i = j
     j = k
-  end subroutine i4_swap
+  end
 
-  function i4_uniform ( a, b, seed ) &
-        bind(C, name="i4_uniform")
+  function i4_uniform ( a, b, seed )
 
   !*****************************************************************************80
   !
@@ -7829,7 +7714,7 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !    The pseudorandom number will be scaled to be uniformly distributed
   !    between A and B.
@@ -7872,22 +7757,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) A, B, the limits of the interval.
+  !    Input, integer(int32) A, B, the limits of the interval.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, 
+  !    Input/output, integer(int32) SEED, the "seed" value, 
   !    which should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, integer(ip) I4_UNIFORM, a number between 
+  !    Output, integer(int32) I4_UNIFORM, a number between 
   !    A and B.
   !
 
-    integer(ip), intent(in), value :: a
-    integer(ip), intent(in), value :: b
-    integer(ip) :: i4_uniform
-    integer(ip) :: k
-    real(sp) :: r
-    integer(ip), intent(inout) :: seed
-    integer(ip) :: value
+    integer(int32) a
+    integer(int32) b
+    integer(int32) i4_uniform
+    integer(int32) k
+    real(real32) r
+    integer(int32) seed
+    integer(int32) value
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -7904,25 +7789,24 @@ contains
       seed = seed + 2147483647
     end if
 
-    r = real ( seed, sp) * 4.656612875E-10
+    r = real ( seed, real32) * 4.656612875E-10
   !
   !  Scale R to lie between A-0.5 and B+0.5.
   !
-    r = ( 1.0 - r ) * ( real ( min ( a, b ), sp) - 0.5 ) & 
-      +             r   * ( real ( max ( a, b ), sp) + 0.5 )
+    r = ( 1.0E+00 - r ) * ( real ( min ( a, b ), real32) - 0.5E+00 ) & 
+      +             r   * ( real ( max ( a, b ), real32) + 0.5E+00 )
   !
   !  Use rounding to convert R to an integer between A and B.
   !
-    value = nint ( r, sp)
+    value = nint ( r, real32)
 
     value = max ( value, min ( a, b ) )
     value = min ( value, max ( a, b ) )
 
     i4_uniform = value
-  end function i4_uniform
+  end
 
-  function i4_wrap ( ival, ilo, ihi ) &
-        bind(C, name="i4_wrap")
+  function i4_wrap ( ival, ilo, ihi )
 
   !*****************************************************************************80
   !
@@ -7966,22 +7850,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IVAL, an integer value.
+  !    Input, integer(int32) IVAL, an integer value.
   !
-  !    Input, integer(ip) ILO, IHI, the desired bounds for the integer
+  !    Input, integer(int32) ILO, IHI, the desired bounds for the integer
   !    value.
   !
-  !    Output, integer(ip) I4_WRAP, a "wrapped" version of IVAL.
+  !    Output, integer(int32) I4_WRAP, a "wrapped" version of IVAL.
   !
 
-    integer(ip) :: i4_modp
-    integer(ip) :: i4_wrap
-    integer(ip), intent(in), value :: ihi
-    integer(ip), intent(in), value :: ilo
-    integer(ip), intent(out) :: ival
-    integer(ip) :: jhi
-    integer(ip) :: jlo
-    integer(ip) :: wide
+    integer(int32) i4_modp
+    integer(int32) i4_wrap
+    integer(int32) ihi
+    integer(int32) ilo
+    integer(int32) ival
+    integer(int32) jhi
+    integer(int32) jlo
+    integer(int32) wide
 
     jlo = min ( ilo, ihi )
     jhi = max ( ilo, ihi )
@@ -7993,10 +7877,9 @@ contains
     else
       i4_wrap = jlo + i4_modp ( ival - jlo, wide )
     end if
-  end function i4_wrap
+  end
 
-  subroutine i4col_compare ( m, n, a, i, j, isgn ) &
-        bind(C, name="i4col_compare")
+  subroutine i4col_compare ( m, n, a, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -8031,28 +7914,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), an array of N columns of vectors 
+  !    Input, integer(int32) A(M,N), an array of N columns of vectors 
   !    of length M.
   !
-  !    Input, integer(ip) I, J, the columns to be compared.
+  !    Input, integer(int32) I, J, the columns to be compared.
   !    I and J must be between 1 and N.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, column I < column J,
   !     0, column I = column J,
   !    +1, column J < column I.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
-    integer(ip) :: k
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) k
   !
   !  Check.
   !
@@ -8089,10 +7972,9 @@ contains
       k = k + 1
 
     end do
-  end subroutine i4col_compare
+  end
 
-  subroutine i4col_find_item ( m, n, a, item, row, col ) &
-        bind(C, name="i4col_find_item")
+  subroutine i4col_find_item ( m, n, a, item, row, col )
 
   !*****************************************************************************80
   !
@@ -8112,29 +7994,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns in
+  !    Input, integer(int32) M, N, the number of rows and columns in
   !    the table.
   !
-  !    Input, integer(ip) A(M,N), an array of N columns of vectors
+  !    Input, integer(int32) A(M,N), an array of N columns of vectors
   !    of length M.
   !
-  !    Input, integer(ip) ITEM, the value to search for.
+  !    Input, integer(int32) ITEM, the value to search for.
   !
-  !    Output, integer(ip) ROW, COL, the row and column indices
+  !    Output, integer(int32) ROW, COL, the row and column indices
   !    of the first occurrence of the value ITEM.  The search
   !    is conducted by columns.  If the item is not found, then
   !    ROW = COL = -1.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip), intent(out) :: col
-    integer(ip) :: i
-    integer(ip), intent(in), value :: item
-    integer(ip) :: j
-    integer(ip), intent(out) :: row
+    integer(int32) a(m,n)
+    integer(int32) col
+    integer(int32) i
+    integer(int32) item
+    integer(int32) j
+    integer(int32) row
 
     do j = 1, n
       do i = 1, m
@@ -8147,10 +8029,9 @@ contains
 
     row = -1
     col = -1
-  end subroutine i4col_find_item
+  end
 
-  subroutine i4col_find_pair_wrap ( m, n, a, item1, item2, row, col ) &
-        bind(C, name="i4col_find_pair_wrap")
+  subroutine i4col_find_pair_wrap ( m, n, a, item1, item2, row, col )
 
   !*****************************************************************************80
   !
@@ -8179,29 +8060,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns in 
+  !    Input, integer(int32) M, N, the number of rows and columns in 
   !    the array.
   !
-  !    Input, integer(ip) A(M,N), the array to search.
+  !    Input, integer(int32) A(M,N), the array to search.
   !
-  !    Input, integer(ip) ITEM1, ITEM2, the values to search for.
+  !    Input, integer(int32) ITEM1, ITEM2, the values to search for.
   !
-  !    Output, integer(ip) ROW, COL, the row and column indices
+  !    Output, integer(int32) ROW, COL, the row and column indices
   !    of the first occurrence of the value ITEM1 followed immediately
   !    by ITEM2.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip), intent(out) :: col
-    integer(ip) :: i
-    integer(ip) :: i2
-    integer(ip), intent(in), value :: item1
-    integer(ip), intent(in), value :: item2
-    integer(ip) :: j
-    integer(ip), intent(out) :: row
+    integer(int32) a(m,n)
+    integer(int32) col
+    integer(int32) i
+    integer(int32) i2
+    integer(int32) item1
+    integer(int32) item2
+    integer(int32) j
+    integer(int32) row
 
     do j = 1, n
       do i = 1, m
@@ -8226,10 +8107,9 @@ contains
 
     row = -1
     col = -1
-  end subroutine i4col_find_pair_wrap
+  end
 
-  subroutine i4col_sort_a ( m, n, a ) &
-        bind(C, name="i4col_sort_a")
+  subroutine i4col_sort_a ( m, n, a )
 
   !*****************************************************************************80
   !
@@ -8261,25 +8141,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows of A, and the length of
+  !    Input, integer(int32) M, the number of rows of A, and the length of
   !    a vector of data.
   !
-  !    Input, integer(ip) N, the number of columns of A.
+  !    Input, integer(int32) N, the number of columns of A.
   !
-  !    Input/output, integer(ip) A(M,N).
+  !    Input/output, integer(int32) A(M,N).
   !    On input, the array of N columns of M-vectors.
   !    On output, the columns of A have been sorted in ascending
   !    lexicographic order.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
 
     if ( m <= 0 ) then
     end if
@@ -8319,10 +8199,9 @@ contains
       end if
 
     end do
-  end subroutine i4col_sort_a
+  end
 
-  subroutine i4col_sorted_unique_count ( m, n, a, unique_num ) &
-        bind(C, name="i4col_sorted_unique_count")
+  subroutine i4col_sorted_unique_count ( m, n, a, unique_num )
 
   !*****************************************************************************80
   !
@@ -8346,21 +8225,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), a sorted array, containing
+  !    Input, integer(int32) A(M,N), a sorted array, containing
   !    N columns of data.
   !
-  !    Output, integer(ip) UNIQUE_NUM, the number of unique columns.
+  !    Output, integer(int32) UNIQUE_NUM, the number of unique columns.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip), intent(out) :: unique_num
+    integer(int32) a(m,n)
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) unique_num
 
     if ( n <= 0 ) then
       unique_num = 0
@@ -8377,10 +8256,9 @@ contains
       end if
 
     end do
-  end subroutine i4col_sorted_unique_count
+  end
 
-  subroutine i4col_swap ( m, n, a, i, j ) &
-        bind(C, name="i4col_swap")
+  subroutine i4col_swap ( m, n, a, i, j )
 
   !*****************************************************************************80
   !
@@ -8418,22 +8296,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns in 
+  !    Input, integer(int32) M, N, the number of rows and columns in 
   !    the array.
   !
-  !    Input/output, integer(ip) A(M,N), an array of N columns of 
+  !    Input/output, integer(int32) A(M,N), an array of N columns of 
   !    length M.
   !
-  !    Input, integer(ip) I, J, the columns to be swapped.
+  !    Input, integer(int32) I, J, the columns to be swapped.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip) :: col(m)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(in), value :: j
+    integer(int32) a(m,n)
+    integer(int32) col(m)
+    integer(int32) i
+    integer(int32) j
 
     if ( i < 1 .or. n < i .or. j < 1 .or. n < j ) then
 
@@ -8453,10 +8331,9 @@ contains
     col(1:m) = a(1:m,i)
     a(1:m,i) = a(1:m,j)
     a(1:m,j) = col(1:m)
-  end subroutine i4col_swap
+  end
 
-  subroutine i4row_compare ( m, n, a, i, j, isgn ) &
-        bind(C, name="i4row_compare")
+  subroutine i4row_compare ( m, n, a, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -8491,28 +8368,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), an array of M rows of vectors of 
+  !    Input, integer(int32) A(M,N), an array of M rows of vectors of 
   !    length N.
   !
-  !    Input, integer(ip) I, J, the rows to be compared.
+  !    Input, integer(int32) I, J, the rows to be compared.
   !    I and J must be between 1 and M.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, row I < row J,
   !     0, row I = row J,
   !    +1, row J < row I.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
-    integer(ip) :: k
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) k
   !
   !  Check that I and J are legal.
   !
@@ -8565,10 +8442,9 @@ contains
       k = k + 1
 
     end do
-  end subroutine i4row_compare
+  end
 
-  subroutine i4row_sort_a ( m, n, a ) &
-        bind(C, name="i4row_sort_a")
+  subroutine i4row_sort_a ( m, n, a )
 
   !*****************************************************************************80
   !
@@ -8623,24 +8499,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of rows of A.
+  !    Input, integer(int32) M, the number of rows of A.
   !
-  !    Input, integer(ip) N, the number of columns of A.
+  !    Input, integer(int32) N, the number of columns of A.
   !
-  !    Input/output, integer(ip) A(M,N).
+  !    Input/output, integer(int32) A(M,N).
   !    On input, the array of M rows of N-vectors.
   !    On output, the rows of A have been sorted in ascending
   !    lexicographic order.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    integer(int32) a(m,n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
   !
   !  Initialize.
   !
@@ -8674,10 +8550,9 @@ contains
       end if
 
     end do
-  end subroutine i4row_sort_a
+  end
 
-  subroutine i4row_sorted_unique_count ( m, n, a, unique_num ) &
-        bind(C, name="i4row_sorted_unique_count")
+  subroutine i4row_sorted_unique_count ( m, n, a, unique_num )
 
   !*****************************************************************************80
   !
@@ -8701,21 +8576,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input, integer(ip) A(M,N), a sorted array, containing
+  !    Input, integer(int32) A(M,N), a sorted array, containing
   !    M rows of data.
   !
-  !    Output, integer(ip) UNIQUE_NUM, the number of unique rows.
+  !    Output, integer(int32) UNIQUE_NUM, the number of unique rows.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip), intent(out) :: unique_num
+    integer(int32) a(m,n)
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) unique_num
 
     if ( n <= 0 ) then
       unique_num = 0
@@ -8732,10 +8607,9 @@ contains
       end if
 
     end do
-  end subroutine i4row_sorted_unique_count
+  end
 
-  subroutine i4row_swap ( m, n, a, irow1, irow2 ) &
-        bind(C, name="i4row_swap")
+  subroutine i4row_swap ( m, n, a, irow1, irow2 )
 
   !*****************************************************************************80
   !
@@ -8755,20 +8629,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns.
+  !    Input, integer(int32) M, N, the number of rows and columns.
   !
-  !    Input/output, integer(ip) A(M,N), an array of data.
+  !    Input/output, integer(int32) A(M,N), an array of data.
   !
-  !    Input, integer(ip) IROW1, IROW2, the two rows to swap.
+  !    Input, integer(int32) IROW1, IROW2, the two rows to swap.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: a(m,n)
-    integer(ip), intent(in), value :: irow1
-    integer(ip), intent(in), value :: irow2
-    integer(ip) :: row(n)
+    integer(int32) a(m,n)
+    integer(int32) irow1
+    integer(int32) irow2
+    integer(int32) row(n)
   !
   !  Check.
   !
@@ -8792,10 +8666,9 @@ contains
     row(1:n) = a(irow1,1:n)
     a(irow1,1:n) = a(irow2,1:n)
     a(irow2,1:n) = row(1:n)
-  end subroutine i4row_swap
+  end
 
-  subroutine i4vec_heap_d ( n, a ) &
-        bind(C, name="i4vec_heap_d")
+  subroutine i4vec_heap_d ( n, a )
 
   !*****************************************************************************80
   !
@@ -8838,20 +8711,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the size of the input array.
+  !    Input, integer(int32) N, the size of the input array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, an unsorted array.
   !    On output, the array has been reordered into a heap.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: i
-    integer(ip) :: ifree
-    integer(ip) :: key
-    integer(ip) :: m
+    integer(int32) a(n)
+    integer(int32) i
+    integer(int32) ifree
+    integer(int32) key
+    integer(int32) m
   !
   !  Only nodes N/2 down to 1 can be "parent" nodes.
   !
@@ -8907,10 +8780,9 @@ contains
       a(ifree) = key
 
     end do
-  end subroutine i4vec_heap_d
+  end
 
-  subroutine i4vec_indicator ( n, a ) &
-        bind(C, name="i4vec_indicator")
+  subroutine i4vec_indicator ( n, a )
 
   !*****************************************************************************80
   !
@@ -8930,23 +8802,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Output, integer(ip) A(N), the array to be initialized.
+  !    Output, integer(int32) A(N), the array to be initialized.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: i
+    integer(int32) a(n)
+    integer(int32) i
 
     do i = 1, n
       a(i) = i
     end do
-  end subroutine i4vec_indicator
+  end
 
-  function i4vec_lcm ( n, v ) &
-        bind(C, name="i4vec_lcm")
+  function i4vec_lcm ( n, v )
 
   !*****************************************************************************80
   !
@@ -8977,20 +8848,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of V.
+  !    Input, integer(int32) N, the order of V.
   !
-  !    Input, integer(ip) V(N), the vector.
+  !    Input, integer(int32) V(N), the vector.
   !
-  !    Output, integer(ip) I4VEC_LCM, the least common multiple of V.
+  !    Output, integer(int32) I4VEC_LCM, the least common multiple of V.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: i4_lcm
-    integer(ip) :: i4vec_lcm
-    integer(ip) :: lcm
-    integer(ip), intent(out) :: v(n)
+    integer(int32) i
+    integer(int32) i4_lcm
+    integer(int32) i4vec_lcm
+    integer(int32) lcm
+    integer(int32) v(n)
 
     lcm = 1
 
@@ -9006,10 +8877,9 @@ contains
     end do
 
     i4vec_lcm = lcm
-  end function i4vec_lcm
+  end
 
-  subroutine i4vec_sort_heap_a ( n, a ) &
-        bind(C, name="i4vec_sort_heap_a")
+  subroutine i4vec_sort_heap_a ( n, a )
 
   !*****************************************************************************80
   !
@@ -9036,17 +8906,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, the array to be sorted;
   !    On output, the array has been sorted.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: n1
+    integer(int32) a(n)
+    integer(int32) n1
 
     if ( n <= 1 ) then
     end if
@@ -9075,10 +8945,9 @@ contains
       call i4_swap ( a(1), a(n1) )
 
     end do
-  end subroutine i4vec_sort_heap_a
+  end
 
-  subroutine i4vec_sorted_unique ( n, a, unique_num ) &
-        bind(C, name="i4vec_sorted_unique")
+  subroutine i4vec_sorted_unique ( n, a, unique_num )
 
   !*****************************************************************************80
   !
@@ -9098,20 +8967,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements in A.
+  !    Input, integer(int32) N, the number of elements in A.
   !
-  !    Input/output, integer(ip) A(N).  On input, the sorted
+  !    Input/output, integer(int32) A(N).  On input, the sorted
   !    integer array.  On output, the unique elements in A.
   !
-  !    Output, integer(ip) UNIQUE_NUM, the number of unique elements
+  !    Output, integer(int32) UNIQUE_NUM, the number of unique elements
   !    in A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: itest
-    integer(ip), intent(out) :: unique_num
+    integer(int32) a(n)
+    integer(int32) itest
+    integer(int32) unique_num
 
     unique_num = 0
 
@@ -9128,10 +8997,9 @@ contains
       end if
 
     end do
-  end subroutine i4vec_sorted_unique
+  end
 
-  subroutine i4vec_uniform ( n, a, b, seed, x ) &
-        bind(C, name="i4vec_uniform")
+  subroutine i4vec_uniform ( n, a, b, seed, x )
 
   !*****************************************************************************80
   !
@@ -9139,7 +9007,7 @@ contains
   !
   !  Discussion:
   !
-  !    An I4VEC is a vector of integer(ip) values.
+  !    An I4VEC is a vector of integer(int32) values.
   !
   !    The pseudorandom numbers should be scaled to be uniformly distributed
   !    between A and B.
@@ -9158,26 +9026,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the dimension of the vector.
+  !    Input, integer(int32) N, the dimension of the vector.
   !
-  !    Input, integer(ip) A, B, the limits of the interval.
+  !    Input, integer(int32) A, B, the limits of the interval.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which 
+  !    Input/output, integer(int32) SEED, the "seed" value, which 
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, integer(ip) X(N), a vector of numbers between A and B.
+  !    Output, integer(int32) X(N), a vector of numbers between A and B.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in), value :: a
-    integer(ip), intent(out) :: b
-    integer(ip) :: i
-    integer(ip) :: k
-    real(sp) :: r
-    integer(ip), intent(inout) :: seed
-    integer(ip) :: value
-    integer(ip), intent(out) :: x(n)
+    integer(int32) a
+    integer(int32) b
+    integer(int32) i
+    integer(int32) k
+    real(real32) r
+    integer(int32) seed
+    integer(int32) value
+    integer(int32) x(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -9196,16 +9064,16 @@ contains
         seed = seed + 2147483647
       end if
 
-      r = real ( seed, sp) * 4.656612875E-10
+      r = real ( seed, real32) * 4.656612875E-10
   !
   !  Scale R to lie between A-0.5 and B+0.5.
   !
-      r = ( 1.0 - r ) * ( real ( min ( a, b ), sp) - 0.5 ) & 
-        +             r   * ( real ( max ( a, b ), sp) + 0.5 )
+      r = ( 1.0E+00 - r ) * ( real ( min ( a, b ), real32) - 0.5E+00 ) & 
+        +             r   * ( real ( max ( a, b ), real32) + 0.5E+00 )
   !
   !  Use rounding to convert R to an integer between A and B.
   !
-      value = nint ( r, sp)
+      value = nint ( r, real32)
 
       value = max ( value, min ( a, b ) )
       value = min ( value, max ( a, b ) )
@@ -9213,10 +9081,9 @@ contains
       x(i) = value
 
     end do
-  end subroutine i4vec_uniform
+  end
 
-  subroutine i4vec2_compare ( n, a1, a2, i, j, isgn ) &
-        bind(C, name="i4vec2_compare")
+  subroutine i4vec2_compare ( n, a1, a2, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -9236,26 +9103,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of data items.
+  !    Input, integer(int32) N, the number of data items.
   !
-  !    Input, integer(ip) A1(N), A2(N), contain the two components 
+  !    Input, integer(int32) A1(N), A2(N), contain the two components 
   !    of each item.
   !
-  !    Input, integer(ip) I, J, the items to be compared.
+  !    Input, integer(int32) I, J, the items to be compared.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, item I < item J,
   !     0, item I = item J,
   !    +1, item J < item I.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in) :: a1(n)
-    integer(ip), intent(in) :: a2(n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
+    integer(int32) a1(n)
+    integer(int32) a2(n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
 
     isgn = 0
 
@@ -9278,10 +9145,9 @@ contains
       isgn = +1
 
     end if
-  end subroutine i4vec2_compare
+  end
 
-  subroutine i4vec2_sort_a ( n, a1, a2 ) &
-        bind(C, name="i4vec2_sort_a")
+  subroutine i4vec2_sort_a ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -9306,19 +9172,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items of data.
+  !    Input, integer(int32) N, the number of items of data.
   !
-  !    Input/output, integer(ip) A1(N), A2(N), the data to be sorted..
+  !    Input/output, integer(int32) A1(N), A2(N), the data to be sorted..
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a1(n)
-    integer(ip), intent(inout) :: a2(n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    integer(int32) a1(n)
+    integer(int32) a2(n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
   !
   !  Initialize.
   !
@@ -9353,10 +9219,9 @@ contains
       end if
 
     end do
-  end subroutine i4vec2_sort_a
+  end
 
-  subroutine i4vec2_sorted_unique ( n, a1, a2, unique_num ) &
-        bind(C, name="i4vec2_sorted_unique")
+  subroutine i4vec2_sorted_unique ( n, a1, a2, unique_num )
 
   !*****************************************************************************80
   !
@@ -9386,21 +9251,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items.
+  !    Input, integer(int32) N, the number of items.
   !
-  !    Input/output, integer(ip) A1(N), A2(N).
+  !    Input/output, integer(int32) A1(N), A2(N).
   !    On input, the array of N items.
   !    On output, an array of unique items.
   !
-  !    Output, integer(ip) UNIQUE_NUM, the number of unique items.
+  !    Output, integer(int32) UNIQUE_NUM, the number of unique items.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(inout) :: a1(n)
-    integer(ip), intent(inout) :: a2(n)
-    integer(ip) :: itest
-    integer(ip), intent(out) :: unique_num
+    integer(int32) a1(n)
+    integer(int32) a2(n)
+    integer(int32) itest
+    integer(int32) unique_num
 
     unique_num = 0
 
@@ -9421,11 +9286,10 @@ contains
       end if
 
     end do
-  end subroutine i4vec2_sorted_unique
+  end
 
   subroutine icos_shape ( point_num, edge_num, face_num, face_order_max, &
-    point_coord, edge_point, face_order, face_point ) &
-        bind(C, name="icos_shape")
+    point_coord, edge_point, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -9458,24 +9322,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points (12).
+  !    Input, integer(int32) POINT_NUM, the number of points (12).
   !
-  !    Input, integer(ip) EDGE_NUM, the number of edges (30).
+  !    Input, integer(int32) EDGE_NUM, the number of edges (30).
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces (20).
+  !    Input, integer(int32) FACE_NUM, the number of faces (20).
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of 
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of 
   !    vertices per face (3).
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the points.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the points.
   !
-  !    Output, integer(ip) EDGE_POINT(2,EDGE_NUM), the points that 
+  !    Output, integer(int32) EDGE_POINT(2,EDGE_NUM), the points that 
   !    make up each edge, listed in ascending order of their indexes.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    per face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) is the index of the I-th point in the J-th face.  The
   !    points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.  The nodes of each face are ordered 
@@ -9483,29 +9347,29 @@ contains
   !    nodes.
   !
 
-    integer(ip), intent(in), value :: edge_num
-    integer(ip), parameter :: edge_order = 2
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: point_num
+    integer(int32) edge_num
+    integer(int32), parameter :: edge_order = 2
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) point_num
 
-    real(dp) :: a
-    real(dp) :: b
-    integer(ip), intent(out) :: edge_point(edge_order,edge_num)
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    real(dp) :: phi
-    real(dp), intent(out) :: point_coord(dim_num,point_num)
-    real(dp) :: z
+    real(real64) a
+    real(real64) b
+    integer(int32) edge_point(edge_order,edge_num)
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) phi
+    real(real64) point_coord(dim_num,point_num)
+    real(real64) z
   !
   !  Set the point coordinates.
   !
-    phi = 0.5_dp * ( sqrt ( 5.0_dp ) + 1.0_dp )
+    phi = 0.5e+00_real64 * ( sqrt ( 5.0e+00_real64 ) + 1.0e+00_real64 )
 
-    a = phi / sqrt ( 1.0_dp + phi * phi )
-    b = 1.0_dp / sqrt ( 1.0_dp + phi * phi )
-    z = 0.0_dp
+    a = phi / sqrt ( 1.0e+00_real64 + phi * phi )
+    b = 1.0e+00_real64 / sqrt ( 1.0e+00_real64 + phi * phi )
+    z = 0.0e+00_real64
   !
   !  A*A + B*B + Z*Z = 1.
   !
@@ -9586,10 +9450,9 @@ contains
        8, 12, 10, &
        9, 11, 12, &
       10, 12, 11 /), (/ face_order_max, face_num /) )
-  end subroutine icos_shape
+  end
 
-  subroutine icos_size ( point_num, edge_num, face_num, face_order_max ) &
-        bind(C, name="icos_size")
+  subroutine icos_size ( point_num, edge_num, face_num, face_order_max )
 
   !*****************************************************************************80
   !
@@ -9609,28 +9472,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of points.
+  !    Output, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 12
     edge_num = 30
     face_num = 20
     face_order_max = 3
-  end subroutine icos_size
+  end
 
-  function line_exp_is_degenerate_nd ( dim_num, p1, p2 ) &
-        bind(C, name="line_exp_is_degenerate_nd")
+  function line_exp_is_degenerate_nd ( dim_num, p1, p2 )
 
   !*****************************************************************************80
   !
@@ -9658,25 +9520,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) P1(DIM_NUM), P2(DIM_NUM), two points on the line.
+  !    Input, real(real64) P1(DIM_NUM), P2(DIM_NUM), two points on the line.
   !
   !    Output, logical LINE_EXP_IS_DEGENERATE_ND, is TRUE if the line
   !    is degenerate.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
+    logical line_exp_is_degenerate_nd
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
     line_exp_is_degenerate_nd = ( all ( p1(1:dim_num) == p2(1:dim_num) ) )
-  end function line_exp_is_degenerate_nd
+  end
 
-  subroutine line_exp_normal_2d ( p1, p2, normal ) &
-        bind(C, name="line_exp_normal_2d")
+  subroutine line_exp_normal_2d ( p1, p2, normal )
 
   !*****************************************************************************80
   !
@@ -9705,31 +9566,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two distinct points on the line.
+  !    Input, real(real64) P1(2), P2(2), two distinct points on the line.
   !
-  !    Output, real(dp) NORMAL(2), a unit normal vector to the line.
+  !    Output, real(real64) NORMAL(2), a unit normal vector to the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical :: line_exp_is_degenerate_nd
-    real(dp) :: norm
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
+    logical line_exp_is_degenerate_nd
+    real(real64) norm
+    real(real64) normal(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
-      normal(1:dim_num) = sqrt ( 2.0_dp )
+      normal(1:dim_num) = sqrt ( 2.0e+00_real64 )
     end if
 
     norm = sqrt ( ( p2(1) - p1(1) )**2 + ( p2(2) - p1(2) )**2 )
 
     normal(1) = - ( p2(2) - p1(2) ) / norm
     normal(2) =   ( p2(1) - p1(1) ) / norm
-  end subroutine line_exp_normal_2d
+  end
 
-  subroutine line_exp_perp_2d ( p1, p2, p3, p4, flag ) &
-        bind(C, name="line_exp_perp_2d")
+  subroutine line_exp_perp_2d ( p1, p2, p3, p4, flag )
 
   !*****************************************************************************80
   !
@@ -9765,29 +9625,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the line.
+  !    Input, real(real64) P1(2), P2(2), two points on the line.
   !
-  !    Input, real(dp) P3(2), a point (presumably not on the 
+  !    Input, real(real64) P3(2), a point (presumably not on the 
   !    line (P1,P2)), through which the perpendicular must pass.
   !
-  !    Output, real(dp) P4(2), a point on the line (P1,P2),
+  !    Output, real(real64) P4(2), a point on the line (P1,P2),
   !    such that the line (P3,P4) is perpendicular to the line (P1,P2).
   !
   !    Output, logical FLAG, is TRUE if the value could 
   !    not be computed.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: bot
-    logical, intent(out) :: flag
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(out) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(out) :: p4(dim_num)
-    real(dp) :: r8_huge
-    real(dp) :: t
+    real(real64) bot
+    logical flag
+    logical line_exp_is_degenerate_nd
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
+    real(real64) r8_huge
+    real(real64) t
 
     flag = .false.
 
@@ -9807,10 +9667,9 @@ contains
             * ( p1(1:dim_num) - p2(1:dim_num) ) ) / bot
 
     p4(1:dim_num) = p1(1:dim_num) + t * ( p2(1:dim_num) - p1(1:dim_num) )
-  end subroutine line_exp_perp_2d
+  end
 
-  subroutine line_exp_point_dist_2d ( p1, p2, p, dist ) &
-        bind(C, name="line_exp_point_dist_2d")
+  subroutine line_exp_point_dist_2d ( p1, p2, p, dist )
 
   !*****************************************************************************80
   !
@@ -9836,25 +9695,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the line.
+  !    Input, real(real64) P1(2), P2(2), two points on the line.
   !
-  !    Input, real(dp) P(2), the point whose distance from the line is
+  !    Input, real(real64) P(2), the point whose distance from the line is
   !    to be measured.
   !
-  !    Output, real(dp) DIST, the distance from the point to the line.
+  !    Output, real(real64) DIST, the distance from the point to the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp) :: dot
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp) :: t
+    real(real64) bot
+    real(real64) dist
+    real(real64) dot
+    logical line_exp_is_degenerate_nd
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
 
@@ -9879,10 +9738,9 @@ contains
     end if
 
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine line_exp_point_dist_2d
+  end
 
-  subroutine line_exp_point_dist_3d ( p1, p2, p, dist ) &
-        bind(C, name="line_exp_point_dist_3d")
+  subroutine line_exp_point_dist_3d ( p1, p2, p, dist )
 
   !*****************************************************************************80
   !
@@ -9908,24 +9766,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the line.
+  !    Input, real(real64) P1(3), P2(3), two points on the line.
   !
-  !    Input, real(dp) P(3), the point whose distance from the line is
+  !    Input, real(real64) P(3), the point whose distance from the line is
   !    to be measured.
   !
-  !    Output, real(dp) DIST, the distance from the point to the line.
+  !    Output, real(real64) DIST, the distance from the point to the line.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp) :: t
+    real(real64) bot
+    real(real64) dist
+    logical line_exp_is_degenerate_nd
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
 
@@ -9950,10 +9808,9 @@ contains
   !  Now compute the distance between the projection point and P.
   !
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine line_exp_point_dist_3d
+  end
 
-  subroutine line_exp_point_dist_signed_2d ( p1, p2, p, dist_signed ) &
-        bind(C, name="line_exp_point_dist_signed_2d")
+  subroutine line_exp_point_dist_signed_2d ( p1, p2, p, dist_signed )
 
   !*****************************************************************************80
   !
@@ -9995,24 +9852,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the line.
+  !    Input, real(real64) P1(2), P2(2), two points on the line.
   !
-  !    Input, real(dp) P(2), the point whose signed distance is desired.
+  !    Input, real(real64) P(2), the point whose signed distance is desired.
   !
-  !    Output, real(dp) DIST_SIGNED, the signed distance from the
+  !    Output, real(real64) DIST_SIGNED, the signed distance from the
   !    point to the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), intent(out) :: dist_signed
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) dist_signed
+    logical line_exp_is_degenerate_nd
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
   !
   !  If the explicit line degenerates to a point, the computation is easy.
   !
@@ -10032,10 +9889,9 @@ contains
       dist_signed = ( a * p(1) + b * p(2) + c ) / sqrt ( a * a + b * b )
 
     end if
-  end subroutine line_exp_point_dist_signed_2d
+  end
 
-  subroutine line_exp_point_near_2d ( p1, p2, p, pn, dist, t ) &
-        bind(C, name="line_exp_point_near_2d")
+  subroutine line_exp_point_near_2d ( p1, p2, p, pn, dist, t )
 
   !*****************************************************************************80
   !
@@ -10069,29 +9925,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the line.
+  !    Input, real(real64) P1(2), P2(2), two points on the line.
   !
-  !    Input, real(dp) P(2), the point whose nearest neighbor on the
+  !    Input, real(real64) P(2), the point whose nearest neighbor on the
   !    line is to be determined.
   !
-  !    Output, real(dp) PN(2), the nearest point on the line to P.
+  !    Output, real(real64) PN(2), the nearest point on the line to P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the line.
+  !    Output, real(real64) DIST, the distance from the point to the line.
   !
-  !    Output, real(dp) T, the relative position of the point
+  !    Output, real(real64) T, the relative position of the point
   !    PN to the points P1 and P2.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(out) :: t
+    real(real64) bot
+    real(real64) dist
+    logical line_exp_is_degenerate_nd
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
       write ( *, '(a)' ) ' '
@@ -10113,10 +9969,9 @@ contains
     pn(1:dim_num) = p1(1:dim_num) + t * ( p2(1:dim_num) - p1(1:dim_num) )
 
     dist = sqrt ( sum ( ( pn(1:dim_num) - p(1:dim_num) )**2 ) )
-  end subroutine line_exp_point_near_2d
+  end
 
-  subroutine line_exp_point_near_3d ( p1, p2, p, pn, dist, t ) &
-        bind(C, name="line_exp_point_near_3d")
+  subroutine line_exp_point_near_3d ( p1, p2, p, pn, dist, t )
 
   !*****************************************************************************80
   !
@@ -10150,31 +10005,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the line.
+  !    Input, real(real64) P1(3), P2(3), two points on the line.
   !
-  !    Input, real(dp) P(3), the point whose nearest neighbor on
+  !    Input, real(real64) P(3), the point whose nearest neighbor on
   !    the line is to be determined.
   !
-  !    Output, real(dp) PN(3), the point which is the nearest
+  !    Output, real(real64) PN(3), the point which is the nearest
   !    point on the line to P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the 
+  !    Output, real(real64) DIST, the distance from the point to the 
   !    nearest point on the line.
   !
-  !    Output, real(dp) T, the relative position of the point
+  !    Output, real(real64) T, the relative position of the point
   !    PN to P1 and P2.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(out) :: t
+    real(real64) bot
+    real(real64) dist
+    logical line_exp_is_degenerate_nd
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
       write ( *, '(a)' ) ' '
@@ -10200,10 +10055,9 @@ contains
   !  Now compute the distance between the projection point and P.
   !
     dist = sqrt ( sum ( ( pn(1:dim_num) - p(1:dim_num) )**2 ) )
-  end subroutine line_exp_point_near_3d
+  end
 
-  subroutine line_exp2imp_2d ( p1, p2, a, b, c ) &
-        bind(C, name="line_exp2imp_2d")
+  subroutine line_exp2imp_2d ( p1, p2, a, b, c )
 
   !*****************************************************************************80
   !
@@ -10233,20 +10087,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the line.
+  !    Input, real(real64) P1(2), P2(2), two points on the line.
   !
-  !    Output, real(dp) A, B, C, the implicit form of the line.
+  !    Output, real(real64) A, B, C, the implicit form of the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: a
-    real(dp), intent(out) :: b
-    real(dp), intent(out) :: c
-    logical :: line_exp_is_degenerate_nd
-    real(dp) :: norm
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    logical line_exp_is_degenerate_nd
+    real(real64) norm
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
   !
   !  Take care of degenerate cases.
   !
@@ -10262,21 +10116,20 @@ contains
 
     norm = a * a + b * b + c * c
 
-    if ( 0.0_dp < norm ) then
+    if ( 0.0e+00_real64 < norm ) then
       a = a / norm
       b = b / norm
       c = c / norm
     end if
 
-    if ( a < 0.0_dp ) then
+    if ( a < 0.0e+00_real64 ) then
       a = -a
       b = -b
       c = -c
     end if
-  end subroutine line_exp2imp_2d
+  end
 
-  subroutine line_exp2par_2d ( p1, p2, f, g, x0, y0 ) &
-        bind(C, name="line_exp2par_2d")
+  subroutine line_exp2par_2d ( p1, p2, f, g, x0, y0 )
 
   !*****************************************************************************80
   !
@@ -10309,22 +10162,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the line.
+  !    Input, real(real64) P1(2), P2(2), two points on the line.
   !
-  !    Output, real(dp) F, G, X0, Y0, the parametric parameters
+  !    Output, real(real64) F, G, X0, Y0, the parametric parameters
   !    of the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: f
-    real(dp), intent(out) :: g
-    logical :: line_exp_is_degenerate_nd
-    real(dp) :: norm
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: x0
-    real(dp), intent(out) :: y0
+    real(real64) f
+    real(real64) g
+    logical line_exp_is_degenerate_nd
+    real(real64) norm
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) x0
+    real(real64) y0
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
       write ( *, '(a)' ) ' '
@@ -10340,19 +10193,18 @@ contains
 
     norm = sqrt ( f * f + g * g )
 
-    if ( norm /= 0.0_dp ) then
+    if ( norm /= 0.0e+00_real64 ) then
       f = f / norm
       g = g / norm
     end if
 
-    if ( f < 0.0_dp ) then
+    if ( f < 0.0e+00_real64 ) then
       f = -f
       g = -g
     end if
-  end subroutine line_exp2par_2d
+  end
 
-  subroutine line_exp2par_3d ( p1, p2, f, g, h, x0, y0, z0 ) &
-        bind(C, name="line_exp2par_3d")
+  subroutine line_exp2par_3d ( p1, p2, f, g, h, x0, y0, z0 )
 
   !*****************************************************************************80
   !
@@ -10386,24 +10238,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the line.
+  !    Input, real(real64) P1(3), P2(3), two points on the line.
   !
-  !    Output, real(dp) F, G, H, X0, Y0, Z0, the parametric parameters
+  !    Output, real(real64) F, G, H, X0, Y0, Z0, the parametric parameters
   !    of the line.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: f
-    real(dp), intent(out) :: g
-    real(dp), intent(out) :: h
-    logical :: line_exp_is_degenerate_nd
-    real(dp) :: norm
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: x0
-    real(dp), intent(out) :: y0
-    real(dp), intent(out) :: z0
+    real(real64) f
+    real(real64) g
+    real(real64) h
+    logical line_exp_is_degenerate_nd
+    real(real64) norm
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) x0
+    real(real64) y0
+    real(real64) z0
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
       write ( *, '(a)' ) ' '
@@ -10421,21 +10273,20 @@ contains
 
     norm = sqrt ( f * f + g * g + h * h )
 
-    if ( norm /= 0.0_dp ) then
+    if ( norm /= 0.0e+00_real64 ) then
       f = f / norm
       g = g / norm
       h = h / norm
     end if
 
-    if ( f < 0.0_dp ) then
+    if ( f < 0.0e+00_real64 ) then
       f = -f
       g = -g
       h = -h
     end if
-  end subroutine line_exp2par_3d
+  end
 
-  function line_imp_is_degenerate_2d ( a, b, c ) &
-        bind(C, name="line_imp_is_degenerate_2d")
+  function line_imp_is_degenerate_2d ( a, b, c )
 
   !*****************************************************************************80
   !
@@ -10461,24 +10312,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, the implicit line parameters.
+  !    Input, real(real64) A, B, C, the implicit line parameters.
   !
   !    Output, logical LINE_IMP_IS_DEGENERATE_2D, is true if the
   !    line is degenerate.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    logical :: line_imp_is_degenerate_2d
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    logical line_imp_is_degenerate_2d
 
-    line_imp_is_degenerate_2d = ( a * a + b * b == 0.0_dp )
-  end function line_imp_is_degenerate_2d
+    line_imp_is_degenerate_2d = ( a * a + b * b == 0.0e+00_real64 )
+  end
 
-  subroutine line_imp_point_dist_2d ( a, b, c, p, dist ) &
-        bind(C, name="line_imp_point_dist_2d")
+  subroutine line_imp_point_dist_2d ( a, b, c, p, dist )
 
   !*****************************************************************************80
   !
@@ -10504,22 +10354,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, the implicit line parameters.
+  !    Input, real(real64) A, B, C, the implicit line parameters.
   !
-  !    Input, real(dp) P(2), the point whose distance from the line is
+  !    Input, real(real64) P(2), the point whose distance from the line is
   !    to be measured.
   !
-  !    Output, real(dp) DIST, the distance from the point to the line.
+  !    Output, real(real64) DIST, the distance from the point to the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(out) :: dist
-    logical :: line_imp_is_degenerate_2d
-    real(dp), intent(in) :: p(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) dist
+    logical line_imp_is_degenerate_2d
+    real(real64) p(dim_num)
 
     if ( line_imp_is_degenerate_2d ( a, b, c ) ) then
       write ( *, '(a)' ) ' '
@@ -10529,10 +10379,9 @@ contains
     end if
 
     dist = abs ( a * p(1) + b * p(2) + c ) / sqrt ( a * a + b * b )
-  end subroutine line_imp_point_dist_2d
+  end
 
-  subroutine line_imp_point_dist_signed_2d ( a, b, c, p, dist_signed ) &
-        bind(C, name="line_imp_point_dist_signed_2d")
+  subroutine line_imp_point_dist_signed_2d ( a, b, c, p, dist_signed )
 
   !*****************************************************************************80
   !
@@ -10558,22 +10407,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, the implicit line parameters.
+  !    Input, real(real64) A, B, C, the implicit line parameters.
   !
-  !    Input, real(dp) P(2), the coordinates of the point.
+  !    Input, real(real64) P(2), the coordinates of the point.
   !
-  !    Output, real(dp) DIST_SIGNED, the signed distance from the
+  !    Output, real(real64) DIST_SIGNED, the signed distance from the
   !    point to the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(out) :: dist_signed
-    logical :: line_imp_is_degenerate_2d
-    real(dp), intent(in) :: p(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) dist_signed
+    logical line_imp_is_degenerate_2d
+    real(real64) p(dim_num)
 
     if ( line_imp_is_degenerate_2d ( a, b, c ) ) then
       write ( *, '(a)' ) ' '
@@ -10582,12 +10431,11 @@ contains
       stop 1
     end if
 
-    dist_signed = - sign ( 1.0_dp, c ) * ( a * p(1) + b * p(2) + c ) / &
+    dist_signed = - sign ( 1.0e+00_real64, c ) * ( a * p(1) + b * p(2) + c ) / &
       sqrt ( a * a + b * b )
-  end subroutine line_imp_point_dist_signed_2d
+  end
 
-  subroutine line_imp2exp_2d ( a, b, c, p1, p2 ) &
-        bind(C, name="line_imp2exp_2d")
+  subroutine line_imp2exp_2d ( a, b, c, p1, p2 )
 
   !*****************************************************************************80
   !
@@ -10624,20 +10472,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, the implicit line parameters.
+  !    Input, real(real64) A, B, C, the implicit line parameters.
   !
-  !    Output, real(dp) P1(2), P2(2), two points on the line.
+  !    Output, real(real64) P1(2), P2(2), two points on the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    logical :: line_imp_is_degenerate_2d
-    real(dp) :: normsq
-    real(dp), intent(out) :: p1(dim_num)
-    real(dp), intent(out) :: p2(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    logical line_imp_is_degenerate_2d
+    real(real64) normsq
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
     if ( line_imp_is_degenerate_2d ( a, b, c ) ) then
       write ( *, '(a)' ) ' '
@@ -10653,15 +10501,14 @@ contains
 
     if ( abs ( b ) < abs ( a ) ) then
       p2(1) = - ( a - b / a ) * c / normsq
-      p2(2) = - ( b + 1.0_dp ) * c / normsq
+      p2(2) = - ( b + 1.0e+00_real64 ) * c / normsq
     else
-      p2(1) = - ( a + 1.0_dp ) * c / normsq
+      p2(1) = - ( a + 1.0e+00_real64 ) * c / normsq
       p2(2) = - ( b - a / b ) * c / normsq
     end if
-  end subroutine line_imp2exp_2d
+  end
 
-  subroutine line_imp2par_2d ( a, b, c, f, g, x0, y0 ) &
-        bind(C, name="line_imp2par_2d")
+  subroutine line_imp2par_2d ( a, b, c, f, g, x0, y0 )
 
   !*****************************************************************************80
   !
@@ -10701,22 +10548,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, the implicit line parameters.
+  !    Input, real(real64) A, B, C, the implicit line parameters.
   !
-  !    Output, real(dp) F, G, X0, Y0, the parametric parameters of
+  !    Output, real(real64) F, G, X0, Y0, the parametric parameters of
   !    the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(out) :: f
-    logical :: line_imp_is_degenerate_2d
-    real(dp), intent(out) :: g
-    real(dp), intent(out) :: x0
-    real(dp), intent(out) :: y0
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) f
+    logical line_imp_is_degenerate_2d
+    real(real64) g
+    real(real64) x0
+    real(real64) y0
 
     if ( line_imp_is_degenerate_2d ( a, b, c ) ) then
       write ( *, '(a)' ) ' '
@@ -10731,14 +10578,13 @@ contains
     f =   b / sqrt ( a * a + b * b )
     g = - a / sqrt ( a * a + b * b )
 
-    if ( f < 0.0_dp ) then
+    if ( f < 0.0e+00_real64 ) then
       f = -f
       g = -g
     end if
-  end subroutine line_imp2par_2d
+  end
 
-  subroutine line_par_point_dist_2d ( f, g, x0, y0, p, dist ) &
-        bind(C, name="line_par_point_dist_2d")
+  subroutine line_par_point_dist_2d ( f, g, x0, y0, p, dist )
 
   !*****************************************************************************80
   !
@@ -10774,33 +10620,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F, G, X0, Y0, the parametric line parameters.
+  !    Input, real(real64) F, G, X0, Y0, the parametric line parameters.
   !
-  !    Input, real(dp) P(2), the point whose distance from the line is
+  !    Input, real(real64) P(2), the point whose distance from the line is
   !    to be measured.
   !
-  !    Output, real(dp) DIST, the distance from the point to the line.
+  !    Output, real(real64) DIST, the distance from the point to the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dx
-    real(dp) :: dy
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
+    real(real64) dist
+    real(real64) dx
+    real(real64) dy
+    real(real64) f
+    real(real64) g
+    real(real64) p(dim_num)
+    real(real64) x0
+    real(real64) y0
 
     dx =   g * g * ( p(1) - x0 ) - f * g * ( p(2) - y0 )
     dy = - f * g * ( p(1) - x0 ) + f * f * ( p(2) - y0 )
 
     dist = sqrt ( dx * dx + dy * dy ) / ( f * f + g * g )
-  end subroutine line_par_point_dist_2d
+  end
 
-  subroutine line_par_point_dist_3d ( f, g, h, x0, y0, z0, p, dist ) &
-        bind(C, name="line_par_point_dist_3d")
+  subroutine line_par_point_dist_3d ( f, g, h, x0, y0, z0, p, dist )
 
   !*****************************************************************************80
   !
@@ -10837,28 +10682,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F, G, H, X0, Y0, Z0, the parametric line
+  !    Input, real(real64) F, G, H, X0, Y0, Z0, the parametric line
   !    parameters.
   !
-  !    Input, real(dp) P(3), the point whose distance from the line is
+  !    Input, real(real64) P(3), the point whose distance from the line is
   !    to be measured.
   !
-  !    Output, real(dp) DIST, the distance from the point to the line.
+  !    Output, real(real64) DIST, the distance from the point to the line.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dx
-    real(dp) :: dy
-    real(dp) :: dz
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    real(dp), intent(in), value :: h
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
-    real(dp), intent(in), value :: z0
+    real(real64) dist
+    real(real64) dx
+    real(real64) dy
+    real(real64) dz
+    real(real64) f
+    real(real64) g
+    real(real64) h
+    real(real64) p(dim_num)
+    real(real64) x0
+    real(real64) y0
+    real(real64) z0
 
     dx =   g * ( f * ( p(2) - y0 ) - g * ( p(1) - x0 ) ) &
          + h * ( f * ( p(3) - z0 ) - h * ( p(1) - x0 ) )
@@ -10871,10 +10716,9 @@ contains
 
     dist = sqrt ( dx * dx + dy * dy + dz * dz ) &
       / ( f * f + g * g + h * h )
-  end subroutine line_par_point_dist_3d
+  end
 
-  subroutine line_par_point_near_2d ( f, g, x0, y0, p, pn ) &
-        bind(C, name="line_par_point_near_2d")
+  subroutine line_par_point_near_2d ( f, g, x0, y0, p, pn )
 
   !*****************************************************************************80
   !
@@ -10910,33 +10754,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F, G, X0, Y0, the parametric line parameters.
+  !    Input, real(real64) F, G, X0, Y0, the parametric line parameters.
   !
-  !    Input, real(dp) P(2), the point whose distance from the line is
+  !    Input, real(real64) P(2), the point whose distance from the line is
   !    to be measured.
   !
-  !    Output, real(dp) PN(2), the point on the parametric line which
+  !    Output, real(real64) PN(2), the point on the parametric line which
   !    is nearest to P.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp) :: t
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
+    real(real64) f
+    real(real64) g
+    real(real64) p(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
+    real(real64) x0
+    real(real64) y0
 
     t = ( f * ( p(1) - x0 ) + g * ( p(2) - y0 ) ) / ( f * f + g * g )
 
     pn(1) = x0 + t * f
     pn(2) = y0 + t * g
-  end subroutine line_par_point_near_2d
+  end
 
-  subroutine line_par_point_near_3d ( f, g, h, x0, y0, z0, p, pn ) &
-        bind(C, name="line_par_point_near_3d")
+  subroutine line_par_point_near_3d ( f, g, h, x0, y0, z0, p, pn )
 
   !*****************************************************************************80
   !
@@ -10973,27 +10816,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F, G, H, X0, Y0, Z0, the parametric 
+  !    Input, real(real64) F, G, H, X0, Y0, Z0, the parametric 
   !    line parameters.
   !
-  !    Input, real(dp) P(3), the point whose distance from the line is
+  !    Input, real(real64) P(3), the point whose distance from the line is
   !    to be measured.
   !
-  !    Output, real(dp) PN(3), the point on the parametric line which
+  !    Output, real(real64) PN(3), the point on the parametric line which
   !    is nearest to P.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    real(dp), intent(in), value :: h
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp) :: t
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
-    real(dp), intent(in), value :: z0
+    real(real64) f
+    real(real64) g
+    real(real64) h
+    real(real64) p(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
+    real(real64) x0
+    real(real64) y0
+    real(real64) z0
 
     t = ( f * ( p(1) - x0 ) + g * ( p(2) - y0 ) + h * ( p(3) - z0 ) ) &
       / ( f * f + g * g + h * h )
@@ -11001,10 +10844,9 @@ contains
     pn(1) = x0 + t * f
     pn(2) = y0 + t * g
     pn(3) = z0 + t * h
-  end subroutine line_par_point_near_3d
+  end
 
-  subroutine line_par2exp_2d ( f, g, x0, y0, p1, p2 ) &
-        bind(C, name="line_par2exp_2d")
+  subroutine line_par2exp_2d ( f, g, x0, y0, p1, p2 )
 
   !*****************************************************************************80
   !
@@ -11044,29 +10886,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F, G, X0, Y0, the parametric line parameters.
+  !    Input, real(real64) F, G, X0, Y0, the parametric line parameters.
   !
-  !    Output, real(dp) P1(2), P2(2), two points on the line.
+  !    Output, real(real64) P1(2), P2(2), two points on the line.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
-    real(dp), intent(out) :: p1(dim_num)
-    real(dp), intent(out) :: p2(dim_num)
+    real(real64) f
+    real(real64) g
+    real(real64) x0
+    real(real64) y0
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
     p1(1) = x0
     p1(2) = y0
 
     p2(1) = p1(1) + f
     p2(2) = p1(2) + g
-  end subroutine line_par2exp_2d
+  end
 
-  subroutine line_par2exp_3d ( f, g, h, x0, y0, z0, p1, p2 ) &
-        bind(C, name="line_par2exp_3d")
+  subroutine line_par2exp_3d ( f, g, h, x0, y0, z0, p1, p2 )
 
   !*****************************************************************************80
   !
@@ -11107,22 +10948,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F, G, H, X0, Y0, Z0, the parametric 
+  !    Input, real(real64) F, G, H, X0, Y0, Z0, the parametric 
   !    line parameters.
   !
-  !    Output, real(dp) P1(3), P2(3), two points on the line.
+  !    Output, real(real64) P1(3), P2(3), two points on the line.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
-    real(dp), intent(in), value :: z0
-    real(dp), intent(out) :: p1(dim_num)
-    real(dp), intent(out) :: p2(dim_num)
+    real(real64) f
+    real(real64) g
+    real(real64) h
+    real(real64) x0
+    real(real64) y0
+    real(real64) z0
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
     p1(1) = x0
     p1(2) = y0
@@ -11131,10 +10972,9 @@ contains
     p2(1) = p1(1) + f
     p2(2) = p1(2) + g
     p2(3) = p1(3) + h
-  end subroutine line_par2exp_3d
+  end
 
-  subroutine line_par2imp_2d ( f, g, x0, y0, a, b, c ) &
-        bind(C, name="line_par2imp_2d")
+  subroutine line_par2imp_2d ( f, g, x0, y0, a, b, c )
 
   !*****************************************************************************80
   !
@@ -11174,26 +11014,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F, G, X0, Y0, the parametric line parameters.
+  !    Input, real(real64) F, G, X0, Y0, the parametric line parameters.
   !
-  !    Output, real(dp) A, B, C, the implicit line parameters.
+  !    Output, real(real64) A, B, C, the implicit line parameters.
   !
 
-    real(dp), intent(out) :: a
-    real(dp), intent(out) :: b
-    real(dp), intent(out) :: c
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) f
+    real(real64) g
+    real(real64) x0
+    real(real64) y0
 
     a = -g
     b = f
     c = g * x0 - f * y0
-  end subroutine line_par2imp_2d
+  end
 
-  subroutine lines_exp_angle_3d ( p1, p2, q1, q2, angle ) &
-        bind(C, name="lines_exp_angle_3d")
+  subroutine lines_exp_angle_3d ( p1, p2, q1, q2, angle )
 
   !*****************************************************************************80
   !
@@ -11219,42 +11058,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the first line.
+  !    Input, real(real64) P1(3), P2(3), two points on the first line.
   !
-  !    Input, real(dp) Q1(3), Q2(3), two points on the second line.
+  !    Input, real(real64) Q1(3), Q2(3), two points on the second line.
   !
-  !    Output, real(dp) ANGLE, the angle in radians between the two
+  !    Output, real(real64) ANGLE, the angle in radians between the two
   !    lines.  The angle is computed using the ACOS function, and so lies between
   !    0 and PI.  But if one of the lines is degenerate, the angle is 
   !    returned as -1.0.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: angle
-    real(dp) :: ctheta
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pdotq
-    real(dp) :: pnorm
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp) :: qnorm
-    real(dp) :: r8_acos
+    real(real64) angle
+    real(real64) ctheta
+    logical line_exp_is_degenerate_nd
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pdotq
+    real(real64) pnorm
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) qnorm
+    real(real64) r8_acos
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
   !   write ( *, '(a)' ) ' '
   !   write ( *, '(a)' ) 'LINES_EXP_ANGLE_3D - Fatal error!'
   !   write ( *, '(a)' ) '  The line (P1,P2) is degenerate!'
-      angle = -1.0_dp
+      angle = -1.0e+00_real64
     end if
 
     if ( line_exp_is_degenerate_nd ( dim_num, q1, q2 ) ) then
   !   write ( *, '(a)' ) ' '
   !   write ( *, '(a)' ) 'LINES_EXP_ANGLE_3D - Warning!'
   !   write ( *, '(a)' ) '  The line (Q1,Q2) is degenerate!'
-      angle = -1.0_dp
+      angle = -1.0e+00_real64
     end if
 
     pnorm = sqrt ( sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 ) )
@@ -11267,10 +11106,9 @@ contains
     ctheta = pdotq / ( pnorm * qnorm )
 
     angle = r8_acos ( ctheta )
-  end subroutine lines_exp_angle_3d
+  end
 
-  subroutine lines_exp_angle_nd ( dim_num, p1, p2, q1, q2, angle ) &
-        bind(C, name="lines_exp_angle_nd")
+  subroutine lines_exp_angle_nd ( dim_num, p1, p2, q1, q2, angle )
 
   !*****************************************************************************80
   !
@@ -11296,39 +11134,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) P1(DIM_NUM), P2(DIM_NUM), two points 
+  !    Input, real(real64) P1(DIM_NUM), P2(DIM_NUM), two points 
   !    on the first line.
   !
-  !    Input, real(dp) Q1(DIM_NUM), Q2(DIM_NUM), two points 
+  !    Input, real(real64) Q1(DIM_NUM), Q2(DIM_NUM), two points 
   !    on the second line.
   !
-  !    Output, real(dp) ANGLE, the angle in radians between the two
+  !    Output, real(real64) ANGLE, the angle in radians between the two
   !    lines.  The angle is computed using the ACOS function, and so lies
   !    between 0 and PI.  But if one of the lines is degenerate, the angle
   !    is returned as -1.0.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp), intent(out) :: angle
-    real(dp) :: ctheta
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pdotq
-    real(dp) :: pnorm
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp) :: qnorm
-    real(dp) :: r8_acos
+    real(real64) angle
+    real(real64) ctheta
+    logical line_exp_is_degenerate_nd
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pdotq
+    real(real64) pnorm
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) qnorm
+    real(real64) r8_acos
 
     if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'LINES_EXP_ANGLE_3D - Fatal error!'
       write ( *, '(a)' ) '  The line (P1,P2) is degenerate!'
-      angle = -1.0_dp
+      angle = -1.0e+00_real64
       stop 1
     end if
 
@@ -11336,7 +11174,7 @@ contains
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'LINES_EXP_ANGLE_3D - Fatal error!'
       write ( *, '(a)' ) '  The line (Q1,Q2) is degenerate!'
-      angle = -1.0_dp
+      angle = -1.0e+00_real64
       stop 1
     end if
 
@@ -11348,10 +11186,9 @@ contains
 
     ctheta = pdotq / ( pnorm * qnorm )
     angle = r8_acos ( ctheta )
-  end subroutine lines_exp_angle_nd
+  end
 
-  subroutine lines_exp_dist_3d ( p1, p2, q1, q2, dist ) &
-        bind(C, name="lines_exp_dist_3d")
+  subroutine lines_exp_dist_3d ( p1, p2, q1, q2, dist )
 
   !*****************************************************************************80
   !
@@ -11377,34 +11214,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the first line.
+  !    Input, real(real64) P1(3), P2(3), two points on the first line.
   !
-  !    Input, real(dp) Q1(3), Q2(3), two points on the second line.  
+  !    Input, real(real64) Q1(3), Q2(3), two points on the second line.  
   !
-  !    Output, real(dp) DIST, the distance between the lines.
+  !    Output, real(real64) DIST, the distance between the lines.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a11
-    real(dp) :: a12
-    real(dp) :: a13
-    real(dp) :: a21
-    real(dp) :: a22
-    real(dp) :: a23
-    real(dp) :: a31
-    real(dp) :: a32
-    real(dp) :: a33
-    real(dp) :: bot
-    real(dp) :: cr1
-    real(dp) :: cr2
-    real(dp) :: cr3
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp) :: top
+    real(real64) a11
+    real(real64) a12
+    real(real64) a13
+    real(real64) a21
+    real(real64) a22
+    real(real64) a23
+    real(real64) a31
+    real(real64) a32
+    real(real64) a33
+    real(real64) bot
+    real(real64) cr1
+    real(real64) cr2
+    real(real64) cr3
+    real(real64) dist
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) top
   !
   !  The distance is found by computing the volume of a parallelipiped,
   !  and dividing by the area of its base.
@@ -11433,7 +11270,7 @@ contains
 
     bot = sqrt ( cr1 * cr1 + cr2 * cr2 + cr3 * cr3 )
 
-    if ( bot == 0.0_dp ) then
+    if ( bot == 0.0e+00_real64 ) then
 
       call line_exp_point_dist_3d ( p1, p2, q1, dist )
 
@@ -11446,10 +11283,9 @@ contains
       dist = top / bot
 
     end if
-  end subroutine lines_exp_dist_3d
+  end
 
-  subroutine lines_exp_dist_3d_2 ( p1, p2, q1, q2, dist ) &
-        bind(C, name="lines_exp_dist_3d_2")
+  subroutine lines_exp_dist_3d_2 ( p1, p2, q1, q2, dist )
 
   !*****************************************************************************80
   !
@@ -11477,33 +11313,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the first line.
+  !    Input, real(real64) P1(3), P2(3), two points on the first line.
   !
-  !    Input, real(dp) Q1(3), Q2(3), two points on the second line.  
+  !    Input, real(real64) Q1(3), Q2(3), two points on the second line.  
   !
-  !    Output, real(dp) DIST, the distance between the lines.
+  !    Output, real(real64) DIST, the distance between the lines.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    real(dp) :: det
-    real(dp), intent(out) :: dist
-    real(dp) :: e
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp) :: qn(dim_num)
-    real(dp) :: sn
-    real(dp) :: tn
-    real(dp) :: u(dim_num)
-    real(dp) :: v(dim_num)
-    real(dp) :: w0(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) det
+    real(real64) dist
+    real(real64) e
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) qn(dim_num)
+    real(real64) sn
+    real(real64) tn
+    real(real64) u(dim_num)
+    real(real64) v(dim_num)
+    real(real64) w0(dim_num)
   !
   !  Let U = (P2-P1) and V = (Q2-Q1) be the direction vectors on
   !  the two lines.
@@ -11552,8 +11388,8 @@ contains
   !
     det = - a * c + b * b
 
-    if ( det == 0.0_dp ) then
-      sn = 0.0_dp
+    if ( det == 0.0e+00_real64 ) then
+      sn = 0.0e+00_real64
       if ( abs ( b ) < abs ( c ) ) then
         tn = e / c
       else
@@ -11568,10 +11404,9 @@ contains
     qn(1:dim_num) = q1(1:dim_num) + tn * ( q2(1:dim_num) - q1(1:dim_num) )
 
     dist = sqrt ( sum ( ( pn(1:dim_num) - qn(1:dim_num) )**2 ) )
-  end subroutine lines_exp_dist_3d_2
+  end
 
-  function lines_exp_equal_2d ( p1, p2, q1, q2 ) &
-        bind(C, name="lines_exp_equal_2d")
+  function lines_exp_equal_2d ( p1, p2, q1, q2 )
 
   !*****************************************************************************80
   !
@@ -11604,32 +11439,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the first line.
+  !    Input, real(real64) P1(2), P2(2), two points on the first line.
   !
-  !    Input, real(dp) Q1(2), Q2(2), two points on the second line.
+  !    Input, real(real64) Q1(2), Q2(2), two points on the second line.
   !
   !    Output, logical LINES_EXP_EQUAL_2D, is TRUE if the two lines 
   !    are determined to be identical.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical :: lines_exp_equal_2d
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: q1(2)
-    real(dp), intent(in) :: q2(2)
-    real(dp) :: test1
-    real(dp) :: test2
-    real(dp) :: test3
-    real(dp) :: test4
+    logical lines_exp_equal_2d
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) q1(2)
+    real(real64) q2(2)
+    real(real64) test1
+    real(real64) test2
+    real(real64) test3
+    real(real64) test4
   !
   !  Slope (P1,P2) = Slope (P2,Q1).
   !
     test1 = ( p2(2) - p1(2) ) * ( q1(1) - p2(1) ) &
           - ( p2(1) - p1(1) ) * ( q1(2) - p2(2) )
 
-    if ( test1 /= 0.0_dp ) then
+    if ( test1 /= 0.0e+00_real64 ) then
       lines_exp_equal_2d = .false.
     end if
   !
@@ -11638,7 +11473,7 @@ contains
     test2 = ( q2(2) - q1(2) ) * ( q1(1) - p2(1) ) &
           - ( q2(1) - q1(1) ) * ( q1(2) - p2(2) ) 
 
-    if ( test2 /= 0.0_dp ) then
+    if ( test2 /= 0.0e+00_real64 ) then
       lines_exp_equal_2d = .false.
     end if
   !
@@ -11647,7 +11482,7 @@ contains
     test3 = ( p2(2) - p1(2) ) * ( q2(1) - p1(1) ) &
           - ( p2(1) - p1(1) ) * ( q2(2) - p1(2) )
 
-    if ( test3 /= 0.0_dp ) then
+    if ( test3 /= 0.0e+00_real64 ) then
       lines_exp_equal_2d = .false.
     end if
   !
@@ -11656,15 +11491,14 @@ contains
     test4 = ( q2(2) - q1(2) ) * ( q2(1) - p1(1) ) &
           - ( q2(1) - q1(1) ) * ( q2(2) - p1(2) ) 
 
-    if ( test4 /= 0.0_dp ) then
+    if ( test4 /= 0.0e+00_real64 ) then
       lines_exp_equal_2d = .false.
     end if
 
     lines_exp_equal_2d = .true.
-  end function lines_exp_equal_2d
+  end
 
-  subroutine lines_exp_int_2d ( p1, p2, q1, q2, ival, p ) &
-        bind(C, name="lines_exp_int_2d")
+  subroutine lines_exp_int_2d ( p1, p2, q1, q2, ival, p )
 
   !*****************************************************************************80
   !
@@ -11690,38 +11524,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the first line.
+  !    Input, real(real64) P1(2), P2(2), two points on the first line.
   !
-  !    Input, real(dp) Q1(2), Q2(2), two points on the second line.
+  !    Input, real(real64) Q1(2), Q2(2), two points on the second line.
   !
-  !    Output, integer(ip) IVAL, reports on the intersection:
+  !    Output, integer(int32) IVAL, reports on the intersection:
   !    0, no intersection, the lines may be parallel or degenerate.
   !    1, one intersection point, returned in P.
   !    2, infinitely many intersections, the lines are identical.
   !
-  !    Output, real(dp) P(2), if IVAl = 1, P is
+  !    Output, real(real64) P(2), if IVAl = 1, P is
   !    the intersection point.  Otherwise, P = 0.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a1
-    real(dp) :: a2
-    real(dp) :: b1
-    real(dp) :: b2
-    real(dp) :: c1
-    real(dp) :: c2
-    integer(ip), intent(out) :: ival
-    logical :: point_1
-    logical :: point_2
-    real(dp), intent(out) :: p(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
-    real(dp), intent(in) :: q1(2)
-    real(dp), intent(in) :: q2(2)
+    real(real64) a1
+    real(real64) a2
+    real(real64) b1
+    real(real64) b2
+    real(real64) c1
+    real(real64) c2
+    integer(int32) ival
+    logical point_1
+    logical point_2
+    real(real64) p(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) q1(2)
+    real(real64) q2(2)
 
     ival = 0
-    p(1:dim_num) = 0.0_dp
+    p(1:dim_num) = 0.0e+00_real64
   !
   !  Check whether either line is a point.
   !
@@ -11767,10 +11601,9 @@ contains
     else
       call lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, p )
     end if
-  end subroutine lines_exp_int_2d
+  end
 
-  subroutine lines_exp_near_3d ( p1, p2, q1, q2, pn, qn ) &
-        bind(C, name="lines_exp_near_3d")
+  subroutine lines_exp_near_3d ( p1, p2, q1, q2, pn, qn )
 
   !*****************************************************************************80
   !
@@ -11798,33 +11631,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the first line.
+  !    Input, real(real64) P1(3), P2(3), two points on the first line.
   !
-  !    Input, real(dp) Q1(3), Q2(3), two points on the second line.  
+  !    Input, real(real64) Q1(3), Q2(3), two points on the second line.  
   !
-  !    Output, real(dp) PN(3), QN(3), the points on the first and
+  !    Output, real(real64) PN(3), QN(3), the points on the first and
   !    second lines that are nearest.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    real(dp) :: det
-    real(dp) :: e
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp), intent(out) :: qn(dim_num)
-    real(dp) :: sn
-    real(dp) :: tn
-    real(dp) :: u(dim_num)
-    real(dp) :: v(dim_num)
-    real(dp) :: w0(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) det
+    real(real64) e
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) qn(dim_num)
+    real(real64) sn
+    real(real64) tn
+    real(real64) u(dim_num)
+    real(real64) v(dim_num)
+    real(real64) w0(dim_num)
   !
   !  Let U = (P2-P1) and V = (Q2-Q1) be the direction vectors on
   !  the two lines.
@@ -11873,8 +11706,8 @@ contains
   !
     det = - a * c + b * b
 
-    if ( det == 0.0_dp ) then
-      sn = 0.0_dp
+    if ( det == 0.0e+00_real64 ) then
+      sn = 0.0e+00_real64
       if ( abs ( b ) < abs ( c ) ) then
         tn = e / c
       else
@@ -11887,10 +11720,9 @@ contains
 
     pn(1:dim_num) = p1(1:dim_num) + sn * ( p2(1:dim_num) - p1(1:dim_num) )
     qn(1:dim_num) = q1(1:dim_num) + tn * ( q2(1:dim_num) - q1(1:dim_num) )
-  end subroutine lines_exp_near_3d
+  end
 
-  function lines_exp_parallel_2d ( p1, p2, q1, q2 ) &
-        bind(C, name="lines_exp_parallel_2d")
+  function lines_exp_parallel_2d ( p1, p2, q1, q2 )
 
   !*****************************************************************************80
   !
@@ -11926,28 +11758,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points on the first line.
+  !    Input, real(real64) P1(2), P2(2), two points on the first line.
   !
-  !    Input, real(dp) Q1(2), Q2(2), two points on the second line.
+  !    Input, real(real64) Q1(2), Q2(2), two points on the second line.
   !
   !    Output, logical LINES_EXP_PARALLEL_2D is TRUE if the 
   !    lines are parallel.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical :: lines_exp_parallel_2d
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
+    logical lines_exp_parallel_2d
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
 
     lines_exp_parallel_2d = ( p2(1) - p1(1) ) * ( q2(2) - q1(2) ) == &
                             ( q2(1) - q1(1) ) * ( p2(2) - p1(2) )
-  end function lines_exp_parallel_2d
+  end
 
-  function lines_exp_parallel_3d ( p1, p2, q1, q2 ) &
-        bind(C, name="lines_exp_parallel_3d")
+  function lines_exp_parallel_3d ( p1, p2, q1, q2 )
 
   !*****************************************************************************80
   !
@@ -11992,24 +11823,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the first line.
+  !    Input, real(real64) P1(3), P2(3), two points on the first line.
   !
-  !    Input, real(dp) Q1(3), Q2(3), two points on the second line.
+  !    Input, real(real64) Q1(3), Q2(3), two points on the second line.
   !
   !    Output, logical LINES_EXP_PARALLEL_3D is TRUE if the lines 
   !    are parallel.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    logical :: lines_exp_parallel_3d
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pdotp
-    real(dp) :: pdotq
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp) :: qdotq
+    logical lines_exp_parallel_3d
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pdotp
+    real(real64) pdotq
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) qdotq
 
     pdotq = dot_product ( p2(1:dim_num) - p1(1:dim_num), &
                           q2(1:dim_num) - q1(1:dim_num) )
@@ -12021,10 +11852,9 @@ contains
                           q2(1:dim_num) - q1(1:dim_num) )
 
     lines_exp_parallel_3d = ( pdotq * pdotq == pdotp * qdotq )
-  end function lines_exp_parallel_3d
+  end
 
-  subroutine lines_imp_angle_2d ( a1, b1, c1, a2, b2, c2, theta ) &
-        bind(C, name="lines_imp_angle_2d")
+  subroutine lines_imp_angle_2d ( a1, b1, c1, a2, b2, c2, theta )
 
   !*****************************************************************************80
   !
@@ -12057,38 +11887,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A1, B1, C1, the implicit parameters of the 
+  !    Input, real(real64) A1, B1, C1, the implicit parameters of the 
   !    first line.
   !
-  !    Input, real(dp) A2, B2, C2, the implicit parameters of the
+  !    Input, real(real64) A2, B2, C2, the implicit parameters of the
   !    second line.
   !
-  !    Output, real(dp) THETA, the angle between the two lines.
+  !    Output, real(real64) THETA, the angle between the two lines.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: a1
-    real(dp), intent(in), value :: a2
-    real(dp), intent(in), value :: b1
-    real(dp), intent(in), value :: b2
-    real(dp), intent(in), value :: c1
-    real(dp), intent(in), value :: c2
-    real(dp) :: pdotq
-    real(dp) :: pnorm
-    real(dp) :: qnorm
-    real(dp) :: r8_acos
-    real(dp), intent(out) :: theta
+    real(real64) a1
+    real(real64) a2
+    real(real64) b1
+    real(real64) b2
+    real(real64) c1
+    real(real64) c2
+    real(real64) pdotq
+    real(real64) pnorm
+    real(real64) qnorm
+    real(real64) r8_acos
+    real(real64) theta
 
     pdotq = a1 * a2 + b1 * b2
     pnorm = sqrt ( a1 * a1 + b1 * b1 )
     qnorm = sqrt ( a2 * a2 + b2 * b2 )
 
     theta = r8_acos ( pdotq / ( pnorm * qnorm ) )
-  end subroutine lines_imp_angle_2d
+  end
 
-  subroutine lines_imp_dist_2d ( a1, b1, c1, a2, b2, c2, dist ) &
-        bind(C, name="lines_imp_dist_2d")
+  subroutine lines_imp_dist_2d ( a1, b1, c1, a2, b2, c2, dist )
 
   !*****************************************************************************80
   !
@@ -12117,25 +11946,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A1, B1, C1, define the first line.
+  !    Input, real(real64) A1, B1, C1, define the first line.
   !    At least one of A1 and B1 must be nonzero.
   !
-  !    Input, real(dp) A2, B2, C2, define the second line.
+  !    Input, real(real64) A2, B2, C2, define the second line.
   !    At least one of A2 and B2 must be nonzero.
   !
-  !    Output, real(dp) DIST, the distance between the two lines.
+  !    Output, real(real64) DIST, the distance between the two lines.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: a1
-    real(dp), intent(in), value :: a2
-    real(dp), intent(in), value :: b1
-    real(dp), intent(in), value :: b2
-    real(dp), intent(in), value :: c1
-    real(dp), intent(in), value :: c2
-    real(dp), intent(out) :: dist
-    logical :: line_imp_is_degenerate_2d
+    real(real64) a1
+    real(real64) a2
+    real(real64) b1
+    real(real64) b2
+    real(real64) c1
+    real(real64) c2
+    real(real64) dist
+    logical line_imp_is_degenerate_2d
   !
   !  Refuse to handle degenerate lines.
   !
@@ -12156,17 +11985,16 @@ contains
   !  Determine if the lines intersect.
   !
     if ( a1 * b2 /= a2 * b1 ) then
-      dist = 0.0_dp
+      dist = 0.0e+00_real64
     end if
   !
   !  Determine the distance between the parallel lines.
   !
     dist = abs ( c2 / sqrt ( a2 * a2 + b2 * b2 ) &
                - c1 / sqrt ( a1 * a1 + b1 * b1 ) )
-  end subroutine lines_imp_dist_2d
+  end
 
-  subroutine lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, p ) &
-        bind(C, name="lines_imp_int_2d")
+  subroutine lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, p )
 
   !*****************************************************************************80
   !
@@ -12192,13 +12020,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A1, B1, C1, define the first line.
+  !    Input, real(real64) A1, B1, C1, define the first line.
   !    At least one of A1 and B1 must be nonzero.
   !
-  !    Input, real(dp) A2, B2, C2, define the second line.
+  !    Input, real(real64) A2, B2, C2, define the second line.
   !    At least one of A2 and B2 must be nonzero.
   !
-  !    Output, integer(ip) IVAL, reports on the intersection.
+  !    Output, integer(int32) IVAL, reports on the intersection.
   !
   !    -1, both A1 and B1 were zero.
   !    -2, both A2 and B2 were zero.
@@ -12206,25 +12034,25 @@ contains
   !     1, one intersection point, returned in P.
   !     2, infinitely many intersections, the lines are identical.
   !
-  !    Output, real(dp) P(2), if IVAL = 1, then P is
+  !    Output, real(real64) P(2), if IVAL = 1, then P is
   !    the intersection point.  Otherwise, P = 0.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a(dim_num,dim_num+1)
-    real(dp), intent(in), value :: a1
-    real(dp), intent(in), value :: a2
-    real(dp), intent(in), value :: b1
-    real(dp), intent(in), value :: b2
-    real(dp), intent(in), value :: c1
-    real(dp), intent(in), value :: c2
-    integer(ip) :: info
-    integer(ip), intent(out) :: ival
-    logical :: line_imp_is_degenerate_2d
-    real(dp), intent(out) :: p(dim_num)
+    real(real64) a(dim_num,dim_num+1)
+    real(real64) a1
+    real(real64) a2
+    real(real64) b1
+    real(real64) b2
+    real(real64) c1
+    real(real64) c2
+    integer(int32) info
+    integer(int32) ival
+    logical line_imp_is_degenerate_2d
+    real(real64) p(dim_num)
 
-    p(1:dim_num) = 0.0_dp
+    p(1:dim_num) = 0.0e+00_real64
   !
   !  Refuse to handle degenerate lines.
   !
@@ -12263,7 +12091,7 @@ contains
 
       ival = 0
 
-      if ( a1 == 0.0_dp ) then
+      if ( a1 == 0.0e+00_real64 ) then
         if ( b2 * c1 == c2 * b1 ) then
           ival = 2
         end if
@@ -12274,10 +12102,9 @@ contains
       end if
 
     end if
-  end subroutine lines_imp_int_2d
+  end
 
-  subroutine lines_par_angle_2d ( f1, g1, x01, y01, f2, g2, x02, y02, theta ) &
-        bind(C, name="lines_par_angle_2d")
+  subroutine lines_par_angle_2d ( f1, g1, x01, y01, f2, g2, x02, y02, theta )
 
   !*****************************************************************************80
   !
@@ -12313,41 +12140,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F1, G1, X01, Y01, the parametric parameters of the
+  !    Input, real(real64) F1, G1, X01, Y01, the parametric parameters of the
   !    first line.
   !
-  !    Input, real(dp) F2, G2, X02, Y02, the parametric parameters of the
+  !    Input, real(real64) F2, G2, X02, Y02, the parametric parameters of the
   !    second line.
   !
-  !    Output, real(dp) THETA, the angle between the two lines.
+  !    Output, real(real64) THETA, the angle between the two lines.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: f1
-    real(dp), intent(in), value :: f2
-    real(dp), intent(in), value :: g1
-    real(dp), intent(in), value :: g2
-    real(dp) :: pdotq
-    real(dp) :: pnorm
-    real(dp) :: qnorm
-    real(dp) :: r8_acos
-    real(dp), intent(out) :: theta
-    real(dp), intent(in), value :: x01
-    real(dp), intent(in), value :: x02
-    real(dp), intent(in), value :: y01
-    real(dp), intent(in), value :: y02
+    real(real64) f1
+    real(real64) f2
+    real(real64) g1
+    real(real64) g2
+    real(real64) pdotq
+    real(real64) pnorm
+    real(real64) qnorm
+    real(real64) r8_acos
+    real(real64) theta
+    real(real64) x01
+    real(real64) x02
+    real(real64) y01
+    real(real64) y02
 
     pdotq = f1 * f2 + g1 * g2
     pnorm = sqrt ( f1 * f1 + g1 * g1 )
     qnorm = sqrt ( f2 * f2 + g2 * g2 )
 
     theta = r8_acos ( pdotq / ( pnorm * qnorm ) )
-  end subroutine lines_par_angle_2d
+  end
 
   subroutine lines_par_angle_3d ( f1, g1, h1, x01, y01, z01, f2, g2, h2, &
-    x02, y02, z02, theta ) &
-        bind(C, name="lines_par_angle_3d")
+    x02, y02, z02, theta )
 
   !*****************************************************************************80
   !
@@ -12384,45 +12210,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F1, G1, H1, X01, Y01, Z01, the parametric
+  !    Input, real(real64) F1, G1, H1, X01, Y01, Z01, the parametric
   !    parameters of the first line.
   !
-  !    Input, real(dp) F2, G2, H2, X02, Y02, Z02, the parametric
+  !    Input, real(real64) F2, G2, H2, X02, Y02, Z02, the parametric
   !    parameters of the second line.
   !
-  !    Output, real(dp) THETA, the angle between the two lines.
+  !    Output, real(real64) THETA, the angle between the two lines.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: f1
-    real(dp), intent(in), value :: f2
-    real(dp), intent(in), value :: g1
-    real(dp), intent(in), value :: g2
-    real(dp), intent(in), value :: h1
-    real(dp), intent(in), value :: h2
-    real(dp) :: pdotq
-    real(dp) :: pnorm
-    real(dp) :: qnorm
-    real(dp) :: r8_acos
-    real(dp), intent(out) :: theta
-    real(dp), intent(in), value :: x01
-    real(dp), intent(in), value :: x02
-    real(dp), intent(in), value :: y01
-    real(dp), intent(in), value :: y02
-    real(dp), intent(in), value :: z01
-    real(dp), intent(in), value :: z02
+    real(real64) f1
+    real(real64) f2
+    real(real64) g1
+    real(real64) g2
+    real(real64) h1
+    real(real64) h2
+    real(real64) pdotq
+    real(real64) pnorm
+    real(real64) qnorm
+    real(real64) r8_acos
+    real(real64) theta
+    real(real64) x01
+    real(real64) x02
+    real(real64) y01
+    real(real64) y02
+    real(real64) z01
+    real(real64) z02
 
     pdotq = f1 * f2 + g1 * g2 + h1 * h2
     pnorm = sqrt ( f1 * f1 + g1 * g1 + h1 * h1 )
     qnorm = sqrt ( f2 * f2 + g2 * g2 + h2 * h2 )
 
     theta = r8_acos ( pdotq / ( pnorm * qnorm ) )
-  end subroutine lines_par_angle_3d
+  end
 
   subroutine lines_par_dist_3d ( f1, g1, h1, x01, y01, z01, f2, g2, h2, &
-    x02, y02, z02, dist ) &
-        bind(C, name="lines_par_dist_3d")
+    x02, y02, z02, dist )
 
   !*****************************************************************************80
   !
@@ -12461,30 +12286,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F1, G1, H1, X01, Y01, Z01, the parametric
+  !    Input, real(real64) F1, G1, H1, X01, Y01, Z01, the parametric
   !    parameters of the first line.
   !
-  !    Input, real(dp) F2, G2, H2, X02, Y02, Z02, the parametric
+  !    Input, real(real64) F2, G2, H2, X02, Y02, Z02, the parametric
   !    parameters of the second line.
   !
-  !    Output, real(dp) DIST, the distance between the two lines.
+  !    Output, real(real64) DIST, the distance between the two lines.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in), value :: f1
-    real(dp), intent(in), value :: f2
-    real(dp), intent(in), value :: g1
-    real(dp), intent(in), value :: g2
-    real(dp), intent(in), value :: h1
-    real(dp), intent(in), value :: h2
-    real(dp), intent(in), value :: x01
-    real(dp), intent(in), value :: x02
-    real(dp), intent(in), value :: y01
-    real(dp), intent(in), value :: y02
-    real(dp), intent(in), value :: z01
-    real(dp), intent(in), value :: z02
+    real(real64) dist
+    real(real64) f1
+    real(real64) f2
+    real(real64) g1
+    real(real64) g2
+    real(real64) h1
+    real(real64) h2
+    real(real64) x01
+    real(real64) x02
+    real(real64) y01
+    real(real64) y02
+    real(real64) z01
+    real(real64) z02
 
     dist = abs ( ( x02 - x01 ) * ( g1 * h2 - g2 * h1 ) &
                + ( y02 - y01 ) * ( h1 * f2 - h2 * f1 ) &
@@ -12492,10 +12317,9 @@ contains
                ( ( f1 * g2 - f2 * g1 ) ** 2 &
                + ( g1 * h2 - g2 * h1 ) ** 2 &
                + ( h1 * f2 - h2 * f1 ) ** 2 )
-  end subroutine lines_par_dist_3d
+  end
 
-  subroutine lines_par_int_2d ( f1, g1, x1, y1, f2, g2, x2, y2, t1, t2, pint ) &
-        bind(C, name="lines_par_int_2d")
+  subroutine lines_par_int_2d ( f1, g1, x1, y1, f2, g2, x2, y2, t1, t2, pint )
 
   !*****************************************************************************80
   !
@@ -12531,48 +12355,47 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) F1, G1, X1, Y1, define the first parametric line.
+  !    Input, real(real64) F1, G1, X1, Y1, define the first parametric line.
   !
-  !    Input, real(dp) F2, G2, X2, Y2, define the second parametric line.
+  !    Input, real(real64) F2, G2, X2, Y2, define the second parametric line.
   !
-  !    Output, real(dp) T1, T2, the T parameters on the first and second
+  !    Output, real(real64) T1, T2, the T parameters on the first and second
   !    lines of the intersection point.
   !
-  !    Output, real(dp) PINT(2), the intersection point.
+  !    Output, real(real64) PINT(2), the intersection point.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: det
-    real(dp), intent(in), value :: f1
-    real(dp), intent(in), value :: f2
-    real(dp), intent(in), value :: g1
-    real(dp), intent(in), value :: g2
-    real(dp), intent(out) :: pint(dim_num)
-    real(dp), intent(out) :: t1
-    real(dp), intent(out) :: t2
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
+    real(real64) det
+    real(real64) f1
+    real(real64) f2
+    real(real64) g1
+    real(real64) g2
+    real(real64) pint(dim_num)
+    real(real64) t1
+    real(real64) t2
+    real(real64) x1
+    real(real64) x2
+    real(real64) y1
+    real(real64) y2
 
     det = f2 * g1 - f1 * g2
 
-    if ( det == 0.0_dp ) then
-      t1 = 0.0_dp
-      t2 = 0.0_dp
-      pint(1:dim_num) = 0.0_dp
+    if ( det == 0.0e+00_real64 ) then
+      t1 = 0.0e+00_real64
+      t2 = 0.0e+00_real64
+      pint(1:dim_num) = 0.0e+00_real64
     else
       t1 = ( f2 * ( y2 - y1 ) - g2 * ( x2 - x1 ) ) / det
       t2 = ( f1 * ( y2 - y1 ) - g1 * ( x2 - x1 ) ) / det
       pint(1) = x1 + f1 * t1
       pint(2) = y1 + g1 * t1
     end if
-  end subroutine lines_par_int_2d
+  end
 
   subroutine loc2glob_3d ( cospitch, cosroll, cosyaw, sinpitch, sinroll, sinyaw, &
-    globas, locpts, glopts ) &
-        bind(C, name="loc2glob_3d")
+    globas, locpts, glopts )
 
   !*****************************************************************************80
   !
@@ -12621,31 +12444,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) COSPITCH, COSROLL, COSYAW, the cosines of the
+  !    Input, real(real64) COSPITCH, COSROLL, COSYAW, the cosines of the
   !    pitch, roll and yaw angles.
   !
-  !    Input, real(dp) SINPITCH, SINROLL, SINYAW, the sines of the pitch,
+  !    Input, real(real64) SINPITCH, SINROLL, SINYAW, the sines of the pitch,
   !    roll and yaw angles.
   !
-  !    Input, real(dp) GLOBAS(3), the global coordinates of the base
+  !    Input, real(real64) GLOBAS(3), the global coordinates of the base
   !    vector.
   !
-  !    Input, real(dp) LOCPTS(3), the local coordinates of the point.
+  !    Input, real(real64) LOCPTS(3), the local coordinates of the point.
   !
-  !    Output, real(dp) GLOPTS(3), the global coordinates of the point.
+  !    Output, real(real64) GLOPTS(3), the global coordinates of the point.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: cospitch
-    real(dp), intent(in), value :: cosroll
-    real(dp), intent(in), value :: cosyaw
-    real(dp), intent(in) :: globas(dim_num)
-    real(dp), intent(out) :: glopts(dim_num)
-    real(dp), intent(in) :: locpts(dim_num)
-    real(dp), intent(in), value :: sinpitch
-    real(dp), intent(in), value :: sinroll
-    real(dp), intent(in), value :: sinyaw
+    real(real64) cospitch
+    real(real64) cosroll
+    real(real64) cosyaw
+    real(real64) globas(dim_num)
+    real(real64) glopts(dim_num)
+    real(real64) locpts(dim_num)
+    real(real64) sinpitch
+    real(real64) sinroll
+    real(real64) sinyaw
 
     glopts(1) = globas(1) + (  cosyaw * cospitch ) * locpts(1) &
       + (  cosyaw * sinpitch * sinroll - sinyaw * cosroll ) * locpts(2) &
@@ -12658,10 +12481,9 @@ contains
     glopts(3) = globas(3) + ( -sinpitch ) * locpts(1) &
       + (  cospitch * sinroll ) * locpts(2) &
       + (  cospitch * cosroll ) * locpts(3)
-  end subroutine loc2glob_3d
+  end
 
-  subroutine l4vec_print ( n, a, title ) &
-        bind(C, name="l4vec_print")
+  subroutine l4vec_print ( n, a, title )
 
   !*****************************************************************************80
   !
@@ -12681,18 +12503,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of components of the vector.
+  !    Input, integer(int32) N, the number of components of the vector.
   !
   !    Input, logical A(N), the vector to be printed.
   !
   !    Input, character ( len = * ) TITLE, a title.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    logical, intent(in) :: a(n)
-    integer(ip) :: i
-    character ( len = * ), intent(in), value :: title
+    logical a(n)
+    integer(int32) i
+    character ( len = * )  title
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) trim ( title )
@@ -12701,10 +12523,9 @@ contains
     do i = 1, n
       write ( *, '(2x,i8,a,1x,l1)' ) i, ':', a(i)
     end do
-  end subroutine l4vec_print
+  end
 
-  subroutine minabs ( x1, y1, x2, y2, x3, y3, xmin, ymin ) &
-        bind(C, name="minabs")
+  subroutine minabs ( x1, y1, x2, y2, x3, y3, xmin, ymin )
 
   !*****************************************************************************80
   !
@@ -12724,28 +12545,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, real(dp) X1, Y1, X2, Y2, X3, Y3, are three sets of
+  !    Input/output, real(real64) X1, Y1, X2, Y2, X3, Y3, are three sets of
   !    data of the form ( X, F(X) ).  The three X values must be distinct.
   !    On output, the data has been sorted so that X1 < X2 < X3,
   !    and the Y values have been rearranged accordingly.
   !
-  !    Output, real(dp) XMIN, YMIN.  XMIN is a point within the interval
+  !    Output, real(real64) XMIN, YMIN.  XMIN is a point within the interval
   !    spanned by X1, X2 and X3, at which F takes its local minimum
   !    value YMIN.
   !
 
-    real(dp) :: slope
-    real(dp) :: slope12
-    real(dp) :: slope13
-    real(dp) :: slope23
-    real(dp), intent(inout) :: x1
-    real(dp), intent(inout) :: x2
-    real(dp), intent(inout) :: x3
-    real(dp), intent(out) :: xmin
-    real(dp), intent(inout) :: y1
-    real(dp), intent(inout) :: y2
-    real(dp), intent(inout) :: y3
-    real(dp), intent(out) :: ymin
+    real(real64) slope
+    real(real64) slope12
+    real(real64) slope13
+    real(real64) slope23
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) xmin
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) ymin
   !
   !  Refuse to deal with coincident data.
   !
@@ -12781,7 +12602,7 @@ contains
   !
   !  Case 1: Minimum must be at an endpoint.
   !
-    if ( slope13 <= slope12 .or. 0.0_dp <= slope12 ) then
+    if ( slope13 <= slope12 .or. 0.0e+00_real64 <= slope12 ) then
 
       if ( y1 < y3 ) then
         xmin = x1
@@ -12803,14 +12624,13 @@ contains
 
       slope = max ( abs ( slope12 ), slope23 )
 
-      xmin = 0.5_dp * ( x1 + x3 + ( y1 - y3 ) / slope )
+      xmin = 0.5e+00_real64 * ( x1 + x3 + ( y1 - y3 ) / slope )
       ymin = y1 - slope * ( xmin - x1 )
 
     end if
-  end subroutine minabs
+  end
 
-  subroutine minquad ( x1, y1, x2, y2, x3, y3, xmin, ymin ) &
-        bind(C, name="minquad")
+  subroutine minquad ( x1, y1, x2, y2, x3, y3, xmin, ymin )
 
   !*****************************************************************************80
   !
@@ -12838,28 +12658,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, real(dp) X1, Y1, X2, Y2, X3, Y3, three sets of data
+  !    Input/output, real(real64) X1, Y1, X2, Y2, X3, Y3, three sets of data
   !    of the form ( X, F(X) ).  The three X values must be distinct.
   !    On output, the data has been sorted so that X1 < X2 < X3,
   !    and the Y values have been rearranged accordingly.
   !
-  !    Output, real(dp) XMIN, YMIN.  XMIN is a point within the interval
+  !    Output, real(real64) XMIN, YMIN.  XMIN is a point within the interval
   !    spanned by X1, X2 and X3, at which F takes its local minimum value YMIN.
   !
 
-    integer(ip) :: ierror
-    real(dp) :: x
-    real(dp), intent(inout) :: x1
-    real(dp), intent(inout) :: x2
-    real(dp), intent(inout) :: x3
-    real(dp) :: xleft
-    real(dp), intent(out) :: xmin
-    real(dp) :: xrite
-    real(dp) :: y
-    real(dp), intent(inout) :: y1
-    real(dp), intent(inout) :: y2
-    real(dp), intent(inout) :: y3
-    real(dp), intent(out) :: ymin
+    integer(int32) ierror
+    real(real64) x
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) xleft
+    real(real64) xmin
+    real(real64) xrite
+    real(real64) y
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) ymin
   !
   !  Refuse to deal with coincident data.
   !
@@ -12914,11 +12734,10 @@ contains
       ymin = y
 
     end if
-  end subroutine minquad
+  end
 
   subroutine octahedron_shape_3d ( point_num, face_num, face_order_max, &
-    point_coord, face_order, face_point ) &
-        bind(C, name="octahedron_shape_3d")
+    point_coord, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -12944,42 +12763,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of vertices 
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of vertices 
   !    per face.
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the points.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the points.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of 
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of 
   !    vertices per face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) is the index of the I-th point in the J-th face.  The
   !    points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: point_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) point_num
 
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    real(dp), intent(out) :: point_coord(dim_num,point_num)
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) point_coord(dim_num,point_num)
   !
   !  Set point coordinates.
   !
     point_coord(1:dim_num,1:point_num) = reshape ( (/ &
-       0.0_dp,  0.0_dp, -1.0_dp, &
-       0.0_dp, -1.0_dp,  0.0_dp, &
-       1.0_dp,  0.0_dp,  0.0_dp, &
-       0.0_dp,  1.0_dp,  0.0_dp, &
-      -1.0_dp,  0.0_dp,  0.0_dp, &
-       0.0_dp,  0.0_dp,  1.0_dp /), (/ dim_num, point_num /) )
+       0.0e+00_real64,  0.0e+00_real64, -1.0e+00_real64, &
+       0.0e+00_real64, -1.0e+00_real64,  0.0e+00_real64, &
+       1.0e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+       0.0e+00_real64,  1.0e+00_real64,  0.0e+00_real64, &
+      -1.0e+00_real64,  0.0e+00_real64,  0.0e+00_real64, &
+       0.0e+00_real64,  0.0e+00_real64,  1.0e+00_real64 /), (/ dim_num, point_num /) )
   !
   !  Set the face orders.
   !
@@ -12997,10 +12816,9 @@ contains
        3, 4, 6, &
        4, 5, 6, &
        5, 2, 6 /), (/ face_order_max, face_num /) )
-  end subroutine octahedron_shape_3d
+  end
 
-  subroutine octahedron_size_3d ( point_num, edge_num, face_num, face_order_max ) &
-        bind(C, name="octahedron_size_3d")
+  subroutine octahedron_size_3d ( point_num, edge_num, face_num, face_order_max )
 
   !*****************************************************************************80
   !
@@ -13025,29 +12843,28 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of points.
+  !    Output, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum number of 
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum number of 
   !    vertices per face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 6
     edge_num = 12
     face_num = 8
     face_order_max = 3
-  end subroutine octahedron_size_3d
+  end
 
-  subroutine parallelogram_area_2d ( p, area ) &
-        bind(C, name="parallelogram_area_2d")
+  subroutine parallelogram_area_2d ( p, area )
 
   !*****************************************************************************80
   !
@@ -13087,24 +12904,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P(2,4), the parallelogram vertices,
+  !    Input, real(real64) P(2,4), the parallelogram vertices,
   !    given in counterclockwise order.  The fourth vertex is ignored.
   !
-  !    Output, real(dp) AREA, the (signed) area.
+  !    Output, real(real64) AREA, the (signed) area.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: p(2,4)
+    real(real64) area
+    real(real64) p(2,4)
   !
   !  Compute the cross product vector, which only has a single
   !  nonzero component.  
   !
     area = ( p(1,2) - p(1,1) ) * ( p(2,3) - p(2,1) ) &
          - ( p(2,2) - p(2,1) ) * ( p(1,3) - p(1,1) )
-  end subroutine parallelogram_area_2d
+  end
 
-  subroutine parallelogram_area_3d ( p, area ) &
-        bind(C, name="parallelogram_area_3d")
+  subroutine parallelogram_area_3d ( p, area )
 
   !*****************************************************************************80
   !
@@ -13148,15 +12964,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P(3,4), the parallelogram vertices,
+  !    Input, real(real64) P(3,4), the parallelogram vertices,
   !    given in counterclockwise order.  The fourth vertex is ignored.
   !
-  !    Output, real(dp) AREA, the area
+  !    Output, real(real64) AREA, the area
   !
 
-    real(dp), intent(out) :: area
-    real(dp) :: cross(3)
-    real(dp), intent(in) :: p(3,4)
+    real(real64) area
+    real(real64) cross(3)
+    real(real64) p(3,4)
   !
   !  Compute the cross product vector.
   !
@@ -13170,10 +12986,9 @@ contains
              - ( p(2,2) - p(2,1) ) * ( p(1,3) - p(1,1) )
 
     area = sqrt ( sum ( cross(1:3) ** 2 ) )
-  end subroutine parallelogram_area_3d
+  end
 
-  function parallelogram_contains_point_2d ( p1, p2, p3, p ) &
-        bind(C, name="parallelogram_contains_point_2d")
+  function parallelogram_contains_point_2d ( p1, p2, p3, p )
 
   !*****************************************************************************80
   !
@@ -13209,24 +13024,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), three corners of the 
+  !    Input, real(real64) P1(2), P2(2), P3(2), three corners of the 
   !    parallelogram, with P1 between P2 and P3.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical PARALLELOGRAM_CONTAINS_POINT_2D, 
   !    is TRUE if P is inside the parallelogram.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a(dim_num,dim_num+1)
-    integer(ip) :: info
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    logical :: parallelogram_contains_point_2d
+    real(real64) a(dim_num,dim_num+1)
+    integer(int32) info
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    logical parallelogram_contains_point_2d
   !
   !  Set up the linear system
   !
@@ -13255,17 +13070,16 @@ contains
       stop 1
     end if
 
-    if ( a(1,3) < 0.0_dp .or. 1.0_dp < a(1,3) ) then
+    if ( a(1,3) < 0.0e+00_real64 .or. 1.0e+00_real64 < a(1,3) ) then
       parallelogram_contains_point_2d = .false.
-    else if ( a(2,3) < 0.0_dp .or. 1.0_dp < a(2,3) ) then
+    else if ( a(2,3) < 0.0e+00_real64 .or. 1.0e+00_real64 < a(2,3) ) then
       parallelogram_contains_point_2d = .false.
     else
       parallelogram_contains_point_2d = .true.
     end if
-  end function parallelogram_contains_point_2d
+  end
 
-  function parallelogram_contains_point_3d ( p1, p2, p3, p ) &
-        bind(C, name="parallelogram_contains_point_3d")
+  function parallelogram_contains_point_3d ( p1, p2, p3, p )
 
   !*****************************************************************************80
   !
@@ -13303,10 +13117,10 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three corners of the 
+  !    Input, real(real64) P1(3), P2(3), P3(3), three corners of the 
   !    parallelogram, with P1 between P2 and P3.
   !
-  !    Input, real(dp) P(3), the point to be checked.
+  !    Input, real(real64) P(3), the point to be checked.
   !
   !    Output, logical PARALLELOGRAM_CONTAINS_POINT_3D, 
   !    is TRUE if P is inside the parallelogram, or on its boundary.
@@ -13315,18 +13129,18 @@ contains
   !    and yet be computationally slightly outside it.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a(dim_num,dim_num+1)
-    real(dp) :: r8vec_norm
-    integer(ip) :: info
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp) :: p4(dim_num)
-    logical :: parallelogram_contains_point_3d
-    real(dp), parameter :: tol = 0.0001_dp
+    real(real64) a(dim_num,dim_num+1)
+    real(real64) r8vec_norm
+    integer(int32) info
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
+    logical parallelogram_contains_point_3d
+    real(real64), parameter :: tol = 0.0001e+00_real64
   !
   !  Turn the triangle into a tetrahedron by computing the normal to
   !  P2-P1 and P3-P1.
@@ -13371,19 +13185,18 @@ contains
       stop 1
     end if
 
-    if ( a(1,4) < 0.0_dp .or. 1.0_dp < a(1,4) ) then
+    if ( a(1,4) < 0.0e+00_real64 .or. 1.0e+00_real64 < a(1,4) ) then
       parallelogram_contains_point_3d = .false.
-    else if ( a(2,4) < 0.0_dp .or. 1.0_dp < a(2,4) ) then
+    else if ( a(2,4) < 0.0e+00_real64 .or. 1.0e+00_real64 < a(2,4) ) then
       parallelogram_contains_point_3d = .false.
     else if ( tol < abs ( a(3,4) ) ) then
       parallelogram_contains_point_3d = .false.
     else
       parallelogram_contains_point_3d = .true.
     end if
-  end function parallelogram_contains_point_3d
+  end
 
-  subroutine parallelogram_point_dist_3d ( p1, p2, p3, p, dist ) &
-        bind(C, name="parallelogram_point_dist_3d")
+  subroutine parallelogram_point_dist_3d ( p1, p2, p3, p, dist )
 
   !*****************************************************************************80
   !
@@ -13414,34 +13227,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three corners of the 
+  !    Input, real(real64) P1(3), P2(3), P3(3), three corners of the 
   !    parallelogram, with P1 between P2 and P3.
   !
-  !    Input, real(dp) P(3), the point which is to be checked.
+  !    Input, real(real64) P(3), the point which is to be checked.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    parallelogram.  DIST is zero if the point lies exactly on the
   !    parallelogram.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: dis13
-    real(dp) :: dis21
-    real(dp) :: dis34
-    real(dp) :: dis42
-    real(dp), intent(out) :: dist
-    logical :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp) :: p4(dim_num)
-    logical :: parallelogram_contains_point_3d
-    real(dp) :: pn(dim_num)
-    real(dp) :: pp(dim_num)
-    real(dp) :: t
-    real(dp) :: temp
+    real(real64) dis13
+    real(real64) dis21
+    real(real64) dis34
+    real(real64) dis42
+    real(real64) dist
+    logical inside
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
+    logical parallelogram_contains_point_3d
+    real(real64) pn(dim_num)
+    real(real64) pp(dim_num)
+    real(real64) t
+    real(real64) temp
   !
   !  Compute PP, the unit normal to X2-X1 and X3-X1:
   !
@@ -13454,7 +13267,7 @@ contains
 
     temp = sqrt ( sum ( pp(1:dim_num) ** 2 ) )
 
-    if ( temp == 0.0_dp ) then
+    if ( temp == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PARALLELOGRAM_POINT_DIST_3D - Fatal error!'
       write ( *, '(a)' ) '  The normal vector is zero.'
@@ -13488,10 +13301,9 @@ contains
     call segment_point_dist_3d ( p2, p1, p, dis21 )
 
     dist = min ( dis13, dis34, dis42, dis21 )
-  end subroutine parallelogram_point_dist_3d
+  end
 
-  subroutine parabola_ex ( x1, y1, x2, y2, x3, y3, x, y, ierror ) &
-        bind(C, name="parabola_ex")
+  subroutine parabola_ex ( x1, y1, x2, y2, x3, y3, x, y, ierror )
 
   !*****************************************************************************80
   !
@@ -13511,28 +13323,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, X3, Y3, the coordinates of 
+  !    Input, real(real64) X1, Y1, X2, Y2, X3, Y3, the coordinates of 
   !    three points on the parabola.  X1, X2 and X3 must be distinct.
   !
-  !    Output, real(dp) X, Y, the X coordinate of the extremal point
+  !    Output, real(real64) X, Y, the X coordinate of the extremal point
   !    of the parabola, and the value of the parabola at that point.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    0, no error.
   !    1, two of the X values are equal.
   !    2, the data lies on a straight line; there is no finite extremal point.
   !
 
-    real(dp) :: bot
-    integer(ip), intent(out) :: ierror
-    real(dp), intent(out) :: x
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(out) :: y
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
+    real(real64) bot
+    integer(int32) ierror
+    real(real64) x
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
 
     ierror = 0
 
@@ -13547,11 +13359,11 @@ contains
 
     bot = ( x2 - x3 ) * y1 - ( x1 - x3 ) * y2 + ( x1 - x2 ) * y3
 
-    if ( bot == 0.0_dp ) then
+    if ( bot == 0.0e+00_real64 ) then
       ierror = 2
     end if
 
-    x = 0.5_dp * ( x1 * x1 * ( y3 - y2 ) &
+    x = 0.5e+00_real64 * ( x1 * x1 * ( y3 - y2 ) &
                   + x2 * x2 * ( y1 - y3 ) &
                   + x3 * x3 * ( y2 - y1 ) ) / bot
 
@@ -13559,10 +13371,9 @@ contains
            - ( x  - x1 ) * ( x  - x3 ) * ( x1 - x3 ) * y2 &
            + ( x  - x1 ) * ( x  - x2 ) * ( x1 - x2 ) * y3 ) / &
            ( ( x1 - x2 ) * ( x2 - x3 ) * ( x1 - x3 ) )
-  end subroutine parabola_ex
+  end
 
-  subroutine parabola_ex2 ( x1, y1, x2, y2, x3, y3, x, y, a, b, c, ierror ) &
-        bind(C, name="parabola_ex2")
+  subroutine parabola_ex2 ( x1, y1, x2, y2, x3, y3, x, y, a, b, c, ierror )
 
   !*****************************************************************************80
   !
@@ -13582,37 +13393,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, X3, Y3, the coordinates of 
+  !    Input, real(real64) X1, Y1, X2, Y2, X3, Y3, the coordinates of 
   !    three points on the parabola.  X1, X2 and X3 must be distinct.
   !
-  !    Output, real(dp) X, Y, the X coordinate of the extremal point
+  !    Output, real(real64) X, Y, the X coordinate of the extremal point
   !    of the parabola, and the value of the parabola at that point.
   !
-  !    Output, real(dp) A, B, C, the coefficients that define the
+  !    Output, real(real64) A, B, C, the coefficients that define the
   !    parabola: P(X) = A * X * X + B * X + C.
   !
-  !    Output, integer(ip) IERROR, error flag.
+  !    Output, integer(int32) IERROR, error flag.
   !    0, no error.
   !    1, two of the X values are equal.
   !    2, the data lies on a straight line; there is no finite extremal
   !    point.
   !
 
-    real(dp), intent(out) :: a
-    real(dp), intent(out) :: b
-    real(dp), intent(out) :: c
-    real(dp) :: det
-    integer(ip), intent(out) :: ierror
-    real(dp) :: v(3,3)
-    real(dp) :: w(3,3)
-    real(dp), intent(out) :: x
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(out) :: y
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) det
+    integer(int32) ierror
+    real(real64) v(3,3)
+    real(real64) w(3,3)
+    real(real64) x
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
 
     ierror = 0
 
@@ -13627,15 +13438,15 @@ contains
   !
   !  Set up the Vandermonde matrix.
   !
-    v(1,1) = 1.0_dp
+    v(1,1) = 1.0e+00_real64
     v(1,2) = x1
     v(1,3) = x1 * x1
 
-    v(2,1) = 1.0_dp
+    v(2,1) = 1.0e+00_real64
     v(2,2) = x2
     v(2,3) = x2 * x2
 
-    v(3,1) = 1.0_dp
+    v(3,1) = 1.0e+00_real64
     v(3,2) = x3
     v(3,3) = x3 * x3
   !
@@ -13651,16 +13462,15 @@ contains
   !
   !  Determine the extremal point.
   !
-    if ( a == 0.0_dp ) then
+    if ( a == 0.0e+00_real64 ) then
       ierror = 2
     end if
 
-    x = - b / ( 2.0_dp * a )
+    x = - b / ( 2.0e+00_real64 * a )
     y = a * x * x + b * x + c
-  end subroutine parabola_ex2
+  end
 
-  function parallelepiped_contains_point_3d ( p1, p2, p3, p4, p ) &
-        bind(C, name="parallelepiped_contains_point_3d")
+  function parallelepiped_contains_point_3d ( p1, p2, p3, p4, p )
 
   !*****************************************************************************80
   !
@@ -13699,32 +13509,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), P4(3), four corners 
+  !    Input, real(real64) P1(3), P2(3), P3(3), P4(3), four corners 
   !    of the parallelepiped.  It is assumed that P2, P3 and P4 are
   !    immediate neighbors of P1.
   !
-  !    Input, real(dp) P(3), the point to be checked.
+  !    Input, real(real64) P(3), the point to be checked.
   !
   !    Output, logical PARALLELEPIPED_CONTAINS_POINT_3D, 
   !    is true if P is inside the parallelepiped, or on its boundary.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: dot
-    logical :: parallelepiped_contains_point_3d
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(in) :: p4(dim_num)
+    real(real64) dot
+    logical parallelepiped_contains_point_3d
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
 
     parallelepiped_contains_point_3d = .false.
 
     dot = dot_product ( p(1:dim_num)  - p1(1:dim_num), &
                         p2(1:dim_num) - p1(1:dim_num) )
 
-    if ( dot < 0.0_dp ) then
+    if ( dot < 0.0e+00_real64 ) then
     end if
 
     if ( sum ( ( p2(1:dim_num) - p1(1:dim_num) ) ** 2 ) < dot ) then
@@ -13733,7 +13543,7 @@ contains
     dot = dot_product ( p(1:dim_num)  - p1(1:dim_num), &
                         p3(1:dim_num) - p1(1:dim_num) )
 
-    if ( dot < 0.0_dp ) then
+    if ( dot < 0.0e+00_real64 ) then
     end if
 
     if ( sum ( ( p3(1:dim_num) - p1(1:dim_num) ) ** 2 ) < dot ) then
@@ -13742,17 +13552,16 @@ contains
     dot = dot_product ( p(1:dim_num)  - p1(1:dim_num), &
                         p4(1:dim_num) - p1(1:dim_num) )
 
-    if ( dot < 0.0_dp ) then
+    if ( dot < 0.0e+00_real64 ) then
     end if
 
     if ( sum ( ( p4(1:dim_num) - p1(1:dim_num) ) ** 2 ) < dot ) then
     end if
 
     parallelepiped_contains_point_3d = .true.
-  end function parallelepiped_contains_point_3d
+  end
 
-  subroutine parallelepiped_point_dist_3d ( p1, p2, p3, p4, p, dist ) &
-        bind(C, name="parallelepiped_point_dist_3d")
+  subroutine parallelepiped_point_dist_3d ( p1, p2, p3, p4, p, dist )
 
   !*****************************************************************************80
   !
@@ -13791,32 +13600,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), P4(3), 
+  !    Input, real(real64) P1(3), P2(3), P3(3), P4(3), 
   !    half of the corners of the box, from which the other corners can be
   !    deduced.  The corners should be chosen so that the first corner
   !    is directly connected to the other three.  The locations of
   !    corners 5, 6, 7 and 8 will be computed by the parallelogram
   !    relation.
   !
-  !    Input, real(dp) P(3), the point which is to be checked.
+  !    Input, real(real64) P(3), the point which is to be checked.
   !
-  !    Output, real(dp) DIST, the distance from the point to the box. 
+  !    Output, real(real64) DIST, the distance from the point to the box. 
   !    DIST is zero if the point lies exactly on the box.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: dis
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(in) :: p4(dim_num)
-    real(dp) :: p5(dim_num)
-    real(dp) :: p6(dim_num)
-    real(dp) :: p7(dim_num)
-    real(dp) :: p8(dim_num)
+    real(real64) dis
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
+    real(real64) p5(dim_num)
+    real(real64) p6(dim_num)
+    real(real64) p7(dim_num)
+    real(real64) p8(dim_num)
   !
   !  Fill in the other corners
   !
@@ -13824,7 +13633,7 @@ contains
     p6(1:dim_num) = p2(1:dim_num) + p4(1:dim_num) - p1(1:dim_num)
     p7(1:dim_num) = p3(1:dim_num) + p4(1:dim_num) - p1(1:dim_num)
     p8(1:dim_num) = p2(1:dim_num) + p3(1:dim_num) + p4(1:dim_num) &
-      - 2.0_dp * p1(1:dim_num)
+      - 2.0e+00_real64 * p1(1:dim_num)
   !
   !  Compute the distance from the point P to each of the six
   !  parallelogram faces.
@@ -13852,10 +13661,9 @@ contains
     call parallelogram_point_dist_3d ( p8, p6, p7, p, dis )
 
     dist = min ( dist, dis )
-  end subroutine parallelepiped_point_dist_3d
+  end
 
-  subroutine perm_inverse ( n, p ) &
-        bind(C, name="perm_inverse")
+  subroutine perm_inverse ( n, p )
 
   !*****************************************************************************80
   !
@@ -13875,20 +13683,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of objects being permuted.
+  !    Input, integer(int32) N, the number of objects being permuted.
   !
-  !    Input/output, integer(ip) P(N), the permutation, in standard 
+  !    Input/output, integer(int32) P(N), the permutation, in standard 
   !    index form.  On output, P describes the inverse permutation
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: i0
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: is
-    integer(ip), intent(inout) :: p(n)
+    integer(int32) i
+    integer(int32) i0
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) is
+    integer(int32) p(n)
 
     if ( n <= 0 ) then
       write ( *, '(a)' ) ' '
@@ -13939,11 +13747,10 @@ contains
       end if
 
     end do
-  end subroutine perm_inverse
+  end
 
   subroutine plane_exp_grid_3d ( p1, p2, p3, ncor3, line_num, cor3, lines, &
-    maxcor3, line_max, ierror ) &
-        bind(C, name="plane_exp_grid_3d")
+    maxcor3, line_max, ierror )
 
   !*****************************************************************************80
   !
@@ -13983,56 +13790,56 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Input, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
-  !    Input/output, integer(ip) NCOR3, the number of points stored 
+  !    Input/output, integer(int32) NCOR3, the number of points stored 
   !    in COR3.
   !
-  !    Input/output, integer(ip) LINE_NUM, the number of line data items.
+  !    Input/output, integer(int32) LINE_NUM, the number of line data items.
   !
-  !    Input/output, real(dp) COR3(3,MAXCOR3), the grid points.
+  !    Input/output, real(real64) COR3(3,MAXCOR3), the grid points.
   !
-  !    Input/output, integer(ip) LINES(LINE_MAX), the indices of 
+  !    Input/output, integer(int32) LINES(LINE_MAX), the indices of 
   !    points used in the lines of the grid.  Successive entries of LINES are 
   !    joined by a line, unless an entry equals -1.  Note that indices begin
   !    with 0.
   !
-  !    Input, integer(ip) MAXCOR3, the maximum number of points.
+  !    Input, integer(int32) MAXCOR3, the maximum number of points.
   !
-  !    Input, integer(ip) LINE_MAX, the maximum number of lines.
+  !    Input, integer(int32) LINE_MAX, the maximum number of lines.
   !
-  !    Output, integer(ip) IERROR, error indicator.
+  !    Output, integer(int32) IERROR, error indicator.
   !    0, no error.
   !    1, more space for point coordinates is needed.
   !    2, more space for line data is needed.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: maxcor3
-    integer(ip), intent(in), value :: line_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) maxcor3
+    integer(int32) line_max
 
-    real(dp) :: a
-    real(dp) :: amax
-    real(dp) :: amin
-    real(dp) :: b
-    real(dp) :: bmax
-    real(dp) :: bmin
-    real(dp), intent(inout) :: cor3(dim_num,maxcor3)
-    real(dp) :: dot
-    integer(ip) :: i
-    integer(ip), intent(out) :: ierror
-    integer(ip) :: j
-    integer(ip), intent(inout) :: line_num
-    integer(ip), intent(in) :: lines(line_max)
-    integer(ip) :: nbase
-    integer(ip), intent(inout) :: ncor3
-    integer(ip), parameter :: nx = 5
-    integer(ip), parameter :: ny = 5
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp) :: v1(dim_num)
-    real(dp) :: v2(dim_num)
+    real(real64) a
+    real(real64) amax
+    real(real64) amin
+    real(real64) b
+    real(real64) bmax
+    real(real64) bmin
+    real(real64) cor3(dim_num,maxcor3)
+    real(real64) dot
+    integer(int32) i
+    integer(int32) ierror
+    integer(int32) j
+    integer(int32) line_num
+    integer(int32) lines(line_max)
+    integer(int32) nbase
+    integer(int32) ncor3
+    integer(int32), parameter :: nx = 5
+    integer(int32), parameter :: ny = 5
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
 
     ierror = 0
 
@@ -14069,10 +13876,10 @@ contains
   !
     if ( ncor3 == 0 ) then
 
-      amin = 0.0_dp
-      amax = 1.0_dp
-      bmin = 0.0_dp
-      bmax = 1.0_dp
+      amin = 0.0e+00_real64
+      amax = 1.0e+00_real64
+      bmin = 0.0e+00_real64
+      bmax = 1.0e+00_real64
 
     else
 
@@ -14105,15 +13912,15 @@ contains
 
     do j = 1, ny
 
-      b = ( real ( ny - j, dp) * bmin &
-          + real (      j - 1, dp) * bmax ) &
-          / real ( ny     - 1, dp)
+      b = ( real ( ny - j, real64) * bmin &
+          + real (      j - 1, real64) * bmax ) &
+          / real ( ny     - 1, real64)
 
       do i = 1, nx
 
-        a = ( real ( nx - i, dp) * amin &
-            + real (      i - 1, dp) * amax ) &
-            / real ( nx     - 1, dp)
+        a = ( real ( nx - i, real64) * amin &
+            + real (      i - 1, real64) * amax ) &
+            / real ( nx     - 1, real64)
 
         ncor3 = ncor3 + 1
         cor3(1:dim_num,ncor3) = a * v1(1:dim_num) + b * v2(1:dim_num)
@@ -14169,10 +13976,9 @@ contains
       lines(line_num) = 0
 
     end do
-  end subroutine plane_exp_grid_3d
+  end
 
-  subroutine plane_exp_normal_3d ( p1, p2, p3, normal ) &
-        bind(C, name="plane_exp_normal_3d")
+  subroutine plane_exp_normal_3d ( p1, p2, p3, normal )
 
   !*****************************************************************************80
   !
@@ -14198,19 +14004,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Input, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
-  !    Output, real(dp) NORMAL(3), the coordinates of the unit normal
+  !    Output, real(real64) NORMAL(3), the coordinates of the unit normal
   !    vector to the plane containing the three points.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp) :: normal_norm
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
+    real(real64) normal(dim_num)
+    real(real64) normal_norm
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
   !
   !  The cross product (P2-P1) x (P3-P1) is normal to (P2-P1) and (P3-P1).
   !
@@ -14225,7 +14031,7 @@ contains
 
     normal_norm = sqrt ( sum ( normal(1:dim_num) ** 2 ) )
 
-    if ( normal_norm == 0.0_dp ) then
+    if ( normal_norm == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_EXP_NORMAL_3D - Fatal error!'
       write ( *, '(a)' ) '  The plane is poorly defined.'
@@ -14233,10 +14039,9 @@ contains
     end if
 
     normal(1:dim_num) = normal(1:dim_num) / normal_norm
-  end subroutine plane_exp_normal_3d
+  end
 
-  subroutine plane_exp_point_dist_3d ( p1, p2, p3, p, dist ) &
-        bind(C, name="plane_exp_point_dist_3d")
+  subroutine plane_exp_point_dist_3d ( p1, p2, p3, p, dist )
 
   !*****************************************************************************80
   !
@@ -14262,32 +14067,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Input, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
-  !    Input, real(dp) P(3), the coordinates of the point.
+  !    Input, real(real64) P(3), the coordinates of the point.
   !
-  !    Output, real(dp) DIST, the distance from the point to the plane.
+  !    Output, real(real64) DIST, the distance from the point to the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
 
     call plane_exp2imp_3d ( p1, p2, p3, a, b, c, d )
 
     call plane_imp_point_dist_3d ( a, b, c, d, p, dist )
-  end subroutine plane_exp_point_dist_3d
+  end
 
-  subroutine plane_exp_pro2 ( p1, p2, p3, n, p, pp ) &
-        bind(C, name="plane_exp_pro2")
+  subroutine plane_exp_pro2 ( p1, p2, p3, n, p, pp )
 
   !*****************************************************************************80
   !
@@ -14322,31 +14126,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Input, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
-  !    Input, integer(ip) N, the number of points to project.
+  !    Input, integer(int32) N, the number of points to project.
   !
-  !    Input, real(dp) P(3,N), are the Cartesian
+  !    Input, real(real64) P(3,N), are the Cartesian
   !    coordinates of points which lie on the plane spanned by the
   !    three points.  These points are not checked to ensure that
   !    they lie on the plane.
   !
-  !    Output, real(dp) PP(2,N), the "in-plane"
+  !    Output, real(real64) PP(2,N), the "in-plane"
   !    coordinates of the points.  
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 3
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: dot
-    integer(ip) :: i
-    real(dp), intent(in) :: p(dim_num,n)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(out) :: pp(2,dim_num)
-    real(dp) :: v1(dim_num)
-    real(dp) :: v2(dim_num)
+    real(real64) dot
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pp(2,dim_num)
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
   !
   !  Compute the two basis vectors for the affine plane.
   !
@@ -14368,10 +14172,9 @@ contains
       pp(1,i) = dot_product ( p(1:dim_num,i) - p1(1:dim_num), v1(1:dim_num) )
       pp(2,i) = dot_product ( p(1:dim_num,i) - p2(1:dim_num), v2(1:dim_num) )
     end do
-  end subroutine plane_exp_pro2
+  end
 
-  subroutine plane_exp_pro3 ( p1, p2, p3, n, p, pp ) &
-        bind(C, name="plane_exp_pro3")
+  subroutine plane_exp_pro3 ( p1, p2, p3, n, p, pp )
 
   !*****************************************************************************80
   !
@@ -14400,29 +14203,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Input, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
-  !    Input, integer(ip) N, the number of points to project.
+  !    Input, integer(int32) N, the number of points to project.
   !
-  !    Input, real(dp) P(3,N), the points.
+  !    Input, real(real64) P(3,N), the points.
   !
-  !    Output, real(dp) PP(3,N), the projections of the points through 
+  !    Output, real(real64) PP(3,N), the projections of the points through 
   !    the focus point onto the plane.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 3
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    integer(ip) :: i
-    real(dp), intent(in) :: p(dim_num,n)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(out) :: pp(dim_num,n)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pp(dim_num,n)
   !
   !  Put the plane into ABCD form.
   !
@@ -14436,10 +14239,9 @@ contains
       call plane_imp_point_near_3d ( a, b, c, d, p(1:dim_num,i), pp(1:dim_num,i) )
 
     end do
-  end subroutine plane_exp_pro3
+  end
 
-  subroutine plane_exp_project_3d ( p1, p2, p3, pf, n, po, pp, ivis ) &
-        bind(C, name="plane_exp_project_3d")
+  subroutine plane_exp_project_3d ( p1, p2, p3, pf, n, po, pp, ivis )
 
   !*****************************************************************************80
   !
@@ -14465,20 +14267,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Input, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
-  !    Input, real(dp) PF(3), the focus point.
+  !    Input, real(real64) PF(3), the focus point.
   !
-  !    Input, integer(ip) N, the number of points to project.
+  !    Input, integer(int32) N, the number of points to project.
   !
-  !    Input, real(dp) PO(3,N), the object points.
+  !    Input, real(real64) PO(3,N), the object points.
   !
-  !    Output, real(dp) PP(3,N), are the 
+  !    Output, real(real64) PP(3,N), are the 
   !    coordinates of the projections of the object points through the focus
   !    point onto the plane.  PP may share the same memory as PO,
   !    in which case the projections will overwrite the original data.
   !
-  !    Output, integer(ip) IVIS(N), visibility indicator:
+  !    Output, integer(int32) IVIS(N), visibility indicator:
   !    3, the object was behind the plane;
   !    2, the object was already on the plane;
   !    1, the object was between the focus and the plane;
@@ -14488,27 +14290,27 @@ contains
   !    might be considered invisible.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 3
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a
-    real(dp) :: alpha
-    real(dp) :: angle_rad_3d
-    real(dp) :: b
-    real(dp) :: beta
-    real(dp) :: c
-    real(dp) :: d
-    real(dp) :: disfo
-    real(dp) :: disfn
-    integer(ip) :: i
-    integer(ip), intent(out) :: ivis(n)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(in) :: pf(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp), intent(in) :: po(dim_num,n)
-    real(dp), intent(out) :: pp(dim_num,n)
+    real(real64) a
+    real(real64) alpha
+    real(real64) angle_rad_3d
+    real(real64) b
+    real(real64) beta
+    real(real64) c
+    real(real64) d
+    real(real64) disfo
+    real(real64) disfn
+    integer(int32) i
+    integer(int32) ivis(n)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pf(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) po(dim_num,n)
+    real(real64) pp(dim_num,n)
   !
   !  Put the plane into ABCD form.
   !
@@ -14526,7 +14328,7 @@ contains
   !  project points that actually lie in the plane, but we'll
   !  just bail out.
   !
-    if ( disfn == 0.0_dp ) then
+    if ( disfn == 0.0e+00_real64 ) then
       ivis(1:n) = 0
       do i = 1, dim_num
         pp(i,1:n) = pf(i)
@@ -14541,7 +14343,7 @@ contains
   !
       disfo = sqrt ( sum ( ( po(1:dim_num,i) - pf(1:dim_num) ) ** 2 ) )
 
-      if ( disfo == 0.0_dp ) then
+      if ( disfo == 0.0e+00_real64 ) then
 
         ivis(i) = 0
         pp(1:dim_num,i) = pn(1:dim_num)
@@ -14552,7 +14354,7 @@ contains
   !
         alpha = angle_rad_3d ( po(1:3,i), pf(1:3), pn(1:3) )
 
-        if ( cos ( alpha ) == 0.0_dp ) then
+        if ( cos ( alpha ) == 0.0e+00_real64 ) then
 
           ivis(i) = 0
           pp(1:dim_num,i) = pn(1:dim_num)
@@ -14563,11 +14365,11 @@ contains
   !
           beta = disfn / ( cos ( alpha ) * disfo )
 
-          if ( 1.0_dp < beta ) then
+          if ( 1.0e+00_real64 < beta ) then
             ivis(i) = 1
-          else if ( beta == 1.0_dp ) then
+          else if ( beta == 1.0e+00_real64 ) then
             ivis(i) = 2
-          else if ( 0.0_dp < beta ) then
+          else if ( 0.0e+00_real64 < beta ) then
             ivis(i) = 3
           else
             ivis(i) = -1
@@ -14583,10 +14385,9 @@ contains
       end if
 
     end do
-  end subroutine plane_exp_project_3d
+  end
 
-  subroutine plane_exp2imp_3d ( p1, p2, p3, a, b, c, d ) &
-        bind(C, name="plane_exp2imp_3d")
+  subroutine plane_exp2imp_3d ( p1, p2, p3, a, b, c, d )
 
   !*****************************************************************************80
   !
@@ -14623,21 +14424,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Input, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
-  !    Output, real(dp) A, B, C, D, coefficients which describe 
+  !    Output, real(real64) A, B, C, D, coefficients which describe 
   !    the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: a
-    real(dp), intent(out) :: b
-    real(dp), intent(out) :: c
-    real(dp), intent(out) :: d
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
 
     a = ( p2(2) - p1(2) ) * ( p3(3) - p1(3) ) &
       - ( p2(3) - p1(3) ) * ( p3(2) - p1(2) )
@@ -14649,10 +14450,9 @@ contains
       - ( p2(2) - p1(2) ) * ( p3(1) - p1(1) )
 
     d = - p2(1) * a - p2(2) * b - p2(3) * c
-  end subroutine plane_exp2imp_3d
+  end
 
-  subroutine plane_exp2normal_3d ( p1, p2, p3, pp, normal ) &
-        bind(C, name="plane_exp2normal_3d")
+  subroutine plane_exp2normal_3d ( p1, p2, p3, pp, normal )
 
   !*****************************************************************************80
   !
@@ -14683,21 +14483,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Input, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
-  !    Output, real(dp) PP(3), a point on the plane.
+  !    Output, real(real64) PP(3), a point on the plane.
   !
-  !    Output, real(dp) NORMAL(3), a unit normal vector to the plane.
+  !    Output, real(real64) NORMAL(3), a unit normal vector to the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: norm
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(out) :: pp(dim_num)
+    real(real64) norm
+    real(real64) normal(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pp(dim_num)
 
     pp(1:dim_num) = p1(1:dim_num)
 
@@ -14712,7 +14512,7 @@ contains
 
     norm = sqrt ( sum ( normal(1:dim_num) ** 2 ) )
 
-    if ( norm == 0.0_dp ) then
+    if ( norm == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_EXP2NORMAL_3D - Fatal error!'
       write ( *, '(a)' ) '  The normal vector is null.'
@@ -14721,10 +14521,9 @@ contains
     end if
 
     normal(1:dim_num) = normal(1:dim_num) / norm
-  end subroutine plane_exp2normal_3d
+  end
 
-  function plane_imp_is_degenerate_3d ( a, b, c ) &
-        bind(C, name="plane_imp_is_degenerate_3d")
+  function plane_imp_is_degenerate_3d ( a, b, c )
 
   !*****************************************************************************80
   !
@@ -14752,27 +14551,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, the implicit plane parameters.
   !
   !    Output, logical PLANE_IMP_IS_DEGENERATE_3D, 
   !    is TRUE if the plane is degenerate.
   !
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    logical :: plane_imp_is_degenerate_3d
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    logical plane_imp_is_degenerate_3d
 
-    if ( a == 0.0_dp .and. b == 0.0_dp .and. c == 0.0_dp ) then
+    if ( a == 0.0e+00_real64 .and. b == 0.0e+00_real64 .and. c == 0.0e+00_real64 ) then
       plane_imp_is_degenerate_3d = .true.
     else
       plane_imp_is_degenerate_3d = .false.
     end if
-  end function plane_imp_is_degenerate_3d
+  end
 
   subroutine plane_imp_line_par_int_3d ( a, b, c, d, x0, y0, z0, f, g, h, &
-    intersect, p ) &
-        bind(C, name="plane_imp_line_par_int_3d")
+    intersect, p )
 
   !*****************************************************************************80
   !
@@ -14815,43 +14613,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Input, real(dp) X0, Y0, Z0, F, G, H, parameters that define the
+  !    Input, real(real64) X0, Y0, Z0, F, G, H, parameters that define the
   !    parametric line.
   !
   !    Output, logical INTERSECT, is TRUE if the line and the plane
   !    intersect.
   !
-  !    Output, real(dp) P(3), is a point of intersection of the line
+  !    Output, real(real64) P(3), is a point of intersection of the line
   !    and the plane, if INTERSECT is TRUE.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp) :: denom
-    real(dp), intent(in), value :: f
-    real(dp), intent(in), value :: g
-    real(dp), intent(in), value :: h
-    logical, intent(out) :: intersect
-    real(dp) :: norm1
-    real(dp) :: norm2
-    real(dp), intent(out) :: p(dim_num)
-    real(dp) :: t
-    real(dp), parameter :: tol = 0.00001_dp
-    real(dp), intent(in), value :: x0
-    real(dp), intent(in), value :: y0
-    real(dp), intent(in), value :: z0
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) denom
+    real(real64) f
+    real(real64) g
+    real(real64) h
+    logical intersect
+    real(real64) norm1
+    real(real64) norm2
+    real(real64) p(dim_num)
+    real(real64) t
+    real(real64), parameter :: tol = 0.00001e+00_real64
+    real(real64) x0
+    real(real64) y0
+    real(real64) z0
   !
   !  Check.
   !
     norm1 = sqrt ( a * a + b * b + c * c )
 
-    if ( norm1 == 0.0_dp ) then
+    if ( norm1 == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_IMP_LINE_PAR_INT_3D - Fatal error!'
       write ( *, '(a)' ) '  The plane normal vector is null.'
@@ -14860,7 +14658,7 @@ contains
 
     norm2 = sqrt ( f * f + g * g + h * h )
 
-    if ( norm2 == 0.0_dp ) then
+    if ( norm2 == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_IMP_LINE_PAR_INT_3D - Fatal error!'
       write ( *, '(a)' ) '  The line direction vector is null.'
@@ -14873,14 +14671,14 @@ contains
   !
     if ( abs ( denom ) < tol * norm1 * norm2 ) then
 
-      if ( a * x0 + b * y0 + c * z0 + d == 0.0_dp ) then
+      if ( a * x0 + b * y0 + c * z0 + d == 0.0e+00_real64 ) then
         intersect = .true.
         p(1) = x0
         p(2) = y0
         p(3) = z0
       else
         intersect = .false.
-        p(1:dim_num) = 0.0_dp
+        p(1:dim_num) = 0.0e+00_real64
       end if
   !
   !  If they are not parallel, they must intersect.
@@ -14894,10 +14692,9 @@ contains
       p(3) = z0 + t * h
 
     end if
-  end subroutine plane_imp_line_par_int_3d
+  end
 
-  subroutine plane_imp_point_dist_3d ( a, b, c, d, p, dist ) &
-        bind(C, name="plane_imp_point_dist_3d")
+  subroutine plane_imp_point_dist_3d ( a, b, c, d, p, dist )
 
   !*****************************************************************************80
   !
@@ -14930,26 +14727,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Input, real(dp) P(3), the coordinates of the point.
+  !    Input, real(real64) P(3), the coordinates of the point.
   !
-  !    Output, real(dp) DIST, the distance from the point to the plane.
+  !    Output, real(real64) DIST, the distance from the point to the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp), intent(out) :: dist
-    real(dp) :: norm
-    real(dp), intent(in) :: p(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) dist
+    real(real64) norm
+    real(real64) p(dim_num)
 
     norm = sqrt ( a * a + b * b + c * c )
 
-    if ( norm == 0.0_dp ) then
+    if ( norm == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_IMP_POINT_DIST_3D - Fatal error!'
       write ( *, '(a)' ) '  The plane normal vector is null.'
@@ -14957,10 +14754,9 @@ contains
     end if
 
     dist = abs ( a * p(1) + b * p(2) + c * p(3) + d ) / norm
-  end subroutine plane_imp_point_dist_3d
+  end
 
-  subroutine plane_imp_point_dist_signed_3d ( a, b, c, d, p, dist_signed ) &
-        bind(C, name="plane_imp_point_dist_signed_3d")
+  subroutine plane_imp_point_dist_signed_3d ( a, b, c, d, p, dist_signed )
 
   !*****************************************************************************80
   !
@@ -14994,39 +14790,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Input, real(dp) P(3), the coordinates of the point.
+  !    Input, real(real64) P(3), the coordinates of the point.
   !
-  !    Output, real(dp) DIST_SIGNED, the signed distance from 
+  !    Output, real(real64) DIST_SIGNED, the signed distance from 
   !    the point to the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp), intent(out) :: dist_signed
-    real(dp) :: norm
-    real(dp), intent(in) :: p(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) dist_signed
+    real(real64) norm
+    real(real64) p(dim_num)
 
     norm = sqrt ( a * a + b * b + c * c )
 
-    if ( norm == 0.0_dp ) then
+    if ( norm == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_IMP_POINT_DIST_SIGNED_3D - Fatal error!'
       write ( *, '(a)' ) '  The plane normal vector is null.'
       stop 1
     end if
 
-    dist_signed = - sign ( 1.0_dp, d ) &
+    dist_signed = - sign ( 1.0e+00_real64, d ) &
       * ( a * p(1) + b * p(2) + c * p(3) + d ) / norm
-  end subroutine plane_imp_point_dist_signed_3d
+  end
 
-  subroutine plane_imp_point_near_3d ( a, b, c, d, p, pn ) &
-        bind(C, name="plane_imp_point_near_3d")
+  subroutine plane_imp_point_near_3d ( a, b, c, d, p, pn )
 
   !*****************************************************************************80
   !
@@ -15071,23 +14866,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Input, real(dp) P(3), the coordinates of the point.
+  !    Input, real(real64) P(3), the coordinates of the point.
   !
-  !    Output, real(dp) PN(3), the nearest point on the plane.
+  !    Output, real(real64) PN(3), the nearest point on the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp), intent(in) :: p(dim_num)
-    logical :: plane_imp_is_degenerate_3d
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp) :: t
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) p(dim_num)
+    logical plane_imp_is_degenerate_3d
+    real(real64) pn(dim_num)
+    real(real64) t
 
     if ( plane_imp_is_degenerate_3d ( a, b, c ) ) then
       write ( *, '(a)' ) ' '
@@ -15101,10 +14896,9 @@ contains
     pn(1) = p(1) + a * t
     pn(2) = p(2) + b * t
     pn(3) = p(3) + c * t
-  end subroutine plane_imp_point_near_3d
+  end
 
-  subroutine plane_imp_segment_near_3d ( p1, p2, a, b, c, d, dist, p, pn ) &
-        bind(C, name="plane_imp_segment_near_3d")
+  subroutine plane_imp_segment_near_3d ( p1, p2, a, b, c, d, dist, p, pn )
 
   !*****************************************************************************80
   !
@@ -15133,47 +14927,47 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the endpoints of the line
+  !    Input, real(real64) P1(3), P2(3), the endpoints of the line
   !    segment.
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Output, real(dp) DIST, the distance between the line segment and
+  !    Output, real(real64) DIST, the distance between the line segment and
   !    the plane.
   !
-  !    Output, real(dp) P(3), the nearest point on the plane.
+  !    Output, real(real64) P(3), the nearest point on the plane.
   !
-  !    Output, real(dp) PN(3), the nearest point on the line
+  !    Output, real(real64) PN(3), the nearest point on the line
   !    segment to the plane.  If DIST is zero, the PN is a point of
   !    intersection of the plane and the line segment.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp) :: alpha
-    real(dp) :: an
-    real(dp), intent(in), value :: b
-    real(dp) :: bn
-    real(dp), intent(in), value :: c
-    real(dp) :: cn
-    real(dp), intent(in), value :: d
-    real(dp), intent(out) :: dist
-    real(dp) :: dn
-    real(dp) :: dot1
-    real(dp) :: dot2
-    real(dp) :: norm
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
+    real(real64) a
+    real(real64) alpha
+    real(real64) an
+    real(real64) b
+    real(real64) bn
+    real(real64) c
+    real(real64) cn
+    real(real64) d
+    real(real64) dist
+    real(real64) dn
+    real(real64) dot1
+    real(real64) dot2
+    real(real64) norm
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
 
-    pn(1:dim_num) = 0.0_dp
-    p(1:dim_num) = 0.0_dp
+    pn(1:dim_num) = 0.0e+00_real64
+    p(1:dim_num) = 0.0e+00_real64
 
     norm = sqrt ( a * a + b * b + c * c )
 
-    if ( norm == 0.0_dp ) then
+    if ( norm == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_IMP_SEGMENT_NEAR_3D - Fatal error!'
       write ( *, '(a)' ) '  Plane normal vector is null.'
@@ -15207,8 +15001,8 @@ contains
   !  If these have the same sign, then the line segment does not
   !  cross the plane, and one endpoint is the nearest point.
   !
-    if ( ( 0.0_dp < dot1 .and. 0.0_dp < dot2 ) .or. &
-         ( dot1 < 0.0_dp .and. dot2 < 0.0_dp ) ) then
+    if ( ( 0.0e+00_real64 < dot1 .and. 0.0e+00_real64 < dot2 ) .or. &
+         ( dot1 < 0.0e+00_real64 .and. dot2 < 0.0e+00_real64 ) ) then
 
       dot1 = abs ( dot1 )
       dot2 = abs ( dot2 )
@@ -15231,26 +15025,25 @@ contains
   !
     else
 
-      if ( dot1 == 0.0_dp ) then
-        alpha = 0.0_dp
-      else if ( dot2 == 0.0_dp ) then
-        alpha = 1.0_dp
+      if ( dot1 == 0.0e+00_real64 ) then
+        alpha = 0.0e+00_real64
+      else if ( dot2 == 0.0e+00_real64 ) then
+        alpha = 1.0e+00_real64
       else
         alpha = dot2 / ( dot2 - dot1 )
       end if
 
       pn(1:dim_num) =             alpha   * p1(1:dim_num) &
-                    + ( 1.0_dp - alpha ) * p2(1:dim_num)
+                    + ( 1.0e+00_real64 - alpha ) * p2(1:dim_num)
 
       p(1:dim_num) = pn(1:dim_num)
 
-      dist = 0.0_dp
+      dist = 0.0e+00_real64
 
     end if
-  end subroutine plane_imp_segment_near_3d
+  end
 
-  subroutine plane_imp_triangle_int_3d ( a, b, c, d, t, int_num, pint ) &
-        bind(C, name="plane_imp_triangle_int_3d")
+  subroutine plane_imp_triangle_int_3d ( a, b, c, d, t, int_num, pint )
 
   !*****************************************************************************80
   !
@@ -15284,28 +15077,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Input, real(dp) T(3,3), the vertices of the triangle.
+  !    Input, real(real64) T(3,3), the vertices of the triangle.
   !
-  !    Output, integer(ip) INT_NUM, the number of intersection points 
+  !    Output, integer(int32) INT_NUM, the number of intersection points 
   !    returned.
   !
-  !    Output, real(dp) PINT(3,3), the intersection points.
+  !    Output, real(real64) PINT(3,3), the intersection points.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp) :: dist1
-    real(dp) :: dist2
-    real(dp) :: dist3
-    integer(ip), intent(out) :: int_num
-    real(dp), intent(out) :: pint(dim_num,3)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) dist1
+    real(real64) dist2
+    real(real64) dist3
+    integer(int32) int_num
+    real(real64) pint(dim_num,3)
+    real(real64) t(dim_num,3)
 
     int_num = 0
   !
@@ -15317,17 +15110,17 @@ contains
   !
   !  Consider any zero distances.
   !
-    if ( dist1 == 0.0_dp ) then
+    if ( dist1 == 0.0e+00_real64 ) then
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,1)
     end if
 
-    if ( dist2 == 0.0_dp ) then
+    if ( dist2 == 0.0e+00_real64 ) then
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,2)
     end if
 
-    if ( dist3 == 0.0_dp ) then
+    if ( dist3 == 0.0e+00_real64 ) then
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,3)
     end if
@@ -15342,17 +15135,17 @@ contains
   !
     if ( int_num == 1 ) then
 
-      if ( dist1 == 0.0_dp ) then
+      if ( dist1 == 0.0e+00_real64 ) then
 
         call plane_imp_triangle_int_add_3d ( t(1:dim_num,2), t(1:dim_num,3), &
           dist2, dist3, int_num, pint )
 
-      else if ( dist2 == 0.0_dp ) then
+      else if ( dist2 == 0.0e+00_real64 ) then
 
         call plane_imp_triangle_int_add_3d ( t(1:dim_num,1), t(1:dim_num,3), &
           dist1, dist3, int_num, pint )
 
-      else if ( dist3 == 0.0_dp ) then
+      else if ( dist3 == 0.0e+00_real64 ) then
 
         call plane_imp_triangle_int_add_3d ( t(1:dim_num,1), t(1:dim_num,2), &
           dist1, dist2, int_num, pint )
@@ -15363,7 +15156,7 @@ contains
   !  All nodal distances are nonzero, and there is at least one
   !  positive and one negative.
   !
-    if ( dist1 * dist2 < 0.0_dp .and. dist1 * dist3 < 0.0_dp ) then
+    if ( dist1 * dist2 < 0.0e+00_real64 .and. dist1 * dist3 < 0.0e+00_real64 ) then
 
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,1), t(1:dim_num,2), &
         dist1, dist2, int_num, pint )
@@ -15371,7 +15164,7 @@ contains
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,1), t(1:dim_num,3), &
         dist1, dist3, int_num, pint )
 
-    else if ( dist2 * dist1 < 0.0_dp .and. dist2 * dist3 < 0.0_dp ) then
+    else if ( dist2 * dist1 < 0.0e+00_real64 .and. dist2 * dist3 < 0.0e+00_real64 ) then
 
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,2), t(1:dim_num,1), &
         dist2, dist1, int_num, pint )
@@ -15379,7 +15172,7 @@ contains
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,2), t(1:dim_num,3), &
         dist2, dist3, int_num, pint )
 
-    else if ( dist3 * dist1 < 0.0_dp .and. dist3 * dist2 < 0.0_dp ) then
+    else if ( dist3 * dist1 < 0.0e+00_real64 .and. dist3 * dist2 < 0.0e+00_real64 ) then
 
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,3), t(1:dim_num,1), &
         dist3, dist1, int_num, pint )
@@ -15388,10 +15181,9 @@ contains
         dist3, dist2, int_num, pint )
 
     end if
-  end subroutine plane_imp_triangle_int_3d
+  end
 
-  subroutine plane_imp_triangle_int_add_3d ( p1, p2, dist1, dist2, int_num, pint ) &
-        bind(C, name="plane_imp_triangle_int_add_3d")
+  subroutine plane_imp_triangle_int_add_3d ( p1, p2, dist1, dist2, int_num, pint )
 
   !*****************************************************************************80
   !
@@ -15418,44 +15210,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the coordinates of two vertices 
+  !    Input, real(real64) P1(3), P2(3), the coordinates of two vertices 
   !    of a triangle.
   !
-  !    Input, real(dp) DIST1, DIST2, the signed distances of the 
+  !    Input, real(real64) DIST1, DIST2, the signed distances of the 
   !    two vertices from a plane.
   !
-  !    Input/output, integer(ip) INT_NUM, the number of intersection 
+  !    Input/output, integer(int32) INT_NUM, the number of intersection 
   !    points.
   !
-  !    Input/output, real(dp) PINT(3,INT_NUM), the intersection points.
+  !    Input/output, real(real64) PINT(3,INT_NUM), the intersection points.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: alpha
-    real(dp), intent(in), value :: dist1
-    real(dp), intent(in), value :: dist2
-    integer(ip), intent(inout) :: int_num
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(inout) :: pint(dim_num,3)
+    real(real64) alpha
+    real(real64) dist1
+    real(real64) dist2
+    integer(int32) int_num
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pint(dim_num,3)
 
-    if ( dist1 == 0.0_dp ) then
+    if ( dist1 == 0.0e+00_real64 ) then
       int_num = int_num + 1
       pint(1:dim_num,int_num) = p1(1:dim_num)
-    else if ( dist2 == 0.0_dp ) then
+    else if ( dist2 == 0.0e+00_real64 ) then
       int_num = int_num + 1
       pint(1:dim_num,int_num) = p2(1:dim_num)
-    else if ( dist1 * dist2 < 0.0_dp ) then
+    else if ( dist1 * dist2 < 0.0e+00_real64 ) then
       alpha = dist2 / ( dist2 - dist1 )
       int_num = int_num + 1
       pint(1:dim_num,int_num) =             alpha   * p1(1:dim_num) &
-                              + ( 1.0_dp - alpha ) * p2(1:dim_num)
+                              + ( 1.0e+00_real64 - alpha ) * p2(1:dim_num)
     end if
-  end subroutine plane_imp_triangle_int_add_3d
+  end
 
-  subroutine plane_imp_triangle_near_3d ( t, a, b, c, d, dist, near_num, pn ) &
-        bind(C, name="plane_imp_triangle_near_3d")
+  subroutine plane_imp_triangle_near_3d ( t, a, b, c, d, dist, near_num, pn )
 
   !*****************************************************************************80
   !
@@ -15491,34 +15282,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the vertices of the triangle.
+  !    Input, real(real64) T(3,3), the vertices of the triangle.
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Output, real(dp) DIST, the distance between the triangle
+  !    Output, real(real64) DIST, the distance between the triangle
   !    and the plane.
   !
-  !    Output, integer(ip) NEAR_NUM, the number of nearest points 
+  !    Output, integer(int32) NEAR_NUM, the number of nearest points 
   !    returned.
   !
-  !    Output, real(dp) PN(3,6), a collection of nearest points.
+  !    Output, real(real64) PN(3,6), a collection of nearest points.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp), intent(out) :: dist
-    real(dp) :: dist12
-    real(dp) :: dist23
-    real(dp) :: dist31
-    integer(ip), intent(out) :: near_num
-    real(dp) :: p(dim_num)
-    real(dp), intent(out) :: pn(dim_num,6)
-    real(dp) :: pt(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) dist
+    real(real64) dist12
+    real(real64) dist23
+    real(real64) dist31
+    integer(int32) near_num
+    real(real64) p(dim_num)
+    real(real64) pn(dim_num,6)
+    real(real64) pt(dim_num)
+    real(real64) t(dim_num,3)
 
     near_num = 0
   !
@@ -15532,7 +15323,7 @@ contains
     near_num = near_num + 1
     pn(1:dim_num,near_num) = pt(1:dim_num)
 
-    if ( 0.0_dp < dist12 ) then
+    if ( 0.0e+00_real64 < dist12 ) then
       near_num = near_num + 1
       pn(1:dim_num,near_num) = p(1:dim_num)
     end if
@@ -15550,7 +15341,7 @@ contains
       near_num = near_num + 1
       pn(1:dim_num,near_num) = pt(1:dim_num)
 
-      if ( 0.0_dp < dist23 ) then
+      if ( 0.0e+00_real64 < dist23 ) then
         near_num = near_num + 1
         pn(1:dim_num,near_num) = p(1:dim_num)
       end if
@@ -15560,7 +15351,7 @@ contains
       near_num = near_num + 1
       pn(1:dim_num,near_num) = pt(1:dim_num)
 
-      if ( 0.0_dp < dist23 ) then
+      if ( 0.0e+00_real64 < dist23 ) then
         near_num = near_num + 1
         pn(1:dim_num,near_num) = p(1:dim_num)
       end if
@@ -15580,7 +15371,7 @@ contains
       near_num = near_num + 1
       pn(1:dim_num,near_num) = pt(1:dim_num)
 
-      if ( 0.0_dp < dist31 ) then
+      if ( 0.0e+00_real64 < dist31 ) then
         near_num = near_num + 1
         pn(1:dim_num,near_num) = p(1:dim_num)
       end if
@@ -15590,16 +15381,15 @@ contains
       near_num = near_num + 1
       pn(1:dim_num,near_num) = pt(1:dim_num)
 
-      if ( 0.0_dp < dist31 ) then
+      if ( 0.0e+00_real64 < dist31 ) then
         near_num = near_num + 1
         pn(1:dim_num,near_num) = p(1:dim_num)
       end if
 
     end if
-  end subroutine plane_imp_triangle_near_3d
+  end
 
-  subroutine plane_imp2exp_3d ( a, b, c, d, p1, p2, p3 ) &
-        bind(C, name="plane_imp2exp_3d")
+  subroutine plane_imp2exp_3d ( a, b, c, d, p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -15629,30 +15419,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Output, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Output, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp) :: normal(dim_num)
-    real(dp), intent(out) :: p1(dim_num)
-    real(dp), intent(out) :: p2(dim_num)
-    real(dp), intent(out) :: p3(dim_num)
-    real(dp) :: pp(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) normal(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pp(dim_num)
 
     call plane_imp2normal_3d ( a, b, c, d, pp, normal )
 
     call plane_normal2exp_3d ( pp, normal, p1, p2, p3 )
-  end subroutine plane_imp2exp_3d
+  end
 
-  subroutine plane_imp2normal_3d ( a, b, c, d, pp, normal ) &
-        bind(C, name="plane_imp2normal_3d")
+  subroutine plane_imp2normal_3d ( a, b, c, d, pp, normal )
 
   !*****************************************************************************80
   !
@@ -15683,26 +15472,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Input, real(real64) A, B, C, D, the implicit plane parameters.
   !
-  !    Output, real(dp) PP(3), a point on the plane.
+  !    Output, real(real64) PP(3), a point on the plane.
   !
-  !    Output, real(dp) NORMAL(3), the unit normal vector to the plane.
+  !    Output, real(real64) NORMAL(3), the unit normal vector to the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: d
-    real(dp) :: norm
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp), intent(out) :: pp(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) norm
+    real(real64) normal(dim_num)
+    real(real64) pp(dim_num)
 
     norm = sqrt ( a * a + b * b + c * c )
 
-    if ( norm == 0.0_dp ) then
+    if ( norm == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_IMP2NORMAL_3D - Fatal error!'
       write ( *, '(a)' ) '  The plane (A,B,C) has zero norm.'
@@ -15713,17 +15502,17 @@ contains
     normal(2) = b / norm
     normal(3) = c / norm
 
-    if ( a /= 0.0_dp ) then
+    if ( a /= 0.0e+00_real64 ) then
       pp(1) = - d / a
-      pp(2) = 0.0_dp
-      pp(3) = 0.0_dp
-    else if ( b /= 0.0_dp ) then
-      pp(1) = 0.0_dp
+      pp(2) = 0.0e+00_real64
+      pp(3) = 0.0e+00_real64
+    else if ( b /= 0.0e+00_real64 ) then
+      pp(1) = 0.0e+00_real64
       pp(2) = - d / b
-      pp(3) = 0.0_dp
-    else if ( c /= 0.0_dp ) then
-      pp(1) = 0.0_dp
-      pp(2) = 0.0_dp
+      pp(3) = 0.0e+00_real64
+    else if ( c /= 0.0e+00_real64 ) then
+      pp(1) = 0.0e+00_real64
+      pp(2) = 0.0e+00_real64
       pp(3) = - d / c
     else
       write ( *, '(a)' ) ' '
@@ -15731,10 +15520,9 @@ contains
       write ( *, '(a)' ) '  The (A,B,C) vector is null.'
       stop 1
     end if
-  end subroutine plane_imp2normal_3d
+  end
 
-  subroutine plane_normal_basis_3d ( pp, normal, pq, pr ) &
-        bind(C, name="plane_normal_basis_3d")
+  subroutine plane_normal_basis_3d ( pp, normal, pq, pr )
 
   !*****************************************************************************80
   !
@@ -15771,35 +15559,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.  (Actually,
+  !    Input, real(real64) PP(3), a point on the plane.  (Actually,
   !    we never need to know these values to do the calculation!)
   !
-  !    Input, real(dp) NORMAL(3), a normal vector N to the plane.  The
+  !    Input, real(real64) NORMAL(3), a normal vector N to the plane.  The
   !    vector must not have zero length, but it is not necessary for N
   !    to have unit length.
   !
-  !    Output, real(dp) PQ(3), a vector of unit length,
+  !    Output, real(real64) PQ(3), a vector of unit length,
   !    perpendicular to the vector N and the vector PR.
   !
-  !    Output, real(dp) PR(3), a vector of unit length,
+  !    Output, real(real64) PR(3), a vector of unit length,
   !    perpendicular to the vector N and the vector PQ.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8vec_norm
-    real(dp), intent(in) :: normal(dim_num)
-    real(dp) :: normal_norm
-    real(dp), intent(in) :: pp(dim_num)
-    real(dp), intent(out) :: pq(dim_num)
-    real(dp), intent(out) :: pr(dim_num)
-    real(dp) :: pr_norm
+    real(real64) r8vec_norm
+    real(real64) normal(dim_num)
+    real(real64) normal_norm
+    real(real64) pp(dim_num)
+    real(real64) pq(dim_num)
+    real(real64) pr(dim_num)
+    real(real64) pr_norm
   !
   !  Compute the length of NORMAL.
   !
     normal_norm = r8vec_norm ( dim_num, normal )
 
-    if ( normal_norm == 0.0_dp ) then
+    if ( normal_norm == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_NORMAL_BASIS_3D - Fatal error!'
       write ( *, '(a)' ) '  The normal vector is 0.'
@@ -15817,10 +15605,9 @@ contains
     pr_norm = r8vec_norm ( dim_num, pr )
 
     pr(1:dim_num) = pr(1:dim_num) / pr_norm
-  end subroutine plane_normal_basis_3d
+  end
 
-  subroutine plane_normal_line_exp_int_3d ( pp, normal, p1, p2, ival, pint ) &
-        bind(C, name="plane_normal_line_exp_int_3d")
+  subroutine plane_normal_line_exp_int_3d ( pp, normal, p1, p2, ival, pint )
 
   !*****************************************************************************80
   !
@@ -15851,32 +15638,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.
+  !    Input, real(real64) PP(3), a point on the plane.
   !
-  !    Input, real(dp) NORMAL(3), a normal vector to the plane.
+  !    Input, real(real64) NORMAL(3), a normal vector to the plane.
   !
-  !    Input, real(dp) P1(3), P2(3), two distinct points on the line.
+  !    Input, real(real64) P1(3), P2(3), two distinct points on the line.
   !
-  !    Output, integer(ip) IVAL, the kind of intersection;
+  !    Output, integer(int32) IVAL, the kind of intersection;
   !    0, the line and plane seem to be parallel and separate;
   !    1, the line and plane intersect at a single point;
   !    2, the line and plane seem to be parallel and joined.
   !
-  !    Output, real(dp) PINT(3), the coordinates of a
+  !    Output, real(real64) PINT(3), the coordinates of a
   !    common point of the plane and line, when IVAL is 1 or 2.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: direction(dim_num)
-    integer(ip), intent(out) :: ival
-    logical :: line_exp_is_degenerate_nd
-    real(dp), intent(in) :: normal(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pint(dim_num)
-    real(dp), intent(in) :: pp(dim_num)
-    real(dp) :: temp
+    real(real64) direction(dim_num)
+    integer(int32) ival
+    logical line_exp_is_degenerate_nd
+    real(real64) normal(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pint(dim_num)
+    real(real64) pp(dim_num)
+    real(real64) temp
   !
   !  Make sure the line is not degenerate.
   !
@@ -15891,7 +15678,7 @@ contains
   !
     temp = sqrt ( sum ( normal(1:dim_num) ** 2 ) )
 
-    if ( temp == 0.0_dp ) then
+    if ( temp == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'PLANE_NORMAL_LINE_EXP_INT_3D - Fatal error!'
       write ( *, '(a)' ) '  The normal vector of the plane is degenerate.'
@@ -15909,11 +15696,11 @@ contains
   !  If the normal and direction vectors are orthogonal, then
   !  we have a special case to deal with.
   !
-    if ( dot_product ( normal(1:dim_num), direction(1:dim_num) ) == 0.0_dp ) then
+    if ( dot_product ( normal(1:dim_num), direction(1:dim_num) ) == 0.0e+00_real64 ) then
 
       temp = dot_product ( normal(1:dim_num), p1(1:dim_num) - pp(1:dim_num) )
 
-      if ( temp == 0.0_dp ) then
+      if ( temp == 0.0e+00_real64 ) then
         ival = 2
         pint(1:dim_num) = p1(1:dim_num)
       else
@@ -15929,10 +15716,9 @@ contains
 
     ival = 1
     pint(1:dim_num) = p1(1:dim_num) + temp * direction(1:dim_num)
-  end subroutine plane_normal_line_exp_int_3d
+  end
 
-  subroutine plane_normal_qr_to_xyz ( pp, normal, pq, pr, n, qr, xyz ) &
-        bind(C, name="plane_normal_qr_to_xyz")
+  subroutine plane_normal_qr_to_xyz ( pp, normal, pq, pr, n, qr, xyz )
 
   !*****************************************************************************80
   !
@@ -15968,34 +15754,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.
+  !    Input, real(real64) PP(3), a point on the plane.
   !
-  !    Input, real(dp) NORMAL(3), a normal vector N to the plane.  The
+  !    Input, real(real64) NORMAL(3), a normal vector N to the plane.  The
   !    vector must not have zero length, but it is not necessary for N
   !    to have unit length.
   !
-  !    Input, real(dp) PQ(3), a vector of unit length,
+  !    Input, real(real64) PQ(3), a vector of unit length,
   !    perpendicular to the vector N and the vector PR.
   !
-  !    Input, real(dp) PR(3), a vector of unit length,
+  !    Input, real(real64) PR(3), a vector of unit length,
   !    perpendicular to the vector N and the vector PQ.
   !
-  !    Input, integer(ip) N, the number of points on the plane.
+  !    Input, integer(int32) N, the number of points on the plane.
   !
-  !    Input, real(dp) QR(2,N), the QR coordinates of the points.
+  !    Input, real(real64) QR(2,N), the QR coordinates of the points.
   !
-  !    Output, real(dp) XYZ(3,N), the XYZ coordinates of the points.
+  !    Output, real(real64) XYZ(3,N), the XYZ coordinates of the points.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: normal(3)
-    real(dp), intent(in) :: pp(3)
-    real(dp), intent(in) :: pq(3)
-    real(dp) :: pqpr(3,2)
-    real(dp), intent(in) :: pr(3)
-    real(dp), intent(in) :: qr(2,n)
-    real(dp), intent(out) :: xyz(3,n)
+    real(real64) normal(3)
+    real(real64) pp(3)
+    real(real64) pq(3)
+    real(real64) pqpr(3,2)
+    real(real64) pr(3)
+    real(real64) qr(2,n)
+    real(real64) xyz(3,n)
 
     xyz(1,1:n) = pp(1)
     xyz(2,1:n) = pp(2)
@@ -16005,10 +15791,9 @@ contains
     pqpr(1:3,2) = pr(1:3)
 
     xyz(1:3,1:n) = xyz(1:3,1:n) + matmul ( pqpr(1:3,1:2), qr(1:2,1:n) )
-  end subroutine plane_normal_qr_to_xyz
+  end
 
-  subroutine plane_normal_tetrahedron_intersect ( pp, normal, t, int_num, pint ) &
-        bind(C, name="plane_normal_tetrahedron_intersect")
+  subroutine plane_normal_tetrahedron_intersect ( pp, normal, t, int_num, pint )
 
   !*****************************************************************************80
   !
@@ -16051,36 +15836,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.
+  !    Input, real(real64) PP(3), a point on the plane.
   !
-  !    Input, real(dp) NORMAL(3), a normal vector to the plane.
+  !    Input, real(real64) NORMAL(3), a normal vector to the plane.
   !
-  !    Input, real(dp) T(3,4), the tetrahedron vertices.
+  !    Input, real(real64) T(3,4), the tetrahedron vertices.
   !
-  !    Output, integer(ip) INT_NUM, the number of intersection 
+  !    Output, integer(int32) INT_NUM, the number of intersection 
   !    points returned.  This will be 0, 1, 2, 3 or 4.
   !
-  !    Output, real(dp) PINT(3,4), the coordinates of the
+  !    Output, real(real64) PINT(3,4), the coordinates of the
   !    intersection points.
   !
 
-    real(dp) :: area1
-    real(dp) :: area2
-    real(dp) :: d(4)
-    real(dp) :: dn
-    real(dp) :: dpp
-    integer(ip), intent(out) :: int_num
-    integer(ip) :: j1
-    integer(ip) :: j2
-    real(dp), intent(in) :: normal(3)
-    real(dp), intent(out) :: pint(3,4)
-    real(dp), intent(in) :: pp(3)
-    logical :: r8_sign_opposite_strict
-    real(dp), intent(in) :: t(3,4)
-    real(dp) :: temp(3)
+    real(real64) area1
+    real(real64) area2
+    real(real64) d(4)
+    real(real64) dn
+    real(real64) dpp
+    integer(int32) int_num
+    integer(int32) j1
+    integer(int32) j2
+    real(real64) normal(3)
+    real(real64) pint(3,4)
+    real(real64) pp(3)
+    logical r8_sign_opposite_strict
+    real(real64) t(3,4)
+    real(real64) temp(3)
 
     int_num = 0
-    pint(1:3,1:4) = 0.0_dp
+    pint(1:3,1:4) = 0.0e+00_real64
   !
   !  DN is the length of the normal vector.
   !
@@ -16098,7 +15883,7 @@ contains
   !
   !  If all D are positive or negative, no intersection.
   !
-    if ( all ( d(1:4) < 0.0_dp ) .or. all ( 0.0_dp < d(1:4) ) ) then
+    if ( all ( d(1:4) < 0.0e+00_real64 ) .or. all ( 0.0e+00_real64 < d(1:4) ) ) then
       int_num = 0
     end if
   !
@@ -16110,7 +15895,7 @@ contains
   !
     do j1 = 1, 4
 
-      if ( d(j1) == 0.0_dp ) then
+      if ( d(j1) == 0.0e+00_real64 ) then
         int_num = int_num + 1
         pint(1:3,int_num) = t(1:3,j1)
       else
@@ -16139,10 +15924,9 @@ contains
         pint(1:3,4) = temp(1:3)
       end if
     end if
-  end subroutine plane_normal_tetrahedron_intersect
+  end
 
-  subroutine plane_normal_triangle_int_3d ( pp, normal, t, int_num, pint ) &
-        bind(C, name="plane_normal_triangle_int_3d")
+  subroutine plane_normal_triangle_int_3d ( pp, normal, t, int_num, pint )
 
   !*****************************************************************************80
   !
@@ -16177,30 +15961,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.
+  !    Input, real(real64) PP(3), a point on the plane.
   !
-  !    Input, real(dp) NORMAL(3), a normal vector to the plane.
+  !    Input, real(real64) NORMAL(3), a normal vector to the plane.
   !
-  !    Input, real(dp) T(3,3), the vertices of the triangle.
+  !    Input, real(real64) T(3,3), the vertices of the triangle.
   !
-  !    Output, integer(ip) INT_NUM, the number of intersection 
+  !    Output, integer(int32) INT_NUM, the number of intersection 
   !    points returned.
   !
-  !    Output, real(dp) PINT(3,3), the coordinates of the
+  !    Output, real(real64) PINT(3,3), the coordinates of the
   !    intersection points.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: d
-    real(dp) :: dist1
-    real(dp) :: dist2
-    real(dp) :: dist3
-    real(dp), intent(in) :: normal(dim_num)
-    integer(ip), intent(out) :: int_num
-    real(dp), intent(out) :: pint(dim_num,3)
-    real(dp), intent(in) :: pp(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) d
+    real(real64) dist1
+    real(real64) dist2
+    real(real64) dist3
+    real(real64) normal(dim_num)
+    integer(int32) int_num
+    real(real64) pint(dim_num,3)
+    real(real64) pp(dim_num)
+    real(real64) t(dim_num,3)
 
     int_num = 0
   !
@@ -16214,21 +15998,21 @@ contains
   !
   !  Consider any zero distances.
   !
-    if ( dist1 == 0.0_dp ) then
+    if ( dist1 == 0.0e+00_real64 ) then
 
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,1)
 
     end if
 
-    if ( dist2 == 0.0_dp ) then
+    if ( dist2 == 0.0e+00_real64 ) then
 
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,2)
 
     end if
 
-    if ( dist3 == 0.0_dp ) then
+    if ( dist3 == 0.0e+00_real64 ) then
 
       int_num = int_num + 1
       pint(1:dim_num,int_num) = t(1:dim_num,3)
@@ -16245,17 +16029,17 @@ contains
   !
     if ( int_num == 1 ) then
 
-      if ( dist1 == 0.0_dp ) then
+      if ( dist1 == 0.0e+00_real64 ) then
 
         call plane_imp_triangle_int_add_3d ( t(1:dim_num,2), t(1:dim_num,3), &
           dist2, dist3, int_num, pint )
 
-      else if ( dist2 == 0.0_dp ) then
+      else if ( dist2 == 0.0e+00_real64 ) then
 
         call plane_imp_triangle_int_add_3d ( t(1:dim_num,1), t(1:dim_num,3), &
           dist1, dist3, int_num, pint )
 
-      else if ( dist3 == 0.0_dp ) then
+      else if ( dist3 == 0.0e+00_real64 ) then
 
         call plane_imp_triangle_int_add_3d ( t(1:dim_num,1), t(1:dim_num,2), &
           dist1, dist2, int_num, pint )
@@ -16266,7 +16050,7 @@ contains
   !  All nodal distances are nonzero, and there is at least one
   !  positive and one negative.
   !
-    if ( dist1 * dist2 < 0.0_dp .and. dist1 * dist3 < 0.0_dp ) then
+    if ( dist1 * dist2 < 0.0e+00_real64 .and. dist1 * dist3 < 0.0e+00_real64 ) then
 
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,1), t(1:dim_num,2), &
         dist1, dist2, int_num, pint )
@@ -16274,7 +16058,7 @@ contains
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,1), t(1:dim_num,3), &
         dist1, dist3, int_num, pint )
 
-    else if ( dist2 * dist1 < 0.0_dp .and. dist2 * dist3 < 0.0_dp ) then
+    else if ( dist2 * dist1 < 0.0e+00_real64 .and. dist2 * dist3 < 0.0e+00_real64 ) then
 
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,2), t(1:dim_num,1), &
         dist2, dist1, int_num, pint )
@@ -16282,7 +16066,7 @@ contains
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,2), t(1:dim_num,3), &
         dist2, dist3, int_num, pint )
 
-    else if ( dist3 * dist1 < 0.0_dp .and. dist3 * dist2 < 0.0_dp ) then
+    else if ( dist3 * dist1 < 0.0e+00_real64 .and. dist3 * dist2 < 0.0e+00_real64 ) then
 
       call plane_imp_triangle_int_add_3d ( t(1:dim_num,3), t(1:dim_num,1), &
         dist3, dist1, int_num, pint )
@@ -16291,10 +16075,9 @@ contains
         dist3, dist2, int_num, pint )
 
     end if
-  end subroutine plane_normal_triangle_int_3d
+  end
 
-  subroutine plane_normal_uniform_3d ( seed, pp, normal ) &
-        bind(C, name="plane_normal_uniform_3d")
+  subroutine plane_normal_uniform_3d ( seed, pp, normal )
 
   !*****************************************************************************80
   !
@@ -16323,20 +16106,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) PP(3), a point on the plane.
+  !    Output, real(real64) PP(3), a point on the plane.
   !
-  !    Output, real(dp) NORMAL(3), the unit normal vector.
+  !    Output, real(real64) NORMAL(3), the unit normal vector.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: norm
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp), intent(out) :: pp(dim_num)
-    integer(ip), intent(inout) :: seed
+    real(real64) norm
+    real(real64) normal(dim_num)
+    real(real64) pp(dim_num)
+    integer(int32) seed
   !
   !  Pick PP as a random point inside the unit sphere in ND.
   !
@@ -16353,10 +16136,9 @@ contains
   !  Normalize the vector.
   !
     normal(1:dim_num) = normal(1:dim_num) / norm
-  end subroutine plane_normal_uniform_3d
+  end
 
-  subroutine plane_normal_uniform_nd ( dim_num, seed, pp, normal ) &
-        bind(C, name="plane_normal_uniform_nd")
+  subroutine plane_normal_uniform_nd ( dim_num, seed, pp, normal )
 
   !*****************************************************************************80
   !
@@ -16385,22 +16167,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) PP(DIM_NUM), a point on the plane.
+  !    Output, real(real64) PP(DIM_NUM), a point on the plane.
   !
-  !    Output, real(dp) NORMAL(DIM_NUM), the unit normal vector.
+  !    Output, real(real64) NORMAL(DIM_NUM), the unit normal vector.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: norm
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp), intent(out) :: pp(dim_num)
-    integer(ip), intent(inout) :: seed
+    real(real64) norm
+    real(real64) normal(dim_num)
+    real(real64) pp(dim_num)
+    integer(int32) seed
   !
   !  Pick PP as a random point inside the unit sphere in ND.
   !
@@ -16417,10 +16199,9 @@ contains
   !  Normalize the vector.
   !
     normal(1:dim_num) = normal(1:dim_num) / norm
-  end subroutine plane_normal_uniform_nd
+  end
 
-  subroutine plane_normal_xyz_to_qr ( pp, normal, pq, pr, n, xyz, qr ) &
-        bind(C, name="plane_normal_xyz_to_qr")
+  subroutine plane_normal_xyz_to_qr ( pp, normal, pq, pr, n, xyz, qr )
 
   !*****************************************************************************80
   !
@@ -16456,34 +16237,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.
+  !    Input, real(real64) PP(3), a point on the plane.
   !
-  !    Input, real(dp) NORMAL(3), a normal vector N to the plane.  The
+  !    Input, real(real64) NORMAL(3), a normal vector N to the plane.  The
   !    vector must not have zero length, but it is not necessary for N
   !    to have unit length.
   !
-  !    Input, real(dp) PQ(3), a vector of unit length,
+  !    Input, real(real64) PQ(3), a vector of unit length,
   !    perpendicular to the vector N and the vector PR.
   !
-  !    Input, real(dp) PR(3), a vector of unit length,
+  !    Input, real(real64) PR(3), a vector of unit length,
   !    perpendicular to the vector N and the vector PQ.
   !
-  !    Input, integer(ip) N, the number of points on the plane.
+  !    Input, integer(int32) N, the number of points on the plane.
   !
-  !    Input, real(dp) XYZ(3,N), the XYZ coordinates of the points.
+  !    Input, real(real64) XYZ(3,N), the XYZ coordinates of the points.
   !
-  !    Output, real(dp) QR(2,N), the QR coordinates of the points.
+  !    Output, real(real64) QR(2,N), the QR coordinates of the points.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: normal(3)
-    real(dp), intent(in) :: pp(3)
-    real(dp), intent(in) :: pq(3)
-    real(dp), intent(in) :: pr(3)
-    real(dp), intent(out) :: qr(2,n)
-    real(dp) :: rpqp(2,3)
-    real(dp), intent(in) :: xyz(3,n)
+    real(real64) normal(3)
+    real(real64) pp(3)
+    real(real64) pq(3)
+    real(real64) pr(3)
+    real(real64) qr(2,n)
+    real(real64) rpqp(2,3)
+    real(real64) xyz(3,n)
 
     rpqp(1,1:3) = pq(1:3)
     rpqp(2,1:3) = pr(1:3)
@@ -16492,10 +16273,9 @@ contains
 
     qr(1,1:n) = qr(1,1:n) - dot_product ( pq(1:3), pp(1:3) )
     qr(2,1:n) = qr(2,1:n) - dot_product ( pr(1:3), pp(1:3) )
-  end subroutine plane_normal_xyz_to_qr
+  end
 
-  subroutine plane_normal2exp_3d ( pp, normal, p1, p2, p3 ) &
-        bind(C, name="plane_normal2exp_3d")
+  subroutine plane_normal2exp_3d ( pp, normal, p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -16526,34 +16306,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.
+  !    Input, real(real64) PP(3), a point on the plane.
   !
-  !    Input, real(dp) NORMAL(3), a normal vector N to the plane.  The
+  !    Input, real(real64) NORMAL(3), a normal vector N to the plane.  The
   !    vector must not have zero length, but it is not necessary for N
   !    to have unit length.
   !
-  !    Output, real(dp) P1(3), P2(3), P3(3), three points on the plane.
+  !    Output, real(real64) P1(3), P2(3), P3(3), three points on the plane.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in) :: normal(dim_num)
-    real(dp), intent(out) :: p1(dim_num)
-    real(dp), intent(out) :: p2(dim_num)
-    real(dp), intent(out) :: p3(dim_num)
-    real(dp), intent(in) :: pp(dim_num)
-    real(dp) :: pq(dim_num)
-    real(dp) :: pr(dim_num)
+    real(real64) normal(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pp(dim_num)
+    real(real64) pq(dim_num)
+    real(real64) pr(dim_num)
 
     call plane_normal_basis_3d ( pp, normal, pq, pr )
 
     p1(1:dim_num) = pp(1:dim_num)
     p2(1:dim_num) = pp(1:dim_num) + pq(1:dim_num)
     p3(1:dim_num) = pp(1:dim_num) + pr(1:dim_num)
-  end subroutine plane_normal2exp_3d
+  end
 
-  subroutine plane_normal2imp_3d ( pp, normal, a, b, c, d ) &
-        bind(C, name="plane_normal2imp_3d")
+  subroutine plane_normal2imp_3d ( pp, normal, a, b, c, d )
 
   !*****************************************************************************80
   !
@@ -16584,30 +16363,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PP(3), a point on the plane.
+  !    Input, real(real64) PP(3), a point on the plane.
   !
-  !    Input, real(dp) NORMAL(3), the unit normal vector to the plane.
+  !    Input, real(real64) NORMAL(3), the unit normal vector to the plane.
   !
-  !    Output, real(dp) A, B, C, D, the implicit plane parameters.
+  !    Output, real(real64) A, B, C, D, the implicit plane parameters.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: a
-    real(dp), intent(out) :: b
-    real(dp), intent(out) :: c
-    real(dp), intent(out) :: d
-    real(dp), intent(in) :: normal(dim_num)
-    real(dp), intent(in) :: pp(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) normal(dim_num)
+    real(real64) pp(dim_num)
 
     a = normal(1)
     b = normal(2)
     c = normal(3)
     d = - a * pp(1) - b * pp(2) - c * pp(3)
-  end subroutine plane_normal2imp_3d
+  end
 
-  subroutine planes_imp_angle_3d ( a1, b1, c1, d1, a2, b2, c2, d2, angle ) &
-        bind(C, name="planes_imp_angle_3d")
+  subroutine planes_imp_angle_3d ( a1, b1, c1, d1, a2, b2, c2, d2, angle )
 
   !*****************************************************************************80
   !
@@ -16650,53 +16428,52 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A1, B1, C1, D1, coefficients that define the
+  !    Input, real(real64) A1, B1, C1, D1, coefficients that define the
   !    first plane.
   !
-  !    Input, real(dp) A2, B2, C2, D2, coefficients that define
+  !    Input, real(real64) A2, B2, C2, D2, coefficients that define
   !    the second plane.
   !
-  !    Output, real(dp) ANGLE, the dihedral angle, in radians,
+  !    Output, real(real64) ANGLE, the dihedral angle, in radians,
   !    defined by the two planes.  If either plane is degenerate, or they
   !    do not intersect, or they coincide, then the angle is set to HUGE(1.0).
   !    Otherwise, the angle is between 0 and PI.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: a1
-    real(dp), intent(in), value :: a2
-    real(dp), intent(out) :: angle
-    real(dp), intent(in), value :: b1
-    real(dp), intent(in), value :: b2
-    real(dp), intent(in), value :: c1
-    real(dp), intent(in), value :: c2
-    real(dp) :: cosine
-    real(dp), intent(in), value :: d1
-    real(dp), intent(in), value :: d2
-    real(dp) :: norm1
-    real(dp) :: norm2
-    real(dp) :: r8_acos
+    real(real64) a1
+    real(real64) a2
+    real(real64) angle
+    real(real64) b1
+    real(real64) b2
+    real(real64) c1
+    real(real64) c2
+    real(real64) cosine
+    real(real64) d1
+    real(real64) d2
+    real(real64) norm1
+    real(real64) norm2
+    real(real64) r8_acos
 
     norm1 = sqrt ( a1 * a1 + b1 * b1 + c1 * c1 )
 
-    if ( norm1 == 0.0_dp ) then
+    if ( norm1 == 0.0e+00_real64 ) then
       angle = huge ( angle )
     end if
 
     norm2 = sqrt ( a2 * a2 + b2 * b2 + c2 * c2 )
 
-    if ( norm2 == 0.0_dp ) then
+    if ( norm2 == 0.0e+00_real64 ) then
       angle = huge ( angle )
     end if
 
     cosine = ( a1 * a2 + b1 * b2 + c1 * c2 ) / ( norm1 * norm2 )
 
     angle = r8_acos ( cosine )
-  end subroutine planes_imp_angle_3d
+  end
 
-  function points_avoid_point_naive_2d ( n, p_set, p ) &
-        bind(C, name="points_avoid_point_naive_2d")
+  function points_avoid_point_naive_2d ( n, p_set, p )
 
   !*****************************************************************************80
   !
@@ -16727,26 +16504,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of accepted points.
+  !    Input, integer(int32) N, the number of accepted points.
   !
-  !    Input, real(dp) P_SET(2,N), the accepted points.
+  !    Input, real(real64) P_SET(2,N), the accepted points.
   !
-  !    Input, real(dp) P(2), a point to be tested.
+  !    Input, real(real64) P(2), a point to be tested.
   !
   !    Output, logical POINTS_AVOID_POINT_NAIVE_2D, is TRUE if 
   !    XY_TEST is "far enough" from all the accepted points.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: j
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p_set(dim_num,n)
-    logical :: points_avoid_point_naive_2d
-    real(dp) :: tol
+    integer(int32) j
+    real(real64) p(dim_num)
+    real(real64) p_set(dim_num,n)
+    logical points_avoid_point_naive_2d
+    real(real64) tol
 
-    tol = 100.0_dp * epsilon ( tol )
+    tol = 100.0e+00_real64 * epsilon ( tol )
 
     points_avoid_point_naive_2d = .true.
 
@@ -16757,10 +16534,9 @@ contains
       end if
 
     end do
-  end function points_avoid_point_naive_2d
+  end
 
-  subroutine points_bisect_line_imp_2d ( p1, p2, a, b, c ) &
-        bind(C, name="points_bisect_line_imp_2d")
+  subroutine points_bisect_line_imp_2d ( p1, p2, a, b, c )
 
   !*****************************************************************************80
   !
@@ -16796,28 +16572,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the coordinates of two points.
+  !    Input, real(real64) P1(2), P2(2), the coordinates of two points.
   !
-  !    Output, real(dp) A, B, C, the parameters of the implicit line
+  !    Output, real(real64) A, B, C, the parameters of the implicit line
   !    equidistant from both points.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: a
-    real(dp), intent(out) :: b
-    real(dp), intent(out) :: c
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
     a = p1(1) - p2(1)
     b = p1(2) - p2(2)
-    c = - 0.5_dp * ( ( p1(1) * p1(1) + p1(2) * p1(2) ) &
+    c = - 0.5e+00_real64 * ( ( p1(1) * p1(1) + p1(2) * p1(2) ) &
                     - ( p2(1) * p2(1) + p2(2) * p2(2) ) )
-  end subroutine points_bisect_line_imp_2d
+  end
 
-  subroutine points_bisect_line_par_2d ( p1, p2, f, g, x, y ) &
-        bind(C, name="points_bisect_line_par_2d")
+  subroutine points_bisect_line_par_2d ( p1, p2, f, g, x, y )
 
   !*****************************************************************************80
   !
@@ -16856,43 +16631,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), two points.
+  !    Input, real(real64) P1(2), P2(2), two points.
   !
-  !    Output, real(dp) F, G, X, Y, the parameters of the parametric line
+  !    Output, real(real64) F, G, X, Y, the parameters of the parametric line
   !    equidistant from both points.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: f
-    real(dp), intent(out) :: g
-    real(dp) :: norm
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: x
-    real(dp), intent(out) :: y
+    real(real64) f
+    real(real64) g
+    real(real64) norm
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) x
+    real(real64) y
 
-    f = 0.5_dp * ( p1(1) + p2(1) )
-    g = 0.5_dp * ( p1(2) + p2(2) )
+    f = 0.5e+00_real64 * ( p1(1) + p2(1) )
+    g = 0.5e+00_real64 * ( p1(2) + p2(2) )
 
     norm = f * f + g * g
 
-    if ( norm /= 0.0_dp ) then
+    if ( norm /= 0.0e+00_real64 ) then
       f = f / norm
       g = g / norm
     end if
 
-    if ( f < 0.0_dp ) then
+    if ( f < 0.0e+00_real64 ) then
       f = -f
       g = -g
     end if
 
     x = - ( p2(2) - p1(2) )
     y = + ( p2(1) - p1(1) )
-  end subroutine points_bisect_line_par_2d
+  end
 
-  subroutine points_centroid_2d ( n, p, centroid_index ) &
-        bind(C, name="points_centroid_2d")
+  subroutine points_centroid_2d ( n, p, centroid_index )
 
   !*****************************************************************************80
   !
@@ -16924,30 +16698,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) P(2,N), the points.
+  !    Input, real(real64) P(2,N), the points.
   !
-  !    Output, integer(ip) CENTROID_INDEX, the index of a discrete
+  !    Output, integer(int32) CENTROID_INDEX, the index of a discrete
   !    centroid of the set, between 1 and N.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip), intent(out) :: centroid_index
-    real(dp) :: dist
-    real(dp) :: dist_min
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(in) :: p(dim_num,n)
+    integer(int32) centroid_index
+    real(real64) dist
+    real(real64) dist_min
+    integer(int32) i
+    integer(int32) j
+    real(real64) p(dim_num,n)
 
-    dist_min = 0.0_dp
+    dist_min = 0.0e+00_real64
     centroid_index = -1
 
     do i = 1, n
 
-      dist = 0.0_dp
+      dist = 0.0e+00_real64
       do j = 1, n
         dist = dist + sum ( ( p(1:dim_num,i) - p(1:dim_num,j) )**2 )
       end do
@@ -16961,10 +16735,9 @@ contains
       end if
 
     end do
-  end subroutine points_centroid_2d
+  end
 
-  subroutine points_colin_2d ( p1, p2, p3, colin ) &
-        bind(C, name="points_colin_2d")
+  subroutine points_colin_2d ( p1, p2, p3, colin )
 
   !*****************************************************************************80
   !
@@ -16994,31 +16767,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), the points.
+  !    Input, real(real64) P1(2), P2(2), P3(2), the points.
   !
-  !    Output, real(dp) COLIN, the colinearity estimate.
+  !    Output, real(real64) COLIN, the colinearity estimate.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: area_triangle
-    real(dp) :: area2
-    real(dp), intent(out) :: colin
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp) :: perim
-    real(dp) :: side
-    real(dp) :: t(dim_num,3)
+    real(real64) area_triangle
+    real(real64) area2
+    real(real64) colin
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) perim
+    real(real64) side
+    real(real64) t(dim_num,3)
 
     t(1:dim_num,1:3) = reshape ( (/ &
       p1(1:dim_num), p2(1:dim_num), p3(1:dim_num) /), (/ dim_num, 3 /) )
 
     call triangle_area_2d ( t, area_triangle )
 
-    if ( area_triangle == 0.0_dp ) then
+    if ( area_triangle == 0.0e+00_real64 ) then
 
-      colin = 0.0_dp
+      colin = 0.0e+00_real64
 
     else
 
@@ -17026,17 +16799,16 @@ contains
             + sqrt ( sum ( ( p3(1:dim_num) - p2(1:dim_num) )**2 ) ) &
             + sqrt ( sum ( ( p1(1:dim_num) - p3(1:dim_num) )**2 ) )
 
-      side = perim / 3.0_dp
+      side = perim / 3.0e+00_real64
 
-      area2 = 0.25_dp * sqrt ( 3.0_dp ) * side * side
+      area2 = 0.25e+00_real64 * sqrt ( 3.0e+00_real64 ) * side * side
 
       colin = abs ( area_triangle ) / area2
 
     end if
-  end subroutine points_colin_2d
+  end
 
-  subroutine points_colin_3d ( p1, p2, p3, colin ) &
-        bind(C, name="points_colin_3d")
+  subroutine points_colin_3d ( p1, p2, p3, colin )
 
   !*****************************************************************************80
   !
@@ -17066,31 +16838,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), the points.
+  !    Input, real(real64) P1(3), P2(3), P3(3), the points.
   !
-  !    Output, real(dp) COLIN, the colinearity estimate. 
+  !    Output, real(real64) COLIN, the colinearity estimate. 
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: area_triangle
-    real(dp) :: area2
-    real(dp), intent(out) :: colin
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp) :: perim
-    real(dp) :: side
-    real(dp) :: t(dim_num,3)
+    real(real64) area_triangle
+    real(real64) area2
+    real(real64) colin
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) perim
+    real(real64) side
+    real(real64) t(dim_num,3)
 
     t(1:dim_num,1:3) = reshape ( (/ &
       p1(1:dim_num), p2(1:dim_num), p3(1:dim_num) /), (/ dim_num, 3 /) )
 
     call triangle_area_3d ( t, area_triangle )
 
-    if ( area_triangle == 0.0_dp ) then
+    if ( area_triangle == 0.0e+00_real64 ) then
 
-      colin = 0.0_dp
+      colin = 0.0e+00_real64
 
     else
 
@@ -17098,17 +16870,16 @@ contains
             + sqrt ( sum ( ( p3(1:dim_num) - p2(1:dim_num) )**2 ) ) &
             + sqrt ( sum ( ( p1(1:dim_num) - p3(1:dim_num) )**2 ) )
 
-      side = perim / 3.0_dp
+      side = perim / 3.0e+00_real64
 
-      area2 = 0.25_dp * sqrt ( 3.0_dp ) * side * side
+      area2 = 0.25e+00_real64 * sqrt ( 3.0e+00_real64 ) * side * side
 
       colin = abs ( area_triangle ) / area2
 
     end if
-  end subroutine points_colin_3d
+  end
 
-  subroutine points_dist_nd ( dim_num, p1, p2, dist ) &
-        bind(C, name="points_dist_nd")
+  subroutine points_dist_nd ( dim_num, p1, p2, dist )
 
   !*****************************************************************************80
   !
@@ -17128,25 +16899,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) P1(DIM_NUM), P2(DIM_NUM), the coordinates 
+  !    Input, real(real64) P1(DIM_NUM), P2(DIM_NUM), the coordinates 
   !    of two points.
   !
-  !    Output, real(dp) DIST, the distance between the points.
+  !    Output, real(real64) DIST, the distance between the points.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
+    real(real64) dist
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
 
     dist = sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
-  end subroutine points_dist_nd
+  end
 
-  subroutine points_hull_2d ( node_num, node_xy, hull_num, hull ) &
-        bind(C, name="points_hull_2d")
+  subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
 
   !*****************************************************************************80
   !
@@ -17171,34 +16941,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Output, integer(ip) HULL_NUM, the number of nodes that lie on 
+  !    Output, integer(int32) HULL_NUM, the number of nodes that lie on 
   !    the convex hull.
   !
-  !    Output, integer(ip) HULL(NODE_NUM).  Entries 1 through HULL_NUM 
+  !    Output, integer(int32) HULL(NODE_NUM).  Entries 1 through HULL_NUM 
   !    contain the indices of the nodes that form the convex hull, in order.
   !
 
-    integer(ip), intent(in), value :: node_num
+    integer(int32) node_num
 
-    real(dp) :: angle
-    real(dp) :: angle_max
-    real(dp) :: angle_rad_2d
-    real(dp) :: di
-    real(dp) :: dr
-    integer(ip) :: first
-    integer(ip), intent(out) :: hull(node_num)
-    integer(ip), intent(out) :: hull_num
-    integer(ip) :: i
-    real(dp), intent(in) :: node_xy(2,node_num)
-    real(dp) :: p_xy(2)
-    integer(ip) :: q
-    real(dp) :: q_xy(2)
-    integer(ip) :: r
-    real(dp) :: r_xy(2)
+    real(real64) angle
+    real(real64) angle_max
+    real(real64) angle_rad_2d
+    real(real64) di
+    real(real64) dr
+    integer(int32) first
+    integer(int32) hull(node_num)
+    integer(int32) hull_num
+    integer(int32) i
+    real(real64) node_xy(2,node_num)
+    real(real64) p_xy(2)
+    integer(int32) q
+    real(real64) q_xy(2)
+    integer(int32) r
+    real(real64) r_xy(2)
 
     if ( node_num < 1 ) then
       hull_num = 0
@@ -17249,7 +17019,7 @@ contains
   !  and call it "P".
   !
     p_xy(1) = q_xy(1)
-    p_xy(2) = q_xy(2) - 1.0_dp
+    p_xy(2) = q_xy(2) - 1.0e+00_real64
   !
   !  Now, having old point P, and current point Q, find the new point R
   !  so the angle PQR is maximal.
@@ -17259,7 +17029,7 @@ contains
     do
 
       r = 0
-      angle_max = 0.0_dp
+      angle_max = 0.0e+00_real64
 
       do i = 1, node_num
 
@@ -17320,10 +17090,9 @@ contains
       q_xy(1:2) = r_xy(1:2)
 
     end do
-  end subroutine points_hull_2d
+  end
 
-  subroutine points_plot ( file_name, node_num, node_xy, node_label ) &
-        bind(C, name="points_plot")
+  subroutine points_plot ( file_name, node_num, node_xy, node_label )
 
   !*****************************************************************************80
   !
@@ -17345,9 +17114,9 @@ contains
   !
   !    Input, character ( len = * ) FILE_NAME, the name of the output file.
   !
-  !    Input, integer(ip) NODE_NUM, the number of points.
+  !    Input, integer(int32) NODE_NUM, the number of points.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the nodes.
   !
   !    Input, logical NODE_LABEL, is TRUE if the nodes should 
   !    be labeled.
@@ -17359,33 +17128,33 @@ contains
   !    Currently set to 5.  3 is pretty small, and 1 is barely visible.
   !
 
-    integer(ip), intent(in), value :: node_num
+    integer(int32) node_num
 
-    integer(ip), parameter :: circle_size = 5
-    integer(ip) :: delta
-    character ( len = * ), intent(in), value :: file_name
-    integer(ip) :: file_unit
-    integer(ip) :: ios
-    integer(ip) :: node
-    logical, intent(in), value :: node_label
-    real(dp), intent(in) :: node_xy(2,node_num)
-    character ( len = 40 ) :: string
-    real(dp) :: x_max
-    real(dp) :: x_min
-    integer(ip) :: x_ps
-    integer(ip) :: x_ps_max = 576
-    integer(ip) :: x_ps_max_clip = 594
-    integer(ip) :: x_ps_min = 36
-    integer(ip) :: x_ps_min_clip = 18
-    real(dp) :: x_scale
-    real(dp) :: y_max
-    real(dp) :: y_min
-    integer(ip) :: y_ps
-    integer(ip) :: y_ps_max = 666
-    integer(ip) :: y_ps_max_clip = 684
-    integer(ip) :: y_ps_min = 126
-    integer(ip) :: y_ps_min_clip = 108
-    real(dp) :: y_scale
+    integer(int32), parameter :: circle_size = 5
+    integer(int32) delta
+    character ( len = * ) file_name
+    integer(int32) file_unit
+    integer(int32) ios
+    integer(int32) node
+    logical node_label
+    real(real64) node_xy(2,node_num)
+    character ( len = 40 ) string
+    real(real64) x_max
+    real(real64) x_min
+    integer(int32) x_ps
+    integer(int32) :: x_ps_max = 576
+    integer(int32) :: x_ps_max_clip = 594
+    integer(int32) :: x_ps_min = 36
+    integer(int32) :: x_ps_min_clip = 18
+    real(real64) x_scale
+    real(real64) y_max
+    real(real64) y_min
+    integer(int32) y_ps
+    integer(int32) :: y_ps_max = 666
+    integer(int32) :: y_ps_max_clip = 684
+    integer(int32) :: y_ps_min = 126
+    integer(int32) :: y_ps_min_clip = 108
+    real(real64) y_scale
   !
   !  We need to do some figuring here, so that we can determine
   !  the range of the data, and hence the height and width
@@ -17395,22 +17164,22 @@ contains
     x_min = minval ( node_xy(1,1:node_num) )
     x_scale = x_max - x_min
 
-    x_max = x_max + 0.05_dp * x_scale
-    x_min = x_min - 0.05_dp * x_scale
+    x_max = x_max + 0.05e+00_real64 * x_scale
+    x_min = x_min - 0.05e+00_real64 * x_scale
     x_scale = x_max - x_min
 
     y_max = maxval ( node_xy(2,1:node_num) )
     y_min = minval ( node_xy(2,1:node_num) )
     y_scale = y_max - y_min
 
-    y_max = y_max + 0.05_dp * y_scale
-    y_min = y_min - 0.05_dp * y_scale
+    y_max = y_max + 0.05e+00_real64 * y_scale
+    y_min = y_min - 0.05e+00_real64 * y_scale
     y_scale = y_max - y_min
 
     if ( x_scale < y_scale ) then
 
-      delta = nint ( real ( x_ps_max - x_ps_min, dp) &
-        * ( y_scale - x_scale ) / ( 2.0_dp * y_scale ) )
+      delta = nint ( real ( x_ps_max - x_ps_min, real64) &
+        * ( y_scale - x_scale ) / ( 2.0e+00_real64 * y_scale ) )
 
       x_ps_max = x_ps_max - delta
       x_ps_min = x_ps_min + delta
@@ -17422,8 +17191,8 @@ contains
 
     else if ( y_scale < x_scale ) then
 
-      delta = nint ( real ( y_ps_max - y_ps_min, dp) &
-        * ( x_scale - y_scale ) / ( 2.0_dp * x_scale ) )
+      delta = nint ( real ( y_ps_max - y_ps_min, real64) &
+        * ( x_scale - y_scale ) / ( 2.0e+00_real64 * x_scale ) )
 
       y_ps_max = y_ps_max - delta
       y_ps_min = y_ps_min + delta
@@ -17519,13 +17288,13 @@ contains
     do node = 1, node_num
 
       x_ps = int ( &
-        ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-        + (         node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+        ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+        + (         node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
         / ( x_max                   - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-        + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+        ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+        + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
         / ( y_max                   - y_min ) )
 
       write ( file_unit, '(a,i4,2x,i4,2x,i4,2x,a)' ) 'newpath ', x_ps, y_ps, &
@@ -17550,13 +17319,13 @@ contains
       do node = 1, node_num
 
         x_ps = int ( &
-          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, dp)   &
-          + (       + node_xy(1,node) - x_min ) * real ( x_ps_max, dp) ) &
+          ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min, real64)   &
+          + (       + node_xy(1,node) - x_min ) * real ( x_ps_max, real64) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
-          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, dp)   &
-          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, dp) ) &
+          ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min, real64)   &
+          + (         node_xy(2,node) - y_min ) * real ( y_ps_max, real64) ) &
           / ( y_max                   - y_min ) )
 
         write ( string, '(i4)' ) node
@@ -17577,11 +17346,10 @@ contains
     write ( file_unit, '(a)' ) '%%Trailer'
     write ( file_unit, '(a)' ) '%%EOF'
     close ( unit = file_unit )
-  end subroutine points_plot
+  end
 
   subroutine points_point_near_naive_nd ( dim_num, set_num, pset, p, i_min, &
-    dist_min ) &
-        bind(C, name="points_point_near_naive_nd")
+    dist_min )
 
   !*****************************************************************************80
   !
@@ -17606,31 +17374,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) SET_NUM, the number of points in the set.
+  !    Input, integer(int32) SET_NUM, the number of points in the set.
   !
-  !    Input, real(dp) PSET(DIM_NUM,SET_NUM), the points in the set.
+  !    Input, real(real64) PSET(DIM_NUM,SET_NUM), the points in the set.
   !
-  !    Input, real(dp) P(DIM_NUM), the point whose nearest neighbor
+  !    Input, real(real64) P(DIM_NUM), the point whose nearest neighbor
   !    is sought.
   !
-  !    Output, integer(ip) I_MIN, the index of the nearest point in 
+  !    Output, integer(int32) I_MIN, the index of the nearest point in 
   !    PSET to P.
   !
-  !    Output, real(dp) DIST_MIN, the distance between P(*) 
+  !    Output, real(real64) DIST_MIN, the distance between P(*) 
   !    and PSET(*,I_MIN).
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: set_num
+    integer(int32) dim_num
+    integer(int32) set_num
 
-    real(dp) :: d
-    real(dp), intent(out) :: dist_min
-    integer(ip) :: i
-    integer(ip), intent(out) :: i_min
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pset(dim_num,set_num)
+    real(real64) d
+    real(real64) dist_min
+    integer(int32) i
+    integer(int32) i_min
+    real(real64) p(dim_num)
+    real(real64) pset(dim_num,set_num)
 
     dist_min = huge ( dist_min )
     i_min = -1
@@ -17644,10 +17412,9 @@ contains
     end do
 
     dist_min = sqrt ( dist_min )
-  end subroutine points_point_near_naive_nd
+  end
 
-  subroutine polar_to_xy ( r, t, xy ) &
-        bind(C, name="polar_to_xy")
+  subroutine polar_to_xy ( r, t, xy )
 
   !*****************************************************************************80
   !
@@ -17667,21 +17434,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, T, the radius and angle (in radians).
+  !    Input, real(real64) R, T, the radius and angle (in radians).
   !
-  !    Output, real(dp) XY(2), the Cartesian coordinates.
+  !    Output, real(real64) XY(2), the Cartesian coordinates.
   !
 
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: t
-    real(dp), intent(out) :: xy(2)
+    real(real64) r
+    real(real64) t
+    real(real64) xy(2)
 
     xy(1) = r * cos ( t )
     xy(2) = r * sin ( t )
-  end subroutine polar_to_xy
+  end
 
-  subroutine polygon_1_2d ( n, v, result ) &
-        bind(C, name="polygon_1_2d")
+  subroutine polygon_1_2d ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -17719,24 +17485,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -17754,13 +17520,12 @@ contains
         im1 = i - 1
       end if
 
-      result = result + 0.5_dp * ( v(1,i) + v(1,im1) ) * ( v(2,i) - v(2,im1) )
+      result = result + 0.5e+00_real64 * ( v(1,i) + v(1,im1) ) * ( v(2,i) - v(2,im1) )
 
     end do
-  end subroutine polygon_1_2d
+  end
 
-  subroutine polygon_angles_2d ( n, v, angle ) &
-        bind(C, name="polygon_angles_2d")
+  subroutine polygon_angles_2d ( n, v, angle )
 
   !*****************************************************************************80
   !
@@ -17784,27 +17549,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) ANGLE(N), the angles of the polygon,
+  !    Output, real(real64) ANGLE(N), the angles of the polygon,
   !    in radians.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: angle(n)
-    real(dp) :: angle_rad_2d
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: im1
-    integer(ip) :: ip1
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) angle(n)
+    real(real64) angle_rad_2d
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) im1
+    integer(int32) ip1
+    real(real64) v(dim_num,n)
 
     if ( n <= 2 ) then
-      angle(1:n) = 0.0_dp
+      angle(1:n) = 0.0e+00_real64
     end if
 
     do i = 1, n
@@ -17816,10 +17581,9 @@ contains
         v(1:dim_num,ip1) )
 
     end do
-  end subroutine polygon_angles_2d
+  end
 
-  subroutine polygon_area_2d ( n, v, area ) &
-        bind(C, name="polygon_area_2d")
+  subroutine polygon_area_2d ( n, v, area )
 
   !*****************************************************************************80
   !
@@ -17848,24 +17612,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) AREA, the absolute area of the polygon.
+  !    Output, real(real64) AREA, the absolute area of the polygon.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: area
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: im1
-    integer(ip) :: ip1
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) area
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) im1
+    integer(int32) ip1
+    real(real64) v(dim_num,n)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     do i = 1, n
 
@@ -17876,11 +17640,10 @@ contains
 
     end do
 
-    area = 0.5_dp * area
-  end subroutine polygon_area_2d
+    area = 0.5e+00_real64 * area
+  end
 
-  subroutine polygon_area_2d_2 ( n, v, area ) &
-        bind(C, name="polygon_area_2d_2")
+  subroutine polygon_area_2d_2 ( n, v, area )
 
   !*****************************************************************************80
   !
@@ -17920,23 +17683,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) AREA, the absolute area of the polygon.
+  !    Output, real(real64) AREA, the absolute area of the polygon.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: area
-    real(dp) :: area_triangle
-    integer(ip) :: i
-    real(dp) :: t(dim_num,3)
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) area
+    real(real64) area_triangle
+    integer(int32) i
+    real(real64) t(dim_num,3)
+    real(real64) v(dim_num,n)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     do i = 1, n - 2
 
@@ -17949,10 +17712,9 @@ contains
       area = area + area_triangle
 
     end do
-  end subroutine polygon_area_2d_2
+  end
 
-  subroutine polygon_area_3d ( n, v, area, normal ) &
-        bind(C, name="polygon_area_3d")
+  subroutine polygon_area_3d ( n, v, area, normal )
 
   !*****************************************************************************80
   !
@@ -17988,28 +17750,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) V(3,N), the coordinates of the vertices.
+  !    Input, real(real64) V(3,N), the coordinates of the vertices.
   !    The vertices should be listed in neighboring order.
   !
-  !    Output, real(dp) AREA, the area of the polygon.
+  !    Output, real(real64) AREA, the area of the polygon.
   !
-  !    Output, real(dp) NORMAL(3), the unit normal vector to the polygon.
+  !    Output, real(real64) NORMAL(3), the unit normal vector to the polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: area
-    real(dp) :: cross(dim_num)
-    integer(ip) :: i
-    integer(ip) :: ip1
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) area
+    real(real64) cross(dim_num)
+    integer(int32) i
+    integer(int32) ip1
+    real(real64) normal(dim_num)
+    real(real64) v(dim_num,n)
 
-    normal(1:dim_num) = 0.0_dp
+    normal(1:dim_num) = 0.0e+00_real64
 
     do i = 1, n
 
@@ -18031,17 +17793,16 @@ contains
 
     area = sqrt ( sum ( normal(1:dim_num)**2 ) )
 
-    if ( area /= 0.0_dp ) then
+    if ( area /= 0.0e+00_real64 ) then
       normal(1:dim_num) = normal(1:dim_num) / area
     else
-      normal(1:dim_num) = 1.0_dp / sqrt ( real ( dim_num, dp) )
+      normal(1:dim_num) = 1.0e+00_real64 / sqrt ( real ( dim_num, real64) )
     end if
 
-    area = 0.5_dp * area
-  end subroutine polygon_area_3d
+    area = 0.5e+00_real64 * area
+  end
 
-  subroutine polygon_area_3d_2 ( n, v, area ) &
-        bind(C, name="polygon_area_3d_2")
+  subroutine polygon_area_3d_2 ( n, v, area )
 
   !*****************************************************************************80
   !
@@ -18080,24 +17841,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(3,N), the coordinates of the vertices.
+  !    Input, real(real64) V(3,N), the coordinates of the vertices.
   !
-  !    Output, real(dp) AREA, the area of the polygon.
+  !    Output, real(real64) AREA, the area of the polygon.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 3
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: area
-    real(dp) :: area_vector(dim_num)
-    real(dp) :: area_vector_triangle(dim_num)
-    integer(ip) :: j
-    real(dp) :: t(dim_num,3)
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) area
+    real(real64) area_vector(dim_num)
+    real(real64) area_vector_triangle(dim_num)
+    integer(int32) j
+    real(real64) t(dim_num,3)
+    real(real64) v(dim_num,n)
 
-    area_vector(1:dim_num) = 0.0_dp
+    area_vector(1:dim_num) = 0.0e+00_real64
 
     do j = 1, n - 2
 
@@ -18112,11 +17873,10 @@ contains
 
     end do
 
-    area = 0.5_dp * sqrt ( sum ( area_vector(1:dim_num)**2 ) )
-  end subroutine polygon_area_3d_2
+    area = 0.5e+00_real64 * sqrt ( sum ( area_vector(1:dim_num)**2 ) )
+  end
 
-  subroutine polygon_centroid_2d ( n, v, centroid ) &
-        bind(C, name="polygon_centroid_2d")
+  subroutine polygon_centroid_2d ( n, v, centroid )
 
   !*****************************************************************************80
   !
@@ -18173,25 +17933,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices.
+  !    Input, real(real64) V(2,N), the coordinates of the vertices.
   !
-  !    Output, real(dp) CENTROID(2), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(2), the coordinates of the centroid.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: area
-    real(dp), intent(out) :: centroid(dim_num)
-    integer(ip) :: i
-    integer(ip) :: ip1
-    real(dp) :: temp
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) area
+    real(real64) centroid(dim_num)
+    integer(int32) i
+    integer(int32) ip1
+    real(real64) temp
+    real(real64) v(dim_num,n)
 
-    area = 0.0_dp
-    centroid(1:dim_num) = 0.0_dp
+    area = 0.0e+00_real64
+    centroid(1:dim_num) = 0.0e+00_real64
 
     do i = 1, n
 
@@ -18210,17 +17970,16 @@ contains
 
     end do
 
-    area = area / 2.0_dp
+    area = area / 2.0e+00_real64
 
-    if ( area == 0.0_dp ) then
+    if ( area == 0.0e+00_real64 ) then
       centroid(1:dim_num) = v(1:dim_num,1)
     else
-      centroid(1:dim_num) = centroid(1:dim_num) / ( 6.0_dp * area )
+      centroid(1:dim_num) = centroid(1:dim_num) / ( 6.0e+00_real64 * area )
     end if
-  end subroutine polygon_centroid_2d
+  end
 
-  subroutine polygon_centroid_2d_2 ( n, v, centroid ) &
-        bind(C, name="polygon_centroid_2d_2")
+  subroutine polygon_centroid_2d_2 ( n, v, centroid )
 
   !*****************************************************************************80
   !
@@ -18252,25 +18011,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices.
+  !    Input, real(real64) V(2,N), the coordinates of the vertices.
   !
-  !    Output, real(dp) CENTROID(2), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(2), the coordinates of the centroid.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: area_polygon
-    real(dp) :: area_triangle
-    real(dp), intent(out) :: centroid(dim_num)
-    integer(ip) :: i
-    real(dp) :: t(dim_num,3)
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) area_polygon
+    real(real64) area_triangle
+    real(real64) centroid(dim_num)
+    integer(int32) i
+    real(real64) t(dim_num,3)
+    real(real64) v(dim_num,n)
 
-    area_polygon = 0.0_dp
-    centroid(1:dim_num) = 0.0_dp
+    area_polygon = 0.0e+00_real64
+    centroid(1:dim_num) = 0.0e+00_real64
 
     do i = 1, n - 2
 
@@ -18283,19 +18042,18 @@ contains
       area_polygon = area_polygon + area_triangle
 
       centroid(1:dim_num) = centroid(1:dim_num) + area_triangle &
-        * ( v(1:dim_num,i) + v(1:dim_num,i+1) + v(1:dim_num,n) ) / 3.0_dp
+        * ( v(1:dim_num,i) + v(1:dim_num,i+1) + v(1:dim_num,n) ) / 3.0e+00_real64
 
     end do
 
-    if ( area_polygon == 0.0_dp ) then
+    if ( area_polygon == 0.0e+00_real64 ) then
       centroid(1:dim_num) = v(1:dim_num,1)
     else
       centroid(1:dim_num) = centroid(1:dim_num) / area_polygon
     end if
-  end subroutine polygon_centroid_2d_2
+  end
 
-  subroutine polygon_centroid_3d ( n, v, centroid ) &
-        bind(C, name="polygon_centroid_3d")
+  subroutine polygon_centroid_3d ( n, v, centroid )
 
   !*****************************************************************************80
   !
@@ -18332,25 +18090,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(3,N), the coordinates of the vertices.
+  !    Input, real(real64) V(3,N), the coordinates of the vertices.
   !
-  !    Output, real(dp) CENTROID(3), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(3), the coordinates of the centroid.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 3
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: area_polygon
-    real(dp) :: area_triangle
-    real(dp), intent(out) :: centroid(dim_num)
-    integer(ip) :: i
-    real(dp) :: t(dim_num,3)
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) area_polygon
+    real(real64) area_triangle
+    real(real64) centroid(dim_num)
+    integer(int32) i
+    real(real64) t(dim_num,3)
+    real(real64) v(dim_num,n)
 
-    area_polygon = 0.0_dp
-    centroid(1:dim_num) = 0.0_dp
+    area_polygon = 0.0e+00_real64
+    centroid(1:dim_num) = 0.0e+00_real64
 
     do i = 1, n - 2
 
@@ -18363,19 +18121,18 @@ contains
       area_polygon = area_polygon + area_triangle
 
       centroid(1:dim_num) = centroid(1:dim_num) + area_triangle &
-        * ( v(1:dim_num,i) + v(1:dim_num,i+1) + v(1:dim_num,n) ) / 3.0_dp
+        * ( v(1:dim_num,i) + v(1:dim_num,i+1) + v(1:dim_num,n) ) / 3.0e+00_real64
 
     end do
 
-    if ( area_polygon == 0.0_dp ) then
+    if ( area_polygon == 0.0e+00_real64 ) then
       centroid(1:dim_num) = v(1:dim_num,1)
     else
       centroid(1:dim_num) = centroid(1:dim_num) / area_polygon
     end if
-  end subroutine polygon_centroid_3d
+  end
 
-  subroutine polygon_contains_point_2d ( n, v, p, inside ) &
-        bind(C, name="polygon_contains_point_2d")
+  subroutine polygon_contains_point_2d ( n, v, p, inside )
 
   !*****************************************************************************80
   !
@@ -18395,35 +18152,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes or vertices in 
+  !    Input, integer(int32) N, the number of nodes or vertices in 
   !    the polygon.  N must be at least 3.
   !
-  !    Input, real(dp) V(2,N), the vertices of the polygon.
+  !    Input, real(real64) V(2,N), the vertices of the polygon.
   !
-  !    Input, real(dp) P(2), the coordinates of the point to be tested.
+  !    Input, real(real64) P(2), the coordinates of the point to be tested.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside 
   !    the polygon.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    logical, intent(out) :: inside
-    integer(ip) :: ip1
-    real(dp), intent(in) :: p(2)
-    real(dp) :: px1
-    real(dp) :: px2
-    real(dp) :: py1
-    real(dp) :: py2
-    real(dp), intent(in) :: v(2,n)
-    real(dp) :: xints
+    integer(int32) i
+    logical inside
+    integer(int32) ip1
+    real(real64) p(2)
+    real(real64) px1
+    real(real64) px2
+    real(real64) py1
+    real(real64) py2
+    real(real64) v(2,n)
+    real(real64) xints
 
     inside = .false.
 
     px1 = v(1,1)
     py1 = v(2,1)
-    xints = p(1) - 1.0_dp
+    xints = p(1) - 1.0e+00_real64
 
     do i = 1, n
 
@@ -18447,10 +18204,9 @@ contains
       py1 = py2
 
     end do
-  end subroutine polygon_contains_point_2d
+  end
 
-  subroutine polygon_contains_point_2d_2 ( n, v, p, inside ) &
-        bind(C, name="polygon_contains_point_2d_2")
+  subroutine polygon_contains_point_2d_2 ( n, v, p, inside )
 
   !*****************************************************************************80
   !
@@ -18470,25 +18226,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes or vertices in the 
+  !    Input, integer(int32) N, the number of nodes or vertices in the 
   !    polygon.  N must be at least 3.
   !
-  !    Input, real(dp) V(2,N), the vertices of the polygon.
+  !    Input, real(real64) V(2,N), the vertices of the polygon.
   !
-  !    Input, real(dp) P(2), the coordinates of the point to be tested.
+  !    Input, real(real64) P(2), the coordinates of the point to be tested.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside
   !    the polygon or on its boundary.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp) :: t(dim_num,3)
-    real(dp), intent(in) :: v(dim_num,n)
+    integer(int32) i
+    logical inside
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
+    real(real64) v(dim_num,n)
 
     inside = .false.
   !
@@ -18509,10 +18265,9 @@ contains
       end if
 
     end do
-  end subroutine polygon_contains_point_2d_2
+  end
 
-  subroutine polygon_contains_point_2d_3 ( n, v, p, inside ) &
-        bind(C, name="polygon_contains_point_2d_3")
+  subroutine polygon_contains_point_2d_3 ( n, v, p, inside )
 
   !*****************************************************************************80
   !
@@ -18545,25 +18300,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes or vertices in 
+  !    Input, integer(int32) N, the number of nodes or vertices in 
   !    the polygon.  N must be at least 3.
   !
-  !    Input, real(dp) V(2,N), the vertices of the polygon.
+  !    Input, real(real64) V(2,N), the vertices of the polygon.
   !
-  !    Input, real(dp) P(2), the coordinates of the point to be tested.
+  !    Input, real(real64) P(2), the coordinates of the point to be tested.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside 
   !    the polygon.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    logical, intent(out) :: inside
-    integer(ip) :: ip1
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: v(dim_num,n)
+    integer(int32) i
+    logical inside
+    integer(int32) ip1
+    real(real64) p(dim_num)
+    real(real64) v(dim_num,n)
 
     inside = .false.
 
@@ -18578,16 +18333,15 @@ contains
       if ( ( v(2,i)   <  p(2) .and. p(2) <= v(2,ip1)   ) .or. &
            ( p(2) <= v(2,i)   .and. v(2,ip1)   < p(2) ) ) then
         if ( ( p(1) - v(1,i) ) - ( p(2) - v(2,i) ) &
-           * ( v(1,ip1) - v(1,i) ) / ( v(2,ip1) - v(2,i) ) < 0.0_dp ) then
+           * ( v(1,ip1) - v(1,i) ) / ( v(2,ip1) - v(2,i) ) < 0.0e+00_real64 ) then
           inside = .not. inside
         end if
       end if
 
     end do
-  end subroutine polygon_contains_point_2d_3
+  end
 
-  subroutine polygon_diameter_2d ( n, v, diameter ) &
-        bind(C, name="polygon_diameter_2d")
+  subroutine polygon_diameter_2d ( n, v, diameter )
 
   !*****************************************************************************80
   !
@@ -18616,22 +18370,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !
-  !    Input, real(dp) V(2,N), the vertices.
+  !    Input, real(real64) V(2,N), the vertices.
   !
-  !    Output, real(dp) DIAMETER, the diameter of the polygon.
+  !    Output, real(real64) DIAMETER, the diameter of the polygon.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: diameter
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) diameter
+    integer(int32) i
+    integer(int32) j
+    real(real64) v(dim_num,n)
 
-    diameter = 0.0_dp
+    diameter = 0.0e+00_real64
 
     do i = 1, n
 
@@ -18641,10 +18395,9 @@ contains
       end do
 
     end do
-  end subroutine polygon_diameter_2d
+  end
 
-  subroutine polygon_expand_2d ( n, v, h, w ) &
-        bind(C, name="polygon_expand_2d")
+  subroutine polygon_expand_2d ( n, v, h, w )
 
   !*****************************************************************************80
   !
@@ -18674,29 +18427,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices.
+  !    Input, real(real64) V(2,N), the coordinates of the vertices.
   !
-  !    Input, real(dp) H, the expansion amount.
+  !    Input, real(real64) H, the expansion amount.
   !
-  !    Output, real(dp) W(2,N), the "expanded" coordinates.
+  !    Output, real(real64) W(2,N), the "expanded" coordinates.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle
-    real(dp) :: angle_rad_2d
-    real(dp), intent(in), value :: h
-    real(dp) :: h2
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: im1
-    integer(ip) :: ip1
-    real(dp) :: p4(dim_num)
-    real(dp), intent(in) :: v(dim_num,n)
-    real(dp), intent(out) :: w(dim_num,n)
+    real(real64) angle
+    real(real64) angle_rad_2d
+    real(real64) h
+    real(real64) h2
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) im1
+    integer(int32) ip1
+    real(real64) p4(dim_num)
+    real(real64) v(dim_num,n)
+    real(real64) w(dim_num,n)
   !
   !  Consider each angle, formed by the nodes P(I-1), P(I), P(I+1).
   !
@@ -18727,10 +18480,9 @@ contains
       w(1:dim_num,i) = v(1:dim_num,i) - h2 * ( p4(1:dim_num) - v(1:dim_num,i) )
 
     end do
-  end subroutine polygon_expand_2d
+  end
 
-  subroutine polygon_inrad_data_2d ( n, radin, area, radout, side ) &
-        bind(C, name="polygon_inrad_data_2d")
+  subroutine polygon_inrad_data_2d ( n, radin, area, radout, side )
 
   !*****************************************************************************80
   !
@@ -18750,29 +18502,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !    N must be at least 3.
   !
-  !    Input, real(dp) RADIN, the inner radius of the polygon, that is,
+  !    Input, real(real64) RADIN, the inner radius of the polygon, that is,
   !    the radius of the largest circle that can be inscribed within
   !    the polygon.
   !
-  !    Output, real(dp) AREA, the area of the regular polygon.
+  !    Output, real(real64) AREA, the area of the regular polygon.
   !
-  !    Output, real(dp) RADOUT, the outer radius of the polygon, that is,
+  !    Output, real(real64) RADOUT, the outer radius of the polygon, that is,
   !    the radius of the smallest circle that can be described about
   !    the polygon.
   !
-  !    Output, real(dp) SIDE, the length of one side of the polygon.
+  !    Output, real(real64) SIDE, the length of one side of the polygon.
   !
 
-    real(dp) :: angle
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: n
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in), value :: radin
-    real(dp), intent(out) :: radout
-    real(dp), intent(out) :: side
+    real(real64) angle
+    real(real64) area
+    integer(int32) n
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radin
+    real(real64) radout
+    real(real64) side
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -18782,14 +18534,13 @@ contains
       stop 1
     end if
 
-    angle = r8_pi / real ( n, dp)
-    area = real ( n, dp) * radin * radin * tan ( angle )
-    side = 2.0_dp * radin * tan ( angle )
-    radout = 0.5_dp * side / sin ( angle )
-  end subroutine polygon_inrad_data_2d
+    angle = r8_pi / real ( n, real64)
+    area = real ( n, real64) * radin * radin * tan ( angle )
+    side = 2.0e+00_real64 * radin * tan ( angle )
+    radout = 0.5e+00_real64 * side / sin ( angle )
+  end
 
-  function polygon_is_convex_2d ( n, v ) &
-        bind(C, name="polygon_is_convex_2d")
+  function polygon_is_convex_2d ( n, v )
 
   !*****************************************************************************80
   !
@@ -18826,43 +18577,43 @@ contains
   !
   !  Parameters
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input/output, real(dp) V(2,N), the coordinates of the vertices 
+  !    Input/output, real(real64) V(2,N), the coordinates of the vertices 
   !    of the polygon.  On output, duplicate consecutive points have been 
   !    deleted, and the vertices have been reordered so that the 
   !    lexicographically least point comes first.
   !
-  !    Output, integer(ip) POLYGON_IS_CONVEX_2D:
+  !    Output, integer(int32) POLYGON_IS_CONVEX_2D:
   !    -1, the polygon is not convex;
   !     0, the polygon has less than 3 vertices; it is "degenerately" convex;
   !     1, the polygon is convex and counter clockwise;
   !     2, the polygon is convex and clockwise.
   !
 
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), parameter :: RAD_TO_DEG = 180.0_dp / r8_pi
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64), parameter :: RAD_TO_DEG = 180.0e+00_real64 / r8_pi
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle
-    integer(ip), parameter :: CONVEX_CCW = 1
-    integer(ip), parameter :: CONVEX_CW = 2
-    real(dp) :: cross
-    integer(ip), parameter :: DEGENERATE_CONVEX = 0
-    real(dp) :: dot
-    real(dp) :: exterior_total
-    integer(ip) :: i
-    integer(ip) :: ip1
-    integer(ip) :: ip2
-    integer(ip), parameter :: NOT_CONVEX = -1
-    integer(ip) :: polygon_is_convex_2d
-    real(dp) :: sense
-    real(dp), parameter :: tol = 1.0_dp
-    real(dp), intent(inout) :: v(dim_num,n)
+    real(real64) angle
+    integer(int32), parameter :: CONVEX_CCW = 1
+    integer(int32), parameter :: CONVEX_CW = 2
+    real(real64) cross
+    integer(int32), parameter :: DEGENERATE_CONVEX = 0
+    real(real64) dot
+    real(real64) exterior_total
+    integer(int32) i
+    integer(int32) ip1
+    integer(int32) ip2
+    integer(int32), parameter :: NOT_CONVEX = -1
+    integer(int32) polygon_is_convex_2d
+    real(real64) sense
+    real(real64), parameter :: tol = 1.0e+00_real64
+    real(real64) v(dim_num,n)
 
-    exterior_total = 0.0_dp
+    exterior_total = 0.0e+00_real64
   !
   !  If there are not at least 3 distinct vertices, we are done.
   !
@@ -18870,7 +18621,7 @@ contains
       polygon_is_convex_2d = DEGENERATE_CONVEX
     end if
 
-    sense = 0.0_dp
+    sense = 0.0e+00_real64
   !
   !  Consider each polygonal vertex I.
   !
@@ -18898,23 +18649,23 @@ contains
   !  the "sense" of the polygon, or if it disagrees with the previously
   !  defined sense.
   !
-      if ( sense == 0.0_dp ) then
+      if ( sense == 0.0e+00_real64 ) then
 
-        if ( angle < 0.0_dp ) then
-          sense = -1.0_dp
-        else if ( 0.0_dp < angle ) then
-          sense = +1.0_dp
+        if ( angle < 0.0e+00_real64 ) then
+          sense = -1.0e+00_real64
+        else if ( 0.0e+00_real64 < angle ) then
+          sense = +1.0e+00_real64
         end if
 
-      else if ( sense == 1.0_dp ) then
+      else if ( sense == 1.0e+00_real64 ) then
 
-        if ( angle < 0.0_dp ) then
+        if ( angle < 0.0e+00_real64 ) then
           polygon_is_convex_2d = NOT_CONVEX
         end if
 
-      else if ( sense == -1.0_dp ) then
+      else if ( sense == -1.0e+00_real64 ) then
 
-        if ( 0.0_dp < angle ) then
+        if ( 0.0e+00_real64 < angle ) then
           polygon_is_convex_2d = NOT_CONVEX
         end if
 
@@ -18927,21 +18678,20 @@ contains
 
       exterior_total = exterior_total + angle
 
-      if ( 360.0_dp + tol < abs ( exterior_total ) * RAD_TO_DEG ) then
+      if ( 360.0e+00_real64 + tol < abs ( exterior_total ) * RAD_TO_DEG ) then
         polygon_is_convex_2d = NOT_CONVEX
       end if
 
     end do
 
-    if ( sense == +1.0_dp ) then
+    if ( sense == +1.0e+00_real64 ) then
       polygon_is_convex_2d = CONVEX_CCW
-    else if ( sense == -1.0_dp ) then
+    else if ( sense == -1.0e+00_real64 ) then
       polygon_is_convex_2d = CONVEX_CW
     end if
-  end function polygon_is_convex_2d
+  end
 
-  subroutine polygon_lattice_area_2d ( i, b, area ) &
-        bind(C, name="polygon_lattice_area_2d")
+  subroutine polygon_lattice_area_2d ( i, b, area )
 
   !*****************************************************************************80
   !
@@ -18986,22 +18736,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the number of interior lattice points.
+  !    Input, integer(int32) I, the number of interior lattice points.
   !
-  !    Input, integer(ip) B, the number of boundary lattice points.
+  !    Input, integer(int32) B, the number of boundary lattice points.
   !
-  !    Output, real(dp) AREA, the area of the lattice polygon.
+  !    Output, real(real64) AREA, the area of the lattice polygon.
   !
 
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: b
-    integer(ip), intent(in), value :: i
+    real(real64) area
+    integer(int32) b
+    integer(int32) i
 
-    area = real ( i, dp) + real ( b, dp) / 2.0_dp - 1.0_dp
-  end subroutine polygon_lattice_area_2d
+    area = real ( i, real64) + real ( b, real64) / 2.0e+00_real64 - 1.0e+00_real64
+  end
 
-  subroutine polygon_normal_3d ( n, v, normal ) &
-        bind(C, name="polygon_normal_3d")
+  subroutine polygon_normal_3d ( n, v, normal ) 
 
   !*****************************************************************************80
   !
@@ -19043,27 +18792,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) V(3,N), the coordinates of the vertices.
+  !    Input, real(real64) V(3,N), the coordinates of the vertices.
   !
-  !    Output, real(dp) NORMAL(3), the averaged normal vector
+  !    Output, real(real64) NORMAL(3), the averaged normal vector
   !    to the polygon. 
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) n
 
-    real(dp) :: r8vec_norm
-    integer(ip) :: j
-    real(dp), intent(out) :: normal(dim_num)
-    real(dp) :: normal_norm
-    real(dp) :: p(dim_num)
-    real(dp), intent(in) :: v(dim_num,n)
-    real(dp) :: v1(dim_num)
-    real(dp) :: v2(dim_num)
+    real(real64) r8vec_norm
+    integer(int32) j
+    real(real64) normal(dim_num)
+    real(real64) normal_norm
+    real(real64) p(dim_num)
+    real(real64) v(dim_num,n)
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
 
-    normal(1:dim_num) = 0.0_dp
+    normal(1:dim_num) = 0.0e+00_real64
 
     v1(1:dim_num) = v(1:dim_num,2) - v(1:dim_num,1)
 
@@ -19083,14 +18832,13 @@ contains
   !
     normal_norm = r8vec_norm ( dim_num, normal )
 
-    if ( normal_norm == 0.0_dp ) then
+    if ( normal_norm == 0.0e+00_real64 ) then
     end if
 
     normal(1:dim_num) = normal(1:dim_num) / normal_norm
-  end subroutine polygon_normal_3d
+  end
 
-  subroutine polygon_outrad_data_2d ( n, radout, area, radin, side ) &
-        bind(C, name="polygon_outrad_data_2d")
+  subroutine polygon_outrad_data_2d ( n, radout, area, radin, side )
 
   !*****************************************************************************80
   !
@@ -19110,29 +18858,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !    N must be at least 3.
   !
-  !    Input, real(dp) RADOUT, the outer radius of the polygon, that is,
+  !    Input, real(real64) RADOUT, the outer radius of the polygon, that is,
   !    the radius of the smallest circle that can be described
   !    around the polygon.
   !
-  !    Output, real(dp) AREA, the area of the regular polygon.
+  !    Output, real(real64) AREA, the area of the regular polygon.
   !
-  !    Output, real(dp) RADIN, the inner radius of the polygon, that is,
+  !    Output, real(real64) RADIN, the inner radius of the polygon, that is,
   !    the radius of the largest circle that can be inscribed
   !    within the polygon.
   !
-  !    Output, real(dp) SIDE, the length of one side of the polygon.
+  !    Output, real(real64) SIDE, the length of one side of the polygon.
   !
 
-    real(dp) :: angle
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: n
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: radin
-    real(dp), intent(in), value :: radout
-    real(dp), intent(out) :: side
+    real(real64) angle
+    real(real64) area
+    integer(int32) n
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radin
+    real(real64) radout
+    real(real64) side
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -19142,15 +18890,14 @@ contains
       stop 1
     end if
 
-    angle = r8_pi / real ( n, dp)
-    area = 0.5_dp * real ( n, dp) * radout * radout &
-      * sin ( 2.0_dp * angle )
-    side = 2.0_dp * radout * sin ( angle )
-    radin = 0.5_dp * side / tan ( angle )
-  end subroutine polygon_outrad_data_2d
+    angle = r8_pi / real ( n, real64)
+    area = 0.5e+00_real64 * real ( n, real64) * radout * radout &
+      * sin ( 2.0e+00_real64 * angle )
+    side = 2.0e+00_real64 * radout * sin ( angle )
+    radin = 0.5e+00_real64 * side / tan ( angle )
+  end
 
-  subroutine polygon_point_dist_2d ( n, v, p, dist ) &
-        bind(C, name="polygon_point_dist_2d")
+  subroutine polygon_point_dist_2d ( n, v, p, dist )
 
   !*****************************************************************************80
   !
@@ -19170,26 +18917,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) V(2,N), the triangle vertices.
+  !    Input, real(real64) V(2,N), the triangle vertices.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    polygon.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) p(dim_num)
+    real(real64) v(dim_num,n)
   !
   !  Find the distance to each of the line segments.
   !
@@ -19206,10 +18953,9 @@ contains
       end if
 
     end do
-  end subroutine polygon_point_dist_2d
+  end
 
-  subroutine polygon_point_near_2d ( n, v, p, pn, dist ) &
-        bind(C, name="polygon_point_near_2d")
+  subroutine polygon_point_near_2d ( n, v, p, pn, dist )
 
   !*****************************************************************************80
   !
@@ -19229,36 +18975,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V(2,N), the polygon vertices.
+  !    Input, real(real64) V(2,N), the polygon vertices.
   !
-  !    Input, real(dp) P(2), the point whose nearest polygon point
+  !    Input, real(real64) P(2), the point whose nearest polygon point
   !    is to be determined.
   !
-  !    Output, real(dp) PN(2), the nearest point to P.
+  !    Output, real(real64) PN(2), the nearest point to P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    polygon.
   !
 
-    integer(ip) :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp) :: pn2(dim_num)
-    real(dp) :: tval
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) p(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) pn2(dim_num)
+    real(real64) tval
+    real(real64) v(dim_num,n)
   !
   !  Find the distance to each of the line segments that make up the edges
   !  of the polygon.
   !
     dist = huge ( dist )
-    pn(1:dim_num) = 0.0_dp
+    pn(1:dim_num) = 0.0e+00_real64
 
     do j = 1, n
 
@@ -19273,10 +19019,9 @@ contains
       end if
 
     end do
-  end subroutine polygon_point_near_2d
+  end
 
-  subroutine polygon_side_data_2d ( n, side, area, radin, radout ) &
-        bind(C, name="polygon_side_data_2d")
+  subroutine polygon_side_data_2d ( n, side, area, radin, radout )
 
   !*****************************************************************************80
   !
@@ -19296,29 +19041,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of sides of the polygon.
+  !    Input, integer(int32) N, the number of sides of the polygon.
   !    N must be at least 3.
   !
-  !    Input, real(dp) SIDE, the length of one side of the polygon.
+  !    Input, real(real64) SIDE, the length of one side of the polygon.
   !
-  !    Output, real(dp) AREA, the area of the regular polygon.
+  !    Output, real(real64) AREA, the area of the regular polygon.
   !
-  !    Output, real(dp) RADIN, the inner radius of the polygon, that is,
+  !    Output, real(real64) RADIN, the inner radius of the polygon, that is,
   !    the radius of the largest circle that can be inscribed within
   !    the polygon.
   !
-  !    Output, real(dp) RADOUT, the outer radius of the polygon, that is,
+  !    Output, real(real64) RADOUT, the outer radius of the polygon, that is,
   !    the radius of the smallest circle that can be described about
   !    the polygon.
   !
 
-    real(dp) :: angle
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: n
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: radin
-    real(dp), intent(out) :: radout
-    real(dp), intent(in), value :: side
+    real(real64) angle
+    real(real64) area
+    integer(int32) n
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radin
+    real(real64) radout
+    real(real64) side
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -19328,14 +19073,13 @@ contains
       stop 1
     end if
 
-    angle = r8_pi / real ( n, dp)
-    area = 0.25_dp * real ( n, dp) * side * side / tan ( angle )
-    radin = 0.5_dp * side / tan ( angle )
-    radout = 0.5_dp * side / sin ( angle )
-  end subroutine polygon_side_data_2d
+    angle = r8_pi / real ( n, real64)
+    area = 0.25e+00_real64 * real ( n, real64) * side * side / tan ( angle )
+    radin = 0.5e+00_real64 * side / tan ( angle )
+    radout = 0.5e+00_real64 * side / sin ( angle )
+  end
 
-  subroutine polygon_solid_angle_3d ( n, v, p, solid_angle ) &
-        bind(C, name="polygon_solid_angle_3d")
+  subroutine polygon_solid_angle_3d ( n, v, p, solid_angle )
 
   !*****************************************************************************80
   !
@@ -19387,50 +19131,50 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) V(3,N), the coordinates of the vertices.
+  !    Input, real(real64) V(3,N), the coordinates of the vertices.
   !
-  !    Input, real(dp) P(3), the point at the center of the unit sphere.
+  !    Input, real(real64) P(3), the point at the center of the unit sphere.
   !
   !    Output, double SOLID_ANGLE, the solid angle subtended
   !    by the polygon, as projected onto the unit sphere around the point P.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) n
 
-    real(dp) :: a(dim_num)
-    real(dp) :: angle
-    real(dp) :: area
-    real(dp) :: b(dim_num)
-    real(dp) :: r8vec_norm
-    real(dp) :: r8vec_scalar_triple_product
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp) :: normal1(dim_num)
-    real(dp) :: normal1_norm
-    real(dp) :: normal2(dim_num)
-    real(dp) :: normal2_norm
-    real(dp), intent(in) :: p(dim_num)
-    real(dp) :: plane(dim_num)
-    real(dp) :: r1(dim_num)
-    real(dp) :: r8_acos
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: s
-    real(dp), intent(out) :: solid_angle
-    real(dp), intent(in) :: v(dim_num,n)
+    real(real64) a(dim_num)
+    real(real64) angle
+    real(real64) area
+    real(real64) b(dim_num)
+    real(real64) r8vec_norm
+    real(real64) r8vec_scalar_triple_product
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) normal1(dim_num)
+    real(real64) normal1_norm
+    real(real64) normal2(dim_num)
+    real(real64) normal2_norm
+    real(real64) p(dim_num)
+    real(real64) plane(dim_num)
+    real(real64) r1(dim_num)
+    real(real64) r8_acos
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) s
+    real(real64) solid_angle
+    real(real64) v(dim_num,n)
 
     if ( n < 3 ) then
-      solid_angle = 0.0_dp
+      solid_angle = 0.0e+00_real64
     end if
 
     call polygon_normal_3d ( n, v, plane )
 
     a(1:dim_num) = v(1:dim_num,n) - v(1:dim_num,1)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     do j = 1, n
 
@@ -19455,7 +19199,7 @@ contains
 
       s = r8vec_scalar_triple_product ( b, a, plane )
 
-      if ( 0.0_dp < s ) then
+      if ( 0.0e+00_real64 < s ) then
         area = area + r8_pi - angle
       else
         area = area + r8_pi + angle
@@ -19465,17 +19209,16 @@ contains
 
     end do
 
-    area = area - r8_pi * real ( n - 2, dp)
+    area = area - r8_pi * real ( n - 2, real64)
 
-    if ( 0.0_dp < dot_product ( plane(1:dim_num), r1(1:dim_num) ) ) then
+    if ( 0.0e+00_real64 < dot_product ( plane(1:dim_num), r1(1:dim_num) ) ) then
       solid_angle = -area
     else
       solid_angle = area
     end if
-  end subroutine polygon_solid_angle_3d
+  end
 
-  subroutine polygon_x_2d ( n, v, result ) &
-        bind(C, name="polygon_x_2d")
+  subroutine polygon_x_2d ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -19511,24 +19254,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -19551,11 +19294,10 @@ contains
 
     end do
 
-    result = result / 6.0_dp
-  end subroutine polygon_x_2d
+    result = result / 6.0e+00_real64
+  end
 
-  subroutine polygon_xx_2d ( n, v, result ) &
-        bind(C, name="polygon_xx_2d")
+  subroutine polygon_xx_2d ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -19592,25 +19334,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in
   !    counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(2,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(2,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -19633,11 +19375,10 @@ contains
 
     end do
 
-    result = result / 12.0_dp
-  end subroutine polygon_xx_2d
+    result = result / 12.0e+00_real64
+  end
 
-  subroutine polygon_xy_2d ( n, v, result ) &
-        bind(C, name="polygon_xy_2d")
+  subroutine polygon_xy_2d ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -19675,25 +19416,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in
   !    counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(dim_num,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(dim_num,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -19712,17 +19453,16 @@ contains
       end if
 
       result = result + ( &
-        v(2,i) * ( 3.0_dp * v(1,i)**2 + 2.0_dp * v(1,i) * v(1,im1) &
-        + v(1,im1)**2 ) + v(2,im1) * ( v(1,i)**2 + 2.0_dp * v(1,i) * v(1,im1) &
-        + 3.0_dp * v(1,im1)**2 ) ) * ( v(2,i) - v(2,im1) )
+        v(2,i) * ( 3.0e+00_real64 * v(1,i)**2 + 2.0e+00_real64 * v(1,i) * v(1,im1) &
+        + v(1,im1)**2 ) + v(2,im1) * ( v(1,i)**2 + 2.0e+00_real64 * v(1,i) * v(1,im1) &
+        + 3.0e+00_real64 * v(1,im1)**2 ) ) * ( v(2,i) - v(2,im1) )
 
     end do
 
-    result = result / 24.0_dp
-  end subroutine polygon_xy_2d
+    result = result / 24.0e+00_real64
+  end
 
-  subroutine polygon_y_2d ( n, v, result ) &
-        bind(C, name="polygon_y_2d")
+  subroutine polygon_y_2d ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -19758,25 +19498,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in
   !    counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(dim_num,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(dim_num,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -19799,11 +19539,10 @@ contains
 
     end do
 
-    result = result / 6.0_dp
-  end subroutine polygon_y_2d
+    result = result / 6.0e+00_real64
+  end
 
-  subroutine polygon_yy_2d ( n, v, result ) &
-        bind(C, name="polygon_yy_2d")
+  subroutine polygon_yy_2d ( n, v, result )
 
   !*****************************************************************************80
   !
@@ -19840,25 +19579,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices of the polygon.
+  !    Input, integer(int32) N, the number of vertices of the polygon.
   !    N should be at least 3 for a nonzero result.
   !
-  !    Input, real(dp) V(2,N), the coordinates of the vertices
+  !    Input, real(real64) V(2,N), the coordinates of the vertices
   !    of the polygon.  These vertices should be given in
   !    counter clockwise order.
   !
-  !    Output, real(dp) RESULT, the value of the integral.
+  !    Output, real(real64) RESULT, the value of the integral.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: i
-    integer(ip) :: im1
-    real(dp), intent(out) :: result
-    real(dp), intent(in) :: v(dim_num,n)
+    integer(int32) i
+    integer(int32) im1
+    real(real64) result
+    real(real64) v(dim_num,n)
 
-    result = 0.0_dp
+    result = 0.0e+00_real64
 
     if ( n < 3 ) then
       write ( *, '(a)' ) ' '
@@ -19881,12 +19620,11 @@ contains
 
     end do
 
-    result = result / 12.0_dp
-  end subroutine polygon_yy_2d
+    result = result / 12.0e+00_real64
+  end
 
   subroutine polyhedron_area_3d ( coord, order_max, face_num, node, &
-    node_num, order, area ) &
-        bind(C, name="polyhedron_area_3d")
+    node_num, order, area )
 
   !*****************************************************************************80
   !
@@ -19919,50 +19657,50 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) COORD(3,NODE_NUM), the coordinates of the
+  !    Input, real(real64) COORD(3,NODE_NUM), the coordinates of the
   !    vertices.  The vertices may be listed in any order.
   !
-  !    Input, integer(ip) ORDER_MAX, the maximum number of vertices 
+  !    Input, integer(int32) ORDER_MAX, the maximum number of vertices 
   !    that make up a face of the polyhedron.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces of the 
+  !    Input, integer(int32) FACE_NUM, the number of faces of the 
   !    polyhedron.
   !
-  !    Input, integer(ip) NODE(FACE_NUM,ORDER_MAX).  Face I is defined 
+  !    Input, integer(int32) NODE(FACE_NUM,ORDER_MAX).  Face I is defined 
   !    by the vertices NODE(I,1) through NODE(I,ORDER(I)).  These vertices
   !    are listed in neighboring order.
   !
-  !    Input, integer(ip) NODE_NUM, the number of points stored in COORD.
+  !    Input, integer(int32) NODE_NUM, the number of points stored in COORD.
   !
-  !    Input, integer(ip) ORDER(FACE_NUM), the number of vertices 
+  !    Input, integer(int32) ORDER(FACE_NUM), the number of vertices 
   !    making up each face.
   !
-  !    Output, real(dp) AREA, the total surface area of the polyhedron.
+  !    Output, real(real64) AREA, the total surface area of the polyhedron.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(in), value :: order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
+    integer(int32) face_num
+    integer(int32) order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
 
-    real(dp) :: ainc
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: coord(dim_num,node_num)
-    integer(ip) :: face
-    integer(ip) :: j
-    integer(ip) :: k1
-    integer(ip) :: k2
-    integer(ip), intent(in) :: node(face_num,order_max)
-    integer(ip), intent(in) :: order(face_num)
-    real(dp) :: v(dim_num)
+    real(real64) ainc
+    real(real64) area
+    real(real64) coord(dim_num,node_num)
+    integer(int32) face
+    integer(int32) j
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) node(face_num,order_max)
+    integer(int32) order(face_num)
+    real(real64) v(dim_num)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
   !
   !  For each face
   !
     do face = 1, face_num
 
-      v(1:dim_num) = 0.0_dp
+      v(1:dim_num) = 0.0e+00_real64
   !
   !  For each triangle in the face, compute the normal vector.
   !
@@ -19991,12 +19729,11 @@ contains
 
     end do
 
-    area = 0.5_dp * area
-  end subroutine polyhedron_area_3d
+    area = 0.5e+00_real64 * area
+  end
 
   subroutine polyhedron_centroid_3d ( coord, order_max, face_num, node, &
-    node_num, order, centroid ) &
-        bind(C, name="polyhedron_centroid_3d")
+    node_num, order, centroid )
 
   !*****************************************************************************80
   !
@@ -20023,58 +19760,58 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) COORD(3,NODE_NUM), the vertices.
+  !    Input, real(real64) COORD(3,NODE_NUM), the vertices.
   !    The vertices may be listed in any order.
   !
-  !    Input, integer(ip) ORDER_MAX, the maximum number of vertices 
+  !    Input, integer(int32) ORDER_MAX, the maximum number of vertices 
   !    that make up a face of the polyhedron.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces of the 
+  !    Input, integer(int32) FACE_NUM, the number of faces of the 
   !    polyhedron.
   !
-  !    Input, integer(ip) NODE(FACE_NUM,ORDER_MAX).  Face I is defined 
+  !    Input, integer(int32) NODE(FACE_NUM,ORDER_MAX).  Face I is defined 
   !    by the vertices NODE(I,1) through NODE(I,ORDER(I)).  These vertices
   !    are listed in neighboring order.
   !
-  !    Input, integer(ip) NODE_NUM, the number of points stored in COORD.
+  !    Input, integer(int32) NODE_NUM, the number of points stored in COORD.
   !
-  !    Input, integer(ip) ORDER(FACE_NUM), the number of vertices making 
+  !    Input, integer(int32) ORDER(FACE_NUM), the number of vertices making 
   !    up each face.
   !
-  !    Output, real(dp) CENTROID(3), the centroid of the polyhedron.
+  !    Output, real(real64) CENTROID(3), the centroid of the polyhedron.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(in), value :: order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
+    integer(int32) face_num
+    integer(int32) order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
 
-    real(dp) :: area
-    real(dp), intent(out) :: centroid(dim_num)
-    real(dp), intent(in) :: coord(dim_num,node_num)
-    integer(ip) :: face
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip), intent(in) :: node(face_num,order_max)
-    real(dp) :: normal(dim_num)
-    integer(ip), intent(in) :: order(face_num)
-    real(dp) :: point(dim_num)
-    real(dp) :: polygon_area
-    real(dp) :: polygon_centroid(dim_num)
-    real(dp) :: tetra(dim_num,4)
-    real(dp) :: tetra_centroid(dim_num)
-    real(dp) :: tetra_volume
-    integer(ip) :: vert
-    integer(ip) :: vert_num
-    real(dp) :: volume
-    real(dp) :: v(dim_num,order_max)
+    real(real64) area
+    real(real64) centroid(dim_num)
+    real(real64) coord(dim_num,node_num)
+    integer(int32) face
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) node(face_num,order_max)
+    real(real64) normal(dim_num)
+    integer(int32) order(face_num)
+    real(real64) point(dim_num)
+    real(real64) polygon_area
+    real(real64) polygon_centroid(dim_num)
+    real(real64) tetra(dim_num,4)
+    real(real64) tetra_centroid(dim_num)
+    real(real64) tetra_volume
+    integer(int32) vert
+    integer(int32) vert_num
+    real(real64) volume
+    real(real64) v(dim_num,order_max)
   !
   !  Compute a point in the interior.
   !  We take the area-weighted centroid of each face.
   !
-    point(1:dim_num) = 0.0_dp
-    area = 0.0_dp
+    point(1:dim_num) = 0.0e+00_real64
+    area = 0.0e+00_real64
 
     do face = 1, face_num
 
@@ -20098,8 +19835,8 @@ contains
   !  Now triangulate each face.
   !  For each triangle, consider the tetrahedron created by including POINT.
   !
-    centroid(1:dim_num) = 0.0_dp
-    volume = 0.0_dp
+    centroid(1:dim_num) = 0.0e+00_real64
+    volume = 0.0e+00_real64
 
     do face = 1, face_num
 
@@ -20127,11 +19864,10 @@ contains
     end do
 
     centroid(1:dim_num) = centroid(1:dim_num) / volume
-  end subroutine polyhedron_centroid_3d
+  end
 
   subroutine polyhedron_contains_point_3d ( node_num, face_num, &
-    face_order_max, v, face_order, face_point, p, inside ) &
-        bind(C, name="polyhedron_contains_point_3d")
+    face_order_max, v, face_order, face_point, p, inside )
 
   !*****************************************************************************80
   !
@@ -20169,45 +19905,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of vertices.
+  !    Input, integer(int32) NODE_NUM, the number of vertices.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
-  !    Input, real(dp) V(3,NODE_NUM), the coordinates of the vertices.
+  !    Input, real(real64) V(3,NODE_NUM), the coordinates of the vertices.
   !
-  !    Input, integer(ip) FACE_ORDER(FACE_NUM), the order of each face.
+  !    Input, integer(int32) FACE_ORDER(FACE_NUM), the order of each face.
   !
-  !    Input, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM), the 
+  !    Input, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM), the 
   !    indices of the nodes that make up each face.
   !
-  !    Input, real(dp) P(3), the point to be tested.
+  !    Input, real(real64) P(3), the point to be tested.
   !
   !    Output, logical INSIDE, is true if the point 
   !    is inside the polyhedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(in), value :: face_order_max
-    integer(ip), intent(in), value :: node_num
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) node_num
 
-    real(dp) :: area
-    integer(ip) :: face
-    integer(ip), intent(in) :: face_order(face_num)
-    integer(ip), intent(in) :: face_point(face_order_max,face_num)
-    logical, intent(out) :: inside
-    integer(ip) :: k
-    integer(ip) :: node
-    integer(ip) :: node_num_face
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: solid_angle
-    real(dp), intent(in) :: v(dim_num,node_num)
-    real(dp) :: v_face(dim_num,face_order_max)
+    real(real64) area
+    integer(int32) face
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    logical inside
+    integer(int32) k
+    integer(int32) node
+    integer(int32) node_num_face
+    real(real64) p(dim_num)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) solid_angle
+    real(real64) v(dim_num,node_num)
+    real(real64) v_face(dim_num,face_order_max)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     do face = 1, face_num
 
@@ -20230,16 +19966,15 @@ contains
   !  AREA should be -4*PI, 0, or 4*PI.
   !  So this test should be quite safe!
   !
-    if ( area < -2.0_dp * r8_pi .or. 2.0_dp * r8_pi < area ) then
+    if ( area < -2.0e+00_real64 * r8_pi .or. 2.0e+00_real64 * r8_pi < area ) then
       inside = .true.
     else
       inside = .false.
     end if
-  end subroutine polyhedron_contains_point_3d
+  end
 
   subroutine polyhedron_volume_3d ( coord, order_max, face_num, node, &
-    node_num, order, volume ) &
-        bind(C, name="polyhedron_volume_3d")
+    node_num, order, volume )
 
   !*****************************************************************************80
   !
@@ -20259,43 +19994,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) COORD(3,NODE_NUM), the coordinates of 
+  !    Input, real(real64) COORD(3,NODE_NUM), the coordinates of 
   !    the vertices.  The vertices may be listed in any order.
   !
-  !    Input, integer(ip) ORDER_MAX, the maximum number of vertices 
+  !    Input, integer(int32) ORDER_MAX, the maximum number of vertices 
   !    that make up a face of the polyhedron.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces of the 
+  !    Input, integer(int32) FACE_NUM, the number of faces of the 
   !    polyhedron.
   !
-  !    Input, integer(ip) NODE(FACE_NUM,ORDER_MAX).  Face I is defined by
+  !    Input, integer(int32) NODE(FACE_NUM,ORDER_MAX).  Face I is defined by
   !    the vertices NODE(I,1) through NODE(I,ORDER(I)).  These vertices
   !    are listed in neighboring order.
   !
-  !    Input, integer(ip) NODE_NUM, the number of points stored in COORD.
+  !    Input, integer(int32) NODE_NUM, the number of points stored in COORD.
   !
-  !    Input, integer(ip) ORDER(FACE_NUM), the number of vertices making 
+  !    Input, integer(int32) ORDER(FACE_NUM), the number of vertices making 
   !    up each face.
   !
-  !    Output, real(dp) VOLUME, the volume of the polyhedron.
+  !    Output, real(real64) VOLUME, the volume of the polyhedron.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(in), value :: order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
+    integer(int32) face_num
+    integer(int32) order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
 
-    real(dp), intent(in) :: coord(dim_num,node_num)
-    integer(ip) :: face
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    integer(ip), intent(in) :: node(face_num,order_max)
-    integer(ip), intent(in) :: order(face_num)
-    integer(ip) :: v
-    real(dp), intent(out) :: volume
+    real(real64) coord(dim_num,node_num)
+    integer(int32) face
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    integer(int32) node(face_num,order_max)
+    integer(int32) order(face_num)
+    integer(int32) v
+    real(real64) volume
 
-    volume = 0.0_dp
+    volume = 0.0e+00_real64
   !
   !  Triangulate each face.
   !
@@ -20320,12 +20055,11 @@ contains
 
     end do
 
-    volume = volume / 6.0_dp
-  end subroutine polyhedron_volume_3d
+    volume = volume / 6.0e+00_real64
+  end
 
   subroutine polyhedron_volume_3d_2 ( coord, order_max, face_num, node, &
-    node_num, order, volume ) &
-        bind(C, name="polyhedron_volume_3d_2")
+    node_num, order, volume )
 
   !*****************************************************************************80
   !
@@ -20358,49 +20092,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) COORD(3,NODE_NUM), the vertices.
+  !    Input, real(real64) COORD(3,NODE_NUM), the vertices.
   !    The vertices may be listed in any order.
   !
-  !    Input, integer(ip) ORDER_MAX, the maximum number of vertices 
+  !    Input, integer(int32) ORDER_MAX, the maximum number of vertices 
   !    that make up a face of the polyhedron.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces of the 
+  !    Input, integer(int32) FACE_NUM, the number of faces of the 
   !    polyhedron.
   !
-  !    Input, integer(ip) NODE(FACE_NUM,ORDER_MAX).  Face I is defined 
+  !    Input, integer(int32) NODE(FACE_NUM,ORDER_MAX).  Face I is defined 
   !    by the vertices NODE(I,1) through NODE(I,ORDER(I)).  These vertices
   !    are listed in neighboring order.
   !
-  !    Input, integer(ip) NODE_NUM, the number of points stored in COORD.
+  !    Input, integer(int32) NODE_NUM, the number of points stored in COORD.
   !
-  !    Input, integer(ip) ORDER(FACE_NUM), the number of vertices making 
+  !    Input, integer(int32) ORDER(FACE_NUM), the number of vertices making 
   !    up each face.
   !
-  !    Output, real(dp) VOLUME, the volume of the polyhedron.
+  !    Output, real(real64) VOLUME, the volume of the polyhedron.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(in), value :: order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: node_num
+    integer(int32) face_num
+    integer(int32) order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) node_num
 
-    real(dp), intent(in) :: coord(dim_num,node_num)
-    integer(ip) :: face
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: k1
-    integer(ip) :: k2
-    integer(ip), intent(in) :: node(face_num,order_max)
-    real(dp) :: normal(dim_num)
-    integer(ip), intent(in) :: order(face_num)
-    real(dp) :: v(dim_num)
-    real(dp), intent(out) :: volume
+    real(real64) coord(dim_num,node_num)
+    integer(int32) face
+    integer(int32) j
+    integer(int32) k
+    integer(int32) k1
+    integer(int32) k2
+    integer(int32) node(face_num,order_max)
+    real(real64) normal(dim_num)
+    integer(int32) order(face_num)
+    real(real64) v(dim_num)
+    real(real64) volume
 
-    volume = 0.0_dp
+    volume = 0.0e+00_real64
 
     do face = 1, face_num
 
-      v(1:dim_num) = 0.0_dp
+      v(1:dim_num) = 0.0e+00_real64
   !
   !  Compute the area vector for this face.
   !
@@ -20431,11 +20165,10 @@ contains
 
     end do
 
-    volume = volume / 6.0_dp
-  end subroutine polyhedron_volume_3d_2
+    volume = volume / 6.0e+00_real64
+  end
 
-  subroutine polyline_arclength_nd ( dim_num, n, p, s ) &
-        bind(C, name="polyline_arclength_nd")
+  subroutine polyline_arclength_nd ( dim_num, n, p, s )
 
   !*****************************************************************************80
   !
@@ -20465,35 +20198,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points defining the polyline.
+  !    Input, integer(int32) N, the number of points defining the polyline.
   !
-  !    Input, real(dp) P(DIM_NUM,N), the points defining the polyline.
+  !    Input, real(real64) P(DIM_NUM,N), the points defining the polyline.
   !
-  !    Output, real(dp) S(N), the arclength coordinates
+  !    Output, real(real64) S(N), the arclength coordinates
   !    of each point.  The first point has S(1) = 0 and the 
   !    last point has S(N) = arclength of the entire polyline.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
+    integer(int32) dim_num
+    integer(int32) n
 
-    integer(ip) :: i
-    real(dp), intent(in) :: p(dim_num,n)
-    real(dp), intent(out) :: s(n)
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) s(n)
 
-    s(1) = 0.0_dp
+    s(1) = 0.0e+00_real64
 
     do i = 2, n
 
       s(i) = s(i-1) + sqrt ( sum ( ( p(1:dim_num,i) - p(1:dim_num,i-1) )**2 ) )
 
     end do
-  end subroutine polyline_arclength_nd
+  end
 
-  subroutine polyline_index_point_nd ( dim_num, n, p, t, pt ) &
-        bind(C, name="polyline_index_point_nd")
+  subroutine polyline_index_point_nd ( dim_num, n, p, t, pt )
 
   !*****************************************************************************80
   !
@@ -20530,27 +20262,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points defining the polyline.
+  !    Input, integer(int32) N, the number of points defining the polyline.
   !
-  !    Input, real(dp) P(DIM_NUM,N), the points defining the polyline.
+  !    Input, real(real64) P(DIM_NUM,N), the points defining the polyline.
   !
-  !    Input, real(dp) T, the desired arclength coordinate.
+  !    Input, real(real64) T, the desired arclength coordinate.
   !
-  !    Output, real(dp) PT(DIM_NUM), the point corresponding to the
+  !    Output, real(real64) PT(DIM_NUM), the point corresponding to the
   !    arclength.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) n
+    integer(int32) dim_num
 
-    integer(ip) :: i
-    real(dp), intent(in) :: p(dim_num,n)
-    real(dp), intent(out) :: pt(dim_num)
-    real(dp), intent(in), value :: t
-    real(dp) :: t1
-    real(dp) :: t2
+    integer(int32) i
+    real(real64) p(dim_num,n)
+    real(real64) pt(dim_num)
+    real(real64) t
+    real(real64) t1
+    real(real64) t2
 
     if ( n <= 0 ) then
       write ( *, '(a)' ) ' '
@@ -20566,7 +20298,7 @@ contains
 
     else
 
-      t2 = 0.0_dp
+      t2 = 0.0e+00_real64
 
       do i = 1, n - 1
   !
@@ -20585,10 +20317,9 @@ contains
         end if
       end do
     end if
-  end subroutine polyline_index_point_nd
+  end
 
-  subroutine polyline_length_nd ( dim_num, nk, pk, length ) &
-        bind(C, name="polyline_length_nd")
+  subroutine polyline_length_nd ( dim_num, nk, pk, length )
 
   !*****************************************************************************80
   !
@@ -20618,23 +20349,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) NK, the number of points defining the polyline.
+  !    Input, integer(int32) NK, the number of points defining the polyline.
   !
-  !    Input, real(dp) PK(DIM_NUM,NK), the points defining the polyline.
+  !    Input, real(real64) PK(DIM_NUM,NK), the points defining the polyline.
   !
-  !    Output, real(dp) LENGTH, the length of the polyline.
+  !    Output, real(real64) LENGTH, the length of the polyline.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: nk
+    integer(int32) dim_num
+    integer(int32) nk
 
-    integer(ip) :: i
-    real(dp), intent(out) :: length
-    real(dp), intent(in) :: pk(dim_num,nk)
+    integer(int32) i
+    real(real64) length
+    real(real64) pk(dim_num,nk)
 
-    length = 0.0_dp
+    length = 0.0e+00_real64
 
     do i = 2, nk
 
@@ -20642,10 +20373,9 @@ contains
         + sqrt ( sum ( ( pk(1:dim_num,i) - pk(1:dim_num,i-1) )**2 ) )
 
     end do
-  end subroutine polyline_length_nd
+  end
 
-  subroutine polyline_points_nd ( dim_num, n, p, nt, pt ) &
-        bind(C, name="polyline_points_nd")
+  subroutine polyline_points_nd ( dim_num, n, p, nt, pt )
 
   !*****************************************************************************80
   !
@@ -20675,28 +20405,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) N, the number of points defining the polyline.
+  !    Input, integer(int32) N, the number of points defining the polyline.
   !
-  !    Input, real(dp) P(DIM_NUM,N), the points defining the polyline.
+  !    Input, real(real64) P(DIM_NUM,N), the points defining the polyline.
   !
-  !    Input, integer(ip) NT, the number of points to be sampled.
+  !    Input, integer(int32) NT, the number of points to be sampled.
   !
-  !    Output, real(dp) PT(DIM_NUM,NT), equally spaced points
+  !    Output, real(real64) PT(DIM_NUM,NT), equally spaced points
   !    on the polyline.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: nt
+    integer(int32) dim_num
+    integer(int32) n
+    integer(int32) nt
 
-    integer(ip) :: it
-    integer(ip) :: j
-    real(dp), intent(in) :: p(dim_num,n)
-    real(dp), intent(out) :: pt(dim_num,nt)
-    real(dp) :: s(n)
-    real(dp) :: st
+    integer(int32) it
+    integer(int32) j
+    real(real64) p(dim_num,n)
+    real(real64) pt(dim_num,nt)
+    real(real64) s(n)
+    real(real64) st
 
     call polyline_arclength_nd ( dim_num, n, p, s )
 
@@ -20704,9 +20434,9 @@ contains
 
     do it = 1,  nt
 
-      st = ( real ( nt - it, dp) * 0.0_dp + &
-             real (      it - 1, dp) * s(n) ) &
-           / real ( nt      - 1, dp)
+      st = ( real ( nt - it, real64) * 0.0e+00_real64 + &
+             real (      it - 1, real64) * s(n) ) &
+           / real ( nt      - 1, real64)
 
       do
 
@@ -20727,10 +20457,9 @@ contains
                          / ( s(j+1)      - s(j) )
 
     end do
-  end subroutine polyline_points_nd
+  end
 
-  subroutine polyloop_arclength_nd ( dim_num, nk, pk, sk ) &
-        bind(C, name="polyloop_arclength_nd")
+  subroutine polyloop_arclength_nd ( dim_num, nk, pk, sk )
 
   !*****************************************************************************80
   !
@@ -20758,26 +20487,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) NK, the number of points defining the polyloop.
+  !    Input, integer(int32) NK, the number of points defining the polyloop.
   !
-  !    Input, real(dp) PK(DIM_NUM,NK), the points defining the polyloop.
+  !    Input, real(real64) PK(DIM_NUM,NK), the points defining the polyloop.
   !
-  !    Output, real(dp) SK(NK+1), the arclength coordinates
+  !    Output, real(real64) SK(NK+1), the arclength coordinates
   !    of each point.  The first point has two arc length values,
   !    namely SK(1) = 0 and SK(NK+1) = LENGTH.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: nk
+    integer(int32) dim_num
+    integer(int32) nk
 
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(in) :: pk(dim_num,nk)
-    real(dp), intent(out) :: sk(nk+1)
+    integer(int32) i
+    integer(int32) j
+    real(real64) pk(dim_num,nk)
+    real(real64) sk(nk+1)
 
-    sk(1) = 0.0_dp
+    sk(1) = 0.0e+00_real64
 
     do i = 2, nk + 1
 
@@ -20791,10 +20520,9 @@ contains
         + sqrt ( sum ( ( pk(1:dim_num,j) - pk(1:dim_num,i-1) )**2 ) )
 
     end do
-  end subroutine polyloop_arclength_nd
+  end
 
-  subroutine polyloop_length_nd ( dim_num, nk, pk, length ) &
-        bind(C, name="polyloop_length_nd")
+  subroutine polyloop_length_nd ( dim_num, nk, pk, length )
 
   !*****************************************************************************80
   !
@@ -20822,24 +20550,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) NK, the number of points defining the polyloop.
+  !    Input, integer(int32) NK, the number of points defining the polyloop.
   !
-  !    Input, real(dp) PK(DIM_NUM,NK), the points defining the polyloop.
+  !    Input, real(real64) PK(DIM_NUM,NK), the points defining the polyloop.
   !
-  !    Output, real(dp) LENGTH, the length of the polyloop.
+  !    Output, real(real64) LENGTH, the length of the polyloop.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: nk
+    integer(int32) dim_num
+    integer(int32) nk
 
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp), intent(out) :: length
-    real(dp), intent(in) :: pk(dim_num,nk)
+    integer(int32) i
+    integer(int32) j
+    real(real64) length
+    real(real64) pk(dim_num,nk)
 
-    length = 0.0_dp
+    length = 0.0e+00_real64
 
     do i = 2, nk + 1
 
@@ -20853,10 +20581,9 @@ contains
         + sqrt ( sum ( ( pk(1:dim_num,j) - pk(1:dim_num,i-1) )**2 ) )
 
     end do
-  end subroutine polyloop_length_nd
+  end
 
-  subroutine polyloop_points_nd ( dim_num, nk, pk, nt, pt ) &
-        bind(C, name="polyloop_points_nd")
+  subroutine polyloop_points_nd ( dim_num, nk, pk, nt, pt )
 
   !*****************************************************************************80
   !
@@ -20882,30 +20609,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) NK, the number of points defining the polyloop.
+  !    Input, integer(int32) NK, the number of points defining the polyloop.
   !
-  !    Input, real(dp) PK(DIM_NUM,NK), the points defining the polyloop.
+  !    Input, real(real64) PK(DIM_NUM,NK), the points defining the polyloop.
   !
-  !    Input, integer(ip) NT, the number of points to be sampled.
+  !    Input, integer(int32) NT, the number of points to be sampled.
   !
-  !    Input, real(dp) PT(DIM_NUM,NT), equally spaced points
+  !    Input, real(real64) PT(DIM_NUM,NT), equally spaced points
   !    on the polyloop.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: nk
-    integer(ip), intent(in), value :: nt
+    integer(int32) dim_num
+    integer(int32) nk
+    integer(int32) nt
 
-    integer(ip) :: it
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(in) :: pk(dim_num,nk)
-    real(dp), intent(in) :: pt(dim_num,nt)
-    real(dp) :: sk(nk+1)
-    real(dp) :: st
+    integer(int32) it
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) pk(dim_num,nk)
+    real(real64) pt(dim_num,nt)
+    real(real64) sk(nk+1)
+    real(real64) st
 
     call polyloop_arclength_nd ( dim_num, nk, pk, sk )
 
@@ -20913,9 +20640,9 @@ contains
 
     do it = 1,  nt
 
-      st = ( real ( nt - it, dp) * 0.0_dp + &
-             real (      it - 1, dp) * sk(nk+1) ) &
-           / real ( nt      - 1, dp)
+      st = ( real ( nt - it, real64) * 0.0e+00_real64 + &
+             real (      it - 1, real64) * sk(nk+1) ) &
+           / real ( nt      - 1, real64)
 
       do
 
@@ -20938,10 +20665,9 @@ contains
                          / ( sk(j+1)      - sk(j) )
 
     end do
-  end subroutine polyloop_points_nd
+  end
 
-  subroutine provec ( m, n, base, vecm, vecn, vecnm ) &
-        bind(C, name="provec")
+  subroutine provec ( m, n, base, vecm, vecn, vecnm )
 
   !*****************************************************************************80
   !
@@ -20961,35 +20687,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the dimension of the higher order space.
+  !    Input, integer(int32) M, the dimension of the higher order space.
   !
-  !    Input, integer(ip) N, the dimension of the lower order space.
+  !    Input, integer(int32) N, the dimension of the lower order space.
   !
-  !    Input, real(dp) BASE(M,N).  The columns of BASE contain
+  !    Input, real(real64) BASE(M,N).  The columns of BASE contain
   !    N vectors, each of length M, which form the basis for
   !    a space of dimension N.
   !
-  !    Input, real(dp) VECM(M), is an M dimensional vector.
+  !    Input, real(real64) VECM(M), is an M dimensional vector.
   !
-  !    Output, real(dp) VECN(N), the projection of VECM into the
+  !    Output, real(real64) VECN(N), the projection of VECM into the
   !    lower dimensional space.  These values represent
   !    coordinates in the lower order space.
   !
-  !    Output, real(dp) VECNM(M), the projection of VECM into the
+  !    Output, real(real64) VECNM(M), the projection of VECM into the
   !    lower dimensional space, but using coordinates in
   !    the higher dimensional space.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    real(dp), intent(in) :: base(m,n)
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp) :: temp
-    real(dp), intent(in) :: vecm(m)
-    real(dp), intent(out) :: vecn(n)
-    real(dp), intent(out) :: vecnm(m)
+    real(real64) base(m,n)
+    integer(int32) i
+    integer(int32) j
+    real(real64) temp
+    real(real64) vecm(m)
+    real(real64) vecn(n)
+    real(real64) vecnm(m)
   !
   !  For each vector, remove all projections onto previous vectors,
   !  and then normalize.  This should result in a matrix BASE
@@ -21007,7 +20733,7 @@ contains
 
       temp = sqrt ( sum ( base(1:m,j)**2 ) )
 
-      if ( 0.0_dp < temp ) then
+      if ( 0.0e+00_real64 < temp ) then
         base(1:m,j) = base(1:m,j) / temp
       end if
 
@@ -21026,10 +20752,9 @@ contains
     do i = 1, m
       vecnm(i) = dot_product ( base(i,1:n), vecn(1:n) )
     end do
-  end subroutine provec
+  end
 
-  subroutine pyramid_volume_3d ( h, s, volume ) &
-        bind(C, name="pyramid_volume_3d")
+  subroutine pyramid_volume_3d ( h, s, volume )
 
   !*****************************************************************************80
   !
@@ -21049,21 +20774,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) H, S, the height of the pyramid, and the 
+  !    Input, real(real64) H, S, the height of the pyramid, and the 
   !    length of one side of the square base.
   !
-  !    Output, real(dp) VOLUME, the volume of the pyramid.
+  !    Output, real(real64) VOLUME, the volume of the pyramid.
   !
 
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: s
-    real(dp), intent(out) :: volume
+    real(real64) h
+    real(real64) s
+    real(real64) volume
 
-    volume = s * s * h / 3.0_dp
-  end subroutine pyramid_volume_3d
+    volume = s * s * h / 3.0e+00_real64
+  end
 
-  function pyramid01_volume ( ) &
-        bind(C, name="pyramid01_volume")
+  function pyramid01_volume ( )
 
   !*****************************************************************************80
   !
@@ -21094,19 +20818,18 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) VALUE, the volume of the pyramid.
+  !    Output, real(real64) VALUE, the volume of the pyramid.
   !
 
-    real(dp) :: pyramid01_volume
-    real(dp) :: volume
+    real(real64) pyramid01_volume
+    real(real64) volume
 
-    volume = 4.0_dp / 3.0_dp
+    volume = 4.0e+00_real64 / 3.0e+00_real64
 
     pyramid01_volume = volume
-  end function pyramid01_volume
+  end
 
-  subroutine quad_area_2d ( q, area ) &
-        bind(C, name="quad_area_2d")
+  subroutine quad_area_2d ( q, area )
 
   !*****************************************************************************80
   !
@@ -21135,20 +20858,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Q(2,4), the vertices, specified in
+  !    Input, real(real64) Q(2,4), the vertices, specified in
   !    counter clockwise order.
   !
-  !    Output, real(dp) AREA, the area of the quadrilateral.
+  !    Output, real(real64) AREA, the area of the quadrilateral.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: area
-    real(dp) :: area_triangle
-    real(dp), intent(in) :: q(dim_num,4)
-    real(dp) :: t(dim_num,3)
+    real(real64) area
+    real(real64) area_triangle
+    real(real64) q(dim_num,4)
+    real(real64) t(dim_num,3)
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     t(1:dim_num,1:3) = reshape ( (/ &
       q(1:2,1), q(1:2,2), q(1:2,3) /), (/ dim_num, 3 /) )
@@ -21163,10 +20886,9 @@ contains
     call triangle_area_2d ( t, area_triangle )
 
     area = area + area_triangle
-  end subroutine quad_area_2d
+  end
 
-  subroutine quad_area2_2d ( q, area ) &
-        bind(C, name="quad_area2_2d")
+  subroutine quad_area2_2d ( q, area )
 
   !*****************************************************************************80
   !
@@ -21193,20 +20915,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Q(2,4), the vertices, specified in
+  !    Input, real(real64) Q(2,4), the vertices, specified in
   !    counter clockwise order.
   !
-  !    Output, real(dp) AREA, the area of the quadrilateral.
+  !    Output, real(real64) AREA, the area of the quadrilateral.
   !
 
-    real(dp), intent(out) :: area
-    real(dp) :: p(2,4)
-    real(dp), intent(in) :: q(2,4)
+    real(real64) area
+    real(real64) p(2,4)
+    real(real64) q(2,4)
   !
   !  Define a parallelogram by averaging consecutive vertices.
   !
-    p(1:2,1:3) = ( q(1:2,1:3) + q(1:2,2:4) ) / 2.0_dp
-    p(1:2,  4) = ( q(1:2,  4) + q(1:2,1  ) ) / 2.0_dp
+    p(1:2,1:3) = ( q(1:2,1:3) + q(1:2,2:4) ) / 2.0e+00_real64
+    p(1:2,  4) = ( q(1:2,  4) + q(1:2,1  ) ) / 2.0e+00_real64
   !
   !  Compute the area.
   !
@@ -21214,11 +20936,10 @@ contains
   !
   !  The quadrilateral's area is twice that of the parallelogram.
   !
-    area = 2.0_dp * area
-  end subroutine quad_area2_2d
+    area = 2.0e+00_real64 * area
+  end
 
-  subroutine quad_area_3d ( q, area ) &
-        bind(C, name="quad_area_3d")
+  subroutine quad_area_3d ( q, area )
 
   !*****************************************************************************80
   !
@@ -21248,20 +20969,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Q(3,4), the vertices, specified in
+  !    Input, real(real64) Q(3,4), the vertices, specified in
   !    counter clockwise order.
   !
-  !    Output, real(dp) AREA, the area of the quadrilateral.
+  !    Output, real(real64) AREA, the area of the quadrilateral.
   !
 
-    real(dp), intent(out) :: area
-    real(dp) :: p(3,4)
-    real(dp), intent(in) :: q(3,4)
+    real(real64) area
+    real(real64) p(3,4)
+    real(real64) q(3,4)
   !
   !  Define a parallelogram by averaging consecutive vertices.
   !
-    p(1:3,1:3) = ( q(1:3,1:3) + q(1:3,2:4) ) / 2.0_dp
-    p(1:3,  4) = ( q(1:3,  4) + q(1:3,1  ) ) / 2.0_dp
+    p(1:3,1:3) = ( q(1:3,1:3) + q(1:3,2:4) ) / 2.0e+00_real64
+    p(1:3,  4) = ( q(1:3,  4) + q(1:3,1  ) ) / 2.0e+00_real64
   !
   !  Compute the area.
   !
@@ -21269,11 +20990,10 @@ contains
   !
   !  The quadrilateral's area is twice that of the parallelogram.
   !
-    area = 2.0_dp * area
-  end subroutine quad_area_3d
+    area = 2.0e+00_real64 * area
+  end
 
-  subroutine quad_contains_point_2d ( q, p, inside ) &
-        bind(C, name="quad_contains_point_2d")
+  subroutine quad_contains_point_2d ( q, p, inside )
 
   !*****************************************************************************80
   !
@@ -21297,22 +21017,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Q(2,4), the vertices of the quadrilateral.
+  !    Input, real(real64) Q(2,4), the vertices of the quadrilateral.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is in the
   !    quadrilateral.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle_1
-    real(dp) :: angle_2
-    real(dp) :: angle_rad_2d
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: q(dim_num,4)
+    real(real64) angle_1
+    real(real64) angle_2
+    real(real64) angle_rad_2d
+    logical inside
+    real(real64) p(dim_num)
+    real(real64) q(dim_num,4)
   !
   !  This will only handle convex quadrilaterals.
   !
@@ -21343,10 +21063,9 @@ contains
     end if
 
     inside = .true.
-  end subroutine quad_contains_point_2d
+  end
 
-  subroutine quad_convex_random ( seed, xy ) &
-        bind(C, name="quad_convex_random")
+  subroutine quad_convex_random ( seed, xy )
 
   !*****************************************************************************80
   !
@@ -21373,21 +21092,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) XY(2,NODE_NUM), the coordinates of the 
+  !    Output, real(real64) XY(2,NODE_NUM), the coordinates of the 
   !    nodes of the quadrilateral, given in counterclockwise order.
   !
 
-    integer(ip), parameter :: node_num = 4
+    integer(int32), parameter :: node_num = 4
 
-    integer(ip) :: hull(node_num)
-    integer(ip) :: hull_num
-    integer(ip) :: j
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: xy(2,node_num)
-    real(dp) :: xy_random(2,node_num)
+    integer(int32) hull(node_num)
+    integer(int32) hull_num
+    integer(int32) j
+    integer(int32) seed
+    real(real64) xy(2,node_num)
+    real(real64) xy_random(2,node_num)
 
     do
   !
@@ -21413,10 +21132,9 @@ contains
     do j = 1, node_num
       xy(1:2,j) = xy_random(1:2,hull(j))
     end do
-  end subroutine quad_convex_random
+  end
 
-  subroutine quad_point_dist_2d ( q, p, dist ) &
-        bind(C, name="quad_point_dist_2d")
+  subroutine quad_point_dist_2d ( q, p, dist )
 
   !*****************************************************************************80
   !
@@ -21440,24 +21158,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Q(2,4), the quadrilateral vertices.
+  !    Input, real(real64) Q(2,4), the quadrilateral vertices.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    quadrilateral.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), parameter :: side_num = 4
+    integer(int32), parameter :: dim_num = 2
+    integer(int32), parameter :: side_num = 4
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: q(dim_num,side_num)
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) p(dim_num)
+    real(real64) q(dim_num,side_num)
   !
   !  Find the distance to each of the line segments.
   !
@@ -21474,10 +21192,9 @@ contains
       end if
 
     end do
-  end subroutine quad_point_dist_2d
+  end
 
-  subroutine quad_point_dist_signed_2d ( q, p, dist_signed ) &
-        bind(C, name="quad_point_dist_signed_2d")
+  subroutine quad_point_dist_signed_2d ( q, p, dist_signed )
 
   !*****************************************************************************80
   !
@@ -21509,28 +21226,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Q(2,4), the vertices of the quadrilateral.
+  !    Input, real(real64) Q(2,4), the vertices of the quadrilateral.
   !
-  !    Input, real(dp) P(2), the point which is to be checked.
+  !    Input, real(real64) P(2), the point which is to be checked.
   !
-  !    Output, real(dp) DIST_SIGNED, the signed distance from the 
+  !    Output, real(real64) DIST_SIGNED, the signed distance from the 
   !    point to the convex quadrilateral.  If DIST_SIGNED is
   !    0.0, the point is on the boundary;
   !    negative, the point is in the interior;
   !    positive, the point is in the exterior.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: dis
-    real(dp) :: dis12
-    real(dp) :: dis23
-    real(dp) :: dis34
-    real(dp) :: dis41
-    real(dp), intent(out) :: dist_signed
-    real(dp), intent(in) :: p(dim_num)
-    real(dp) :: pm(dim_num)
-    real(dp), intent(in) :: q(dim_num,4)
+    real(real64) dis
+    real(real64) dis12
+    real(real64) dis23
+    real(real64) dis34
+    real(real64) dis41
+    real(real64) dist_signed
+    real(real64) p(dim_num)
+    real(real64) pm(dim_num)
+    real(real64) q(dim_num,4)
   !
   !  Compare the signed distance from each line segment to the point,
   !  with the signed distance to the midpoint of the opposite line.
@@ -21541,11 +21258,11 @@ contains
   !
     call line_exp_point_dist_signed_2d ( q(1:2,1), q(1:2,2), p, dis12 )
 
-    pm(1:dim_num) = 0.5_dp * ( q(1:dim_num,3) + q(1:dim_num,4) )
+    pm(1:dim_num) = 0.5e+00_real64 * ( q(1:dim_num,3) + q(1:dim_num,4) )
 
     call line_exp_point_dist_signed_2d ( q(1:2,1), q(1:2,2), pm, dis )
 
-    if ( 0.0_dp < dis ) then
+    if ( 0.0e+00_real64 < dis ) then
       dis = -dis
       dis12 = -dis12
     end if
@@ -21554,11 +21271,11 @@ contains
   !
     call line_exp_point_dist_signed_2d ( q(1:2,2), q(1:2,3), p, dis23 )
 
-    pm(1:dim_num) = 0.5_dp * ( q(1:dim_num,4) + q(1:dim_num,1) )
+    pm(1:dim_num) = 0.5e+00_real64 * ( q(1:dim_num,4) + q(1:dim_num,1) )
 
     call line_exp_point_dist_signed_2d ( q(1:2,2), q(1:2,3), pm, dis )
 
-    if ( 0.0_dp < dis ) then
+    if ( 0.0e+00_real64 < dis ) then
       dis = -dis
       dis23 = -dis23
     end if
@@ -21567,11 +21284,11 @@ contains
   !
     call line_exp_point_dist_signed_2d ( q(1:2,3), q(1:2,4), p, dis34 )
 
-    pm(1:dim_num) = 0.5_dp * ( q(1:dim_num,1) + q(1:dim_num,2) )
+    pm(1:dim_num) = 0.5e+00_real64 * ( q(1:dim_num,1) + q(1:dim_num,2) )
 
     call line_exp_point_dist_signed_2d ( q(1:2,3), q(1:2,4), pm, dis )
 
-    if ( 0.0_dp < dis ) then
+    if ( 0.0e+00_real64 < dis ) then
       dis = -dis
       dis34 = -dis34
     end if
@@ -21580,20 +21297,19 @@ contains
   !
     call line_exp_point_dist_signed_2d ( q(1:2,4), q(1:2,1), p, dis41 )
 
-    pm(1:dim_num) = 0.5_dp * ( q(1:dim_num,2) + q(1:dim_num,3) )
+    pm(1:dim_num) = 0.5e+00_real64 * ( q(1:dim_num,2) + q(1:dim_num,3) )
 
     call line_exp_point_dist_signed_2d ( q(1:2,4), q(1:2,1), pm, dis )
 
-    if ( 0.0_dp < dis ) then
+    if ( 0.0e+00_real64 < dis ) then
       dis = -dis
       dis41 = -dis41
     end if
 
     dist_signed = max ( dis12, dis23, dis34, dis41 )
-  end subroutine quad_point_dist_signed_2d
+  end
 
-  subroutine quad_point_near_2d ( q, p, pn, dist ) &
-        bind(C, name="quad_point_near_2d")
+  subroutine quad_point_near_2d ( q, p, pn, dist )
 
   !*****************************************************************************80
   !
@@ -21617,36 +21333,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Q(2,4), the quadrilateral vertices.
+  !    Input, real(real64) Q(2,4), the quadrilateral vertices.
   !
-  !    Input, real(dp) P(2), the point whose nearest quadrilateral point
+  !    Input, real(real64) P(2), the point whose nearest quadrilateral point
   !    is to be determined.
   !
-  !    Output, real(dp) PN(2), the nearest point to P.
+  !    Output, real(real64) PN(2), the nearest point to P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    quadrilateral.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), parameter :: side_num = 4
+    integer(int32), parameter :: dim_num = 2
+    integer(int32), parameter :: side_num = 4
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp) :: pn2(dim_num)
-    real(dp), intent(in) :: q(dim_num,side_num)
-    real(dp) :: tval
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) p(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) pn2(dim_num)
+    real(real64) q(dim_num,side_num)
+    real(real64) tval
   !
   !  Find the distance to each of the line segments that make up the edges
   !  of the quadrilateral.
   !
     dist = huge ( dist )
-    pn(1:dim_num) = 0.0_dp
+    pn(1:dim_num) = 0.0e+00_real64
 
     do j = 1, side_num
 
@@ -21661,10 +21377,9 @@ contains
       end if
 
     end do
-  end subroutine quad_point_near_2d
+  end
 
-  function r8_acos ( c ) &
-        bind(C, name="r8_acos")
+  function r8_acos ( c )
 
   !*****************************************************************************80
   !
@@ -21692,24 +21407,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) C, the argument.
+  !    Input, real(real64) C, the argument.
   !
-  !    Output, real(dp) R8_ACOS, an angle whose cosine is C.
+  !    Output, real(real64) R8_ACOS, an angle whose cosine is C.
   !
 
-    real(dp), intent(out) :: c
-    real(dp) :: c2
-    real(dp) :: r8_acos
+    real(real64) c
+    real(real64) c2
+    real(real64) r8_acos
 
     c2 = c
-    c2 = max ( c2, -1.0_dp )
-    c2 = min ( c2, +1.0_dp )
+    c2 = max ( c2, -1.0e+00_real64 )
+    c2 = min ( c2, +1.0e+00_real64 )
 
     r8_acos = acos ( c2 )
-  end function r8_acos
+  end
 
-  function r8_asin ( s ) &
-        bind(C, name="r8_asin")
+  function r8_asin ( s )
 
   !*****************************************************************************80
   !
@@ -21737,24 +21451,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) S, the argument.
+  !    Input, real(real64) S, the argument.
   !
-  !    Output, real(dp) R8_ASIN, an angle whose sine is S.
+  !    Output, real(real64) R8_ASIN, an angle whose sine is S.
   !
 
-    real(dp) :: r8_asin
-    real(dp), intent(out) :: s
-    real(dp) :: s2
+    real(real64) r8_asin
+    real(real64) s
+    real(real64) s2
 
     s2 = s
-    s2 = max ( s2, -1.0_dp )
-    s2 = min ( s2, +1.0_dp )
+    s2 = max ( s2, -1.0e+00_real64 )
+    s2 = min ( s2, +1.0e+00_real64 )
 
     r8_asin = asin ( s2 )
-  end function r8_asin
+  end
 
-  function r8_atan ( y, x ) &
-        bind(C, name="r8_atan")
+  function r8_atan ( y, x )
 
   !*****************************************************************************80
   !
@@ -21789,40 +21502,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Y, X, two quantities which represent the
+  !    Input, real(real64) Y, X, two quantities which represent the
   !    tangent of an angle.  If Y is not zero, then the tangent is (Y/X).
   !
-  !    Output, real(dp) R8_ATAN, an angle between 0 and 2 * PI, whose
+  !    Output, real(real64) R8_ATAN, an angle between 0 and 2 * PI, whose
   !    tangent is (Y/X), and which lies in the appropriate quadrant so that
   !    the signs of its cosine and sine match those of X and Y.
   !
 
-    real(dp) :: abs_x
-    real(dp) :: abs_y
-    real(dp) :: r8_atan
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
-    real(dp) :: theta_0
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    real(real64) abs_x
+    real(real64) abs_y
+    real(real64) r8_atan
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
+    real(real64) theta_0
+    real(real64) x
+    real(real64) y
   !
   !  Special cases:
   !
-    if ( x == 0.0_dp ) then
+    if ( x == 0.0e+00_real64 ) then
 
-      if ( 0.0_dp < y ) then
-        theta = r8_pi / 2.0_dp
-      else if ( y < 0.0_dp ) then
-        theta = 3.0_dp * r8_pi / 2.0_dp
-      else if ( y == 0.0_dp ) then
-        theta = 0.0_dp
+      if ( 0.0e+00_real64 < y ) then
+        theta = r8_pi / 2.0e+00_real64
+      else if ( y < 0.0e+00_real64 ) then
+        theta = 3.0e+00_real64 * r8_pi / 2.0e+00_real64
+      else if ( y == 0.0e+00_real64 ) then
+        theta = 0.0e+00_real64
       end if
 
-    else if ( y == 0.0_dp ) then
+    else if ( y == 0.0e+00_real64 ) then
 
-      if ( 0.0_dp < x ) then
-        theta = 0.0_dp
-      else if ( x < 0.0_dp ) then
+      if ( 0.0e+00_real64 < x ) then
+        theta = 0.0e+00_real64
+      else if ( x < 0.0e+00_real64 ) then
         theta = r8_pi
       end if
   !
@@ -21835,23 +21548,22 @@ contains
 
       theta_0 = atan2 ( abs_y, abs_x )
 
-      if ( 0.0_dp < x .and. 0.0_dp < y ) then
+      if ( 0.0e+00_real64 < x .and. 0.0e+00_real64 < y ) then
         theta = theta_0
-      else if ( x < 0.0_dp .and. 0.0_dp < y ) then
+      else if ( x < 0.0e+00_real64 .and. 0.0e+00_real64 < y ) then
         theta = r8_pi - theta_0
-      else if ( x < 0.0_dp .and. y < 0.0_dp ) then
+      else if ( x < 0.0e+00_real64 .and. y < 0.0e+00_real64 ) then
         theta = r8_pi + theta_0
-      else if ( 0.0_dp < x .and. y < 0.0_dp ) then
-        theta = 2.0_dp * r8_pi - theta_0
+      else if ( 0.0e+00_real64 < x .and. y < 0.0e+00_real64 ) then
+        theta = 2.0e+00_real64 * r8_pi - theta_0
       end if
 
     end if
 
     r8_atan = theta
-  end function r8_atan
+  end
 
-  function r8_cosd ( degrees ) &
-        bind(C, name="r8_cosd")
+  function r8_cosd ( degrees )
 
   !*****************************************************************************80
   !
@@ -21871,22 +21583,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DEGREES, the angle in degrees.
+  !    Input, real(real64) DEGREES, the angle in degrees.
   !
-  !    Output, real(dp) R8_COSD, the cosine of the angle.
+  !    Output, real(real64) R8_COSD, the cosine of the angle.
   !
 
-    real(dp), intent(in), value :: degrees
-    real(dp) :: r8_cosd
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: radians
+    real(real64) degrees
+    real(real64) r8_cosd
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radians
 
-    radians = r8_pi * ( degrees / 180.0_dp )
+    radians = r8_pi * ( degrees / 180.0e+00_real64 )
     r8_cosd = cos ( radians )
-  end function r8_cosd
+  end
 
-  function r8_cotd ( degrees ) &
-        bind(C, name="r8_cotd")
+  function r8_cotd ( degrees )
 
   !*****************************************************************************80
   !
@@ -21906,22 +21617,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DEGREES, the angle in degrees.
+  !    Input, real(real64) DEGREES, the angle in degrees.
   !
-  !    Output, real(dp) R8_COTD, the cotangent of the angle.
+  !    Output, real(real64) R8_COTD, the cotangent of the angle.
   !
 
-    real(dp), intent(in), value :: degrees
-    real(dp) :: r8_cotd
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: radians
+    real(real64) degrees
+    real(real64) r8_cotd
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radians
 
-    radians = r8_pi * ( degrees / 180.0_dp )
+    radians = r8_pi * ( degrees / 180.0e+00_real64 )
     r8_cotd = cos ( radians ) / sin ( radians )
-  end function r8_cotd
+  end
 
-  function r8_cscd ( degrees ) &
-        bind(C, name="r8_cscd")
+  function r8_cscd ( degrees )
 
   !*****************************************************************************80
   !
@@ -21941,22 +21651,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DEGREES, the angle in degrees.
+  !    Input, real(real64) DEGREES, the angle in degrees.
   !
-  !    Output, real(dp) R8_CSCD, the cosecant of the angle.
+  !    Output, real(real64) R8_CSCD, the cosecant of the angle.
   !
 
-    real(dp), intent(in), value :: degrees
-    real(dp) :: r8_cscd
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: radians
+    real(real64) degrees
+    real(real64) r8_cscd
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radians
 
-    radians = r8_pi * ( degrees / 180.0_dp )
-    r8_cscd  = 1.0_dp / sin ( radians )
-  end function r8_cscd
+    radians = r8_pi * ( degrees / 180.0e+00_real64 )
+    r8_cscd  = 1.0e+00_real64 / sin ( radians )
+  end
 
-  function r8_huge ( ) &
-        bind(C, name="r8_huge")
+  function r8_huge ( )
 
   !*****************************************************************************80
   !
@@ -21987,16 +21696,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) R8_HUGE, a "huge" value.
+  !    Output, real(real64) R8_HUGE, a "huge" value.
   !
 
-    real(dp) :: r8_huge
+    real(real64) r8_huge
 
-    r8_huge = 1.0e+30_dp
-  end function r8_huge
+    r8_huge = 1.0e+30_real64
+  end
 
-  function r8_is_int ( r ) &
-        bind(C, name="r8_is_int")
+  function r8_is_int ( r )
 
   !*****************************************************************************80
   !
@@ -22016,28 +21724,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the number to be checked.
+  !    Input, real(real64) R, the number to be checked.
   !
   !    Output, logical R8_IS_INT, is TRUE if R is an integer value.
   !
 
-    integer(ip) :: i
-    real(dp), intent(in), value :: r
-    logical :: r8_is_int
+    integer(int32) i
+    real(real64) r
+    logical r8_is_int
 
-    if ( real ( huge ( i ), dp) < r ) then
+    if ( real ( huge ( i ), real64) < r ) then
       r8_is_int = .false.
-    else if ( r < - real ( huge ( i ), dp) ) then
+    else if ( r < - real ( huge ( i ), real64) ) then
       r8_is_int = .false.
-    else if ( r == real ( int ( r ), dp) ) then
+    else if ( r == real ( int ( r ), real64) ) then
       r8_is_int = .true.
     else
       r8_is_int = .false.
     end if
-  end function r8_is_int
+  end
 
-  function r8_modp ( x, y ) &
-        bind(C, name="r8_modp")
+  function r8_modp ( x, y )
 
   !*****************************************************************************80
   !
@@ -22083,19 +21790,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, the number to be divided.
+  !    Input, real(real64) X, the number to be divided.
   !
-  !    Input, real(dp) Y, the number that divides X.
+  !    Input, real(real64) Y, the number that divides X.
   !
-  !    Output, real(dp) R8_MODP, the nonnegative remainder 
+  !    Output, real(real64) R8_MODP, the nonnegative remainder 
   !    when X is divided by Y.
   !
 
-    real(dp) :: r8_modp
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    real(real64) r8_modp
+    real(real64) x
+    real(real64) y
 
-    if ( y == 0.0_dp ) then
+    if ( y == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'R8_MODP - Fatal error!'
       write ( *, '(a,g14.6)' ) '  R8_MODP ( X, Y ) called with Y = ', y
@@ -22104,13 +21811,12 @@ contains
 
     r8_modp = mod ( x, y )
 
-    if ( r8_modp < 0.0_dp ) then
+    if ( r8_modp < 0.0e+00_real64 ) then
       r8_modp = r8_modp + abs ( y )
     end if
-  end function r8_modp
+  end
 
-  function r8_normal_01 ( seed ) &
-        bind(C, name="r8_normal_01")
+  function r8_normal_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -22149,23 +21855,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number 
+  !    Input/output, integer(int32) SEED, a seed for the random number 
   !    generator.
   !
-  !    Output, real(dp) R8_NORMAL_01, a sample of the standard 
+  !    Output, real(real64) R8_NORMAL_01, a sample of the standard 
   !    normal PDF.
   !
 
-    real(dp) :: r1
-    real(dp) :: r2
-    real(dp) :: r8_normal_01
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
-    integer(ip), save :: seed2 = 0
-    integer(ip), save :: used = 0
-    real(dp) :: x
-    real(dp), save :: y = 0.0_dp
+    real(real64) r1
+    real(real64) r2
+    real(real64) r8_normal_01
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r8_uniform_01
+    integer(int32) seed
+    integer(int32), save :: seed2 = 0
+    integer(int32), save :: used = 0
+    real(real64) x
+    real(real64), save :: y = 0.0e+00_real64
   !
   !  On odd numbered calls, generate two uniforms, create two normals,
   !  return the first normal and its corresponding seed.
@@ -22174,7 +21880,7 @@ contains
 
       r1 = r8_uniform_01 ( seed )
 
-      if ( r1 == 0.0_dp ) then
+      if ( r1 == 0.0e+00_real64 ) then
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'R8_NORMAL_01 - Fatal error!'
         write ( *, '(a)' ) '  R8_UNIFORM_01 returned a value of 0.'
@@ -22184,8 +21890,8 @@ contains
       seed2 = seed
       r2 = r8_uniform_01 ( seed2 )
 
-      x = sqrt ( -2.0_dp * log ( r1 ) ) * cos ( 2.0_dp * r8_pi * r2 )
-      y = sqrt ( -2.0_dp * log ( r1 ) ) * sin ( 2.0_dp * r8_pi * r2 )
+      x = sqrt ( -2.0e+00_real64 * log ( r1 ) ) * cos ( 2.0e+00_real64 * r8_pi * r2 )
+      y = sqrt ( -2.0e+00_real64 * log ( r1 ) ) * sin ( 2.0e+00_real64 * r8_pi * r2 )
   !
   !  On odd calls, return the second normal and its corresponding seed.
   !
@@ -22199,10 +21905,9 @@ contains
     used = used + 1
 
     r8_normal_01 = x
-  end function r8_normal_01
+  end
 
-  function r8_pi ( ) &
-        bind(C, name="r8_pi")
+  function r8_pi ( )
 
   !*****************************************************************************80
   !
@@ -22222,16 +21927,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) R8_PI, the value of pi.
+  !    Output, real(real64) R8_PI, the value of pi.
   !
 
-    real(dp) :: r8_pi
+    real(real64) r8_pi
 
-    r8_pi = 3.141592653589793_dp
-  end function r8_pi
+    r8_pi = 3.141592653589793e+00_real64
+  end
 
-  function r8_sign_opposite_strict ( r1, r2 ) &
-        bind(C, name="r8_sign_opposite_strict")
+  function r8_sign_opposite_strict ( r1, r2 )
 
   !*****************************************************************************80
   !
@@ -22257,22 +21961,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, the values to check.
+  !    Input, real(real64) R1, R2, the values to check.
   !
   !    Output, logical R8_SIGN_OPPOSITE_STRICT, is TRUE 
   !    if ( R1 < 0 and 0 < R2 ) or ( R2 < 0 and 0 < R1 ).
   !
 
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    logical :: r8_sign_opposite_strict
+    real(real64) r1
+    real(real64) r2
+    logical r8_sign_opposite_strict
 
-    r8_sign_opposite_strict = ( r1 < 0.0_dp .and. 0.0_dp < r2 ) .or. &
-                              ( r2 < 0.0_dp .and. 0.0_dp < r1 )
-  end function r8_sign_opposite_strict
+    r8_sign_opposite_strict = ( r1 < 0.0e+00_real64 .and. 0.0e+00_real64 < r2 ) .or. &
+                              ( r2 < 0.0e+00_real64 .and. 0.0e+00_real64 < r1 )
+  end
 
-  function r8_sind ( degrees ) &
-        bind(C, name="r8_sind")
+  function r8_sind ( degrees )
 
   !*****************************************************************************80
   !
@@ -22292,22 +21995,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DEGREES, the angle in degrees.
+  !    Input, real(real64) DEGREES, the angle in degrees.
   !
-  !    Output, real(dp) R8_SIND, the sine of the angle.
+  !    Output, real(real64) R8_SIND, the sine of the angle.
   !
 
-    real(dp), intent(in), value :: degrees
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: r8_sind
-    real(dp) :: radians
+    real(real64) degrees
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r8_sind
+    real(real64) radians
 
-    radians = r8_pi * ( degrees / 180.0_dp )
+    radians = r8_pi * ( degrees / 180.0e+00_real64 )
     r8_sind  = sin ( radians )
-  end function r8_sind
+  end
 
-  function r8_secd ( degrees ) &
-        bind(C, name="r8_secd")
+  function r8_secd ( degrees )
 
   !*****************************************************************************80
   !
@@ -22327,22 +22029,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DEGREES, the angle in degrees.
+  !    Input, real(real64) DEGREES, the angle in degrees.
   !
-  !    Output, real(dp) R8_SECD, the secant of the angle.
+  !    Output, real(real64) R8_SECD, the secant of the angle.
   !
 
-    real(dp), intent(in), value :: degrees
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: r8_secd
-    real(dp) :: radians
+    real(real64) degrees
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r8_secd
+    real(real64) radians
 
-    radians = r8_pi * ( degrees / 180.0_dp )
-    r8_secd = 1.0_dp / cos ( radians )
-  end function r8_secd
+    radians = r8_pi * ( degrees / 180.0e+00_real64 )
+    r8_secd = 1.0e+00_real64 / cos ( radians )
+  end
 
-  subroutine r8_swap ( x, y ) &
-        bind(C, name="r8_swap")
+  subroutine r8_swap ( x, y )
 
   !*****************************************************************************80
   !
@@ -22362,21 +22063,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, real(dp) X, Y.  On output, the values of X and
+  !    Input/output, real(real64) X, Y.  On output, the values of X and
   !    Y have been interchanged.
   !
 
-    real(dp), intent(inout) :: x
-    real(dp), intent(inout) :: y
-    real(dp) :: z
+    real(real64) x
+    real(real64) y
+    real(real64) z
 
     z = x
     x = y
     y = z
-  end subroutine r8_swap
+  end
 
-  function r8_tand ( degrees ) &
-        bind(C, name="r8_tand")
+  function r8_tand ( degrees )
 
   !*****************************************************************************80
   !
@@ -22396,22 +22096,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DEGREES, the angle in degrees.
+  !    Input, real(real64) DEGREES, the angle in degrees.
   !
-  !    Output, real(dp) R8_TAND, the tangent of the angle.
+  !    Output, real(real64) R8_TAND, the tangent of the angle.
   !
 
-    real(dp), intent(in), value :: degrees
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: r8_tand
-    real(dp) :: radians
+    real(real64) degrees
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r8_tand
+    real(real64) radians
 
-    radians = r8_pi * ( degrees / 180.0_dp )
+    radians = r8_pi * ( degrees / 180.0e+00_real64 )
     r8_tand  = tan ( radians )
-  end function r8_tand
+  end
 
-  function r8_uniform ( a, b, seed ) &
-        bind(C, name="r8_uniform")
+  function r8_uniform ( a, b, seed )
 
   !*****************************************************************************80
   !
@@ -22419,9 +22118,9 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
-  !    For now, the input quantity SEED is an integer(ip) variable.
+  !    For now, the input quantity SEED is an integer(int32) variable.
   !
   !    The pseudorandom number should be uniformly distributed
   !    between A and B.
@@ -22440,19 +22139,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, the limits of the interval.
+  !    Input, real(real64) A, B, the limits of the interval.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM, a number strictly between A and B.
+  !    Output, real(real64) R8_UNIFORM, a number strictly between A and B.
   !
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(out) :: b
-    integer(ip) :: k
-    real(dp) :: r8_uniform
-    integer(ip)seed
+    real(real64) a
+    real(real64) b
+    integer(int32) k
+    real(real64) r8_uniform
+    integer(int32)seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -22469,11 +22168,10 @@ contains
       seed = seed + 2147483647
     end if
 
-    r8_uniform = a + ( b - a ) * real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform
+    r8_uniform = a + ( b - a ) * real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -22481,9 +22179,9 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
-  !    For now, the input quantity SEED is an integer(ip) variable.
+  !    For now, the input quantity SEED is an integer(int32) variable.
   !
   !    This routine implements the recursion
   !
@@ -22540,16 +22238,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -22569,11 +22267,10 @@ contains
   !  Although SEED can be represented exactly as a 32 bit integer,
   !  it generally cannot be represented exactly as a 32 bit real number!
   !
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  subroutine r82vec_permute ( n, p, a ) &
-        bind(C, name="r82vec_permute")
+  subroutine r82vec_permute ( n, p, a )
 
   !*****************************************************************************80
   !
@@ -22616,25 +22313,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of objects.
+  !    Input, integer(int32) N, the number of objects.
   !
-  !    Input, integer(ip) P(N), the permutation.  P(I) = J means
+  !    Input, integer(int32) P(N), the permutation.  P(I) = J means
   !    that the I-th element of the output array should be the J-th
   !    element of the input array.  P must be a legal permutation
   !    of the integers from 1 to N, otherwise the algorithm will
   !    fail catastrophically.
   !
-  !    Input/output, real(dp) A(2,N), the array to be permuted.
+  !    Input/output, real(real64) A(2,N), the array to be permuted.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(2,n)
-    real(dp) :: a_temp(2)
-    integer(ip) :: iget
-    integer(ip) :: iput
-    integer(ip) :: istart
-    integer(ip), intent(in) :: p(n)
+    real(real64) a(2,n)
+    real(real64) a_temp(2)
+    integer(int32) iget
+    integer(int32) iput
+    integer(int32) istart
+    integer(int32) p(n)
   !
   !  Search for the next element of the permutation that has not been used.
   !
@@ -22685,10 +22382,9 @@ contains
   !  Restore the signs of the entries.
   !
     p(1:n) = -p(1:n)
-  end subroutine r82vec_permute
+  end
 
-  subroutine r82vec_sort_heap_index_a ( n, a, indx ) &
-        bind(C, name="r82vec_sort_heap_index_a")
+  subroutine r82vec_sort_heap_index_a ( n, a, indx )
 
   !*****************************************************************************80
   !
@@ -22726,24 +22422,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, real(dp) A(2,N), an array to be index-sorted.
+  !    Input, real(real64) A(2,N), an array to be index-sorted.
   !
-  !    Output, integer(ip) INDX(N), the sort index.  The
+  !    Output, integer(int32) INDX(N), the sort index.  The
   !    I-th element of the sorted array is A(1:2,INDX(I)).
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(2,n)
-    real(dp) :: aval(2)
-    integer(ip) :: i
-    integer(ip), intent(out) :: indx(n)
-    integer(ip) :: indxt
-    integer(ip) :: ir
-    integer(ip) :: j
-    integer(ip) :: l
+    real(real64) a(2,n)
+    real(real64) aval(2)
+    integer(int32) i
+    integer(int32) indx(n)
+    integer(int32) indxt
+    integer(int32) ir
+    integer(int32) j
+    integer(int32) l
 
     if ( n < 1 ) then
     end if
@@ -22807,10 +22503,9 @@ contains
       indx(i) = indxt
 
     end do
-  end subroutine r82vec_sort_heap_index_a
+  end
 
-  subroutine r8ge_det ( n, a, pivot, det ) &
-        bind(C, name="r8ge_det")
+  subroutine r8ge_det ( n, a, pivot, det )
 
   !*****************************************************************************80
   !
@@ -22836,24 +22531,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !    N must be positive.
   !
-  !    Input, real(dp) A(N,N), the LU factors computed by R8GE_FA.
+  !    Input, real(real64) A(N,N), the LU factors computed by R8GE_FA.
   !
-  !    Input, integer(ip) PIVOT(N), as computed by R8GE_FA.
+  !    Input, integer(int32) PIVOT(N), as computed by R8GE_FA.
   !
-  !    Output, real(dp) DET, the determinant of the matrix.
+  !    Output, real(real64) DET, the determinant of the matrix.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(n,n)
-    real(dp), intent(out) :: det
-    integer(ip) :: i
-    integer(ip), intent(in) :: pivot(n)
+    real(real64) a(n,n)
+    real(real64) det
+    integer(int32) i
+    integer(int32) pivot(n)
 
-    det = 1.0_dp
+    det = 1.0e+00_real64
 
     do i = 1, n
       det = det * a(i,i)
@@ -22861,10 +22556,9 @@ contains
         det = - det
       end if
     end do
-  end subroutine r8ge_det
+  end
 
-  subroutine r8ge_fa ( n, a, pivot, info ) &
-        bind(C, name="r8ge_fa")
+  subroutine r8ge_fa ( n, a, pivot, info )
 
   !*****************************************************************************80
   !
@@ -22894,32 +22588,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !    N must be positive.
   !
-  !    Input/output, real(dp) A(N,N), the matrix to be factored.
+  !    Input/output, real(real64) A(N,N), the matrix to be factored.
   !    On output, A contains an upper triangular matrix and the multipliers
   !    which were used to obtain it.  The factorization can be written
   !    A = L * U, where L is a product of permutation and unit lower
   !    triangular matrices and U is upper triangular.
   !
-  !    Output, integer(ip) PIVOT(N), a vector of pivot indices.
+  !    Output, integer(int32) PIVOT(N), a vector of pivot indices.
   !
-  !    Output, integer(ip) INFO, singularity flag.
+  !    Output, integer(int32) INFO, singularity flag.
   !    0, no singularity detected.
   !    nonzero, the factorization failed on the INFO-th step.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(n,n)
-    integer(ip) :: i
-    integer(ip), intent(out) :: info
-    integer(ip), intent(out) :: pivot(n)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    real(dp) :: t
+    real(real64) a(n,n)
+    integer(int32) i
+    integer(int32) info
+    integer(int32) pivot(n)
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    real(real64) t
 
     info = 0
 
@@ -22938,7 +22632,7 @@ contains
   !
   !  If the pivot index is zero, the algorithm has failed.
   !
-      if ( a(l,k) == 0.0_dp ) then
+      if ( a(l,k) == 0.0e+00_real64 ) then
         info = k
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'R8GE_FA - Warning!'
@@ -22975,16 +22669,15 @@ contains
 
     pivot(n) = n
 
-    if ( a(n,n) == 0.0_dp ) then
+    if ( a(n,n) == 0.0e+00_real64 ) then
       info = n
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'R8GE_FA - Warning!'
       write ( *, '(a,i8)' ) '  Zero pivot on step ', info
     end if
-  end subroutine r8ge_fa
+  end
 
-  subroutine r8ge_sl ( n, a, pivot, b, job ) &
-        bind(C, name="r8ge_sl")
+  subroutine r8ge_sl ( n, a, pivot, b, job )
 
   !*****************************************************************************80
   !
@@ -23008,30 +22701,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !    N must be positive.
   !
-  !    Input, real(dp) A(N,N), the LU factors from R8GE_FA.
+  !    Input, real(real64) A(N,N), the LU factors from R8GE_FA.
   !
-  !    Input, integer(ip) PIVOT(N), the pivot vector from R8GE_FA.
+  !    Input, integer(int32) PIVOT(N), the pivot vector from R8GE_FA.
   !
-  !    Input/output, real(dp) B(N).
+  !    Input/output, real(real64) B(N).
   !    On input, the right hand side vector.
   !    On output, the solution vector.
   !
-  !    Input, integer(ip) JOB, specifies the operation.
+  !    Input, integer(int32) JOB, specifies the operation.
   !    0, solve A * x = b.
   !    nonzero, solve A' * x = b.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(n,n)
-    real(dp), intent(inout) :: b(n)
-    integer(ip), intent(in) :: pivot(n)
-    integer(ip), intent(in), value :: job
-    integer(ip) :: k
-    integer(ip) :: l
+    real(real64) a(n,n)
+    real(real64) b(n)
+    integer(int32) pivot(n)
+    integer(int32) job
+    integer(int32) k
+    integer(int32) l
   !
   !  Solve A * x = b.
   !
@@ -23083,10 +22776,9 @@ contains
       end do
 
     end if
-  end subroutine r8ge_sl
+  end
 
-  function r8mat_det_2d ( a ) &
-        bind(C, name="r8mat_det_2d")
+  function r8mat_det_2d ( a )
 
   !*****************************************************************************80
   !
@@ -23113,19 +22805,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(2,2), the matrix whose determinant is desired.
+  !    Input, real(real64) A(2,2), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) R8MAT_DET_2D, the determinant of the matrix.
+  !    Output, real(real64) R8MAT_DET_2D, the determinant of the matrix.
   !
 
-    real(dp) :: a(2,2)
-    real(dp) :: r8mat_det_2d
+    real(real64) a(2,2)
+    real(real64) r8mat_det_2d
 
     r8mat_det_2d = a(1,1) * a(2,2) - a(1,2) * a(2,1)
-  end function r8mat_det_2d
+  end
 
-  function r8mat_det_3d ( a ) &
-        bind(C, name="r8mat_det_3d")
+  function r8mat_det_3d ( a )
 
   !*****************************************************************************80
   !
@@ -23154,21 +22845,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(3,3), the matrix whose determinant is desired.
+  !    Input, real(real64) A(3,3), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) R8MAT_DET_3D, the determinant of the matrix.
+  !    Output, real(real64) R8MAT_DET_3D, the determinant of the matrix.
   !
 
-    real(dp) :: a(3,3)
-    real(dp) :: r8mat_det_3d
+    real(real64) a(3,3)
+    real(real64) r8mat_det_3d
 
     r8mat_det_3d =   a(1,1) * ( a(2,2) * a(3,3) - a(2,3) * a(3,2) ) &
                 + a(1,2) * ( a(2,3) * a(3,1) - a(2,1) * a(3,3) ) &
                 + a(1,3) * ( a(2,1) * a(3,2) - a(2,2) * a(3,1) )
-  end function r8mat_det_3d
+  end
 
-  function r8mat_det_4d ( a ) &
-        bind(C, name="r8mat_det_4d")
+  function r8mat_det_4d ( a )
 
   !*****************************************************************************80
   !
@@ -23188,13 +22878,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the matrix whose determinant is desired.
+  !    Input, real(real64) A(4,4), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) R8MAT_DET_4D, the determinant of the matrix.
+  !    Output, real(real64) R8MAT_DET_4D, the determinant of the matrix.
   !
 
-    real(dp) :: a(4,4)
-    real(dp) :: r8mat_det_4d
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
 
     r8mat_det_4d = &
         a(1,1) * ( &
@@ -23213,10 +22903,9 @@ contains
           a(2,1) * ( a(3,2) * a(4,3) - a(3,3) * a(4,2) ) &
         - a(2,2) * ( a(3,1) * a(4,3) - a(3,3) * a(4,1) ) &
         + a(2,3) * ( a(3,1) * a(4,2) - a(3,2) * a(4,1) ) )
-  end function r8mat_det_4d
+  end
 
-  function r8mat_det_5d ( a ) &
-        bind(C, name="r8mat_det_5d")
+  function r8mat_det_5d ( a )
 
   !*****************************************************************************80
   !
@@ -23236,24 +22925,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(5,5), the matrix whose determinant is desired.
+  !    Input, real(real64) A(5,5), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) R8MAT_DET_5D, the determinant of the matrix.
+  !    Output, real(real64) R8MAT_DET_5D, the determinant of the matrix.
   !
 
-    real(dp) :: a(5,5)
-    real(dp) :: b(4,4)
-    real(dp) :: r8mat_det_4d
-    real(dp) :: r8mat_det_5d
-    integer(ip) :: i
-    integer(ip) :: inc
-    integer(ip) :: j
-    integer(ip) :: k
+    real(real64) a(5,5)
+    real(real64) b(4,4)
+    real(real64) r8mat_det_4d
+    real(real64) r8mat_det_5d
+    integer(int32) i
+    integer(int32) inc
+    integer(int32) j
+    integer(int32) k
   !
   !  Expand the determinant into the sum of the determinants of the
   !  five 4 by 4 matrices created by dropping row 1, and column k.
   !
-    r8mat_det_5d = 0.0_dp
+    r8mat_det_5d = 0.0e+00_real64
 
     do k = 1, 5
 
@@ -23274,10 +22963,9 @@ contains
       r8mat_det_5d = r8mat_det_5d + (-1)**( k + 1 ) * a(1,k) * r8mat_det_4d ( b )
 
     end do
-  end function r8mat_det_5d
+  end
 
-  subroutine r8mat_inverse_2d ( a, b, det ) &
-        bind(C, name="r8mat_inverse_2d")
+  subroutine r8mat_inverse_2d ( a, b, det )
 
   !*****************************************************************************80
   !
@@ -23306,16 +22994,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(2,2), the matrix to be inverted.
+  !    Input, real(real64) A(2,2), the matrix to be inverted.
   !
-  !    Output, real(dp) B(2,2), the inverse of the matrix A.
+  !    Output, real(real64) B(2,2), the inverse of the matrix A.
   !
-  !    Output, real(dp) DET, the determinant of the matrix A.
+  !    Output, real(real64) DET, the determinant of the matrix A.
   !
 
-    real(dp) :: a(2,2)
-    real(dp), intent(out) :: b(2,2)
-    real(dp), intent(out) :: det
+    real(real64) a(2,2)
+    real(real64) b(2,2)
+    real(real64) det
   !
   !  Compute the determinant.
   !
@@ -23323,9 +23011,9 @@ contains
   !
   !  If the determinant is zero, bail out.
   !
-    if ( det == 0.0_dp ) then
+    if ( det == 0.0e+00_real64 ) then
 
-      b(1:2,1:2) = 0.0_dp
+      b(1:2,1:2) = 0.0e+00_real64
     end if
   !
   !  Compute the entries of the inverse matrix using an explicit formula.
@@ -23334,10 +23022,9 @@ contains
     b(1,2) = - a(1,2) / det
     b(2,1) = - a(2,1) / det
     b(2,2) = + a(1,1) / det
-  end subroutine r8mat_inverse_2d
+  end
 
-  subroutine r8mat_inverse_3d ( a, b, det ) &
-        bind(C, name="r8mat_inverse_3d")
+  subroutine r8mat_inverse_3d ( a, b, det )
 
   !*****************************************************************************80
   !
@@ -23366,16 +23053,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(3,3), the matrix to be inverted.
+  !    Input, real(real64) A(3,3), the matrix to be inverted.
   !
-  !    Output, real(dp) B(3,3), the inverse of the matrix A.
+  !    Output, real(real64) B(3,3), the inverse of the matrix A.
   !
-  !    Output, real(dp) DET, the determinant of the matrix A.
+  !    Output, real(real64) DET, the determinant of the matrix A.
   !
 
-    real(dp) :: a(3,3)
-    real(dp), intent(out) :: b(3,3)
-    real(dp), intent(out) :: det
+    real(real64) a(3,3)
+    real(real64) b(3,3)
+    real(real64) det
   !
   !  Compute the determinant of A
   !
@@ -23385,9 +23072,9 @@ contains
   !
   !  If the determinant is zero, bail out.
   !
-    if ( det == 0.0_dp ) then
+    if ( det == 0.0e+00_real64 ) then
 
-      b(1:3,1:3) = 0.0_dp
+      b(1:3,1:3) = 0.0e+00_real64
     end if
   !
   !  Compute the entries of the inverse matrix using an explicit
@@ -23404,10 +23091,9 @@ contains
     b(3,1) = + ( a(2,1) * a(3,2) - a(2,2) * a(3,1) ) / det
     b(3,2) = - ( a(1,1) * a(3,2) - a(1,2) * a(3,1) ) / det
     b(3,3) = + ( a(1,1) * a(2,2) - a(1,2) * a(2,1) ) / det
-  end subroutine r8mat_inverse_3d
+  end
 
-  subroutine r8mat_solve ( n, rhs_num, a, info ) &
-        bind(C, name="r8mat_solve")
+  subroutine r8mat_solve ( n, rhs_num, a, info )
 
   !*****************************************************************************80
   !
@@ -23427,33 +23113,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the matrix.
+  !    Input, integer(int32) N, the order of the matrix.
   !
-  !    Input, integer(ip) RHS_NUM, the number of right hand sides.  
+  !    Input, integer(int32) RHS_NUM, the number of right hand sides.  
   !    RHS_NUM must be at least 0.
   !
-  !    Input/output, real(dp) A(N,N+rhs_num), contains in rows and
+  !    Input/output, real(real64) A(N,N+rhs_num), contains in rows and
   !    columns 1 to N the coefficient matrix, and in columns N+1 through
   !    N+rhs_num, the right hand sides.  On output, the coefficient matrix
   !    area has been destroyed, while the right hand sides have
   !    been overwritten with the corresponding solutions.
   !
-  !    Output, integer(ip) INFO, singularity flag.
+  !    Output, integer(int32) INFO, singularity flag.
   !    0, the matrix was not singular, the solutions were computed;
   !    J, factorization failed on step J, and the solutions could not
   !    be computed.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: rhs_num
+    integer(int32) n
+    integer(int32) rhs_num
 
-    real(dp) :: a(n,n+rhs_num)
-    real(dp) :: apivot
-    real(dp) :: factor
-    integer(ip) :: i
-    integer(ip), intent(out) :: info
-    integer(ip) :: ipivot
-    integer(ip) :: j
+    real(real64) a(n,n+rhs_num)
+    real(real64) apivot
+    real(real64) factor
+    integer(int32) i
+    integer(int32) info
+    integer(int32) ipivot
+    integer(int32) j
 
     info = 0
 
@@ -23471,7 +23157,7 @@ contains
         end if
       end do
 
-      if ( apivot == 0.0_dp ) then
+      if ( apivot == 0.0e+00_real64 ) then
         info = j
       end if
   !
@@ -23483,7 +23169,7 @@ contains
   !
   !  A(J,J) becomes 1.
   !
-      a(j,j) = 1.0_dp
+      a(j,j) = 1.0e+00_real64
       a(j,j+1:n+rhs_num) = a(j,j+1:n+rhs_num) / apivot
   !
   !  A(I,J) becomes 0.
@@ -23493,7 +23179,7 @@ contains
         if ( i /= j ) then
 
           factor = a(i,j)
-          a(i,j) = 0.0_dp
+          a(i,j) = 0.0e+00_real64
           a(i,j+1:n+rhs_num) = a(i,j+1:n+rhs_num) - factor * a(j,j+1:n+rhs_num)
 
         end if
@@ -23501,10 +23187,9 @@ contains
       end do
 
     end do
-  end subroutine r8mat_solve
+  end
 
-  subroutine r8mat_solve_2d ( a, b, det, x ) &
-        bind(C, name="r8mat_solve_2d")
+  subroutine r8mat_solve_2d ( a, b, det, x )
 
   !*****************************************************************************80
   !
@@ -23533,20 +23218,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(2,2), the matrix.
+  !    Input, real(real64) A(2,2), the matrix.
   !
-  !    Input, real(dp) B(2), the right hand side.
+  !    Input, real(real64) B(2), the right hand side.
   !
-  !    Output, real(dp) DET, the determinant of the matrix A.
+  !    Output, real(real64) DET, the determinant of the matrix A.
   !
-  !    Output, real(dp) X(2), the solution of the system, 
+  !    Output, real(real64) X(2), the solution of the system, 
   !    if DET is nonzero.
   !
 
-    real(dp) :: a(2,2)
-    real(dp), intent(in) :: b(2)
-    real(dp), intent(out) :: det
-    real(dp), intent(out) :: x(2)
+    real(real64) a(2,2)
+    real(real64) b(2)
+    real(real64) det
+    real(real64) x(2)
   !
   !  Compute the determinant.
   !
@@ -23554,18 +23239,17 @@ contains
   !
   !  If the determinant is zero, bail out.
   !
-    if ( det == 0.0_dp ) then
-      x(1:2) = 0.0_dp
+    if ( det == 0.0e+00_real64 ) then
+      x(1:2) = 0.0e+00_real64
     end if
   !
   !  Compute the solution.
   !
     x(1) = (  a(2,2) * b(1) - a(1,2) * b(2) ) / det
     x(2) = ( -a(2,1) * b(1) + a(1,1) * b(2) ) / det
-  end subroutine r8mat_solve_2d
+  end
 
-  subroutine r8mat_uniform ( m, n, a, b, seed, r ) &
-        bind(C, name="r8mat_uniform")
+  subroutine r8mat_uniform ( m, n, a, b, seed, r )
 
   !*****************************************************************************80
   !
@@ -23573,9 +23257,9 @@ contains
   !
   !  Discussion:
   !
-  !    An R8MAT is an array of real(dp) values.
+  !    An R8MAT is an array of real(real64) values.
   !
-  !    For now, the input quantity SEED is an integer(ip) variable.
+  !    For now, the input quantity SEED is an integer(int32) variable.
   !
   !  Licensing:
   !
@@ -23609,27 +23293,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns
+  !    Input, integer(int32) M, N, the number of rows and columns
   !    in the array.
   !
-  !    Input, real(dp) A, B, the lower and upper limits.
+  !    Input, real(real64) A, B, the lower and upper limits.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which 
+  !    Input/output, integer(int32) SEED, the "seed" value, which 
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudorandom values.
+  !    Output, real(real64) R(M,N), the array of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
+    real(real64) a
+    real(real64) b
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(m,n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -23650,14 +23334,13 @@ contains
           seed = seed + 2147483647
         end if
 
-        r(i,j) = a + ( b - a ) * real ( seed, dp) * 4.656612875e-10_dp
+        r(i,j) = a + ( b - a ) * real ( seed, real64) * 4.656612875e-10_real64
 
       end do
     end do
-  end subroutine r8mat_uniform
+  end
 
-  subroutine r8mat_uniform_01 ( m, n, seed, r ) &
-        bind(C, name="r8mat_uniform_01")
+  subroutine r8mat_uniform_01 ( m, n, seed, r )
 
   !*****************************************************************************80
   !
@@ -23665,9 +23348,9 @@ contains
   !
   !  Discussion:
   !
-  !    An R8MAT is an array of real(dp) values.
+  !    An R8MAT is an array of real(real64) values.
   !
-  !    For now, the input quantity SEED is an integer(ip) variable.
+  !    For now, the input quantity SEED is an integer(int32) variable.
   !
   !  Licensing:
   !
@@ -23701,23 +23384,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, N, the number of rows and columns 
+  !    Input, integer(int32) M, N, the number of rows and columns 
   !    in the array.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which 
+  !    Input/output, integer(int32) SEED, the "seed" value, which 
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(M,N), the array of pseudorandom values.
+  !    Output, real(real64) R(M,N), the array of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: m
-    integer(ip), intent(in), value :: n
+    integer(int32) m
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(m,n)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(m,n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -23738,14 +23421,13 @@ contains
           seed = seed + 2147483647
         end if
 
-        r(i,j) = real ( seed, dp) * 4.656612875e-10_dp
+        r(i,j) = real ( seed, real64) * 4.656612875e-10_real64
 
       end do
     end do
-  end subroutine r8mat_uniform_01
+  end
 
-  subroutine r8vec_angle_3d ( u, v, angle ) &
-        bind(C, name="r8vec_angle_3d")
+  subroutine r8vec_angle_3d ( u, v, angle )
 
   !*****************************************************************************80
   !
@@ -23761,19 +23443,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) U(3), V(3), the vectors.
+  !    Input, real(real64) U(3), V(3), the vectors.
   !
-  !    Output, real(dp) ANGLE, the angle between the two vectors.
+  !    Output, real(real64) ANGLE, the angle between the two vectors.
   !
 
-    real(dp), intent(out) :: angle
-    real(dp) :: angle_cos
-    real(dp) :: r8_acos
-    real(dp), intent(in) :: u(3)
-    real(dp) :: u_norm
-    real(dp) :: uv_dot
-    real(dp), intent(in) :: v(3)
-    real(dp) :: v_norm
+    real(real64) angle
+    real(real64) angle_cos
+    real(real64) r8_acos
+    real(real64) u(3)
+    real(real64) u_norm
+    real(real64) uv_dot
+    real(real64) v(3)
+    real(real64) v_norm
 
     uv_dot = dot_product ( u(1:3), v(1:3) )
 
@@ -23784,10 +23466,9 @@ contains
     angle_cos = uv_dot / u_norm / v_norm
 
     angle = r8_acos ( angle_cos )
-  end subroutine r8vec_angle_3d
+  end
 
-  subroutine r8vec_any_normal ( dim_num, v1, v2 ) &
-        bind(C, name="r8vec_any_normal")
+  subroutine r8vec_any_normal ( dim_num, v1, v2 )
 
   !*****************************************************************************80
   !
@@ -23816,24 +23497,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) V1(DIM_NUM), the vector.
+  !    Input, real(real64) V1(DIM_NUM), the vector.
   !
-  !    Output, real(dp) V2(DIM_NUM), a vector that is
+  !    Output, real(real64) V2(DIM_NUM), a vector that is
   !    normal to V2, and has unit Euclidean length.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: r8vec_norm
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp), intent(in) :: v1(dim_num)
-    real(dp), intent(out) :: v2(dim_num)
-    real(dp) :: vj
-    real(dp) :: vk
+    real(real64) r8vec_norm
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
+    real(real64) vj
+    real(real64) vk
 
     if ( dim_num < 2 ) then
       write ( *, '(a)' ) ' '
@@ -23842,9 +23523,9 @@ contains
       stop 1
     end if
 
-    if ( r8vec_norm ( dim_num, v1 ) == 0.0_dp ) then
-      v2(1) = 1.0_dp
-      v2(2:dim_num) = 0.0_dp
+    if ( r8vec_norm ( dim_num, v1 ) == 0.0e+00_real64 ) then
+      v2(1) = 1.0e+00_real64
+      v2(2:dim_num) = 0.0e+00_real64
     end if
   !
   !  Seek the largest entry in V1, VJ = V1(J), and the
@@ -23854,10 +23535,10 @@ contains
   !  VJ, at least, is not zero.
   !
     j = -1
-    vj = 0.0_dp
+    vj = 0.0e+00_real64
 
     k = -1
-    vk = 0.0_dp
+    vk = 0.0e+00_real64
 
     do i = 1, dim_num
 
@@ -23880,14 +23561,13 @@ contains
   !  Setting V2 to zero, except that V2(J) = -VK, and V2(K) = VJ,
   !  will just about do the trick.
   !
-    v2(1:dim_num) = 0.0_dp
+    v2(1:dim_num) = 0.0e+00_real64
 
     v2(j) = -vk / sqrt ( vk * vk + vj * vj )
     v2(k) =  vj / sqrt ( vk * vk + vj * vj )
-  end subroutine r8vec_any_normal
+  end
 
-  subroutine r8vec_bracket ( n, x, xval, left, right ) &
-        bind(C, name="r8vec_bracket")
+  subroutine r8vec_bracket ( n, x, xval, left, right )
 
   !*****************************************************************************80
   !
@@ -23913,14 +23593,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, length of input array.
+  !    Input, integer(int32) N, length of input array.
   !
-  !    Input, real(dp) X(N), an array that has been sorted into
+  !    Input, real(real64) X(N), an array that has been sorted into
   !    ascending order.
   !
-  !    Input, real(dp) XVAL, a value to be bracketed.
+  !    Input, real(real64) XVAL, a value to be bracketed.
   !
-  !    Output, integer(ip) LEFT, RIGHT, the results of the search.
+  !    Output, integer(int32) LEFT, RIGHT, the results of the search.
   !    Either:
   !      XVAL < X(1), when LEFT = 1, RIGHT = 2;
   !      X(N) < XVAL, when LEFT = N-1, RIGHT = N;
@@ -23928,13 +23608,13 @@ contains
   !      X(LEFT) <= XVAL <= X(RIGHT).
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip), intent(out) :: left
-    integer(ip), intent(out) :: right
-    real(dp), intent(in) :: x(n)
-    real(dp), intent(in), value :: xval
+    integer(int32) i
+    integer(int32) left
+    integer(int32) right
+    real(real64) x(n)
+    real(real64) xval
 
     do i = 2, n - 1
 
@@ -23947,10 +23627,9 @@ contains
 
     left = n - 1
     right = n
-  end subroutine r8vec_bracket
+  end
 
-  function r8vec_cross_product_2d ( v1, v2 ) &
-        bind(C, name="r8vec_cross_product_2d")
+  function r8vec_cross_product_2d ( v1, v2 )
 
   !*****************************************************************************80
   !
@@ -23977,20 +23656,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(2), V2(2), the vectors.
+  !    Input, real(real64) V1(2), V2(2), the vectors.
   !
-  !    Output, real(dp) R8VEC_CROSS_PRODUCT_2D, the cross product.
+  !    Output, real(real64) R8VEC_CROSS_PRODUCT_2D, the cross product.
   !
 
-    real(dp) :: r8vec_cross_product_2d
-    real(dp), intent(in) :: v1(2)
-    real(dp), intent(in) :: v2(2)
+    real(real64) r8vec_cross_product_2d
+    real(real64) v1(2)
+    real(real64) v2(2)
 
     r8vec_cross_product_2d = v1(1) * v2(2) - v1(2) * v2(1)
-  end function r8vec_cross_product_2d
+  end
 
-  function r8vec_cross_product_affine_2d ( v0, v1, v2 ) &
-        bind(C, name="r8vec_cross_product_affine_2d")
+  function r8vec_cross_product_affine_2d ( v0, v1, v2 )
 
   !*****************************************************************************80
   !
@@ -24017,26 +23695,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V0(2), the base vector.
+  !    Input, real(real64) V0(2), the base vector.
   !
-  !    Input, real(dp) V1(2), V2(2), the vectors.
+  !    Input, real(real64) V1(2), V2(2), the vectors.
   !
-  !    Output, real(dp) R8VEC_CROSS_PRODUCT_AFFINE_2D, 
+  !    Output, real(real64) R8VEC_CROSS_PRODUCT_AFFINE_2D, 
   !    the cross product (V1-V0) x (V2-V0).
   !
 
-    real(dp) :: r8vec_cross_product_affine_2d
-    real(dp), intent(in) :: v0(2)
-    real(dp), intent(in) :: v1(2)
-    real(dp), intent(in) :: v2(2)
+    real(real64) r8vec_cross_product_affine_2d
+    real(real64) v0(2)
+    real(real64) v1(2)
+    real(real64) v2(2)
 
     r8vec_cross_product_affine_2d = &
         ( v1(1) - v0(1) ) * ( v2(2) - v0(2) ) &
       - ( v2(1) - v0(1) ) * ( v1(2) - v0(2) )
-  end function r8vec_cross_product_affine_2d
+  end
 
-  subroutine r8vec_cross_product_3d ( v1, v2, v3 ) &
-        bind(C, name="r8vec_cross_product_3d")
+  subroutine r8vec_cross_product_3d ( v1, v2, v3 )
 
   !*****************************************************************************80
   !
@@ -24069,22 +23746,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), the two vectors.
+  !    Input, real(real64) V1(3), V2(3), the two vectors.
   !
-  !    Output, real(dp) V3(3), the cross product vector.
+  !    Output, real(real64) V3(3), the cross product vector.
   !
 
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(out) :: v3(3)
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     v3(1) = v1(2) * v2(3) - v1(3) * v2(2)
     v3(2) = v1(3) * v2(1) - v1(1) * v2(3)
     v3(3) = v1(1) * v2(2) - v1(2) * v2(1)
-  end subroutine r8vec_cross_product_3d
+  end
 
-  subroutine r8vec_cross_product_affine_3d ( v0, v1, v2, v3 ) &
-        bind(C, name="r8vec_cross_product_affine_3d")
+  subroutine r8vec_cross_product_affine_3d ( v0, v1, v2, v3 )
 
   !*****************************************************************************80
   !
@@ -24120,18 +23796,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V0(3), the base vector.
+  !    Input, real(real64) V0(3), the base vector.
   !
-  !    Input, real(dp) V1(3), V2(3), the two vectors.
+  !    Input, real(real64) V1(3), V2(3), the two vectors.
   !
-  !    Output, real(dp) V3(3), the cross product vector
+  !    Output, real(real64) V3(3), the cross product vector
   !    ( V1-V0) x (V2-V0).
   !
 
-    real(dp), intent(in) :: v0(3)
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(out) :: v3(3)
+    real(real64) v0(3)
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     v3(1) = ( v1(2) - v0(2) ) * ( v2(3) - v0(3) ) &
           - ( v2(2) - v0(2) ) * ( v1(3) - v0(3) )
@@ -24141,10 +23817,9 @@ contains
 
     v3(3) = ( v1(1) - v0(1) ) * ( v2(2) - v0(2) ) &
           - ( v2(1) - v0(1) ) * ( v1(2) - v0(2) )
-  end subroutine r8vec_cross_product_affine_3d
+  end
 
-  function r8vec_distance ( dim_num, v1, v2 ) &
-        bind(C, name="r8vec_distance")
+  function r8vec_distance ( dim_num, v1, v2 )
 
   !*****************************************************************************80
   !
@@ -24164,25 +23839,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) V1(DIM_NUM), V2(DIM_NUM), the vectors.
+  !    Input, real(real64) V1(DIM_NUM), V2(DIM_NUM), the vectors.
   !
-  !    Output, real(dp) R8VEC_DISTANCE, the Euclidean distance 
+  !    Output, real(real64) R8VEC_DISTANCE, the Euclidean distance 
   !    between the vectors.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: r8vec_distance
-    real(dp), intent(in) :: v1(dim_num)
-    real(dp), intent(in) :: v2(dim_num)
+    real(real64) r8vec_distance
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
 
     r8vec_distance = sqrt ( sum ( ( v1(1:dim_num) - v2(1:dim_num) )**2 ) )
-  end function r8vec_distance
+  end
 
-  function r8vec_dot_product ( dim_num, v1, v2 ) &
-        bind(C, name="r8vec_dot_product")
+  function r8vec_dot_product ( dim_num, v1, v2 )
 
   !*****************************************************************************80
   !
@@ -24207,24 +23881,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) V1(DIM_NUM), V2(DIM_NUM), the vectors.
+  !    Input, real(real64) V1(DIM_NUM), V2(DIM_NUM), the vectors.
   !
-  !    Output, real(dp) R8VEC_DOT_PRODUCT, the dot product.
+  !    Output, real(real64) R8VEC_DOT_PRODUCT, the dot product.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: r8vec_dot_product
-    real(dp), intent(in) :: v1(dim_num)
-    real(dp), intent(in) :: v2(dim_num)
+    real(real64) r8vec_dot_product
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
 
     r8vec_dot_product = dot_product ( v1(1:dim_num), v2(1:dim_num) )
-  end function r8vec_dot_product
+  end
 
-  function r8vec_dot_product_affine ( n, v0, v1, v2 ) &
-        bind(C, name="r8vec_dot_product_affine")
+  function r8vec_dot_product_affine ( n, v0, v1, v2 )
 
   !*****************************************************************************80
   !
@@ -24244,29 +23917,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
-  !    Input, real(dp) V0(N), the base vector.
+  !    Input, real(real64) V0(N), the base vector.
   !
-  !    Input, real(dp) V1(N), V2(N), the vectors.
+  !    Input, real(real64) V1(N), V2(N), the vectors.
   !
-  !    Output, real(dp) R8VEC_DOT_PRODUCT_AFFINE, the dot product.
+  !    Output, real(real64) R8VEC_DOT_PRODUCT_AFFINE, the dot product.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: r8vec_dot_product_affine
-    real(dp), intent(in) :: v0(n)
-    real(dp), intent(in) :: v1(n)
-    real(dp), intent(in) :: v2(n)
+    real(real64) r8vec_dot_product_affine
+    real(real64) v0(n)
+    real(real64) v1(n)
+    real(real64) v2(n)
 
     r8vec_dot_product_affine = dot_product ( &
       v1(1:n) - v0(1:n),  &
       v2(1:n) - v0(1:n) )
-  end function r8vec_dot_product_affine
+  end
 
-  function r8vec_eq ( n, a1, a2 ) &
-        bind(C, name="r8vec_eq")
+  function r8vec_eq ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -24286,25 +23958,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vectors.
+  !    Input, integer(int32) N, the number of entries in the vectors.
   !
-  !    Input, real(dp) A1(N), A2(N), two vectors to compare.
+  !    Input, real(real64) A1(N), A2(N), two vectors to compare.
   !
   !    Output, logical R8VEC_EQ.
   !    R8VEC_EQ is TRUE if every pair of elements A1(I) and A2(I) are equal.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(n)
-    real(dp), intent(in) :: a2(n)
-    logical :: r8vec_eq
+    real(real64) a1(n)
+    real(real64) a2(n)
+    logical r8vec_eq
 
     r8vec_eq = ( all ( a1(1:n) == a2(1:n) ) )
-  end function r8vec_eq
+  end
 
-  function r8vec_gt ( n, a1, a2 ) &
-        bind(C, name="r8vec_gt")
+  function r8vec_gt ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -24333,19 +24004,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the dimension of the vectors.
+  !    Input, integer(int32) N, the dimension of the vectors.
   !
-  !    Input, real(dp) A1(N), A2(N), the vectors to be compared.
+  !    Input, real(real64) A1(N), A2(N), the vectors to be compared.
   !
   !    Output, logical R8VEC_GT, is TRUE if and only if A1 > A2.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(n)
-    real(dp), intent(out) :: a2(n)
-    integer(ip) :: i
-    logical :: r8vec_gt
+    real(real64) a1(n)
+    real(real64) a2(n)
+    integer(int32) i
+    logical r8vec_gt
 
     r8vec_gt = .false.
 
@@ -24360,10 +24031,9 @@ contains
       end if
 
     end do
-  end function r8vec_gt
+  end
 
-  function r8vec_lt ( n, a1, a2 ) &
-        bind(C, name="r8vec_lt")
+  function r8vec_lt ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -24392,19 +24062,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the dimension of the vectors.
+  !    Input, integer(int32) N, the dimension of the vectors.
   !
-  !    Input, real(dp) A1(N), A2(N), the vectors to be compared.
+  !    Input, real(real64) A1(N), A2(N), the vectors to be compared.
   !
   !    Output, logical R8VEC_LT, is TRUE if and only if A1 < A2.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(n)
-    real(dp), intent(out) :: a2(n)
-    integer(ip) :: i
-    logical :: r8vec_lt
+    real(real64) a1(n)
+    real(real64) a2(n)
+    integer(int32) i
+    logical r8vec_lt
 
     r8vec_lt = .false.
 
@@ -24419,10 +24089,9 @@ contains
       end if
 
     end do
-  end function r8vec_lt
+  end
 
-  function r8vec_norm ( n, a ) &
-        bind(C, name="r8vec_norm")
+  function r8vec_norm ( n, a )
 
   !*****************************************************************************80
   !
@@ -24450,23 +24119,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in A.
+  !    Input, integer(int32) N, the number of entries in A.
   !
-  !    Input, real(dp) A(N), the vector whose L2 norm is desired.
+  !    Input, real(real64) A(N), the vector whose L2 norm is desired.
   !
-  !    Output, real(dp) R8VEC_NORM, the L2 norm of A.
+  !    Output, real(real64) R8VEC_NORM, the L2 norm of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(n)
-    real(dp) :: r8vec_norm
+    real(real64) a(n)
+    real(real64) r8vec_norm
 
     r8vec_norm = sqrt ( sum ( a(1:n)**2 ) )
-  end function r8vec_norm
+  end
 
-  function r8vec_norm_affine ( n, v0, v1 ) &
-        bind(C, name="r8vec_norm_affine")
+  function r8vec_norm_affine ( n, v0, v1 )
 
   !*****************************************************************************80
   !
@@ -24495,26 +24163,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the order of the vectors.
+  !    Input, integer(int32) N, the order of the vectors.
   !
-  !    Input, real(dp) V0(N), the base vector.
+  !    Input, real(real64) V0(N), the base vector.
   !
-  !    Input, real(dp) V1(N), the vector whose affine norm is desired.
+  !    Input, real(real64) V1(N), the vector whose affine norm is desired.
   !
-  !    Output, real(dp) R8VEC_NORM_AFFINE, the L2 norm of V1-V0.
+  !    Output, real(real64) R8VEC_NORM_AFFINE, the L2 norm of V1-V0.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: r8vec_norm_affine
-    real(dp), intent(out) :: v0(n)
-    real(dp), intent(in) :: v1(n)
+    real(real64) r8vec_norm_affine
+    real(real64) v0(n)
+    real(real64) v1(n)
 
     r8vec_norm_affine = sqrt ( sum ( ( v0(1:n) - v1(1:n) )**2 ) )
-  end function r8vec_norm_affine
+  end
 
-  subroutine r8vec_normal_01 ( n, seed, x ) &
-        bind(C, name="r8vec_normal_01")
+  subroutine r8vec_normal_01 ( n, seed, x )
 
   !*****************************************************************************80
   !
@@ -24549,16 +24216,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of values desired.  If N is
+  !    Input, integer(int32) N, the number of values desired.  If N is
   !    negative, then the code will flush its internal memory; in particular,
   !    if there is a saved value to be used on the next call, it is
   !    instead discarded.  This is useful if the user has reset the
   !    random number seed, for instance.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number 
+  !    Input/output, integer(int32) SEED, a seed for the random number 
   !    generator.
   !
-  !    Output, real(dp) X(N), a sample of the standard normal PDF.
+  !    Output, real(real64) X(N), a sample of the standard normal PDF.
   !
   !  Local parameters:
   !
@@ -24567,7 +24234,7 @@ contains
   !    the return value of N, so the user can get an accounting of
   !    how much work has been done.
   !
-  !    Local, real(dp) R(N+1), is used to store some uniform
+  !    Local, real(real64) R(N+1), is used to store some uniform
   !    random values.  Its dimension is N+1, but really it is only needed
   !    to be the smallest even number greater than or equal to N.
   !
@@ -24579,23 +24246,23 @@ contains
   !    if we have a saved value that can be immediately stored in X(1),
   !    and so on.
   !
-  !    Local, real(dp) Y, the value saved from the previous call, if
+  !    Local, real(real64) Y, the value saved from the previous call, if
   !    SAVED is 1.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: m
-    integer(ip), save :: made = 0
-    real(dp) :: r(n+1)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: r8_uniform_01
-    integer(ip), save :: saved = 0
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(n)
-    integer(ip) :: x_hi_index
-    integer(ip) :: x_lo_index
-    real(dp), save :: y = 0.0_dp
+    integer(int32) m
+    integer(int32), save :: made = 0
+    real(real64) r(n+1)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r8_uniform_01
+    integer(int32), save :: saved = 0
+    integer(int32) seed
+    real(real64) x(n)
+    integer(int32) x_hi_index
+    integer(int32) x_lo_index
+    real(real64), save :: y = 0.0e+00_real64
   !
   !  I'd like to allow the user to reset the internal data.
   !  But this won't work properly if we have a saved value Y.
@@ -24607,7 +24274,7 @@ contains
       n = made
       made = 0
       saved = 0
-      y = 0.0_dp
+      y = 0.0e+00_real64
       return
     else if ( n == 0 ) then
     end if
@@ -24635,7 +24302,7 @@ contains
 
       r(1) = r8_uniform_01 ( seed )
 
-      if ( r(1) == 0.0_dp ) then
+      if ( r(1) == 0.0e+00_real64 ) then
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'R8VEC_NORMAL_01 - Fatal error!'
         write ( *, '(a)' ) '  R8_UNIFORM_01 returned a value of 0.'
@@ -24645,8 +24312,8 @@ contains
       r(2) = r8_uniform_01 ( seed )
 
       x(x_hi_index) = &
-               sqrt ( -2.0_dp * log ( r(1) ) ) * cos ( 2.0_dp * r8_pi * r(2) )
-      y =      sqrt ( -2.0_dp * log ( r(1) ) ) * sin ( 2.0_dp * r8_pi * r(2) )
+               sqrt ( -2.0e+00_real64 * log ( r(1) ) ) * cos ( 2.0e+00_real64 * r8_pi * r(2) )
+      y =      sqrt ( -2.0e+00_real64 * log ( r(1) ) ) * sin ( 2.0e+00_real64 * r8_pi * r(2) )
 
       saved = 1
 
@@ -24661,12 +24328,12 @@ contains
       call r8vec_uniform_01 ( 2*m, seed, r )
 
       x(x_lo_index:x_hi_index-1:2) = &
-        sqrt ( -2.0_dp * log ( r(1:2*m-1:2) ) ) &
-        * cos ( 2.0_dp * r8_pi * r(2:2*m:2) )
+        sqrt ( -2.0e+00_real64 * log ( r(1:2*m-1:2) ) ) &
+        * cos ( 2.0e+00_real64 * r8_pi * r(2:2*m:2) )
 
       x(x_lo_index+1:x_hi_index:2) = &
-        sqrt ( -2.0_dp * log ( r(1:2*m-1:2) ) ) &
-        * sin ( 2.0_dp * r8_pi * r(2:2*m:2) )
+        sqrt ( -2.0e+00_real64 * log ( r(1:2*m-1:2) ) ) &
+        * sin ( 2.0e+00_real64 * r8_pi * r(2:2*m:2) )
 
       made = made + x_hi_index - x_lo_index + 1
   !
@@ -24683,28 +24350,27 @@ contains
       call r8vec_uniform_01 ( 2*m, seed, r )
 
       x(x_lo_index:x_hi_index-1:2) = &
-        sqrt ( -2.0_dp * log ( r(1:2*m-3:2) ) ) &
-        * cos ( 2.0_dp * r8_pi * r(2:2*m-2:2) )
+        sqrt ( -2.0e+00_real64 * log ( r(1:2*m-3:2) ) ) &
+        * cos ( 2.0e+00_real64 * r8_pi * r(2:2*m-2:2) )
 
       x(x_lo_index+1:x_hi_index:2) = &
-        sqrt ( -2.0_dp * log ( r(1:2*m-3:2) ) ) &
-        * sin ( 2.0_dp * r8_pi * r(2:2*m-2:2) )
+        sqrt ( -2.0e+00_real64 * log ( r(1:2*m-3:2) ) ) &
+        * sin ( 2.0e+00_real64 * r8_pi * r(2:2*m-2:2) )
 
-      x(n) = sqrt ( -2.0 * log ( r(2*m-1) ) ) &
-        * cos ( 2.0_dp * r8_pi * r(2*m) )
+      x(n) = sqrt ( -2.0E+00 * log ( r(2*m-1) ) ) &
+        * cos ( 2.0e+00_real64 * r8_pi * r(2*m) )
 
-      y = sqrt ( -2.0_dp * log ( r(2*m-1) ) ) &
-        * sin ( 2.0_dp * r8_pi * r(2*m) )
+      y = sqrt ( -2.0e+00_real64 * log ( r(2*m-1) ) ) &
+        * sin ( 2.0e+00_real64 * r8_pi * r(2*m) )
 
       saved = 1
 
       made = made + x_hi_index - x_lo_index + 2
 
     end if
-  end subroutine r8vec_normal_01
+  end
 
-  function r8vec_normsq ( n, v ) &
-        bind(C, name="r8vec_normsq")
+  function r8vec_normsq ( n, v )
 
   !*****************************************************************************80
   !
@@ -24732,23 +24398,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the vector dimension.
+  !    Input, integer(int32) N, the vector dimension.
   !
-  !    Input, real(dp) V(N), the vector.
+  !    Input, real(real64) V(N), the vector.
   !
-  !    Output, real(dp) R8VEC_NORMSQ, the squared L2 norm.
+  !    Output, real(real64) R8VEC_NORMSQ, the squared L2 norm.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: r8vec_normsq
-    real(dp), intent(in) :: v(n)
+    real(real64) r8vec_normsq
+    real(real64) v(n)
 
     r8vec_normsq = sum ( v(1:n)**2 )
-  end function r8vec_normsq
+  end
 
-  function r8vec_normsq_affine ( n, v0, v1 ) &
-        bind(C, name="r8vec_normsq_affine")
+  function r8vec_normsq_affine ( n, v0, v1 )
 
   !*****************************************************************************80
   !
@@ -24777,26 +24442,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the vector dimension.
+  !    Input, integer(int32) N, the vector dimension.
   !
-  !    Input, real(dp) V0(N), the base vector.
+  !    Input, real(real64) V0(N), the base vector.
   !
-  !    Input, real(dp) V1(N), the vector.
+  !    Input, real(real64) V1(N), the vector.
   !
-  !    Output, real(dp) R8VEC_NORMSQ_AFFINE, the affine squared L2 norm.
+  !    Output, real(real64) R8VEC_NORMSQ_AFFINE, the affine squared L2 norm.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: r8vec_normsq_affine
-    real(dp), intent(in) :: v0(n)
-    real(dp), intent(in) :: v1(n)
+    real(real64) r8vec_normsq_affine
+    real(real64) v0(n)
+    real(real64) v1(n)
 
     r8vec_normsq_affine = sum ( ( v0(1:n) - v1(1:n) )**2 )
-  end function r8vec_normsq_affine
+  end
 
-  subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel ) &
-        bind(C, name="r8vec_polarize")
+  subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel )
 
   !*****************************************************************************80
   !
@@ -24829,30 +24493,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, real(dp) A(N), the vector to be polarized.
+  !    Input, real(real64) A(N), the vector to be polarized.
   !
-  !    Input, real(dp) P(N), the polarizing direction.
+  !    Input, real(real64) P(N), the polarizing direction.
   !
-  !    Output, real(dp) A_NORMAL(N), A_PARALLEL(N), the normal
+  !    Output, real(real64) A_NORMAL(N), A_PARALLEL(N), the normal
   !    and parallel components of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(n)
-    real(dp) :: a_dot_p
-    real(dp), intent(out) :: a_normal(n)
-    real(dp), intent(out) :: a_parallel(n)
-    real(dp), intent(in) :: p(n)
-    real(dp) :: p_norm
+    real(real64) a(n)
+    real(real64) a_dot_p
+    real(real64) a_normal(n)
+    real(real64) a_parallel(n)
+    real(real64) p(n)
+    real(real64) p_norm
 
     p_norm = sqrt ( sum ( p(1:n)**2 ) )
 
-    if ( p_norm == 0.0_dp ) then
+    if ( p_norm == 0.0e+00_real64 ) then
       a_normal(1:n) = a(1:n)
-      a_parallel(1:n) = 0.0_dp
+      a_parallel(1:n) = 0.0e+00_real64
     end if
 
     a_dot_p = dot_product ( a(1:n), p(1:n) ) / p_norm
@@ -24860,10 +24524,9 @@ contains
     a_parallel(1:n) = a_dot_p * p(1:n) / p_norm
 
     a_normal(1:n) = a(1:n) - a_parallel(1:n)
-  end subroutine r8vec_polarize
+  end
 
-  function r8vec_scalar_triple_product ( v1, v2, v3 ) &
-        bind(C, name="r8vec_scalar_triple_product")
+  function r8vec_scalar_triple_product ( v1, v2, v3 )
 
   !*****************************************************************************80
   !
@@ -24902,25 +24565,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vectors.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vectors.
   !
-  !    Output, real(dp) R8VEC_SCALAR_TRIPLE_PRODUCT, the scalar
+  !    Output, real(real64) R8VEC_SCALAR_TRIPLE_PRODUCT, the scalar
   !    triple product.
   !
 
-    real(dp) :: r8vec_scalar_triple_product
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
-    real(dp) :: v4(3)
+    real(real64) r8vec_scalar_triple_product
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) v4(3)
 
     call r8vec_cross_product_3d ( v2, v3, v4 )
 
     r8vec_scalar_triple_product = dot_product ( v1(1:3), v4(1:3) )
-  end function r8vec_scalar_triple_product
+  end
 
-  subroutine r8vec_swap ( n, a1, a2 ) &
-        bind(C, name="r8vec_swap")
+  subroutine r8vec_swap ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -24940,24 +24602,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the arrays.
+  !    Input, integer(int32) N, the number of entries in the arrays.
   !
-  !    Input/output, real(dp) A1(N), A2(N), the vectors to swap.
+  !    Input/output, real(real64) A1(N), A2(N), the vectors to swap.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(inout) :: a1(n)
-    real(dp), intent(inout) :: a2(n)
-    real(dp) :: a3(n)
+    real(real64) a1(n)
+    real(real64) a2(n)
+    real(real64) a3(n)
 
     a3(1:n) = a1(1:n)
     a1(1:n) = a2(1:n)
     a2(1:n) = a3(1:n)
-  end subroutine r8vec_swap
+  end
 
-  subroutine r8vec_uniform_01 ( n, seed, r ) &
-        bind(C, name="r8vec_uniform_01")
+  subroutine r8vec_uniform_01 ( n, seed, r )
 
   !*****************************************************************************80
   !
@@ -24965,9 +24626,9 @@ contains
   !
   !  Discussion:
   !
-  !    An R8VEC is a vector of real(dp) values.
+  !    An R8VEC is a vector of real(real64) values.
   !
-  !    For now, the input quantity SEED is an integer(ip) variable.
+  !    For now, the input quantity SEED is an integer(int32) variable.
   !
   !  Licensing:
   !
@@ -25001,20 +24662,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vector.
+  !    Input, integer(int32) N, the number of entries in the vector.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which 
+  !    Input/output, integer(int32) SEED, the "seed" value, which 
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
+    integer(int32) i
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -25033,13 +24694,12 @@ contains
         seed = seed + 2147483647
       end if
 
-      r(i) = real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_01
+  end
 
-  subroutine r8vec_uniform_ab ( n, a, b, seed, r ) &
-        bind(C, name="r8vec_uniform_ab")
+  subroutine r8vec_uniform_ab ( n, a, b, seed, r )
 
   !*****************************************************************************80
   !
@@ -25047,7 +24707,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8VEC is a vector of real(dp) values.
+  !    An R8VEC is a vector of real(real64) values.
   !
   !  Licensing:
   !
@@ -25081,24 +24741,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the number of entries in the vector.
+  !    Input, integer(int32) M, the number of entries in the vector.
   !
-  !    Input, real(dp) A, B, the lower and upper limits.
+  !    Input, real(real64) A, B, the lower and upper limits.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which 
+  !    Input/output, integer(int32) SEED, the "seed" value, which 
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(dp) R(N), the vector of pseudorandom values.
+  !    Output, real(real64) R(N), the vector of pseudorandom values.
   !
 
-    integer(ip) :: n
+    integer(int32) n
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    integer(ip) :: i
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: r(n)
+    real(real64) a
+    real(real64) b
+    integer(int32) i
+    integer(int32) k
+    integer(int32) seed
+    real(real64) r(n)
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -25117,13 +24777,12 @@ contains
         seed = seed + 2147483647
       end if
 
-      r(i) = a + ( b - a ) * real ( seed, dp) * 4.656612875e-10_dp
+      r(i) = a + ( b - a ) * real ( seed, real64) * 4.656612875e-10_real64
 
     end do
-  end subroutine r8vec_uniform_ab
+  end
 
-  subroutine r8vec_uniform_unit ( m, seed, w ) &
-        bind(C, name="r8vec_uniform_unit")
+  subroutine r8vec_uniform_unit ( m, seed, w )
 
   !*****************************************************************************80
   !
@@ -25143,20 +24802,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) M, the spatial dimension.
+  !    Input, integer(int32) M, the spatial dimension.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number 
+  !    Input/output, integer(int32) SEED, a seed for the random number 
   !    generator.
   !
-  !    Output, real(dp) W(M), a random direction vector,
+  !    Output, real(real64) W(M), a random direction vector,
   !    with unit norm.
   !
 
-    integer(ip), intent(in), value :: m
+    integer(int32) m
 
-    real(dp) :: norm
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: w(m)
+    real(real64) norm
+    integer(int32) seed
+    real(real64) w(m)
   !
   !  Get M values from a standard normal distribution.
   !
@@ -25169,10 +24828,9 @@ contains
   !  Normalize the vector.
   !
     w(1:m) = w(1:m) / norm
-  end subroutine r8vec_uniform_unit
+  end
 
-  subroutine radec_distance_3d ( ra1, dec1, ra2, dec2, theta ) &
-        bind(C, name="radec_distance_3d")
+  subroutine radec_distance_3d ( ra1, dec1, ra2, dec2, theta )
 
   !*****************************************************************************80
   !
@@ -25205,33 +24863,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) RA1, DEC1, RA2, DEC2, the right ascension and
+  !    Input, real(real64) RA1, DEC1, RA2, DEC2, the right ascension and
   !    declination of the two points.
   !
-  !    Output, real(dp) THETA, the angular separation between the points,
+  !    Output, real(real64) THETA, the angular separation between the points,
   !    in radians.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: cos_theta
-    real(dp), intent(in), value :: dec1
-    real(dp), intent(in), value :: dec2
-    real(dp) :: degrees_to_radians
-    real(dp) :: norm_v1
-    real(dp) :: norm_v2
-    real(dp) :: phi1
-    real(dp) :: phi2
-    real(dp) :: r8_acos
-    real(dp), intent(in), value :: ra1
-    real(dp), intent(in), value :: ra2
-    real(dp), intent(out) :: theta
-    real(dp) :: theta1
-    real(dp) :: theta2
-    real(dp) :: v1(dim_num)
-    real(dp) :: v2(dim_num)
+    real(real64) cos_theta
+    real(real64) dec1
+    real(real64) dec2
+    real(real64) degrees_to_radians
+    real(real64) norm_v1
+    real(real64) norm_v2
+    real(real64) phi1
+    real(real64) phi2
+    real(real64) r8_acos
+    real(real64) ra1
+    real(real64) ra2
+    real(real64) theta
+    real(real64) theta1
+    real(real64) theta2
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
 
-    theta1 = degrees_to_radians ( 15.0_dp * ra1 )
+    theta1 = degrees_to_radians ( 15.0e+00_real64 * ra1 )
     phi1 = degrees_to_radians ( dec1 )
 
     v1(1:dim_num) = (/ cos ( theta1 ) * cos ( phi1 ), &
@@ -25240,7 +24898,7 @@ contains
 
     norm_v1 = sqrt ( sum ( v1(1:dim_num)**2 ) )
 
-    theta2 = degrees_to_radians ( 15.0_dp * ra2 )
+    theta2 = degrees_to_radians ( 15.0e+00_real64 * ra2 )
     phi2 = degrees_to_radians ( dec2 )
 
     v2(1:dim_num) = (/ cos ( theta2 ) * cos ( phi2 ), &
@@ -25253,10 +24911,9 @@ contains
       / ( norm_v1 * norm_v2 )
 
     theta = r8_acos ( cos_theta )
-  end subroutine radec_distance_3d
+  end
 
-  subroutine radec_to_xyz ( ra, dec, p ) &
-        bind(C, name="radec_to_xyz")
+  subroutine radec_to_xyz ( ra, dec, p )
 
   !*****************************************************************************80
   !
@@ -25284,32 +24941,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) RA, DEC, the right ascension and declination
+  !    Input, real(real64) RA, DEC, the right ascension and declination
   !    of a point.
   !
-  !    Output, real(dp) P(3), the corresponding coordinates of
+  !    Output, real(real64) P(3), the corresponding coordinates of
   !    a point with radius 1.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: dec
-    real(dp) :: degrees_to_radians
-    real(dp), intent(out) :: p(dim_num)
-    real(dp) :: phi
-    real(dp), intent(in), value :: ra
-    real(dp) :: theta
+    real(real64) dec
+    real(real64) degrees_to_radians
+    real(real64) p(dim_num)
+    real(real64) phi
+    real(real64) ra
+    real(real64) theta
 
-    theta = degrees_to_radians ( 15.0_dp * ra )
+    theta = degrees_to_radians ( 15.0e+00_real64 * ra )
     phi = degrees_to_radians ( dec )
 
     p(1) = cos ( theta ) * cos ( phi )
     p(2) = sin ( theta ) * cos ( phi )
     p(3) = sin ( phi )
-  end subroutine radec_to_xyz
+  end
 
-  function radians_to_degrees ( angle_rad ) &
-        bind(C, name="radians_to_degrees")
+  function radians_to_degrees ( angle_rad )
 
   !*****************************************************************************80
   !
@@ -25329,21 +24985,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE_RAD, an angle in radians.
+  !    Input, real(real64) ANGLE_RAD, an angle in radians.
   !
-  !    Output, real(dp) RADIANS_TO_DEGREES, the equivalent angle
+  !    Output, real(real64) RADIANS_TO_DEGREES, the equivalent angle
   !    in degrees.
   !
 
-    real(dp), intent(in), value :: angle_rad
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: radians_to_degrees
+    real(real64) angle_rad
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radians_to_degrees
 
-    radians_to_degrees = ( angle_rad / r8_pi ) * 180.0_dp
-  end function radians_to_degrees
+    radians_to_degrees = ( angle_rad / r8_pi ) * 180.0e+00_real64
+  end
 
-  subroutine radians_to_dms ( angle_rad, degrees, minutes, seconds ) &
-        bind(C, name="radians_to_dms")
+  subroutine radians_to_dms ( angle_rad, degrees, minutes, seconds )
 
   !*****************************************************************************80
   !
@@ -25363,36 +25018,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE_RAD, the angle in radians.
+  !    Input, real(real64) ANGLE_RAD, the angle in radians.
   !
-  !    Output, integer(ip) DEGREES, MINUTES, SECONDS, the equivalent 
+  !    Output, integer(int32) DEGREES, MINUTES, SECONDS, the equivalent 
   !    angle in degrees, minutes, and seconds.
   !
 
-    real(dp) :: angle_deg
-    real(dp), intent(in), value :: angle_rad
-    integer(ip), intent(out) :: degrees
-    integer(ip), intent(out) :: minutes
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    integer(ip), intent(out) :: seconds
+    real(real64) angle_deg
+    real(real64) angle_rad
+    integer(int32) degrees
+    integer(int32) minutes
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    integer(int32) seconds
 
-    angle_deg = 180.0_dp * abs ( angle_rad ) / r8_pi
+    angle_deg = 180.0e+00_real64 * abs ( angle_rad ) / r8_pi
 
     degrees = int ( angle_deg )
-    angle_deg = ( angle_deg - real ( degrees, dp) ) * 60.0_dp
+    angle_deg = ( angle_deg - real ( degrees, real64) ) * 60.0e+00_real64
     minutes = int ( angle_deg )
-    angle_deg = ( angle_deg - real ( minutes, dp) ) * 60.0_dp
+    angle_deg = ( angle_deg - real ( minutes, real64) ) * 60.0e+00_real64
     seconds = nint ( angle_deg )
 
-    if ( angle_rad < 0.0_dp ) then
+    if ( angle_rad < 0.0e+00_real64 ) then
       degrees = - degrees
       minutes = - minutes
       seconds = - seconds
     end if
-  end subroutine radians_to_dms
+  end
 
-  subroutine rotation_axis_vector_3d ( axis, angle, v, w ) &
-        bind(C, name="rotation_axis_vector_3d")
+  subroutine rotation_axis_vector_3d ( axis, angle, v, w )
 
   !*****************************************************************************80
   !
@@ -25417,30 +25071,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) AXIS(3), the axis vector for the rotation.
+  !    Input, real(real64) AXIS(3), the axis vector for the rotation.
   !
-  !    Input, real(dp) ANGLE, the angle, in radians, of the rotation.
+  !    Input, real(real64) ANGLE, the angle, in radians, of the rotation.
   !
-  !    Input, real(dp) V(3), the vector to be rotated.
+  !    Input, real(real64) V(3), the vector to be rotated.
   !
-  !    Output, real(dp) W(3), the rotated vector.
+  !    Output, real(real64) W(3), the rotated vector.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in), value :: angle
-    real(dp), intent(in) :: axis(dim_num)
-    real(dp) :: axis_norm
-    real(dp) :: dot
-    real(dp) :: norm
-    real(dp) :: normal(dim_num)
-    real(dp) :: normal_component
-    real(dp) :: normal2(dim_num)
-    real(dp) :: parallel(dim_num)
-    real(dp) :: rot(dim_num)
-    real(dp) :: u(dim_num)
-    real(dp), intent(in) :: v(dim_num)
-    real(dp), intent(out) :: w(dim_num)
+    real(real64) angle
+    real(real64) axis(dim_num)
+    real(real64) axis_norm
+    real(real64) dot
+    real(real64) norm
+    real(real64) normal(dim_num)
+    real(real64) normal_component
+    real(real64) normal2(dim_num)
+    real(real64) parallel(dim_num)
+    real(real64) rot(dim_num)
+    real(real64) u(dim_num)
+    real(real64) v(dim_num)
+    real(real64) w(dim_num)
   !
   !  Compute the length of the rotation axis.
   !
@@ -25448,8 +25102,8 @@ contains
 
     axis_norm = sqrt ( sum ( u(1:dim_num)**2 ) )
 
-    if ( axis_norm == 0.0_dp ) then
-      w(1:dim_num) = 0.0_dp
+    if ( axis_norm == 0.0e+00_real64 ) then
+      w(1:dim_num) = 0.0e+00_real64
     end if
 
     u(1:dim_num) = u(1:dim_num) / axis_norm
@@ -25468,7 +25122,7 @@ contains
 
     normal_component = sqrt ( sum ( normal(1:dim_num)**2 ) )
 
-    if ( normal_component == 0.0_dp ) then
+    if ( normal_component == 0.0e+00_real64 ) then
       w(1:dim_num) = parallel(1:dim_num)
     end if
 
@@ -25495,10 +25149,9 @@ contains
   !  The rotated vector is the parallel component plus the rotated component.
   !
     w(1:dim_num) = parallel(1:dim_num) + rot(1:dim_num)
-  end subroutine rotation_axis_vector_3d
+  end
 
-  subroutine rtp_to_xyz ( r, theta, phi, xyz ) &
-        bind(C, name="rtp_to_xyz")
+  subroutine rtp_to_xyz ( r, theta, phi, xyz )
 
   !*****************************************************************************80
   !
@@ -25526,24 +25179,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, THETA, PHI, the radius, longitude, and
+  !    Input, real(real64) R, THETA, PHI, the radius, longitude, and
   !    declination of a point.
   !
-  !    Output, real(dp) XYZ(3), the corresponding Cartesian coordinates. 
+  !    Output, real(real64) XYZ(3), the corresponding Cartesian coordinates. 
   !
 
-    real(dp), intent(in), value :: phi
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: theta
-    real(dp), intent(out) :: xyz(3)
+    real(real64) phi
+    real(real64) r
+    real(real64) theta
+    real(real64) xyz(3)
 
     xyz(1) = r * cos ( theta ) * sin ( phi )
     xyz(2) = r * sin ( theta ) * sin ( phi )
     xyz(3) = r *                 cos ( phi )
-  end subroutine rtp_to_xyz
+  end
 
-  subroutine segment_contains_point_1d ( p1, p2, p, t ) &
-        bind(C, name="segment_contains_point_1d")
+  subroutine segment_contains_point_1d ( p1, p2, p, t )
 
   !*****************************************************************************80
   !
@@ -25568,27 +25220,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1, P2, two points defining a line segment.
+  !    Input, real(real64) P1, P2, two points defining a line segment.
   !    The line segment has T = 0 at P1, and T = 1 at P2.
   !
-  !    Input, real(dp) P, a point to be tested.
+  !    Input, real(real64) P, a point to be tested.
   !
-  !    Output, real(dp) T, the coordinate of P3 in units of (P2-P1).
+  !    Output, real(real64) T, the coordinate of P3 in units of (P2-P1).
   !    The point P3 is contained in the line segment if 0 <= T <= 1.
   !
 
-    real(dp), intent(in), value :: p
-    real(dp), intent(in), value :: p1
-    real(dp), intent(in), value :: p2
-    real(dp), intent(out) :: t
-    real(dp) :: unit
+    real(real64) p
+    real(real64) p1
+    real(real64) p2
+    real(real64) t
+    real(real64) unit
 
     unit = p2 - p1
 
-    if ( unit == 0.0_dp ) then
+    if ( unit == 0.0e+00_real64 ) then
 
       if ( p == p1 ) then
-        t = 0.5_dp
+        t = 0.5e+00_real64
       else if ( p < p1 ) then
         t = - huge ( t )
       else if ( p1 < p ) then
@@ -25600,10 +25252,9 @@ contains
       t = ( p - p1 ) / unit
 
     end if
-  end subroutine segment_contains_point_1d
+  end
 
-  subroutine segment_contains_point_2d ( p1, p2, p, u ) &
-        bind(C, name="segment_contains_point_2d")
+  subroutine segment_contains_point_2d ( p1, p2, p, u )
 
   !*****************************************************************************80
   !
@@ -25631,33 +25282,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the line segment.
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the line segment.
   !
-  !    Input, real(dp) P(2), a point to be tested.
+  !    Input, real(real64) P(2), a point to be tested.
   !
-  !    Output, real(dp) U(2), the components of P, with the first
+  !    Output, real(real64) U(2), the components of P, with the first
   !    component measured along the axis with origin at P1 and unit at P2, 
   !    and second component the magnitude of the off-axis portion of the
   !    vector P-P1, measured in units of (P2-P1).
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: normsq
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: u(dim_num)
+    real(real64) normsq
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) u(dim_num)
 
     normsq = sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 )
 
-    if ( normsq == 0.0_dp ) then
+    if ( normsq == 0.0e+00_real64 ) then
 
       if ( all ( p(1:dim_num) == p1(1:dim_num) ) ) then
-        u(1) = 0.5_dp
-        u(2) = 0.0_dp
+        u(1) = 0.5e+00_real64
+        u(2) = 0.0e+00_real64
       else
-        u(1) = 0.5_dp
+        u(1) = 0.5e+00_real64
         u(2) = huge ( u(2) )
       end if
 
@@ -25666,15 +25317,14 @@ contains
       u(1) = sum ( ( p(1:dim_num)  - p1(1:dim_num) ) &
                  * ( p2(1:dim_num) - p1(1:dim_num) ) ) / normsq
 
-      u(2) = sqrt ( ( ( u(1) - 1.0_dp ) * p1(1) - u(1) * p2(1) + p(1) )**2 &
-                  + ( ( u(1) - 1.0_dp ) * p1(2) - u(1) * p2(2) + p(2) )**2 ) &
+      u(2) = sqrt ( ( ( u(1) - 1.0e+00_real64 ) * p1(1) - u(1) * p2(1) + p(1) )**2 &
+                  + ( ( u(1) - 1.0e+00_real64 ) * p1(2) - u(1) * p2(2) + p(2) )**2 ) &
                   / sqrt ( normsq )
 
     end if
-  end subroutine segment_contains_point_2d
+  end
 
-  subroutine segment_point_coords_2d ( p1, p2, p, s, t ) &
-        bind(C, name="segment_point_coords_2d")
+  subroutine segment_point_coords_2d ( p1, p2, p, s, t )
 
   !*****************************************************************************80
   !
@@ -25717,32 +25367,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the line segment.
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the line segment.
   !
-  !    Input, real(dp) P(2), the point to be considered.
+  !    Input, real(real64) P(2), the point to be considered.
   !
-  !    Output, real(dp) S, the distance of P to the nearest point PN
+  !    Output, real(real64) S, the distance of P to the nearest point PN
   !    on the line through P1 and P2.  (S will always be nonnegative.)
   !
-  !    Output, real(dp) T, the relative position of the point PN
+  !    Output, real(real64) T, the relative position of the point PN
   !    to the points P1 and P2.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: bot
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp), intent(out) :: s
-    real(dp), intent(out) :: t
+    real(real64) bot
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) s
+    real(real64) t
   !
   !  If the line segment is actually a point, then the answer is easy.
   !
     if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
     else
 
@@ -25756,10 +25406,9 @@ contains
     pn(1:dim_num) = p1(1:dim_num) + t * ( p2(1:dim_num) - p1(1:dim_num) )
 
     s = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine segment_point_coords_2d
+  end
 
-  subroutine segment_point_coords_3d ( p1, p2, p, s, t ) &
-        bind(C, name="segment_point_coords_3d")
+  subroutine segment_point_coords_3d ( p1, p2, p, s, t )
 
   !*****************************************************************************80
   !
@@ -25802,32 +25451,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the endpoints of the line segment.
+  !    Input, real(real64) P1(3), P2(3), the endpoints of the line segment.
   !
-  !    Input, real(dp) P(3), the point to be considered.
+  !    Input, real(real64) P(3), the point to be considered.
   !
-  !    Output, real(dp) S, the distance of P to the nearest point PN
+  !    Output, real(real64) S, the distance of P to the nearest point PN
   !    on the line through P1 and P2.  (S will always be nonnegative.)
   !
-  !    Output, real(dp) T, the relative position of the point PN
+  !    Output, real(real64) T, the relative position of the point PN
   !    to the points P1 and P2.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: bot
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp), intent(out) :: s
-    real(dp), intent(out) :: t
+    real(real64) bot
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) s
+    real(real64) t
   !
   !  If the line segment is actually a point, then the answer is easy.
   !
     if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
     else
 
@@ -25841,10 +25490,9 @@ contains
     pn(1:dim_num) = p1(1:dim_num) + t * ( p2(1:dim_num) - p1(1:dim_num) )
 
     s = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine segment_point_coords_3d
+  end
 
-  subroutine segment_point_dist_2d ( p1, p2, p, dist ) &
-        bind(C, name="segment_point_dist_2d")
+  subroutine segment_point_dist_2d ( p1, p2, p, dist )
 
   !*****************************************************************************80
   !
@@ -25875,30 +25523,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the line segment.
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the line segment.
   !
-  !    Input, real(dp) P(2), the point whose nearest neighbor on the line
+  !    Input, real(real64) P(2), the point whose nearest neighbor on the line
   !    segment is to be determined.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    line segment.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp) :: t
+    real(real64) bot
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
   !
   !  If the line segment is actually a point, then the answer is easy.
   !
     if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
     else
 
@@ -25907,18 +25555,17 @@ contains
       t = sum ( ( p(1:dim_num)  - p1(1:dim_num) ) &
               * ( p2(1:dim_num) - p1(1:dim_num) ) ) / bot
 
-      t = max ( t, 0.0_dp )
-      t = min ( t, 1.0_dp )
+      t = max ( t, 0.0e+00_real64 )
+      t = min ( t, 1.0e+00_real64 )
 
     end if
 
     pn(1:dim_num) = p1(1:dim_num) + t * ( p2(1:dim_num) - p1(1:dim_num) )
 
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine segment_point_dist_2d
+  end
 
-  subroutine segment_point_dist_3d ( p1, p2, p, dist ) &
-        bind(C, name="segment_point_dist_3d")
+  subroutine segment_point_dist_3d ( p1, p2, p, dist )
 
   !*****************************************************************************80
   !
@@ -25949,30 +25596,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the endpoints of the segment.
+  !    Input, real(real64) P1(3), P2(3), the endpoints of the segment.
   !
-  !    Input, real(dp) P(3), the point whose nearest neighbor on
+  !    Input, real(real64) P(3), the point whose nearest neighbor on
   !    the line segment is to be determined.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    line segment.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp) :: t
+    real(real64) bot
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
   !
   !  If the line segment is actually a point, then the answer is easy.
   !
     if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
     else
 
@@ -25981,18 +25628,17 @@ contains
       t = sum ( ( p(1:dim_num)  - p1(1:dim_num) ) &
               * ( p2(1:dim_num) - p1(1:dim_num) ) ) / bot
 
-      t = max ( t, 0.0_dp )
-      t = min ( t, 1.0_dp )
+      t = max ( t, 0.0e+00_real64 )
+      t = min ( t, 1.0e+00_real64 )
 
     end if
 
     pn(1:dim_num) = p1(1:dim_num) + t * ( p2(1:dim_num) - p1(1:dim_num) )
 
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine segment_point_dist_3d
+  end
 
-  subroutine segment_point_near_2d ( p1, p2, p, pn, dist, t ) &
-        bind(C, name="segment_point_near_2d")
+  subroutine segment_point_near_2d ( p1, p2, p, pn, dist, t )
 
   !*****************************************************************************80
   !
@@ -26023,36 +25669,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the line segment.
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the line segment.
   !
-  !    Input, real(dp) P(2), the point whose nearest neighbor
+  !    Input, real(real64) P(2), the point whose nearest neighbor
   !    on the line segment is to be determined.
   !
-  !    Output, real(dp) PN(2), the point on the line segment which is
+  !    Output, real(real64) PN(2), the point on the line segment which is
   !    nearest the point P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the 
+  !    Output, real(real64) DIST, the distance from the point to the 
   !    nearest point on the line segment.
   !
-  !    Output, real(dp) T, the relative position of the point PN
+  !    Output, real(real64) T, the relative position of the point PN
   !    to the points P1 and P2.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(out) :: t
+    real(real64) bot
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
   !
   !  If the line segment is actually a point, then the answer is easy.
   !
     if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
     else
 
@@ -26061,18 +25707,17 @@ contains
       t = sum ( ( p(1:dim_num)  - p1(1:dim_num) ) &
               * ( p2(1:dim_num) - p1(1:dim_num) ) ) / bot
 
-      t = max ( t, 0.0_dp )
-      t = min ( t, 1.0_dp )
+      t = max ( t, 0.0e+00_real64 )
+      t = min ( t, 1.0e+00_real64 )
 
     end if
 
     pn(1:dim_num) = p1(1:dim_num) + t * ( p2(1:dim_num) - p1(1:dim_num) )
 
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine segment_point_near_2d
+  end
 
-  subroutine segment_point_near_3d ( p1, p2, p, pn, dist, t ) &
-        bind(C, name="segment_point_near_3d")
+  subroutine segment_point_near_3d ( p1, p2, p, pn, dist, t )
 
   !*****************************************************************************80
   !
@@ -26103,36 +25748,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the endpoints of the segment.
+  !    Input, real(real64) P1(3), P2(3), the endpoints of the segment.
   !
-  !    Input, real(dp) P(3), the point whose nearest neighbor
+  !    Input, real(real64) P(3), the point whose nearest neighbor
   !    on the line segment is to be determined.
   !
-  !    Output, real(dp) PN(3), the point on the line segment
+  !    Output, real(real64) PN(3), the point on the line segment
   !    nearest to P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    nearest point on the line segment.
   !
-  !    Output, real(dp) T, the relative position of the nearest point
+  !    Output, real(real64) T, the relative position of the nearest point
   !    P to P1 and P2, that is PN = (1-T)*P1 + T*P2.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), intent(out) :: t
+    real(real64) bot
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) t
   !
   !  If the line segment is actually a point, then the answer is easy.
   !
     if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
 
-      t = 0.0_dp
+      t = 0.0e+00_real64
 
     else
 
@@ -26141,18 +25786,17 @@ contains
       t = sum ( ( p(1:dim_num)  - p1(1:dim_num) ) &
               * ( p2(1:dim_num) - p1(1:dim_num) ) ) / bot
 
-      t = max ( t, 0.0_dp )
-      t = min ( t, 1.0_dp )
+      t = max ( t, 0.0e+00_real64 )
+      t = min ( t, 1.0e+00_real64 )
 
     end if
 
     pn(1:dim_num) = p1(1:dim_num) + t * ( p2(1:dim_num) - p1(1:dim_num) )
 
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
-  end subroutine segment_point_near_3d
+  end
 
-  subroutine segments_curvature_2d ( p1, p2, p3, curvature ) &
-        bind(C, name="segments_curvature_2d")
+  subroutine segments_curvature_2d ( p1, p2, p3, curvature )
 
   !*****************************************************************************80
   !
@@ -26187,31 +25831,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), the points.
+  !    Input, real(real64) P1(2), P2(2), P3(2), the points.
   !
-  !    Output, real(dp) CURVATURE, the local curvature.
+  !    Output, real(real64) CURVATURE, the local curvature.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: curvature
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp) :: pc(dim_num)
-    real(dp) :: r
+    real(real64) curvature
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
 
     call circle_exp2imp_2d ( p1, p2, p3, r, pc )
 
-    if ( 0.0_dp < r ) then
-      curvature = 1.0_dp / r
+    if ( 0.0e+00_real64 < r ) then
+      curvature = 1.0e+00_real64 / r
     else
-      curvature = 0.0_dp
+      curvature = 0.0e+00_real64
     end if
-  end subroutine segments_curvature_2d
+  end
 
-  subroutine segments_dist_2d ( p1, p2, q1, q2, dist ) &
-        bind(C, name="segments_dist_2d")
+  subroutine segments_dist_2d ( p1, p2, q1, q2, dist )
 
   !*****************************************************************************80
   !
@@ -26258,29 +25901,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the first
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the first
   !    segment.
   !
-  !    Input, real(dp) Q1(2), Q2(2), the endpoints of the second
+  !    Input, real(real64) Q1(2), Q2(2), the endpoints of the second
   !    segment.
   !
-  !    Output, real(dp) DIST, the distance between the line segments.
+  !    Output, real(real64) DIST, the distance between the line segments.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: ival
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp) :: r(dim_num)
-    real(dp) :: rps
-    real(dp) :: rpt
-    real(dp) :: rqs
-    real(dp) :: rqt
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) ival
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) r(dim_num)
+    real(real64) rps
+    real(real64) rpt
+    real(real64) rqs
+    real(real64) rqt
   !
   !  Determine whether and where the underlying lines intersect.
   !
@@ -26294,9 +25937,9 @@ contains
       call segment_point_coords_2d ( p1, p2, r, rps, rpt )
       call segment_point_coords_2d ( q1, q2, r, rqs, rqt )
 
-      if ( 0.0_dp <= rpt .and. rpt <= 1.0_dp .and. &
-           0.0_dp <= rqt .and. rqt <= 1.0_dp ) then
-        dist = 0.0_dp
+      if ( 0.0e+00_real64 <= rpt .and. rpt <= 1.0e+00_real64 .and. &
+           0.0e+00_real64 <= rqt .and. rqt <= 1.0e+00_real64 ) then
+        dist = 0.0e+00_real64
       end if
 
     end if
@@ -26313,10 +25956,9 @@ contains
     dist = min ( dist, dist2 )
     call segment_point_dist_2d ( p1, p2, q2, dist2 )
     dist = min ( dist, dist2 )
-  end subroutine segments_dist_2d
+  end
 
-  subroutine segments_dist_3d ( p1, p2, q1, q2, dist ) &
-        bind(C, name="segments_dist_3d")
+  subroutine segments_dist_3d ( p1, p2, q1, q2, dist )
 
   !*****************************************************************************80
   !
@@ -26380,36 +26022,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the endpoints of the first
+  !    Input, real(real64) P1(3), P2(3), the endpoints of the first
   !    segment.
   !
-  !    Input, real(dp) Q1(3), Q2(3), the endpoints of the second
+  !    Input, real(real64) Q1(3), Q2(3), the endpoints of the second
   !    segment.
   !
-  !    Output, real(dp) DIST, the distance between the line segments.
+  !    Output, real(real64) DIST, the distance between the line segments.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    real(dp) :: det
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    real(dp) :: e
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pn(dim_num)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp) :: qn(dim_num)
-    real(dp) :: sn
-    real(dp) :: tn
-    real(dp) :: u(dim_num)
-    real(dp) :: v(dim_num)
-    real(dp) :: w0(dim_num)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) det
+    real(real64) dist
+    real(real64) dist2
+    real(real64) e
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) qn(dim_num)
+    real(real64) sn
+    real(real64) tn
+    real(real64) u(dim_num)
+    real(real64) v(dim_num)
+    real(real64) w0(dim_num)
   !
   !  The lines are identical.
   !  THIS CASE NOT SET UP YET
@@ -26474,8 +26116,8 @@ contains
   !
     det = - a * c + b * b
 
-    if ( det == 0.0_dp ) then
-      sn = 0.0_dp
+    if ( det == 0.0e+00_real64 ) then
+      sn = 0.0e+00_real64
       if ( abs ( b ) < abs ( c ) ) then
         tn = e / c
       else
@@ -26490,8 +26132,8 @@ contains
   !  also happen to lie inside their line segments,
   !  then we have found the nearest points on the line segments.
   !
-    if ( 0.0_dp <= sn .and. sn <= 1.0_dp .and. &
-         0.0_dp <= tn .and. tn <= 1.0_dp ) then
+    if ( 0.0e+00_real64 <= sn .and. sn <= 1.0e+00_real64 .and. &
+         0.0e+00_real64 <= tn .and. tn <= 1.0e+00_real64 ) then
       pn(1:dim_num) = p1(1:dim_num) + sn * ( p2(1:dim_num) - p1(1:dim_num) )
       qn(1:dim_num) = q1(1:dim_num) + tn * ( q2(1:dim_num) - q1(1:dim_num) )
       dist = sqrt ( sum ( ( pn(1:dim_num) - qn(1:dim_num) )**2 ) )
@@ -26508,10 +26150,9 @@ contains
     dist = min ( dist, dist2 )
     call segment_point_dist_3d ( p1, p2, q2, dist2 )
     dist = min ( dist, dist2 )
-  end subroutine segments_dist_3d
+  end
 
-  subroutine segments_dist_3d_old ( p1, p2, q1, q2, dist ) &
-        bind(C, name="segments_dist_3d_old")
+  subroutine segments_dist_3d_old ( p1, p2, q1, q2, dist )
 
   !*****************************************************************************80
   !
@@ -26536,36 +26177,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), the endpoints of the
+  !    Input, real(real64) P1(3), P2(3), the endpoints of the
   !    first segment.
   !
-  !    Input, real(dp) Q1(3), Q2(3), the endpoints of the
+  !    Input, real(real64) Q1(3), Q2(3), the endpoints of the
   !    second segment.
   !
-  !    Output, real(dp) DIST, the distance between the line segments.
+  !    Output, real(real64) DIST, the distance between the line segments.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: d1
-    real(dp) :: d2
-    real(dp), intent(out) :: dist
-    real(dp) :: dl
-    real(dp) :: dm
-    real(dp) :: dr
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp) :: pm(dim_num)
-    real(dp) :: pn1(dim_num)
-    real(dp) :: pn2(dim_num)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp) :: t1
-    real(dp) :: t2
-    real(dp) :: tl
-    real(dp) :: tm
-    real(dp) :: tmin
-    real(dp) :: tr
+    real(real64) d1
+    real(real64) d2
+    real(real64) dist
+    real(real64) dl
+    real(real64) dm
+    real(real64) dr
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pm(dim_num)
+    real(real64) pn1(dim_num)
+    real(real64) pn2(dim_num)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) t1
+    real(real64) t2
+    real(real64) tl
+    real(real64) tm
+    real(real64) tmin
+    real(real64) tr
   !
   !  Find the nearest points on line 2 to the endpoints of line 1.
   !
@@ -26576,7 +26217,7 @@ contains
       call segment_point_dist_3d ( p1, p2, pn1, dist )
     end if
 
-    pm(1:dim_num) = 0.5_dp * ( pn1(1:dim_num) + pn2(1:dim_num) )
+    pm(1:dim_num) = 0.5e+00_real64 * ( pn1(1:dim_num) + pn2(1:dim_num) )
   !
   !  On line 2, over the interval between the points nearest to line 1,
   !  the square of the distance of any point to line 1 is a quadratic function.
@@ -26586,9 +26227,9 @@ contains
     call segment_point_dist_3d ( p1, p2, pm, dm )
     call segment_point_dist_3d ( p1, p2, pn2, dr )
 
-    tl = 0.0_dp
-    tm = 0.5_dp
-    tr = 1.0_dp
+    tl = 0.0e+00_real64
+    tm = 0.5e+00_real64
+    tr = 1.0e+00_real64
 
     dl = dl * dl
     dm = dm * dm
@@ -26597,10 +26238,9 @@ contains
     call minquad ( tl, dl, tm, dm, tr, dr, tmin, dist )
 
     dist = sqrt ( dist )
-  end subroutine segments_dist_3d_old
+  end
 
-  subroutine segments_int_1d ( p1, p2, q1, q2, dist, r1, r2 ) &
-        bind(C, name="segments_int_1d")
+  subroutine segments_int_1d ( p1, p2, q1, q2, dist, r1, r2 )
 
   !*****************************************************************************80
   !
@@ -26631,17 +26271,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1, P2, the endpoints of the first segment.
+  !    Input, real(real64) P1, P2, the endpoints of the first segment.
   !
-  !    Input, real(dp) Q1, Q2, the endpoints of the second segment.
+  !    Input, real(real64) Q1, Q2, the endpoints of the second segment.
   !
-  !    Output, real(dp) DIST, the "distance" between the segments.
+  !    Output, real(real64) DIST, the "distance" between the segments.
   !    < 0, the segments overlap, and the overlap is DIST units long;
   !    = 0, the segments overlap at a single point;
   !    > 0, the segments do not overlap.  The distance between the nearest
   !    points is DIST units.
   !
-  !    Output, real(dp) R1, R2, the endpoints of the intersection
+  !    Output, real(real64) R1, R2, the endpoints of the intersection
   !    segment.  
   !    If DIST < 0, then the interval [R1,R2] is the common intersection
   !    of the two segments.
@@ -26650,13 +26290,13 @@ contains
   !    segments, which do not overlap at all.
   !
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in), value :: p1
-    real(dp), intent(in), value :: p2
-    real(dp), intent(in), value :: q1
-    real(dp), intent(in), value :: q2
-    real(dp), intent(out) :: r1
-    real(dp), intent(out) :: r2
+    real(real64) dist
+    real(real64) p1
+    real(real64) p2
+    real(real64) q1
+    real(real64) q2
+    real(real64) r1
+    real(real64) r2
 
     r1 = max ( min ( p1, p2 ), &
                min ( q1, q2 ) )
@@ -26665,10 +26305,9 @@ contains
                max ( q1, q2 ) )
 
     dist = r1 - r2
-  end subroutine segments_int_1d
+  end
 
-  subroutine segments_int_2d ( p1, p2, q1, q2, flag, r ) &
-        bind(C, name="segments_int_2d")
+  subroutine segments_int_2d ( p1, p2, q1, q2, flag, r )
 
   !*****************************************************************************80
   !
@@ -26696,34 +26335,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), the endpoints of the first
+  !    Input, real(real64) P1(2), P2(2), the endpoints of the first
   !    segment.
   !
-  !    Input, real(dp) Q1(2), Q2(2), the endpoints of the second
+  !    Input, real(real64) Q1(2), Q2(2), the endpoints of the second
   !    segment.
   !
-  !    Output, integer(ip) FLAG, records the results.
+  !    Output, integer(int32) FLAG, records the results.
   !    0, the line segments do not intersect.
   !    1, the line segments intersect.
   !
-  !    Output, real(dp) R(2), an intersection point, if there is one.
+  !    Output, real(real64) R(2), an intersection point, if there is one.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip), intent(out) :: flag
-    integer(ip) :: ival
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: q1(dim_num)
-    real(dp), intent(in) :: q2(dim_num)
-    real(dp), intent(out) :: r(dim_num)
-    real(dp), parameter :: tol = 0.001_dp
-    real(dp) :: u(dim_num)
+    integer(int32) flag
+    integer(int32) ival
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) q1(dim_num)
+    real(real64) q2(dim_num)
+    real(real64) r(dim_num)
+    real(real64), parameter :: tol = 0.001e+00_real64
+    real(real64) u(dim_num)
   !
   !  Find the intersection of the two lines.
   !
-    r(1:dim_num) = (/ 0.0_dp, 0.0_dp /)
+    r(1:dim_num) = (/ 0.0e+00_real64, 0.0e+00_real64 /)
 
     call lines_exp_int_2d ( p1, p2, q1, q2, ival, r )
 
@@ -26735,7 +26374,7 @@ contains
   !
     call segment_contains_point_2d ( p1, p2, r, u )
 
-    if ( u(1) < 0.0_dp .or. 1.0_dp < u(1) .or. tol < u(2) ) then
+    if ( u(1) < 0.0e+00_real64 .or. 1.0e+00_real64 < u(1) .or. tol < u(2) ) then
       flag = 0
     end if
   !
@@ -26743,15 +26382,14 @@ contains
   !
     call segment_contains_point_2d ( q1, q2, r, u )
 
-    if ( u(1) < 0.0_dp .or. 1.0_dp < u(1) .or. tol < u(2) ) then
+    if ( u(1) < 0.0e+00_real64 .or. 1.0e+00_real64 < u(1) .or. tol < u(2) ) then
       flag = 0
     end if
 
     flag = 1
-  end subroutine segments_int_2d
+  end
 
-  subroutine shape_point_dist_2d ( pc, p1, side_num, p, dist ) &
-        bind(C, name="shape_point_dist_2d")
+  subroutine shape_point_dist_2d ( pc, p1, side_num, p, dist )
 
   !*****************************************************************************80
   !
@@ -26776,38 +26414,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PC(2), the center of the shape.
+  !    Input, real(real64) PC(2), the center of the shape.
   !
-  !    Input, real(dp) P1(2), the first vertex of the shape.
+  !    Input, real(real64) P1(2), the first vertex of the shape.
   !
-  !    Input, integer(ip) SIDE_NUM, the number of sides.
+  !    Input, integer(int32) SIDE_NUM, the number of sides.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) DIST, the distance from the point to the shape.
+  !    Output, real(real64) DIST, the distance from the point to the shape.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle
-    real(dp) :: angle_deg_2d
-    real(dp) :: angle2
-    real(dp) :: degrees_to_radians
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp) :: pa(dim_num)
-    real(dp) :: pb(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: radius
-    real(dp) :: sector_angle
-    integer(ip) :: sector_index
-    integer(ip), intent(in), value :: side_num
+    real(real64) angle
+    real(real64) angle_deg_2d
+    real(real64) angle2
+    real(real64) degrees_to_radians
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) pa(dim_num)
+    real(real64) pb(dim_num)
+    real(real64) pc(dim_num)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radius
+    real(real64) sector_angle
+    integer(int32) sector_index
+    integer(int32) side_num
   !
   !  Determine the angle subtended by a single side.
   !
-    sector_angle = 360.0_dp / real ( side_num, dp)
+    sector_angle = 360.0e+00_real64 / real ( side_num, real64)
   !
   !  How long is the half-diagonal?
   !
@@ -26815,7 +26453,7 @@ contains
   !
   !  If the radius is zero, then the shape is a point and the computation is easy.
   !
-    if ( radius == 0.0_dp ) then
+    if ( radius == 0.0e+00_real64 ) then
       dist = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
     end if
   !
@@ -26824,7 +26462,7 @@ contains
   !  nearest distance is the midpoint of any such side.
   !
     if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
-      dist = radius * cos ( r8_pi / real ( side_num, dp) )
+      dist = radius * cos ( r8_pi / real ( side_num, real64) )
     end if
   !
   !  Determine the angle between the ray to the first corner,
@@ -26838,12 +26476,12 @@ contains
   !
   !  Generate the two corner points that terminate the SECTOR-th side.
   !
-    angle2 = real ( sector_index - 1, dp) * sector_angle
+    angle2 = real ( sector_index - 1, real64) * sector_angle
     angle2 = degrees_to_radians ( angle2 )
 
     call vector_rotate_base_2d ( p1, pc, angle2, pa )
 
-    angle2 = real ( sector_index, dp) * sector_angle
+    angle2 = real ( sector_index, real64) * sector_angle
     angle2 = degrees_to_radians ( angle2 )
 
     call vector_rotate_base_2d ( p1, pc, angle2, pb )
@@ -26852,10 +26490,9 @@ contains
   !  is the SECTOR-th side.
   !
     call segment_point_dist_2d ( pa, pb, p, dist )
-  end subroutine shape_point_dist_2d
+  end
 
-  subroutine shape_point_near_2d ( pc, p1, side_num, p, pn, dist ) &
-        bind(C, name="shape_point_near_2d")
+  subroutine shape_point_near_2d ( pc, p1, side_num, p, pn, dist )
 
   !*****************************************************************************80
   !
@@ -26880,44 +26517,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PC(2), the center of the shape.
+  !    Input, real(real64) PC(2), the center of the shape.
   !
-  !    Input, real(dp) P1(2), the first vertex of the shape.
+  !    Input, real(real64) P1(2), the first vertex of the shape.
   !
-  !    Input, integer(ip) SIDE_NUM, the number of sides.
+  !    Input, integer(int32) SIDE_NUM, the number of sides.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) PN(2), the point on the shape that is nearest
+  !    Output, real(real64) PN(2), the point on the shape that is nearest
   !    to the given point.
   !
-  !    Output, real(dp) DIST, the distance between the points.
+  !    Output, real(real64) DIST, the distance between the points.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle
-    real(dp) :: angle_deg_2d
-    real(dp) :: angle2
-    real(dp) :: degrees_to_radians
-    real(dp), intent(out) :: dist
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp) :: pa(dim_num)
-    real(dp) :: pb(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp) :: pd(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: radius
-    real(dp) :: sector_angle
-    integer(ip) :: sector_index
-    integer(ip), intent(in), value :: side_num
-    real(dp) :: t
+    real(real64) angle
+    real(real64) angle_deg_2d
+    real(real64) angle2
+    real(real64) degrees_to_radians
+    real(real64) dist
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) pa(dim_num)
+    real(real64) pb(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) pd(dim_num)
+    real(real64) pn(dim_num)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) radius
+    real(real64) sector_angle
+    integer(int32) sector_index
+    integer(int32) side_num
+    real(real64) t
   !
   !  Determine the angle subtended by a single side.
   !
-    sector_angle = 360.0_dp / real ( side_num, dp)
+    sector_angle = 360.0e+00_real64 / real ( side_num, real64)
   !
   !  How long is the half-diagonal?
   !
@@ -26925,7 +26562,7 @@ contains
   !
   !  If the radius is zero, then the shape is a point and the computation is easy.
   !
-    if ( radius == 0.0_dp ) then
+    if ( radius == 0.0e+00_real64 ) then
       pn(1:dim_num) = pc(1:dim_num)
       dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
     end if
@@ -26935,7 +26572,7 @@ contains
   !  nearest distance is the midpoint of any such side.
   !
     if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
-      angle = r8_pi / real ( side_num, dp)
+      angle = r8_pi / real ( side_num, real64)
       pd(1) =   ( p(1) - pc(1) ) * cos ( angle ) &
               + ( p(2) - pc(2) ) * sin ( angle )
       pd(2) = - ( p(1) - pc(1) ) * sin ( angle ) &
@@ -26956,12 +26593,12 @@ contains
   !
   !  Generate the two corner points that terminate the SECTOR-th side.
   !
-    angle2 = real ( sector_index - 1, dp) * sector_angle
+    angle2 = real ( sector_index - 1, real64) * sector_angle
     angle2 = degrees_to_radians ( angle2 )
 
     call vector_rotate_base_2d ( p1, pc, angle2, pa )
 
-    angle2 = real ( sector_index, dp) * sector_angle
+    angle2 = real ( sector_index, real64) * sector_angle
     angle2 = degrees_to_radians ( angle2 )
 
     call vector_rotate_base_2d ( p1, pc, angle2, pb )
@@ -26970,11 +26607,10 @@ contains
   !  nearest.
   ! 
     call segment_point_near_2d ( pa, pb, p, pn, dist, t )
-  end subroutine shape_point_near_2d
+  end
 
   subroutine shape_print_3d ( point_num, face_num, face_order_max, &
-    point_coord, face_order, face_point ) &
-        bind(C, name="shape_print_3d")
+    point_coord, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -26994,33 +26630,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the number of vertices 
+  !    Input, integer(int32) FACE_ORDER_MAX, the number of vertices 
   !    per face.
   !
-  !    Input, real(dp) POINT_COORD(3,POINT_NUM), the vertices.
+  !    Input, real(real64) POINT_COORD(3,POINT_NUM), the vertices.
   !
-  !    Input, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Input, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    per face.
   !
-  !    Input, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Input, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) contains the index of the I-th point in the J-th face.  
   !    The points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(in), value :: face_order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: point_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) point_num
 
-    integer(ip), intent(in) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    integer(ip) :: i
-    real(dp), intent(in) :: point_coord(dim_num,point_num)
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    integer(int32) i
+    real(real64) point_coord(dim_num,point_num)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'SHAPE_PRINT_3D'
@@ -27049,10 +26685,9 @@ contains
       write ( *, '(2x,i8,2x,i8,2x,10i8)' ) i, face_order(i), &
        face_point(1:face_order(i),i)
     end do
-  end subroutine shape_print_3d
+  end
 
-  subroutine shape_ray_int_2d ( pc, p1, side_num, pa, pb, pint ) &
-        bind(C, name="shape_ray_int_2d")
+  subroutine shape_ray_int_2d ( pc, p1, side_num, pa, pb, pint )
 
   !*****************************************************************************80
   !
@@ -27080,37 +26715,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) PC(2), the center of the shape.
+  !    Input, real(real64) PC(2), the center of the shape.
   !
-  !    Input, real(dp) P1(2), the first vertex of the shape.
+  !    Input, real(real64) P1(2), the first vertex of the shape.
   !
-  !    Input, integer(ip) SIDE_NUM, the number of sides.
+  !    Input, integer(int32) SIDE_NUM, the number of sides.
   !
-  !    Input, real(dp) PA(2), the origin of the ray.
+  !    Input, real(real64) PA(2), the origin of the ray.
   !
-  !    Input, real(dp) PB(2), a second point on the ray.
+  !    Input, real(real64) PB(2), a second point on the ray.
   !
-  !    Output, real(dp) PINT(2), the point on the shape intersected
+  !    Output, real(real64) PINT(2), the point on the shape intersected
   !    by the ray.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle2
-    real(dp) :: degrees_to_radians
-    logical :: inside
-    integer(ip) :: ival
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: pa(dim_num)
-    real(dp), intent(in) :: pb(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(out) :: pint(dim_num)
-    real(dp) :: radius
-    real(dp) :: sector_angle
-    integer(ip) :: sector_index
-    integer(ip), intent(in), value :: side_num
-    real(dp) :: v1(dim_num)
-    real(dp) :: v2(dim_num)
+    real(real64) angle2
+    real(real64) degrees_to_radians
+    logical inside
+    integer(int32) ival
+    real(real64) p1(dim_num)
+    real(real64) pa(dim_num)
+    real(real64) pb(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) pint(dim_num)
+    real(real64) radius
+    real(real64) sector_angle
+    integer(int32) sector_index
+    integer(int32) side_num
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
   !
   !  Warning!
   !  No check is made to ensure that the ray origin is inside the shape.
@@ -27118,7 +26753,7 @@ contains
   !
   !  Determine the angle subtended by a single side.
   !
-    sector_angle = 360.0_dp / real ( side_num, dp)
+    sector_angle = 360.0e+00_real64 / real ( side_num, real64)
   !
   !  How long is the half-diagonal?
   !
@@ -27126,7 +26761,7 @@ contains
   !
   !  If the radius is zero, refuse to continue.
   !
-    if ( radius == 0.0_dp ) then
+    if ( radius == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'SHAPE_RAY_INT_2D - Fatal error!'
       write ( *, '(a)' ) '  The shape has radius zero.'
@@ -27135,7 +26770,7 @@ contains
   !
   !  Determine which sector side intersects the ray.
   !
-    v2(1:dim_num) = (/ 0.0_dp, 0.0_dp /)
+    v2(1:dim_num) = (/ 0.0e+00_real64, 0.0e+00_real64 /)
 
     do sector_index = 1, side_num
   !
@@ -27143,7 +26778,7 @@ contains
   !
       if ( sector_index == 1 ) then
 
-        angle2 = real ( sector_index - 1, dp) * sector_angle
+        angle2 = real ( sector_index - 1, real64) * sector_angle
         angle2 = degrees_to_radians ( angle2 )
 
         call vector_rotate_base_2d ( p1, pc, angle2, v1 )
@@ -27154,7 +26789,7 @@ contains
 
       end if
 
-      angle2 = real ( sector_index, dp) * sector_angle
+      angle2 = real ( sector_index, real64) * sector_angle
       angle2 = degrees_to_radians ( angle2 )
 
       call vector_rotate_base_2d ( p1, pc, angle2, v2 )
@@ -27183,10 +26818,9 @@ contains
     write ( *, '(a)' ) 'SHAPE_RAY_INT_2D - Fatal error!'
     write ( *, '(a)' ) '  Cannot find intersection of ray and shape.'
     stop 1
-  end subroutine shape_ray_int_2d
+  end
 
-  subroutine simplex_lattice_layer_point_next ( n, c, v, more ) &
-        bind(C, name="simplex_lattice_layer_point_next")
+  subroutine simplex_lattice_layer_point_next ( n, c, v, more )
 
   !*****************************************************************************80
   !
@@ -27218,13 +26852,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
-  !    Input, integer(ip) C(N+1), coefficients defining the 
+  !    Input, integer(int32) C(N+1), coefficients defining the 
   !    lattice layer in entries 1 to N, and the laver index in C(N+1).  
   !    The coefficients should be positive, and C(N+1) must be nonnegative.
   !
-  !    Input/output, integer(ip) V(N).  On first call for a given layer,
+  !    Input/output, integer(int32) V(N).  On first call for a given layer,
   !    the input value of V is not important.  On a repeated call for the same
   !    layer, the input value of V should be the output value from the previous 
   !    call.  On output, V contains the next lattice layer point.
@@ -27237,18 +26871,18 @@ contains
   !    and V was reset to 0, and the lattice layer has been exhausted.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in) :: c(n+1)
-    integer(ip) :: c1n
-    integer(ip) :: i
-    integer(ip) :: i4vec_lcm
-    integer(ip) :: j
-    integer(ip) :: lhs
-    logical, intent(inout) :: more
-    integer(ip) :: rhs1
-    integer(ip) :: rhs2
-    integer(ip), intent(inout) :: v(n)
+    integer(int32) c(n+1)
+    integer(int32) c1n
+    integer(int32) i
+    integer(int32) i4vec_lcm
+    integer(int32) j
+    integer(int32) lhs
+    logical more
+    integer(int32) rhs1
+    integer(int32) rhs2
+    integer(int32) v(n)
   !
   !  Treat layer C(N+1) = 0 specially.
   !
@@ -27312,10 +26946,9 @@ contains
       more = .false.
 
     end if
-  end subroutine simplex_lattice_layer_point_next
+  end
 
-  subroutine simplex_lattice_point_next ( n, c, v, more ) &
-        bind(C, name="simplex_lattice_point_next")
+  subroutine simplex_lattice_point_next ( n, c, v, more )
 
   !*****************************************************************************80
   !
@@ -27350,12 +26983,12 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
-  !    Input, integer(ip) C(N+1), coefficients defining the 
+  !    Input, integer(int32) C(N+1), coefficients defining the 
   !    lattice simplex.  These should be positive.
   !
-  !    Input/output, integer(ip) V(N).  On first call, the input
+  !    Input/output, integer(int32) V(N).  On first call, the input
   !    value is not important.  On a repeated call, the input value should
   !    be the output value from the previous call.  On output, V contains
   !    the next lattice point.
@@ -27370,18 +27003,18 @@ contains
   !    for this simplex.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip), intent(in) :: c(n+1)
-    integer(ip) :: c1n
-    integer(ip) :: i
-    integer(ip) :: i4vec_lcm
-    integer(ip) :: j
-    integer(ip) :: lhs
-    logical, intent(inout) :: more
-    integer(ip) :: rhs
-    integer(ip) :: term
-    integer(ip), intent(inout) :: v(n)
+    integer(int32) c(n+1)
+    integer(int32) c1n
+    integer(int32) i
+    integer(int32) i4vec_lcm
+    integer(int32) j
+    integer(int32) lhs
+    logical more
+    integer(int32) rhs
+    integer(int32) term
+    integer(int32) v(n)
 
     if ( .not. more ) then
 
@@ -27418,10 +27051,9 @@ contains
       more = .false.
 
     end if
-  end subroutine simplex_lattice_point_next
+  end
 
-  subroutine simplex01_lattice_point_num_nd ( d, s, n ) &
-        bind(C, name="simplex01_lattice_point_num_nd")
+  subroutine simplex01_lattice_point_num_nd ( d, s, n )
 
   !*****************************************************************************80
   !
@@ -27462,26 +27094,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) D, the spatial dimension.
+  !    Input, integer(int32) D, the spatial dimension.
   !
-  !    Input, integer(ip) S, the scale factor.
+  !    Input, integer(int32) S, the scale factor.
   !
-  !    Output, integer(ip) N, the number of lattice points.
+  !    Output, integer(int32) N, the number of lattice points.
   !
 
-    integer(ip), intent(in), value :: d
-    integer(ip) :: i
-    integer(ip), intent(out) :: n
-    integer(ip), intent(in), value :: s
+    integer(int32) d
+    integer(int32) i
+    integer(int32) n
+    integer(int32) s
 
     n = 1
     do i = 1, d
       n = ( n * ( s + i ) ) / i
     end do
-  end subroutine simplex01_lattice_point_num_nd
+  end
 
-  subroutine simplex01_volume_nd ( dim_num, volume ) &
-        bind(C, name="simplex01_volume_nd")
+  subroutine simplex01_volume_nd ( dim_num, volume )
 
   !*****************************************************************************80
   !
@@ -27505,23 +27136,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Output, real(dp) VOLUME, the volume.
+  !    Output, real(real64) VOLUME, the volume.
   !
 
-    integer(ip) :: i
-    integer(ip), intent(in), value :: dim_num
-    real(dp), intent(out) :: volume
+    integer(int32) i
+    integer(int32) dim_num
+    real(real64) volume
 
-    volume = 1.0_dp
+    volume = 1.0e+00_real64
     do i = 1, dim_num
-      volume = volume / real ( i, dp)
+      volume = volume / real ( i, real64)
     end do
-  end subroutine simplex01_volume_nd
+  end
 
-  subroutine simplex_volume_nd ( dim_num, a, volume ) &
-        bind(C, name="simplex_volume_nd")
+  subroutine simplex_volume_nd ( dim_num, a, volume )
 
   !*****************************************************************************80
   !
@@ -27550,23 +27180,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the dimension of the space.
+  !    Input, integer(int32) DIM_NUM, the dimension of the space.
   !
-  !    Input, real(dp) A(DIM_NUM,DIM_NUM+1), the vertices.
+  !    Input, real(real64) A(DIM_NUM,DIM_NUM+1), the vertices.
   !
-  !    Output, real(dp) VOLUME, the volume of the simplex.
+  !    Output, real(real64) VOLUME, the volume of the simplex.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: a(dim_num,dim_num+1)
-    real(dp) :: b(dim_num,dim_num)
-    real(dp) :: det
-    integer(ip) :: i
-    integer(ip) :: info
-    integer(ip) :: j
-    integer(ip) :: pivot(dim_num)
-    real(dp), intent(out) :: volume
+    real(real64) a(dim_num,dim_num+1)
+    real(real64) b(dim_num,dim_num)
+    real(real64) det
+    integer(int32) i
+    integer(int32) info
+    integer(int32) j
+    integer(int32) pivot(dim_num)
+    real(real64) volume
 
     b(1:dim_num,1:dim_num) = a(1:dim_num,1:dim_num)
     do j = 1, dim_num
@@ -27577,7 +27207,7 @@ contains
 
     if ( info /= 0 ) then
 
-      volume = -1.0_dp
+      volume = -1.0e+00_real64
 
     else
 
@@ -27585,14 +27215,13 @@ contains
 
       volume = abs ( det )
       do i = 1, dim_num
-        volume = volume / real ( i, dp)
+        volume = volume / real ( i, real64)
       end do
 
     end if
-  end subroutine simplex_volume_nd
+  end
 
-  function sin_power_int ( a, b, n ) &
-        bind(C, name="sin_power_int")
+  function sin_power_int ( a, b, n )
 
   !*****************************************************************************80
   !
@@ -27623,30 +27252,30 @@ contains
   !
   !  Parameters
   !
-  !    Input, real(dp) A, B, the limits of integration.
+  !    Input, real(real64) A, B, the limits of integration.
   !
-  !    Input, integer(ip) N, the power of the sine function.
+  !    Input, integer(int32) N, the power of the sine function.
   !
-  !    Output, real(dp) SIN_POWER_INT, the value of the integral.
+  !    Output, real(real64) SIN_POWER_INT, the value of the integral.
   !
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp) :: ca
-    real(dp) :: cb
-    integer(ip) :: m
-    integer(ip) :: mlo
-    integer(ip), intent(in), value :: n
-    real(dp) :: sa
-    real(dp) :: sb
-    real(dp) :: sin_power_int
-    real(dp) :: value
+    real(real64) a
+    real(real64) b
+    real(real64) ca
+    real(real64) cb
+    integer(int32) m
+    integer(int32) mlo
+    integer(int32) n
+    real(real64) sa
+    real(real64) sb
+    real(real64) sin_power_int
+    real(real64) value
 
     if ( n < 0 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'SIN_POWER_INT - Fatal error!'
       write ( *, '(a)' ) '  Power N < 0.'
-      value = 0.0_dp
+      value = 0.0e+00_real64
       stop 1
     end if
 
@@ -27665,17 +27294,16 @@ contains
     end if
 
     do m = mlo, n, 2
-      value = ( real ( m - 1, dp) * value &
+      value = ( real ( m - 1, real64) * value &
                 + sa**( m - 1 ) * ca - sb**( m - 1 ) * cb ) &
-        / real ( m, dp)
+        / real ( m, real64)
     end do
 
     sin_power_int = value
-  end function sin_power_int
+  end
 
   subroutine soccer_shape_3d ( point_num, face_num, face_order_max, point_coord, &
-    face_order, face_point ) &
-        bind(C, name="soccer_shape_3d")
+    face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -27712,96 +27340,96 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points (60).
+  !    Input, integer(int32) POINT_NUM, the number of points (60).
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces (32).
+  !    Input, integer(int32) FACE_NUM, the number of faces (32).
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum order of any 
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum order of any 
   !    face (6).
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the vertices.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the vertices.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of
   !    vertices per face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM);
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM);
   !    FACE_POINT(I,J) contains the index of the I-th point in the J-th face.
   !    The points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: point_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) point_num
 
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    real(dp), intent(out) :: point_coord(dim_num,point_num)
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) point_coord(dim_num,point_num)
   !
   !  Set the point coordinates.
   !
     point_coord(1:dim_num,1:point_num) = reshape ( (/ &
-         -0.100714e+01_dp,   0.153552_dp,   0.067258_dp, &
-         -0.960284_dp,   0.0848813_dp, -0.336290_dp, &
-         -0.951720_dp,  -0.153552_dp,   0.336290_dp, &
-         -0.860021_dp,   0.529326_dp,   0.150394_dp, &
-         -0.858000_dp,  -0.290893_dp,  -0.470806_dp, &
-         -0.849436_dp,  -0.529326_dp,   0.201774_dp, &
-         -0.802576_dp,  -0.597996_dp,  -0.201774_dp, &
-         -0.784200_dp,   0.418215_dp,  -0.502561_dp, &
-         -0.749174_dp,  -0.0848813_dp,  0.688458_dp, &
-         -0.722234_dp,   0.692896_dp,  -0.201774_dp, &
-         -0.657475_dp,   0.597996_dp,   0.502561_dp, &
-         -0.602051_dp,   0.290893_dp,   0.771593_dp, &
-         -0.583675_dp,  -0.692896_dp,   0.470806_dp, &
-         -0.579632_dp,  -0.333333_dp,  -0.771593_dp, &
-         -0.521710_dp,  -0.418215_dp,   0.771593_dp, &
-         -0.505832_dp,   0.375774_dp,  -0.803348_dp, &
-         -0.489955_dp,  -0.830237_dp,  -0.336290_dp, &
-         -0.403548_dp,   0.000000_dp,  -0.937864_dp, &
-         -0.381901_dp,   0.925138_dp,  -0.201774_dp, &
-         -0.352168_dp,  -0.666667_dp,  -0.688458_dp, &
-         -0.317142_dp,   0.830237_dp,   0.502561_dp, &
-         -0.271054_dp,  -0.925138_dp,   0.336290_dp, &
-         -0.227464_dp,   0.333333_dp,   0.937864_dp, &
-         -0.224193_dp,  -0.993808_dp,  -0.067258_dp, &
-         -0.179355_dp,   0.993808_dp,   0.150394_dp, &
-         -0.165499_dp,   0.608015_dp,  -0.803348_dp, &
-         -0.147123_dp,  -0.375774_dp,   0.937864_dp, &
-         -0.103533_dp,   0.882697_dp,  -0.502561_dp, &
-         -0.513806e-01_dp,   0.666667_dp,   0.771593_dp, &
-          0.000000_dp,   0.000000_dp,   1.021000_dp, &
-          0.000000_dp,   0.000000_dp,  -1.021000_dp, &
-          0.513806e-01_dp,  -0.666667_dp,  -0.771593_dp, &
-          0.103533_dp,  -0.882697_dp,   0.502561_dp, &
-          0.147123_dp,   0.375774_dp,  -0.937864_dp, &
-          0.165499_dp,  -0.608015_dp,   0.803348_dp, &
-          0.179355_dp,  -0.993808_dp,  -0.150394_dp, &
-          0.224193_dp,   0.993808_dp,   0.067258_dp, &
-          0.227464_dp,  -0.333333_dp,  -0.937864_dp, &
-          0.271054_dp,   0.925138_dp,  -0.336290_dp, &
-          0.317142_dp,  -0.830237_dp,  -0.502561_dp, &
-          0.352168_dp,   0.666667_dp,   0.688458_dp, &
-          0.381901_dp,  -0.925138_dp,   0.201774_dp, &
-          0.403548_dp,   0.000000_dp,   0.937864_dp, &
-          0.489955_dp,   0.830237_dp,   0.336290_dp, &
-          0.505832_dp,  -0.375774_dp,   0.803348_dp, &
-          0.521710_dp,   0.418215_dp,  -0.771593_dp, &
-          0.579632_dp,   0.333333_dp,   0.771593_dp, &
-          0.583675_dp,   0.692896_dp,  -0.470806_dp, &
-          0.602051_dp,  -0.290893_dp,  -0.771593_dp, &
-          0.657475_dp,  -0.597996_dp,  -0.502561_dp, &
-          0.722234_dp,  -0.692896_dp,   0.201774_dp, &
-          0.749174_dp,   0.0848813_dp, -0.688458_dp, &
-          0.784200_dp,  -0.418215_dp,   0.502561_dp, &
-          0.802576_dp,   0.597996_dp,   0.201774_dp, &
-          0.849436_dp,   0.529326_dp,  -0.201774_dp, &
-          0.858000_dp,   0.290893_dp,   0.470806_dp, &
-          0.860021_dp,  -0.529326_dp,  -0.150394_dp, &
-          0.951720_dp,   0.153552_dp,  -0.336290_dp, &
-          0.960284_dp,  -0.0848813_dp,  0.336290_dp, &
-          1.007140_dp,  -0.153552_dp,  -0.067258_dp /), &
+         -0.100714e+01_real64,   0.153552e+00_real64,   0.067258e+00_real64, &
+         -0.960284e+00_real64,   0.0848813e+00_real64, -0.336290e+00_real64, &
+         -0.951720e+00_real64,  -0.153552e+00_real64,   0.336290e+00_real64, &
+         -0.860021e+00_real64,   0.529326e+00_real64,   0.150394e+00_real64, &
+         -0.858000e+00_real64,  -0.290893e+00_real64,  -0.470806e+00_real64, &
+         -0.849436e+00_real64,  -0.529326e+00_real64,   0.201774e+00_real64, &
+         -0.802576e+00_real64,  -0.597996e+00_real64,  -0.201774e+00_real64, &
+         -0.784200e+00_real64,   0.418215e+00_real64,  -0.502561e+00_real64, &
+         -0.749174e+00_real64,  -0.0848813e+00_real64,  0.688458e+00_real64, &
+         -0.722234e+00_real64,   0.692896e+00_real64,  -0.201774e+00_real64, &
+         -0.657475e+00_real64,   0.597996e+00_real64,   0.502561e+00_real64, &
+         -0.602051e+00_real64,   0.290893e+00_real64,   0.771593e+00_real64, &
+         -0.583675e+00_real64,  -0.692896e+00_real64,   0.470806e+00_real64, &
+         -0.579632e+00_real64,  -0.333333e+00_real64,  -0.771593e+00_real64, &
+         -0.521710e+00_real64,  -0.418215e+00_real64,   0.771593e+00_real64, &
+         -0.505832e+00_real64,   0.375774e+00_real64,  -0.803348e+00_real64, &
+         -0.489955e+00_real64,  -0.830237e+00_real64,  -0.336290e+00_real64, &
+         -0.403548e+00_real64,   0.000000e+00_real64,  -0.937864e+00_real64, &
+         -0.381901e+00_real64,   0.925138e+00_real64,  -0.201774e+00_real64, &
+         -0.352168e+00_real64,  -0.666667e+00_real64,  -0.688458e+00_real64, &
+         -0.317142e+00_real64,   0.830237e+00_real64,   0.502561e+00_real64, &
+         -0.271054e+00_real64,  -0.925138e+00_real64,   0.336290e+00_real64, &
+         -0.227464e+00_real64,   0.333333e+00_real64,   0.937864e+00_real64, &
+         -0.224193e+00_real64,  -0.993808e+00_real64,  -0.067258e+00_real64, &
+         -0.179355e+00_real64,   0.993808e+00_real64,   0.150394e+00_real64, &
+         -0.165499e+00_real64,   0.608015e+00_real64,  -0.803348e+00_real64, &
+         -0.147123e+00_real64,  -0.375774e+00_real64,   0.937864e+00_real64, &
+         -0.103533e+00_real64,   0.882697e+00_real64,  -0.502561e+00_real64, &
+         -0.513806e-01_real64,   0.666667e+00_real64,   0.771593e+00_real64, &
+          0.000000e+00_real64,   0.000000e+00_real64,   1.021000e+00_real64, &
+          0.000000e+00_real64,   0.000000e+00_real64,  -1.021000e+00_real64, &
+          0.513806e-01_real64,  -0.666667e+00_real64,  -0.771593e+00_real64, &
+          0.103533e+00_real64,  -0.882697e+00_real64,   0.502561e+00_real64, &
+          0.147123e+00_real64,   0.375774e+00_real64,  -0.937864e+00_real64, &
+          0.165499e+00_real64,  -0.608015e+00_real64,   0.803348e+00_real64, &
+          0.179355e+00_real64,  -0.993808e+00_real64,  -0.150394e+00_real64, &
+          0.224193e+00_real64,   0.993808e+00_real64,   0.067258e+00_real64, &
+          0.227464e+00_real64,  -0.333333e+00_real64,  -0.937864e+00_real64, &
+          0.271054e+00_real64,   0.925138e+00_real64,  -0.336290e+00_real64, &
+          0.317142e+00_real64,  -0.830237e+00_real64,  -0.502561e+00_real64, &
+          0.352168e+00_real64,   0.666667e+00_real64,   0.688458e+00_real64, &
+          0.381901e+00_real64,  -0.925138e+00_real64,   0.201774e+00_real64, &
+          0.403548e+00_real64,   0.000000e+00_real64,   0.937864e+00_real64, &
+          0.489955e+00_real64,   0.830237e+00_real64,   0.336290e+00_real64, &
+          0.505832e+00_real64,  -0.375774e+00_real64,   0.803348e+00_real64, &
+          0.521710e+00_real64,   0.418215e+00_real64,  -0.771593e+00_real64, &
+          0.579632e+00_real64,   0.333333e+00_real64,   0.771593e+00_real64, &
+          0.583675e+00_real64,   0.692896e+00_real64,  -0.470806e+00_real64, &
+          0.602051e+00_real64,  -0.290893e+00_real64,  -0.771593e+00_real64, &
+          0.657475e+00_real64,  -0.597996e+00_real64,  -0.502561e+00_real64, &
+          0.722234e+00_real64,  -0.692896e+00_real64,   0.201774e+00_real64, &
+          0.749174e+00_real64,   0.0848813e+00_real64, -0.688458e+00_real64, &
+          0.784200e+00_real64,  -0.418215e+00_real64,   0.502561e+00_real64, &
+          0.802576e+00_real64,   0.597996e+00_real64,   0.201774e+00_real64, &
+          0.849436e+00_real64,   0.529326e+00_real64,  -0.201774e+00_real64, &
+          0.858000e+00_real64,   0.290893e+00_real64,   0.470806e+00_real64, &
+          0.860021e+00_real64,  -0.529326e+00_real64,  -0.150394e+00_real64, &
+          0.951720e+00_real64,   0.153552e+00_real64,  -0.336290e+00_real64, &
+          0.960284e+00_real64,  -0.0848813e+00_real64,  0.336290e+00_real64, &
+          1.007140e+00_real64,  -0.153552e+00_real64,  -0.067258e+00_real64 /), &
       (/ dim_num, point_num /) )
   !
   !  Set the face orders.
@@ -27847,10 +27475,9 @@ contains
          46, 52, 49, 38, 31, 34, &
          16, 26, 34, 31, 18, -1, &
          32, 20, 14, 18, 31, 38 /), (/ face_order_max, face_num /) )
-  end subroutine soccer_shape_3d
+  end
 
-  subroutine soccer_size_3d ( point_num, edge_num, face_num, face_order_max ) &
-        bind(C, name="soccer_size_3d")
+  subroutine soccer_size_3d ( point_num, edge_num, face_num, face_order_max )
 
   !*****************************************************************************80
   !
@@ -27879,28 +27506,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of points.
+  !    Output, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 60
     edge_num = 90
     face_num = 32
     face_order_max = 6
-  end subroutine soccer_size_3d
+  end
 
-  subroutine sort_heap_external ( n, indx, i, j, isgn ) &
-        bind(C, name="sort_heap_external")
+  subroutine sort_heap_external ( n, indx, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -27909,7 +27535,7 @@ contains
   !  Discussion:
   !
   !    The actual list of data is not passed to the routine.  Hence this
-  !    routine may be used to sort integers, real(dp)s, numbers, names,
+  !    routine may be used to sort integers, real(real64)s, numbers, names,
   !    dates, shoe sizes, and so on.  After each call, the routine asks
   !    the user to compare or interchange two items, until a special
   !    return value signals that the sorting is completed.
@@ -27936,9 +27562,9 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items to be sorted.
+  !    Input, integer(int32) N, the number of items to be sorted.
   !
-  !    Input/output, integer(ip) INDX, the main communication signal.
+  !    Input/output, integer(int32) INDX, the main communication signal.
   !
   !    The user must set INDX to 0 before the first call.
   !    Thereafter, the user should not change the value of INDX until
@@ -27957,27 +27583,27 @@ contains
   !
   !      equal to 0, the sorting is done.
   !
-  !    Output, integer(ip) I, J, the indices of two items.
+  !    Output, integer(int32) I, J, the indices of two items.
   !    On return with INDX positive, elements I and J should be interchanged.
   !    On return with INDX negative, elements I and J should be compared, and
   !    the result reported in ISGN on the next call.
   !
-  !    Input, integer(ip) ISGN, results of comparison of elements I 
+  !    Input, integer(int32) ISGN, results of comparison of elements I 
   !    and J.  (Used only when the previous call returned INDX less than 0).
   !    ISGN <= 0 means I is less than or equal to J;
   !    0 <= ISGN means I is greater than or equal to J.
   !
 
-    integer(ip), intent(out) :: i
-    integer(ip), save :: i_save = 0
-    integer(ip), intent(inout) :: indx
-    integer(ip), intent(in), value :: isgn
-    integer(ip), intent(out) :: j
-    integer(ip), save :: j_save = 0
-    integer(ip), save :: k = 0
-    integer(ip), save :: k1 = 0
-    integer(ip), intent(in), value :: n
-    integer(ip), save :: n1 = 0
+    integer(int32) i
+    integer(int32), save :: i_save = 0
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32), save :: j_save = 0
+    integer(int32), save :: k = 0
+    integer(int32), save :: k1 = 0
+    integer(int32) n
+    integer(int32), save :: n1 = 0
   !
   !  INDX = 0: This is the first call.
   !
@@ -28081,10 +27707,9 @@ contains
       i = i_save
       j = j_save
     end if
-  end subroutine sort_heap_external
+  end
 
-  subroutine sphere_cap_area_2d ( r, h, area ) &
-        bind(C, name="sphere_cap_area_2d")
+  subroutine sphere_cap_area_2d ( r, h, area )
 
   !*****************************************************************************80
   !
@@ -28114,39 +27739,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) H, the "height" of the spherical cap. 
+  !    Input, real(real64) H, the "height" of the spherical cap. 
   !    H must be between 0 and 2 * R.
   !
-  !    Output, real(dp) AREA, the area of the spherical cap.
+  !    Output, real(real64) AREA, the area of the spherical cap.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_asin
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
+    real(real64) area
+    real(real64) h
+    real(real64) r
+    real(real64) r8_asin
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
 
-    if ( h <= 0.0_dp ) then
-      area = 0.0_dp
-    else if ( 2.0_dp * r <= h ) then
-      area = 2.0_dp * r8_pi * r
+    if ( h <= 0.0e+00_real64 ) then
+      area = 0.0e+00_real64
+    else if ( 2.0e+00_real64 * r <= h ) then
+      area = 2.0e+00_real64 * r8_pi * r
     else
 
-      theta = 2.0_dp * r8_asin ( sqrt ( r * r - ( r - h )**2 ) / r )
+      theta = 2.0e+00_real64 * r8_asin ( sqrt ( r * r - ( r - h )**2 ) / r )
       area = r * theta
 
       if ( r <= h ) then
-        area = 2.0_dp * r8_pi * r - area
+        area = 2.0e+00_real64 * r8_pi * r - area
       end if
 
     end if
-  end subroutine sphere_cap_area_2d
+  end
 
-  subroutine sphere_cap_area_3d ( r, h, area ) &
-        bind(C, name="sphere_cap_area_3d")
+  subroutine sphere_cap_area_3d ( r, h, area )
 
   !*****************************************************************************80
   !
@@ -28176,30 +27800,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) H, the "height" of the spherical cap. 
+  !    Input, real(real64) H, the "height" of the spherical cap. 
   !    H must be between 0 and 2 * R.
   !
-  !    Output, real(dp) AREA, the area of the spherical cap.
+  !    Output, real(real64) AREA, the area of the spherical cap.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) h
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
-    if ( h <= 0.0_dp ) then
-      area = 0.0_dp
-    else if ( 2.0_dp * r <= h ) then
-      area = 4.0_dp * r8_pi * r * r
+    if ( h <= 0.0e+00_real64 ) then
+      area = 0.0e+00_real64
+    else if ( 2.0e+00_real64 * r <= h ) then
+      area = 4.0e+00_real64 * r8_pi * r * r
     else
-      area = 2.0_dp * r8_pi * r * h
+      area = 2.0e+00_real64 * r8_pi * r * h
     end if
-  end subroutine sphere_cap_area_3d
+  end
 
-  subroutine sphere_cap_area_nd ( dim_num, r, h, area ) &
-        bind(C, name="sphere_cap_area_nd")
+  subroutine sphere_cap_area_nd ( dim_num, r, h, area )
 
   !*****************************************************************************80
   !
@@ -28234,70 +27857,70 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the dimension of the space.
+  !    Input, integer(int32) DIM_NUM, the dimension of the space.
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) H, the "thickness" of the spherical cap,
+  !    Input, real(real64) H, the "thickness" of the spherical cap,
   !    which is normally between 0 and 2 * R.
   !
-  !    Output, real(dp) AREA, the area of the spherical cap.
+  !    Output, real(real64) AREA, the area of the spherical cap.
   !
 
-    real(dp), intent(out) :: area
-    real(dp) :: area2
-    real(dp), intent(in), value :: h
-    real(dp) :: haver_sine
-    integer(ip) :: i
-    integer(ip), intent(in), value :: dim_num
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_asin
-    real(dp) :: sphere_k
-    real(dp) :: theta
-    real(dp) :: ti
-    real(dp) :: tj
-    real(dp) :: tk
+    real(real64) area
+    real(real64) area2
+    real(real64) h
+    real(real64) haver_sine
+    integer(int32) i
+    integer(int32) dim_num
+    real(real64) r
+    real(real64) r8_asin
+    real(real64) sphere_k
+    real(real64) theta
+    real(real64) ti
+    real(real64) tj
+    real(real64) tk
 
-    if ( h <= 0.0_dp ) then
-      area = 0.0_dp
+    if ( h <= 0.0e+00_real64 ) then
+      area = 0.0e+00_real64
     end if
 
-    if ( 2.0_dp * r <= h ) then
+    if ( 2.0e+00_real64 * r <= h ) then
       call sphere_imp_area_nd ( dim_num, r, area )
     end if
   !
   !  For cases where R < H < 2 * R, work with the complementary region.
   !
-    haver_sine = sqrt ( ( 2.0_dp * r - h ) * h )
+    haver_sine = sqrt ( ( 2.0e+00_real64 * r - h ) * h )
 
     theta = r8_asin ( haver_sine / r )
 
     if ( dim_num < 1 ) then
 
-      area = -1.0_dp
+      area = -1.0e+00_real64
       return
 
     else if ( dim_num == 1 ) then
 
-      area = 0.0_dp
+      area = 0.0e+00_real64
 
     else if ( dim_num == 2 ) then
 
-      area = 2.0_dp * theta * r
+      area = 2.0e+00_real64 * theta * r
 
     else
 
       ti = theta
 
       tj = ti
-      ti = 1.0_dp - cos ( theta )
+      ti = 1.0e+00_real64 - cos ( theta )
 
       do i = 2, dim_num-2
         tk = tj
         tj = ti
-        ti = ( real ( i - 1, dp) * tk &
+        ti = ( real ( i - 1, real64) * tk &
           - cos ( theta ) * sin ( theta ) ** ( i - 1 ) ) &
-          / real ( i, dp)
+          / real ( i, real64)
       end do
 
       area = sphere_k ( dim_num-1 ) * ti * r ** ( dim_num - 1 )
@@ -28310,10 +27933,9 @@ contains
       call sphere_imp_area_nd ( dim_num, r, area2 )
       area = area2 - area
     end if
-  end subroutine sphere_cap_area_nd
+  end
 
-  subroutine sphere_cap_volume_2d ( r, h, volume ) &
-        bind(C, name="sphere_cap_volume_2d")
+  subroutine sphere_cap_volume_2d ( r, h, volume )
 
   !*****************************************************************************80
   !
@@ -28342,43 +27964,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) H, the "height" of the spherical cap.  H must
+  !    Input, real(real64) H, the "height" of the spherical cap.  H must
   !    be between 0 and 2 * R.
   !
-  !    Output, real(dp) VOLUME, the volume (area) of the spherical cap.
+  !    Output, real(real64) VOLUME, the volume (area) of the spherical cap.
   !
 
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_asin
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
-    real(dp), intent(out) :: volume
+    real(real64) h
+    real(real64) r
+    real(real64) r8_asin
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
+    real(real64) volume
 
-    if ( h <= 0.0_dp ) then
+    if ( h <= 0.0e+00_real64 ) then
 
-      volume = 0.0_dp
+      volume = 0.0e+00_real64
 
-    else if ( 2.0_dp * r <= h ) then
+    else if ( 2.0e+00_real64 * r <= h ) then
 
       volume = r8_pi * r * r
 
     else
 
-      theta = 2.0_dp * r8_asin ( sqrt ( r * r - ( r - h )**2 ) / r )
-      volume = r * r * ( theta - sin ( theta ) ) / 2.0_dp
+      theta = 2.0e+00_real64 * r8_asin ( sqrt ( r * r - ( r - h )**2 ) / r )
+      volume = r * r * ( theta - sin ( theta ) ) / 2.0e+00_real64
 
       if ( r < h ) then
         volume = r8_pi * r * r - volume
       end if
 
     end if
-  end subroutine sphere_cap_volume_2d
+  end
 
-  subroutine sphere_cap_volume_3d ( r, h, volume ) &
-        bind(C, name="sphere_cap_volume_3d")
+  subroutine sphere_cap_volume_3d ( r, h, volume )
 
   !*****************************************************************************80
   !
@@ -28408,30 +28029,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) H, the "height" of the spherical cap.  H must
+  !    Input, real(real64) H, the "height" of the spherical cap.  H must
   !    be between 0 and 2 * R.
   !
-  !    Output, real(dp) VOLUME, the volume of the spherical cap.
+  !    Output, real(real64) VOLUME, the volume of the spherical cap.
   !
 
-    real(dp), intent(in), value :: h
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: volume
+    real(real64) h
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) volume
 
-    if ( h <= 0.0_dp ) then
-      volume = 0.0_dp
-    else if ( 2.0_dp * r <= h ) then
-      volume = ( 4.0_dp / 3.0_dp ) * r8_pi * r * r * r
+    if ( h <= 0.0e+00_real64 ) then
+      volume = 0.0e+00_real64
+    else if ( 2.0e+00_real64 * r <= h ) then
+      volume = ( 4.0e+00_real64 / 3.0e+00_real64 ) * r8_pi * r * r * r
     else
-      volume = ( 1.0_dp / 3.0_dp ) * r8_pi * h * h * ( 3.0_dp * r - h )
+      volume = ( 1.0e+00_real64 / 3.0e+00_real64 ) * r8_pi * h * h * ( 3.0e+00_real64 * r - h )
     end if
-  end subroutine sphere_cap_volume_3d
+  end
 
-  subroutine sphere_cap_volume_nd ( dim_num, r, h, volume ) &
-        bind(C, name="sphere_cap_volume_nd")
+  subroutine sphere_cap_volume_nd ( dim_num, r, h, volume )
 
   !*****************************************************************************80
   !
@@ -28461,7 +28081,7 @@ contains
   ! 
   !    After factoring out the constant terms, and writing RC = R * cos ( T ),
   !    and RS = R * sin ( T ), and letting 
-  !      T_MAX = arc_sine ( sqrt ( ( 2.0_dp * r - h ) * h / r ) ),
+  !      T_MAX = arc_sine ( sqrt ( ( 2.0e+00_real64 * r - h ) * h / r ) ),
   !    the "interesting part" of our integral becomes
   !
   !      constants * R^N * Integral ( T = 0 to T_MAX ) sin^N ( T ) dT
@@ -28482,39 +28102,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the dimension of the space.
+  !    Input, integer(int32) DIM_NUM, the dimension of the space.
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) H, the "thickness" of the spherical cap,
+  !    Input, real(real64) H, the "thickness" of the spherical cap,
   !    which is normally between 0 and 2 * R.
   !
-  !    Output, real(dp) VOLUME, the volume of the spherical cap.
+  !    Output, real(real64) VOLUME, the volume of the spherical cap.
   !
 
-    real(dp) :: angle
-    real(dp) :: factor1
-    real(dp) :: factor2
-    real(dp), intent(in), value :: h
-    integer(ip), intent(in), value :: dim_num
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_asin
-    real(dp) :: sin_power_int
-    real(dp) :: sphere01_volume_nd
-    real(dp), intent(out) :: volume
-    real(dp) :: volume2
+    real(real64) angle
+    real(real64) factor1
+    real(real64) factor2
+    real(real64) h
+    integer(int32) dim_num
+    real(real64) r
+    real(real64) r8_asin
+    real(real64) sin_power_int
+    real(real64) sphere01_volume_nd
+    real(real64) volume
+    real(real64) volume2
 
-    if ( h <= 0.0_dp ) then
-      volume = 0.0_dp
+    if ( h <= 0.0e+00_real64 ) then
+      volume = 0.0e+00_real64
     end if
 
-    if ( 2.0_dp * r <= h ) then
+    if ( 2.0e+00_real64 * r <= h ) then
       call sphere_imp_volume_nd ( dim_num, r, volume )
     end if
 
     if ( dim_num < 1 ) then
 
-      volume = -1.0_dp
+      volume = -1.0e+00_real64
 
     else if ( dim_num == 1 ) then
 
@@ -28524,9 +28144,9 @@ contains
 
       factor1 = sphere01_volume_nd ( dim_num - 1 )
 
-      angle = r8_asin ( sqrt ( ( 2.0_dp * r - h ) * h / r ) )
+      angle = r8_asin ( sqrt ( ( 2.0e+00_real64 * r - h ) * h / r ) )
 
-      factor2 = sin_power_int ( 0.0_dp, angle, dim_num )
+      factor2 = sin_power_int ( 0.0e+00_real64, angle, dim_num )
 
       volume = factor1 * factor2 * r**dim_num
 
@@ -28536,10 +28156,9 @@ contains
       end if
 
     end if
-  end subroutine sphere_cap_volume_nd
+  end
 
-  subroutine sphere_dia2imp_3d ( p1, p2, r, pc ) &
-        bind(C, name="sphere_dia2imp_3d")
+  subroutine sphere_dia2imp_3d ( p1, p2, r, pc )
 
   !*****************************************************************************80
   !
@@ -28565,27 +28184,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), are two points which form a 
+  !    Input, real(real64) P1(3), P2(3), are two points which form a 
   !    diameter of the sphere.
   !
-  !    Output, real(dp) R, the computed radius of the sphere.
+  !    Output, real(real64) R, the computed radius of the sphere.
   !
-  !    Output, real(dp) PC(3), the computed center of the sphere.
+  !    Output, real(real64) PC(3), the computed center of the sphere.
   !
 
-    real(dp), intent(in) :: p1(3)
-    real(dp), intent(in) :: p2(3)
-    real(dp), intent(out) :: pc(3)
-    real(dp), intent(out) :: r
-    real(dp) :: r8vec_norm_affine
+    real(real64) p1(3)
+    real(real64) p2(3)
+    real(real64) pc(3)
+    real(real64) r
+    real(real64) r8vec_norm_affine
 
-    r = 0.5_dp * r8vec_norm_affine ( 3, p1, p2 )
+    r = 0.5e+00_real64 * r8vec_norm_affine ( 3, p1, p2 )
 
-    pc(1:3) = 0.5_dp * ( p1(1:3) + p2(1:3) )
-  end subroutine sphere_dia2imp_3d
+    pc(1:3) = 0.5e+00_real64 * ( p1(1:3) + p2(1:3) )
+  end
 
-  subroutine sphere_distance_xyz ( xyz1, xyz2, dist ) &
-        bind(C, name="sphere_distance_xyz")
+  subroutine sphere_distance_xyz ( xyz1, xyz2, dist )
 
   !*****************************************************************************80
   !
@@ -28620,27 +28238,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XYZ1(3), the coordinates of the first point.
+  !    Input, real(real64) XYZ1(3), the coordinates of the first point.
   !
-  !    Input, real(dp) XYZ2(3), the coordinates of the second point.
+  !    Input, real(real64) XYZ2(3), the coordinates of the second point.
   !
-  !    Output, real(dp) DIST, the great circle distance between
+  !    Output, real(real64) DIST, the great circle distance between
   !    the points.
   !
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp) :: lat1
-    real(dp) :: lat2
-    real(dp) :: lon1
-    real(dp) :: lon2
-    real(dp) :: r
-    real(dp) :: r8_asin
-    real(dp) :: r8_atan
-    real(dp) :: r8vec_norm
-    real(dp) :: top
-    real(dp), intent(in) :: xyz1(3)
-    real(dp), intent(in) :: xyz2(3)
+    real(real64) bot
+    real(real64) dist
+    real(real64) lat1
+    real(real64) lat2
+    real(real64) lon1
+    real(real64) lon2
+    real(real64) r
+    real(real64) r8_asin
+    real(real64) r8_atan
+    real(real64) r8vec_norm
+    real(real64) top
+    real(real64) xyz1(3)
+    real(real64) xyz2(3)
 
     r = r8vec_norm ( 3, xyz1 )
 
@@ -28660,10 +28278,9 @@ contains
         + cos ( lat1 ) * cos ( lat2 ) * cos ( lon1 - lon2 )
 
     dist = r * atan2 ( top, bot )
-  end subroutine sphere_distance_xyz
+  end
 
-  subroutine sphere_distance1 ( lat1, lon1, lat2, lon2, r, dist ) &
-        bind(C, name="sphere_distance1")
+  subroutine sphere_distance1 ( lat1, lon1, lat2, lon2, r, dist )
 
   !*****************************************************************************80
   !
@@ -28699,34 +28316,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) LAT1, LON1, the latitude and longitude of 
+  !    Input, real(real64) LAT1, LON1, the latitude and longitude of 
   !    the first point.
   !
-  !    Input, real(dp) LAT2, LON2, the latitude and longitude of 
+  !    Input, real(real64) LAT2, LON2, the latitude and longitude of 
   !    the second point.
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Output, real(dp) DIST, the great circle distance between
+  !    Output, real(real64) DIST, the great circle distance between
   !    the points, measured in the same units as R.
   !
 
-    real(dp) :: c
-    real(dp), intent(out) :: dist
-    real(dp), intent(in), value :: lat1
-    real(dp), intent(in), value :: lat2
-    real(dp), intent(in), value :: lon1
-    real(dp), intent(in), value :: lon2
-    real(dp), intent(in), value :: r
+    real(real64) c
+    real(real64) dist
+    real(real64) lat1
+    real(real64) lat2
+    real(real64) lon1
+    real(real64) lon2
+    real(real64) r
 
     c = cos ( lat1 ) * cos ( lat2 ) * cos ( lon1 - lon2 ) &
       + sin ( lat1 ) * sin ( lat2 )
 
     dist = r * acos ( c )
-  end subroutine sphere_distance1
+  end
 
-  subroutine sphere_distance2 ( lat1, lon1, lat2, lon2, r, dist ) &
-        bind(C, name="sphere_distance2")
+  subroutine sphere_distance2 ( lat1, lon1, lat2, lon2, r, dist )
 
   !*****************************************************************************80
   !
@@ -28762,35 +28378,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) LAT1, LON1, the latitude and longitude of 
+  !    Input, real(real64) LAT1, LON1, the latitude and longitude of 
   !    the first point.
   !
-  !    Input, real(dp) LAT2, LON2, the latitude and longitude of 
+  !    Input, real(real64) LAT2, LON2, the latitude and longitude of 
   !    the second point.
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Output, real(dp) DIST, the great circle distance between
+  !    Output, real(real64) DIST, the great circle distance between
   !    the points, measured in the same units as R.
   !
 
-    real(dp), intent(out) :: dist
-    real(dp), intent(in), value :: lat1
-    real(dp), intent(in), value :: lat2
-    real(dp), intent(in), value :: lon1
-    real(dp), intent(in), value :: lon2
-    real(dp), intent(in), value :: r
-    real(dp) :: s
+    real(real64) dist
+    real(real64) lat1
+    real(real64) lat2
+    real(real64) lon1
+    real(real64) lon2
+    real(real64) r
+    real(real64) s
 
-    s = ( sin ( ( lat1 - lat2 ) / 2.0_dp ) )**2 &
-      + cos ( lat1 ) * cos ( lat2 ) * ( sin ( ( lon1 - lon2 ) / 2.0_dp ) )**2
+    s = ( sin ( ( lat1 - lat2 ) / 2.0e+00_real64 ) )**2 &
+      + cos ( lat1 ) * cos ( lat2 ) * ( sin ( ( lon1 - lon2 ) / 2.0e+00_real64 ) )**2
     s = sqrt ( s )
 
-    dist = 2.0_dp * r * asin ( s )
-  end subroutine sphere_distance2
+    dist = 2.0e+00_real64 * r * asin ( s )
+  end
 
-  subroutine sphere_distance3 ( lat1, lon1, lat2, lon2, r, dist ) &
-        bind(C, name="sphere_distance3")
+  subroutine sphere_distance3 ( lat1, lon1, lat2, lon2, r, dist )
 
   !*****************************************************************************80
   !
@@ -28826,26 +28441,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) LAT1, LON1, the latitude and longitude of 
+  !    Input, real(real64) LAT1, LON1, the latitude and longitude of 
   !    the first point.
   !
-  !    Input, real(dp) LAT2, LON2, the latitude and longitude of 
+  !    Input, real(real64) LAT2, LON2, the latitude and longitude of 
   !    the second point.
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Output, real(dp) DIST, the great circle distance between
+  !    Output, real(real64) DIST, the great circle distance between
   !    the points, measured in the same units as R.
   !
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp), intent(in), value :: lat1
-    real(dp), intent(in), value :: lat2
-    real(dp), intent(in), value :: lon1
-    real(dp), intent(in), value :: lon2
-    real(dp), intent(in), value :: r
-    real(dp) :: top
+    real(real64) bot
+    real(real64) dist
+    real(real64) lat1
+    real(real64) lat2
+    real(real64) lon1
+    real(real64) lon2
+    real(real64) r
+    real(real64) top
 
     top = ( cos ( lat2 ) * sin ( lon1 - lon2 ) )**2 &
         + ( cos ( lat1 ) * sin ( lat2 ) &
@@ -28857,10 +28472,9 @@ contains
         + cos ( lat1 ) * cos ( lat2 ) * cos ( lon1 - lon2 )
 
     dist = r * atan2 ( top, bot )
-  end subroutine sphere_distance3
+  end
 
-  subroutine sphere_exp_contains_point_3d ( p1, p2, p3, p4, p, inside ) &
-        bind(C, name="sphere_exp_contains_point_3d")
+  subroutine sphere_exp_contains_point_3d ( p1, p2, p3, p4, p, inside )
 
   !*****************************************************************************80
   !
@@ -28893,60 +28507,59 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), P4(3),
+  !    Input, real(real64) P1(3), P2(3), P3(3), P4(3),
   !    four distinct noncoplanar points on the sphere.
   !
-  !    Input, real(dp) P(3), the coordinates of a point, whose
+  !    Input, real(real64) P(3), the coordinates of a point, whose
   !    position relative to the sphere is desired.
   !
   !    Output, logical INSIDE, is TRUE if the point is in the sphere.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a(5,5)
-    real(dp) :: det
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(in) :: p4(dim_num)
-    real(dp) :: r8mat_det_5d
+    real(real64) a(5,5)
+    real(real64) det
+    logical inside
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
+    real(real64) r8mat_det_5d
   !
   !  Compute the determinant.
   !
     a(1,1:dim_num) = p1(1:dim_num)
     a(1,4) = sum ( p1(1:dim_num)**2 )
-    a(1,5) = 1.0_dp
+    a(1,5) = 1.0e+00_real64
 
     a(2,1:dim_num) = p2(1:dim_num)
     a(2,4) = sum ( p2(1:dim_num)**2 )
-    a(2,5) = 1.0_dp
+    a(2,5) = 1.0e+00_real64
 
     a(3,1:dim_num) = p3(1:dim_num)
     a(3,4) = sum ( p3(1:dim_num)**2 )
-    a(3,5) = 1.0_dp
+    a(3,5) = 1.0e+00_real64
 
     a(4,1:dim_num) = p4(1:dim_num)
     a(4,4) = sum ( p4(1:dim_num)**2 )
-    a(4,5) = 1.0_dp
+    a(4,5) = 1.0e+00_real64
 
     a(5,1:dim_num) = p(1:dim_num)
     a(5,4) = sum ( p(1:dim_num)**2 )
-    a(5,5) = 1.0_dp
+    a(5,5) = 1.0e+00_real64
 
     det = r8mat_det_5d ( a )
 
-    if ( det < 0.0_dp ) then
+    if ( det < 0.0e+00_real64 ) then
       inside = .false.
-    else if ( 0.0_dp <= det ) then
+    else if ( 0.0e+00_real64 <= det ) then
       inside = .true.
     end if
-  end subroutine sphere_exp_contains_point_3d
+  end
 
-  subroutine sphere_exp_point_near_3d ( p1, p2, p3, p4, p, pn ) &
-        bind(C, name="sphere_exp_point_near_3d")
+  subroutine sphere_exp_point_near_3d ( p1, p2, p3, p4, p, pn )
 
   !*****************************************************************************80
   !
@@ -28975,26 +28588,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), P4(3),
+  !    Input, real(real64) P1(3), P2(3), P3(3), P4(3),
   !    four distinct noncoplanar points on the sphere.
   !
-  !    Input, real(dp) P(3), a point whose nearest point on the 
+  !    Input, real(real64) P(3), a point whose nearest point on the 
   !    sphere is desired.
   !
-  !    Output, real(dp) PN(3), the nearest point on the sphere.
+  !    Output, real(real64) PN(3), the nearest point on the sphere.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: norm
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(in) :: p4(dim_num)
-    real(dp) :: pc(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp) :: r
+    real(real64) norm
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) r
   !
   !  Find the center.
   !
@@ -29004,17 +28617,16 @@ contains
   !
     norm = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
 
-    if ( norm == 0.0_dp ) then
-      pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num, dp) )
+    if ( norm == 0.0e+00_real64 ) then
+      pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num, real64) )
     end if
   !
   !  Compute the nearest point.
   !
     pn(1:dim_num) = pc(1:dim_num) + r * ( p(1:dim_num) - pc(1:dim_num) ) / norm
-  end subroutine sphere_exp_point_near_3d
+  end
 
-  subroutine sphere_exp2imp_3d ( p1, p2, p3, p4, r, pc ) &
-        bind(C, name="sphere_exp2imp_3d")
+  subroutine sphere_exp2imp_3d ( p1, p2, p3, p4, r, pc )
 
   !*****************************************************************************80
   !
@@ -29050,33 +28662,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(3), P2(3), P3(3), P4(3),
+  !    Input, real(real64) P1(3), P2(3), P3(3), P4(3),
   !    four distinct noncoplanar points on the sphere.
   !
-  !    Output, real(dp) R, PC(3), the radius and the center
+  !    Output, real(real64) R, PC(3), the radius and the center
   !    of the sphere.  If the linear system is
   !    singular, then R = -1, PC(1:3) = 0.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
-    real(dp), intent(in) :: p4(dim_num)
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(out) :: r
-    real(dp) :: tetra(dim_num,4)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) tetra(dim_num,4)
 
     tetra(1:dim_num,1:4) = reshape ( (/ &
       p1(1:dim_num), p2(1:dim_num), p3(1:dim_num), p4(1:dim_num) /), &
       (/ dim_num, 4 /) )
 
     call tetrahedron_circumsphere_3d ( tetra, r, pc )
-  end subroutine sphere_exp2imp_3d
+  end
 
-  subroutine sphere_exp2imp_nd ( n, p, r, pc ) &
-        bind(C, name="sphere_exp2imp_nd")
+  subroutine sphere_exp2imp_nd ( n, p, r, pc )
 
   !*****************************************************************************80
   !
@@ -29096,23 +28707,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
-  !    Input, real(sp) P(N,N+1), the points.
+  !    Input, real(real32) P(N,N+1), the points.
   !
-  !    Output, real(dp) R, PC(N), the radius and center of the
+  !    Output, real(real64) R, PC(N), the radius and center of the
   !    sphere.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(n,n+1)
-    integer(ip) :: i
-    integer(ip) :: info
-    integer(ip) :: j
-    real(dp), intent(out) :: pc(n)
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: p(n,n+1)
+    real(real64) a(n,n+1)
+    integer(int32) i
+    integer(int32) info
+    integer(int32) j
+    real(real64) pc(n)
+    real(real64) r
+    real(real64) p(n,n+1)
   !
   !  Set up the linear system.
   !
@@ -29133,19 +28744,18 @@ contains
   !  If the system was singular, return a consolation prize.
   !
     if ( info /= 0 ) then
-      r = -1.0_dp
-      pc(1:n) = 0.0_dp
+      r = -1.0e+00_real64
+      pc(1:n) = 0.0e+00_real64
     end if
   !
   !  Compute the radius and center.
   !
-    r = 0.5_dp * sqrt ( sum ( a(1:n,n+1)**2 ) )
+    r = 0.5e+00_real64 * sqrt ( sum ( a(1:n,n+1)**2 ) )
 
-    pc(1:n) = p(1:n,1) + 0.5_dp * a(1:n,n+1)
-  end subroutine sphere_exp2imp_nd
+    pc(1:n) = p(1:n,1) + 0.5e+00_real64 * a(1:n,n+1)
+  end
 
-  subroutine sphere_imp_area_3d ( r, area ) &
-        bind(C, name="sphere_imp_area_3d")
+  subroutine sphere_imp_area_3d ( r, area )
 
   !*****************************************************************************80
   !
@@ -29171,20 +28781,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Output, real(dp) AREA, the area of the sphere.
+  !    Output, real(real64) AREA, the area of the sphere.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
-    area = 4.0_dp * r8_pi * r * r
-  end subroutine sphere_imp_area_3d
+    area = 4.0e+00_real64 * r8_pi * r * r
+  end
 
-  subroutine sphere_imp_area_nd ( dim_num, r, area ) &
-        bind(C, name="sphere_imp_area_nd")
+  subroutine sphere_imp_area_nd ( dim_num, r, area )
 
   !*****************************************************************************80
   !
@@ -29222,23 +28831,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the dimension of the space.
+  !    Input, integer(int32) DIM_NUM, the dimension of the space.
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Output, real(dp) AREA, the area of the sphere.
+  !    Output, real(real64) AREA, the area of the sphere.
   !
 
-    real(dp), intent(out) :: area
-    integer(ip), intent(in), value :: dim_num
-    real(dp), intent(in), value :: r
-    real(dp) :: sphere01_area_nd
+    real(real64) area
+    integer(int32) dim_num
+    real(real64) r
+    real(real64) sphere01_area_nd
 
     area = r**( dim_num - 1  ) * sphere01_area_nd ( dim_num )
-  end subroutine sphere_imp_area_nd
+  end
 
-  subroutine sphere_imp_contains_point_3d ( r, pc, p, inside ) &
-        bind(C, name="sphere_imp_contains_point_3d")
+  subroutine sphere_imp_contains_point_3d ( r, pc, p, inside )
 
   !*****************************************************************************80
   !
@@ -29264,31 +28872,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, real(dp) P(3), the point to be checked.
+  !    Input, real(real64) P(3), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is
   !    inside the sphere.
   !
 
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(3)
-    real(dp), intent(in) :: pc(3)
-    real(dp), intent(in), value :: r
+    logical inside
+    real(real64) p(3)
+    real(real64) pc(3)
+    real(real64) r
 
     if ( sum ( ( p(1:3) - pc(1:3) ) ** 2 ) <= r * r ) then
       inside = .true.
     else
       inside = .false.
     end if
-  end subroutine sphere_imp_contains_point_3d
+  end
 
   subroutine sphere_imp_line_project_3d ( r, pc, n, p, maxpnt2, n2, pp, &
-    theta_min, theta_max ) &
-        bind(C, name="sphere_imp_line_project_3d")
+    theta_min, theta_max )
 
   !*****************************************************************************80
   !
@@ -29324,33 +28931,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.  If R is
+  !    Input, real(real64) R, the radius of the sphere.  If R is
   !    zero, PP will be returned as the pc, and if R is
   !    negative, points will end up diametrically opposite from where
   !    you would expect them for a positive R.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, integer(ip) N, the number of points on the line that is
+  !    Input, integer(int32) N, the number of points on the line that is
   !    to be projected.
   !
-  !    Input, real(dp) P(3,N), the coordinates of
+  !    Input, real(real64) P(3,N), the coordinates of
   !    the points on the line that is to be projected.
   !
-  !    Input, integer(ip) MAXPNT2, the maximum number of points on the
+  !    Input, integer(int32) MAXPNT2, the maximum number of points on the
   !    projected line.  Even if the routine thinks that more points are needed,
   !    no more than MAXPNT2 will be generated.
   !
-  !    Output, integer(ip) N2, the number of points on the projected
+  !    Output, integer(int32) N2, the number of points on the projected
   !    line.  N2 can be zero, if the line has an angular projection of less
   !    than THETA_MIN radians.
   !
-  !    Output, real(dp) PP(3,N2), the coordinates
+  !    Output, real(real64) PP(3,N2), the coordinates
   !    of the points representing the projected line.  These points lie on the
   !    sphere.  Successive points are separated by at least THETA_MIN
   !    radians, and by no more than THETA_MAX radians.
   !
-  !    Input, real(dp) THETA_MIN, THETA_MAX, the minimum and maximum
+  !    Input, real(real64) THETA_MIN, THETA_MAX, the minimum and maximum
   !    angular projections allowed between successive projected points.
   !    If two successive points on the original line have projections
   !    separated by more than THETA_MAX radians, then intermediate points
@@ -29360,32 +28967,32 @@ contains
   !    line from the first point to the next point is considered.
   !
 
-    integer(ip), intent(in), value :: maxpnt2
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: n
+    integer(int32) maxpnt2
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) n
 
-    real(dp) :: alpha
-    real(dp) :: ang3d
-    real(dp) :: dot
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: nfill
-    integer(ip), intent(out) :: n2
-    real(dp), intent(in) :: p(dim_num,n)
-    real(dp) :: p1(dim_num)
-    real(dp) :: p2(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp) :: pd(dim_num)
-    real(dp), intent(out) :: pp(dim_num,maxpnt2)
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_acos
-    real(dp), intent(in), value :: theta_max
-    real(dp), intent(in), value :: theta_min
-    real(dp) :: tnorm
+    real(real64) alpha
+    real(real64) ang3d
+    real(real64) dot
+    integer(int32) i
+    integer(int32) j
+    integer(int32) nfill
+    integer(int32) n2
+    real(real64) p(dim_num,n)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) pd(dim_num)
+    real(real64) pp(dim_num,maxpnt2)
+    real(real64) r
+    real(real64) r8_acos
+    real(real64) theta_max
+    real(real64) theta_min
+    real(real64) tnorm
   !
   !  Check the input.
   !
-    if ( r == 0.0_dp ) then
+    if ( r == 0.0e+00_real64 ) then
       n2 = 0
     end if
 
@@ -29437,14 +29044,14 @@ contains
               do j = 1, nfill-1
 
                 pd(1:dim_num) = &
-                  ( real ( nfill - j, dp) &
+                  ( real ( nfill - j, real64) &
                   * ( p1(1:dim_num) - pc(1:dim_num) ) &
-                  + real (         j, dp) &
+                  + real (         j, real64) &
                   * ( p2(1:dim_num) - pc(1:dim_num) ) )
 
                 tnorm = sqrt ( sum ( pd(1:dim_num)**2 ) )
 
-                if ( tnorm /= 0.0_dp ) then
+                if ( tnorm /= 0.0e+00_real64 ) then
                   pd(1:dim_num) = pc(1:dim_num) + r * pd(1:dim_num) / tnorm
                   n2 = n2 + 1
                   pp(1:dim_num,n2) = pd(1:dim_num)
@@ -29466,10 +29073,9 @@ contains
       end if
 
     end do
-  end subroutine sphere_imp_line_project_3d
+  end
 
-  subroutine sphere_imp_local2xyz_3d ( r, pc, theta, phi, p ) &
-        bind(C, name="sphere_imp_local2xyz_3d")
+  subroutine sphere_imp_local2xyz_3d ( r, pc, theta, phi, p )
 
   !*****************************************************************************80
   !
@@ -29500,32 +29106,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, real(dp) THETA, PHI, the local (THETA,PHI) spherical
+  !    Input, real(real64) THETA, PHI, the local (THETA,PHI) spherical
   !    coordinates of a point on the sphere.  THETA and PHI are angles,
   !    measured in radians.  Usually, 0 <= THETA < 2 * PI, and 0 <= PHI <= PI.
   !
-  !    Output, real(dp) P(3), the XYZ coordinates of the point.
+  !    Output, real(real64) P(3), the XYZ coordinates of the point.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: phi
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: theta
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) phi
+    real(real64) r
+    real(real64) theta
 
     p(1) = pc(1) + r * sin ( phi ) * cos ( theta )
     p(2) = pc(2) + r * sin ( phi ) * sin ( theta )
     p(3) = pc(3) + r * cos ( phi )
-  end subroutine sphere_imp_local2xyz_3d
+  end
 
-  subroutine sphere_imp_point_near_3d ( r, pc, p, pn ) &
-        bind(C, name="sphere_imp_point_near_3d")
+  subroutine sphere_imp_point_near_3d ( r, pc, p, pn )
 
   !*****************************************************************************80
   !
@@ -29555,39 +29160,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, real(dp) P(3), a point whose
+  !    Input, real(real64) P(3), a point whose
   !    nearest point on the sphere is desired.
   !
-  !    Output, real(dp) PN(3), the nearest point on the sphere.
+  !    Output, real(real64) PN(3), the nearest point on the sphere.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: norm
-    real(dp), intent(in) :: p(3)
-    real(dp), intent(in) :: pc(3)
-    real(dp), intent(out) :: pn(3)
-    real(dp), intent(in), value :: r
+    real(real64) norm
+    real(real64) p(3)
+    real(real64) pc(3)
+    real(real64) pn(3)
+    real(real64) r
   !
   !  If P = PC, bail out now.
   !
     norm = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
 
-    if ( norm == 0.0_dp ) then
-      pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num, dp) )
+    if ( norm == 0.0e+00_real64 ) then
+      pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num, real64) )
     end if
   !
   !  Compute the nearest point.
   !
     pn(1:dim_num) = pc(1:dim_num) + r * ( p(1:dim_num) - pc(1:dim_num) ) / norm
-  end subroutine sphere_imp_point_near_3d
+  end
 
-  subroutine sphere_imp_point_project_3d ( r, pc, p, pp ) &
-        bind(C, name="sphere_imp_point_project_3d")
+  subroutine sphere_imp_point_project_3d ( r, pc, p, pp )
 
   !*****************************************************************************80
   !
@@ -29613,30 +29217,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, real(dp) P(3), a point.
+  !    Input, real(real64) P(3), a point.
   !
-  !    Output, real(dp) PP(3), the projected point.
+  !    Output, real(real64) PP(3), the projected point.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: norm
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(out) :: pp(dim_num)
-    real(dp), intent(in), value :: r
+    real(real64) norm
+    real(real64) p(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) pp(dim_num)
+    real(real64) r
 
-    if ( r == 0.0_dp ) then
+    if ( r == 0.0e+00_real64 ) then
 
       pp(1:dim_num) = pc(1:dim_num)
 
     else if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
 
-      pp(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num, dp) )
+      pp(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num, real64) )
 
     else
 
@@ -29645,10 +29249,9 @@ contains
       pp(1:dim_num) = pc(1:dim_num) + r * ( p(1:dim_num) - pc(1:dim_num) ) / norm
 
     end if
-  end subroutine sphere_imp_point_project_3d
+  end
 
-  subroutine sphere_imp_volume_3d ( r, volume ) &
-        bind(C, name="sphere_imp_volume_3d")
+  subroutine sphere_imp_volume_3d ( r, volume )
 
   !*****************************************************************************80
   !
@@ -29674,20 +29277,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Output, real(dp) VOLUME, the volume of the sphere.
+  !    Output, real(real64) VOLUME, the volume of the sphere.
   !
 
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: volume
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) volume
 
-    volume = ( 4.0_dp / 3.0_dp ) * r8_pi * r * r * r
-  end subroutine sphere_imp_volume_3d
+    volume = ( 4.0e+00_real64 / 3.0e+00_real64 ) * r8_pi * r * r * r
+  end
 
-  subroutine sphere_imp_volume_nd ( dim_num, r, volume ) &
-        bind(C, name="sphere_imp_volume_nd")
+  subroutine sphere_imp_volume_nd ( dim_num, r, volume )
 
   !*****************************************************************************80
   !
@@ -29726,23 +29328,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the dimension of the space.
+  !    Input, integer(int32) DIM_NUM, the dimension of the space.
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Output, real(dp) VOLUME, the volume of the sphere.
+  !    Output, real(real64) VOLUME, the volume of the sphere.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    real(dp), intent(in), value :: r
-    real(dp) :: sphere01_volume_nd
-    real(dp), intent(out) :: volume
+    integer(int32) dim_num
+    real(real64) r
+    real(real64) sphere01_volume_nd
+    real(real64) volume
 
     volume = r**dim_num * sphere01_volume_nd ( dim_num )
-  end subroutine sphere_imp_volume_nd
+  end
 
-  subroutine sphere_imp_zone_area_3d ( r, h1, h2, area  ) &
-        bind(C, name="sphere_imp_zone_area_3d")
+  subroutine sphere_imp_zone_area_3d ( r, h1, h2, area  )
 
   !*****************************************************************************80
   !
@@ -29775,34 +29376,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) H1, H2, the distances that define the 
+  !    Input, real(real64) H1, H2, the distances that define the 
   !    thickness of the zone.  H1 and H2 must be between 0 and 2 * R.
   !
-  !    Output, real(dp) AREA, the area of the spherical zone.
+  !    Output, real(real64) AREA, the area of the spherical zone.
   !
 
-    real(dp), intent(out) :: area
-    real(dp) :: h
-    real(dp), intent(in), value :: h1
-    real(dp), intent(in), value :: h2
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) h
+    real(real64) h1
+    real(real64) h2
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
 
     h = abs ( h1 - h2 )
 
-    if ( h <= 0.0_dp ) then
-      area = 0.0_dp
-    else if ( 2.0_dp * r <= h ) then
-      area = 4.0_dp * r8_pi * r * r
+    if ( h <= 0.0e+00_real64 ) then
+      area = 0.0e+00_real64
+    else if ( 2.0e+00_real64 * r <= h ) then
+      area = 4.0e+00_real64 * r8_pi * r * r
     else
-      area = 2.0_dp * r8_pi * r * h
+      area = 2.0e+00_real64 * r8_pi * r * h
     end if
-  end subroutine sphere_imp_zone_area_3d
+  end
 
-  subroutine sphere_imp_zone_volume_3d ( r, h1, h2, volume ) &
-        bind(C, name="sphere_imp_zone_volume_3d")
+  subroutine sphere_imp_zone_volume_3d ( r, h1, h2, volume )
 
   !*****************************************************************************80
   !
@@ -29835,43 +29435,42 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) H1, H2, the distances that define the 
+  !    Input, real(real64) H1, H2, the distances that define the 
   !    thickness of the zone.  H1 and H2 must be between 0 and 2 * R.
   !
-  !    Output, real(dp) VOLUME, the volume of the spherical zone
+  !    Output, real(real64) VOLUME, the volume of the spherical zone
   !
 
-    real(dp), intent(in), value :: h1
-    real(dp) :: h11
-    real(dp), intent(in), value :: h2
-    real(dp) :: h22
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: volume
+    real(real64) h1
+    real(real64) h11
+    real(real64) h2
+    real(real64) h22
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) volume
 
     h11 = min ( h1, h2 )
-    h11 = max ( h11, 0.0_dp )
+    h11 = max ( h11, 0.0e+00_real64 )
 
-    if ( 2.0_dp * r <= h11 ) then
-      volume = 0.0_dp
+    if ( 2.0e+00_real64 * r <= h11 ) then
+      volume = 0.0e+00_real64
     end if
 
     h22 = max ( h1, h2 )
-    h22 = min ( h22, 2.0_dp * r )
+    h22 = min ( h22, 2.0e+00_real64 * r )
 
-    if ( h22 <= 0.0_dp ) then
-      volume = 0.0_dp
+    if ( h22 <= 0.0e+00_real64 ) then
+      volume = 0.0e+00_real64
     end if
 
-    volume = ( 1.0_dp / 3.0_dp ) * r8_pi * ( &
-        h22 * h22 * ( 3.0_dp * r - h22 ) &
-      - h11 * h11 * ( 3.0_dp * r - h11 ) )
-  end subroutine sphere_imp_zone_volume_3d
+    volume = ( 1.0e+00_real64 / 3.0e+00_real64 ) * r8_pi * ( &
+        h22 * h22 * ( 3.0e+00_real64 * r - h22 ) &
+      - h11 * h11 * ( 3.0e+00_real64 * r - h11 ) )
+  end
 
-  subroutine sphere_imp2exp_3d ( r, pc, p1, p2, p3, p4 ) &
-        bind(C, name="sphere_imp2exp_3d")
+  subroutine sphere_imp2exp_3d ( r, pc, p1, p2, p3, p4 )
 
   !*****************************************************************************80
   !
@@ -29907,55 +29506,54 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, PC(3), the radius and center of the sphere.
+  !    Input, real(real64) R, PC(3), the radius and center of the sphere.
   !
-  !    Output, real(dp) P1(3), P2(3), P3(3), P4(3),
+  !    Output, real(real64) P1(3), P2(3), P3(3), P4(3),
   !    four distinct noncoplanar points on the sphere.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: p1(dim_num)
-    real(dp), intent(out) :: p2(dim_num)
-    real(dp), intent(out) :: p3(dim_num)
-    real(dp), intent(out) :: p4(dim_num)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp) :: phi
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
+    real(real64) p4(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) phi
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
 
-    theta = 0.0_dp
-    phi = 0.0_dp
+    theta = 0.0e+00_real64
+    phi = 0.0e+00_real64
 
     p1(1) = pc(1) + r * cos ( theta ) * sin ( phi )
     p1(2) = pc(2) + r * sin ( theta ) * sin ( phi )
     p1(3) = pc(3) + r                 * cos ( phi )
 
-    theta = 0.0_dp
-    phi = 2.0_dp * r8_pi / 3.0_dp
+    theta = 0.0e+00_real64
+    phi = 2.0e+00_real64 * r8_pi / 3.0e+00_real64
 
     p2(1) = pc(1) + r * cos ( theta ) * sin ( phi )
     p2(2) = pc(2) + r * sin ( theta ) * sin ( phi )
     p2(3) = pc(3) + r                 * cos ( phi )
 
-    theta = 2.0_dp * r8_pi / 3.0_dp
-    phi = 2.0_dp * r8_pi / 3.0_dp
+    theta = 2.0e+00_real64 * r8_pi / 3.0e+00_real64
+    phi = 2.0e+00_real64 * r8_pi / 3.0e+00_real64
 
     p3(1) = pc(1) + r * cos ( theta ) * sin ( phi )
     p3(2) = pc(2) + r * sin ( theta ) * sin ( phi )
     p3(3) = pc(3) + r                 * cos ( phi )
 
-    theta = 4.0_dp * r8_pi / 3.0_dp
-    phi = 2.0_dp * r8_pi / 3.0_dp
+    theta = 4.0e+00_real64 * r8_pi / 3.0e+00_real64
+    phi = 2.0e+00_real64 * r8_pi / 3.0e+00_real64
 
     p4(1) = pc(1) + r * cos ( theta ) * sin ( phi )
     p4(2) = pc(2) + r * sin ( theta ) * sin ( phi )
     p4(3) = pc(3) + r                 * cos ( phi )
-  end subroutine sphere_imp2exp_3d
+  end
 
-  function sphere_k ( dim_num ) &
-        bind(C, name="sphere_k")
+  function sphere_k ( dim_num )
 
   !*****************************************************************************80
   !
@@ -29982,27 +29580,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the dimension of the space.
+  !    Input, integer(int32) DIM_NUM, the dimension of the space.
   !
-  !    Output, real(dp) SPHERE_K, the factor.
+  !    Output, real(real64) SPHERE_K, the factor.
   !
 
-    integer(ip) :: i4_factorial2
-    integer(ip), intent(in), value :: dim_num
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: sphere_k
+    integer(int32) i4_factorial2
+    integer(int32) dim_num
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) sphere_k
 
     if ( mod ( dim_num, 2 ) == 0 ) then
-      sphere_k = ( 2.0_dp * r8_pi ) ** ( dim_num / 2 )
+      sphere_k = ( 2.0e+00_real64 * r8_pi ) ** ( dim_num / 2 )
     else
-      sphere_k = 2.0_dp * ( 2.0_dp * r8_pi ) ** ( ( dim_num - 1 ) / 2 )
+      sphere_k = 2.0e+00_real64 * ( 2.0e+00_real64 * r8_pi ) ** ( ( dim_num - 1 ) / 2 )
     end if
 
-    sphere_k = sphere_k / real ( i4_factorial2 ( dim_num - 2 ), dp)
-  end function sphere_k
+    sphere_k = sphere_k / real ( i4_factorial2 ( dim_num - 2 ), real64)
+  end
 
-  subroutine sphere_triangle_angles_to_area ( r, a, b, c, area ) &
-        bind(C, name="sphere_triangle_angles_to_area")
+  subroutine sphere_triangle_angles_to_area ( r, a, b, c, area )
 
   !*****************************************************************************80
   !
@@ -30039,27 +29636,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) A, B, C, the angles of the triangle.
+  !    Input, real(real64) A, B, C, the angles of the triangle.
   !
-  !    Output, real(dp) AREA, the area of the spherical triangle.
+  !    Output, real(real64) AREA, the area of the spherical triangle.
   !
 
-    real(dp), intent(in), value :: a
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), intent(in), value :: r
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) a
+    real(real64) area
+    real(real64) b
+    real(real64) c
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
   !
   !  Apply Girard's formula.
   !
     area = r * r * ( a + b + c - r8_pi )
-  end subroutine sphere_triangle_angles_to_area
+  end
 
-  subroutine sphere_triangle_sides_to_angles ( r, as, bs, cs, a, b, c ) &
-        bind(C, name="sphere_triangle_sides_to_angles")
+  subroutine sphere_triangle_sides_to_angles ( r, as, bs, cs, a, b, c )
 
   !*****************************************************************************80
   !
@@ -30079,53 +29675,52 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) AS, BS, CS, the (geodesic) length of the 
+  !    Input, real(real64) AS, BS, CS, the (geodesic) length of the 
   !    sides of the triangle.
   !
-  !    Output, real(dp) A, B, C, the spherical angles of the triangle.
+  !    Output, real(real64) A, B, C, the spherical angles of the triangle.
   !    Angle A is opposite the side of length AS, and so on.
   !
 
-    real(dp), intent(out) :: a
-    real(dp), intent(in), value :: as
-    real(dp) :: asu
-    real(dp), intent(out) :: b
-    real(dp), intent(in), value :: bs
-    real(dp) :: bsu
-    real(dp), intent(out) :: c
-    real(dp), intent(in), value :: cs
-    real(dp) :: csu
-    real(dp), intent(in), value :: r
-    real(dp) :: ssu
-    real(dp) :: tan_a2
-    real(dp) :: tan_b2
-    real(dp) :: tan_c2
+    real(real64) a
+    real(real64) as
+    real(real64) asu
+    real(real64) b
+    real(real64) bs
+    real(real64) bsu
+    real(real64) c
+    real(real64) cs
+    real(real64) csu
+    real(real64) r
+    real(real64) ssu
+    real(real64) tan_a2
+    real(real64) tan_b2
+    real(real64) tan_c2
 
     asu = as / r
     bsu = bs / r
     csu = cs / r
-    ssu = ( asu + bsu + csu ) / 2.0_dp
+    ssu = ( asu + bsu + csu ) / 2.0e+00_real64
 
     tan_a2 = sqrt ( ( sin ( ssu - bsu ) * sin ( ssu - csu ) ) / & 
                     ( sin ( ssu ) * sin ( ssu - asu )     ) )
 
-    a = 2.0_dp * atan ( tan_a2 )
+    a = 2.0e+00_real64 * atan ( tan_a2 )
 
     tan_b2 = sqrt ( ( sin ( ssu - asu ) * sin ( ssu - csu ) ) / & 
                     ( sin ( ssu ) * sin ( ssu - bsu )     ) )
 
-    b = 2.0_dp * atan ( tan_b2 )
+    b = 2.0e+00_real64 * atan ( tan_b2 )
 
     tan_c2 = sqrt ( ( sin ( ssu - asu ) * sin ( ssu - bsu ) ) / & 
                     ( sin ( ssu ) * sin ( ssu - csu )     ) )
 
-    c = 2.0_dp * atan ( tan_c2 )
-  end subroutine sphere_triangle_sides_to_angles
+    c = 2.0e+00_real64 * atan ( tan_c2 )
+  end
 
-  subroutine sphere_triangle_vertices_to_angles ( r, v1, v2, v3, a, b, c ) &
-        bind(C, name="sphere_triangle_vertices_to_angles")
+  subroutine sphere_triangle_vertices_to_angles ( r, v1, v2, v3, a, b, c )
 
   !*****************************************************************************80
   !
@@ -30154,23 +29749,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) A, B, C, the angles of the spherical triangle.
+  !    Output, real(real64) A, B, C, the angles of the spherical triangle.
   !
 
-    real(dp), intent(out) :: a
-    real(dp) :: as
-    real(dp), intent(out) :: b
-    real(dp) :: bs
-    real(dp), intent(out) :: c
-    real(dp) :: cs
-    real(dp), intent(in), value :: r
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) a
+    real(real64) as
+    real(real64) b
+    real(real64) bs
+    real(real64) c
+    real(real64) cs
+    real(real64) r
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
   !
   !  Compute the lengths of the sides of the spherical triangle.
   !
@@ -30179,10 +29774,9 @@ contains
   !  Get the spherical angles.
   !
     call sphere_triangle_sides_to_angles ( r, as, bs, cs, a, b, c )
-  end subroutine sphere_triangle_vertices_to_angles
+  end
 
-  subroutine sphere_triangle_vertices_to_area ( r, v1, v2, v3, area ) &
-        bind(C, name="sphere_triangle_vertices_to_area")
+  subroutine sphere_triangle_vertices_to_area ( r, v1, v2, v3, area )
 
   !*****************************************************************************80
   !
@@ -30219,24 +29813,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) AREA, the area of the spherical triangle.
+  !    Output, real(real64) AREA, the area of the spherical triangle.
   !
 
-    real(dp) :: a
-    real(dp), intent(out) :: area
-    real(dp) :: as
-    real(dp) :: b
-    real(dp) :: bs
-    real(dp) :: c
-    real(dp) :: cs
-    real(dp), intent(in), value :: r
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) a
+    real(real64) area
+    real(real64) as
+    real(real64) b
+    real(real64) bs
+    real(real64) c
+    real(real64) cs
+    real(real64) r
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
   !
   !  Compute the lengths of the sides of the spherical triangle.
   !
@@ -30249,10 +29843,9 @@ contains
   !  Get the area.
   !
     call sphere_triangle_angles_to_area ( r, a, b, c, area )
-  end subroutine sphere_triangle_vertices_to_area
+  end
 
-  subroutine sphere_triangle_vertices_to_centroid ( r, v1, v2, v3, vs ) &
-        bind(C, name="sphere_triangle_vertices_to_centroid")
+  subroutine sphere_triangle_vertices_to_centroid ( r, v1, v2, v3, vs )
 
   !*****************************************************************************80
   !
@@ -30300,31 +29893,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) VS(3), the coordinates of the "spherical
+  !    Output, real(real64) VS(3), the coordinates of the "spherical
   !    centroid" of the spherical triangle.
   !
 
-    real(dp) :: norm
-    real(dp), intent(in), value :: r
-    real(dp) :: r8vec_norm
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
-    real(dp), intent(out) :: vs(3)
+    real(real64) norm
+    real(real64) r
+    real(real64) r8vec_norm
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) vs(3)
 
-    vs(1:3) = ( v1(1:3) + v2(1:3) + v3(1:3) ) / 3.0_dp
+    vs(1:3) = ( v1(1:3) + v2(1:3) + v3(1:3) ) / 3.0e+00_real64
 
     norm = r8vec_norm ( 3, vs )
 
     vs(1:3) = r * vs(1:3) / norm
-  end subroutine sphere_triangle_vertices_to_centroid
+  end
 
-  subroutine sphere_triangle_vertices_to_orientation ( a, b, c, o ) &
-        bind(C, name="sphere_triangle_vertices_to_orientation")
+  subroutine sphere_triangle_vertices_to_orientation ( a, b, c, o )
 
   !*****************************************************************************80
   !
@@ -30360,24 +29952,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(3), B(3), C(3), three points on a sphere.
+  !    Input, real(real64) A(3), B(3), C(3), three points on a sphere.
   !
-  !    Output, integer(ip) O, is +1 if the spherical triangle is 
+  !    Output, integer(int32) O, is +1 if the spherical triangle is 
   !    judged to have positive orientation, and -1 otherwise.
   !
 
-    real(dp) :: a(3)
-    real(dp), intent(in) :: b(3)
-    real(dp), intent(in) :: c(3)
-    real(dp) :: cd(3)
-    real(dp) :: cp(3)
-    integer(ip), intent(out) :: o
-    real(dp) :: v1(3)
-    real(dp) :: v2(3)
+    real(real64) a(3)
+    real(real64) b(3)
+    real(real64) c(3)
+    real(real64) cd(3)
+    real(real64) cp(3)
+    integer(int32) o
+    real(real64) v1(3)
+    real(real64) v2(3)
   !
   !  Centroid.
   !
-    cd(1:3) = ( a(1:3) + b(1:3) + c(1:3) ) / 3.0_dp
+    cd(1:3) = ( a(1:3) + b(1:3) + c(1:3) ) / 3.0e+00_real64
   !
   !  Cross product ( C - B ) x ( A - B );
   !
@@ -30390,15 +29982,14 @@ contains
   !
   !  Compare the directions.
   !
-    if ( dot_product ( cp, cd ) < 0.0_dp ) then
+    if ( dot_product ( cp, cd ) < 0.0e+00_real64 ) then
       o = - 1
     else
       o = + 1
     end if
-  end subroutine sphere_triangle_vertices_to_orientation
+  end
 
-  subroutine sphere_triangle_vertices_to_sides ( r, v1, v2, v3, as, bs, cs ) &
-        bind(C, name="sphere_triangle_vertices_to_sides")
+  subroutine sphere_triangle_vertices_to_sides ( r, v1, v2, v3, as, bs, cs )
 
   !*****************************************************************************80
   !
@@ -30424,31 +30015,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the spherical
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the spherical
   !    triangle.
   !
-  !    Output, real(dp) AS, BS, CS, the (geodesic) length of the sides
+  !    Output, real(real64) AS, BS, CS, the (geodesic) length of the sides
   !    of the triangle.
   !
 
-    real(dp), intent(out) :: as
-    real(dp), intent(out) :: bs
-    real(dp), intent(out) :: cs
-    real(dp), intent(in), value :: r
-    real(dp) :: r8_acos
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) as
+    real(real64) bs
+    real(real64) cs
+    real(real64) r
+    real(real64) r8_acos
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     as = r * r8_acos ( dot_product ( v2(1:3), v3(1:3) ) / r**2 )
     bs = r * r8_acos ( dot_product ( v3(1:3), v1(1:3) ) / r**2 )
     cs = r * r8_acos ( dot_product ( v1(1:3), v2(1:3) ) / r**2 )
-  end subroutine sphere_triangle_vertices_to_sides
+  end
 
-  function sphere01_area_nd ( dim_num ) &
-        bind(C, name="sphere01_area_nd")
+  function sphere01_area_nd ( dim_num )
 
   !*****************************************************************************80
   !
@@ -30492,37 +30082,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the dimension of the space.
+  !    Input, integer(int32) DIM_NUM, the dimension of the space.
   !
-  !    Output, real(dp) SPHERE01_AREA_ND, the area of the sphere.
+  !    Output, real(real64) SPHERE01_AREA_ND, the area of the sphere.
   !
 
-    real(dp) :: area
-    integer(ip), intent(in), value :: dim_num
-    integer(ip) :: i
-    integer(ip) :: m
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: sphere01_area_nd
+    real(real64) area
+    integer(int32) dim_num
+    integer(int32) i
+    integer(int32) m
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) sphere01_area_nd
 
     if ( mod ( dim_num, 2 ) == 0 ) then
       m = dim_num / 2
-      area = 2.0_dp * ( r8_pi ) ** m
+      area = 2.0e+00_real64 * ( r8_pi ) ** m
       do i = 1, m - 1
-        area = area / real ( i, dp)
+        area = area / real ( i, real64)
       end do
     else
       m = ( dim_num - 1 ) / 2
-      area = ( r8_pi ) ** m * 2.0_dp ** dim_num
+      area = ( r8_pi ) ** m * 2.0e+00_real64 ** dim_num
       do i = m + 1, 2 * m
-        area = area / real ( i, dp)
+        area = area / real ( i, real64)
       end do
     end if
 
     sphere01_area_nd = area
-  end function sphere01_area_nd
+  end
 
-  subroutine sphere01_area_values ( n_data, n, area ) &
-        bind(C, name="sphere01_area_values")
+  subroutine sphere01_area_values ( n_data, n, area )
 
   !*****************************************************************************80
   !
@@ -30577,44 +30166,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) N_DATA.  The user sets N_DATA to 0
+  !    Input/output, integer(int32) N_DATA.  The user sets N_DATA to 0
   !    before the first call.  On each call, the routine increments N_DATA by 1,
   !    and returns the corresponding data; when there is no more data, the
   !    output value of N_DATA will be 0 again.
   !
-  !    Output, integer(ip) N, the spatial dimension.
+  !    Output, integer(int32) N, the spatial dimension.
   !
-  !    Output, real(dp) AREA, the area of the unit sphere
+  !    Output, real(real64) AREA, the area of the unit sphere
   !    in that dimension.
   !
 
-    integer(ip), parameter :: n_max = 20
+    integer(int32), parameter :: n_max = 20
 
-    real(dp), intent(out) :: area
-    real(dp), save, dimension ( n_max ) :: area_vec = (/ &
-      0.2000000000000000e+01_dp, &
-      0.6283185307179586e+01_dp, &
-      0.1256637061435917e+02_dp, &
-      0.1973920880217872e+02_dp, &
-      0.2631894506957162e+02_dp, &
-      0.3100627668029982e+02_dp, &
-      0.3307336179231981e+02_dp, &
-      0.3246969701133415e+02_dp, &
-      0.2968658012464836e+02_dp, &
-      0.2550164039877345e+02_dp, &
-      0.2072514267328890e+02_dp, &
-      0.1602315322625507e+02_dp, &
-      0.1183817381218268e+02_dp, &
-      0.8389703410491089e+01_dp, &
-      0.5721649212349567e+01_dp, &
-      0.3765290085742291e+01_dp, &
-      0.2396678817591364e+01_dp, &
-      0.1478625959000308e+01_dp, &
-      0.8858104195716824_dp, &
-      0.5161378278002812_dp /)
-    integer(ip) :: n_data
-    integer(ip) :: n
-    integer(ip), save, dimension ( n_max ) :: n_vec = (/ &
+    real(real64) area
+    real(real64), save, dimension ( n_max ) :: area_vec = (/ &
+      0.2000000000000000e+01_real64, &
+      0.6283185307179586e+01_real64, &
+      0.1256637061435917e+02_real64, &
+      0.1973920880217872e+02_real64, &
+      0.2631894506957162e+02_real64, &
+      0.3100627668029982e+02_real64, &
+      0.3307336179231981e+02_real64, &
+      0.3246969701133415e+02_real64, &
+      0.2968658012464836e+02_real64, &
+      0.2550164039877345e+02_real64, &
+      0.2072514267328890e+02_real64, &
+      0.1602315322625507e+02_real64, &
+      0.1183817381218268e+02_real64, &
+      0.8389703410491089e+01_real64, &
+      0.5721649212349567e+01_real64, &
+      0.3765290085742291e+01_real64, &
+      0.2396678817591364e+01_real64, &
+      0.1478625959000308e+01_real64, &
+      0.8858104195716824e+00_real64, &
+      0.5161378278002812e+00_real64 /)
+    integer(int32) n_data
+    integer(int32) n
+    integer(int32), save, dimension ( n_max ) :: n_vec = (/ &
        1, &
        2, &
        3, &
@@ -30645,15 +30234,14 @@ contains
     if ( n_max < n_data ) then
       n_data = 0
       n = 0
-      area = 0.0_dp
+      area = 0.0e+00_real64
     else
       n = n_vec(n_data)
       area = area_vec(n_data)
     end if
-  end subroutine sphere01_area_values
+  end
 
-  subroutine sphere01_sample_2d ( seed, x ) &
-        bind(C, name="sphere01_sample_2d")
+  subroutine sphere01_sample_2d ( seed, x )
 
   !*****************************************************************************80
   !
@@ -30679,28 +30267,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) X(2), a random point on the unit circle.
+  !    Output, real(real64) X(2), a random point on the unit circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: r8_uniform_01
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp) :: u
-    real(dp), intent(out) :: x(dim_num)
+    real(real64) r8_uniform_01
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) u
+    real(real64) x(dim_num)
 
     u = r8_uniform_01 ( seed )
 
-    x(1) = cos ( 2.0_dp * r8_pi * u )
-    x(2) = sin ( 2.0_dp * r8_pi * u )
-  end subroutine sphere01_sample_2d
+    x(1) = cos ( 2.0e+00_real64 * r8_pi * u )
+    x(2) = sin ( 2.0e+00_real64 * r8_pi * u )
+  end
 
-  subroutine sphere01_sample_3d ( seed, x ) &
-        bind(C, name="sphere01_sample_3d")
+  subroutine sphere01_sample_3d ( seed, x )
 
   !*****************************************************************************80
   !
@@ -30726,22 +30313,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) X(3), the sample point.
+  !    Output, real(real64) X(3), the sample point.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8_acos
-    real(dp) :: r8_uniform_01
-    real(dp) :: phi
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta
-    real(dp) :: vdot
-    real(dp), intent(out) :: x(dim_num)
+    real(real64) r8_acos
+    real(real64) r8_uniform_01
+    real(real64) phi
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) theta
+    real(real64) vdot
+    real(real64) x(dim_num)
   !
   !  Pick a uniformly random VDOT, which must be between -1 and 1.
   !  This represents the dot product of the random vector with the Z unit vector.
@@ -30751,7 +30338,7 @@ contains
   !  a patch of area uniformly.
   !
     vdot = r8_uniform_01 ( seed )
-    vdot = 2.0_dp * vdot - 1.0_dp
+    vdot = 2.0e+00_real64 * vdot - 1.0e+00_real64
 
     phi = r8_acos ( vdot )
   !
@@ -30759,15 +30346,14 @@ contains
   !  axis of the Z vector.
   !
     theta = r8_uniform_01 ( seed )
-    theta = 2.0_dp * r8_pi * theta
+    theta = 2.0e+00_real64 * r8_pi * theta
 
     x(1) = cos ( theta ) * sin ( phi )
     x(2) = sin ( theta ) * sin ( phi )
     x(3) = cos ( phi )
-  end subroutine sphere01_sample_3d
+  end
 
-  subroutine sphere01_sample_3d_2 ( seed, x ) &
-        bind(C, name="sphere01_sample_3d_2")
+  subroutine sphere01_sample_3d_2 ( seed, x )
 
   !*****************************************************************************80
   !
@@ -30806,34 +30392,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) X(3), the sample point.
+  !    Output, real(real64) X(3), the sample point.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8_uniform_01
-    real(dp) :: phi
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta
-    real(dp), intent(out) :: x(dim_num)
+    real(real64) r8_uniform_01
+    real(real64) phi
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) theta
+    real(real64) x(dim_num)
 
     phi = r8_uniform_01 ( seed )
     phi = r8_pi * phi
 
     theta = r8_uniform_01 ( seed )
-    theta = 2.0_dp * r8_pi * theta
+    theta = 2.0e+00_real64 * r8_pi * theta
 
     x(1) = cos ( theta ) * sin ( phi )
     x(2) = sin ( theta ) * sin ( phi )
     x(3) = cos ( phi )
-  end subroutine sphere01_sample_3d_2
+  end
 
-  subroutine sphere01_sample_nd ( dim_num, seed, x ) &
-        bind(C, name="sphere01_sample_nd")
+  subroutine sphere01_sample_nd ( dim_num, seed, x )
 
   !*****************************************************************************80
   !
@@ -30868,42 +30453,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) X(DIM_NUM), the random point.
+  !    Output, real(real64) X(DIM_NUM), the random point.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    integer(ip) :: i
-    real(dp) :: r8_uniform_01
-    real(dp) :: random_cosine
-    real(dp) :: random_sign
-    real(dp) :: random_sine
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(dim_num)
-    real(dp) :: xi
+    integer(int32) i
+    real(real64) r8_uniform_01
+    real(real64) random_cosine
+    real(real64) random_sign
+    real(real64) random_sine
+    integer(int32) seed
+    real(real64) x(dim_num)
+    real(real64) xi
 
-    x(1) = 1.0_dp
-    x(2:dim_num) = 0.0_dp
+    x(1) = 1.0e+00_real64
+    x(2:dim_num) = 0.0e+00_real64
 
     do i = 1, dim_num-1
       random_cosine = r8_uniform_01 ( seed )
-      random_cosine = 2.0_dp * random_cosine - 1.0_dp
+      random_cosine = 2.0e+00_real64 * random_cosine - 1.0e+00_real64
       random_sign = r8_uniform_01 ( seed )
-      random_sign = real ( 2 * int ( 2.0_dp * random_sign ) - 1, dp)
-      random_sine = random_sign * sqrt ( 1.0_dp - random_cosine**2 )
+      random_sign = real ( 2 * int ( 2.0e+00_real64 * random_sign ) - 1, real64)
+      random_sine = random_sign * sqrt ( 1.0e+00_real64 - random_cosine**2 )
       xi = x(i)
       x(i  ) = random_cosine * xi
       x(i+1) = random_sine   * xi
     end do
-  end subroutine sphere01_sample_nd
+  end
 
-  subroutine sphere01_sample_nd_2 ( dim_num, seed, x ) &
-        bind(C, name="sphere01_sample_nd_2")
+  subroutine sphere01_sample_nd_2 ( dim_num, seed, x )
 
   !*****************************************************************************80
   !
@@ -30932,29 +30516,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) X(DIM_NUM), the random point.
+  !    Output, real(real64) X(DIM_NUM), the random point.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: norm
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(dim_num)
+    real(real64) norm
+    integer(int32) seed
+    real(real64) x(dim_num)
 
     call r8vec_normal_01 ( dim_num, seed, x )
 
     norm = sqrt ( sum ( x(1:dim_num)**2 ) )
 
     x(1:dim_num) = x(1:dim_num) / norm
-  end subroutine sphere01_sample_nd_2
+  end
 
-  subroutine sphere01_sample_nd_3 ( dim_num, seed, x ) &
-        bind(C, name="sphere01_sample_nd_3")
+  subroutine sphere01_sample_nd_3 ( dim_num, seed, x )
 
   !*****************************************************************************80
   !
@@ -30989,25 +30572,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random number
+  !    Input/output, integer(int32) SEED, a seed for the random number
   !    generator.
   !
-  !    Output, real(dp) X(DIM_NUM), the random point.
+  !    Output, real(real64) X(DIM_NUM), the random point.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: norm
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(out) :: x(dim_num)
+    real(real64) norm
+    integer(int32) seed
+    real(real64) x(dim_num)
 
     do
 
       call r8vec_uniform_01 ( dim_num, seed, x )
 
-      x(1:dim_num) = 2.0_dp * x(1:dim_num) - 1.0_dp
+      x(1:dim_num) = 2.0e+00_real64 * x(1:dim_num) - 1.0e+00_real64
 
       norm = sqrt ( sum ( x(1:dim_num)**2 ) )
 
@@ -31017,10 +30600,9 @@ contains
       end if
 
     end do
-  end subroutine sphere01_sample_nd_3
+  end
 
-  function sphere01_volume_nd ( dim_num ) &
-        bind(C, name="sphere01_volume_nd")
+  function sphere01_volume_nd ( dim_num )
 
   !*****************************************************************************80
   !
@@ -31063,37 +30645,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Output, real(dp) SPHERE_UNIT_VOLUME_ND, the volume of the sphere.
+  !    Output, real(real64) SPHERE_UNIT_VOLUME_ND, the volume of the sphere.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip) :: i
-    integer(ip) :: m
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: sphere01_volume_nd
-    real(dp) :: volume
+    integer(int32) dim_num
+    integer(int32) i
+    integer(int32) m
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) sphere01_volume_nd
+    real(real64) volume
 
     if ( mod ( dim_num, 2 ) == 0 ) then
       m = dim_num / 2
       volume = r8_pi ** m
       do i = 1, m
-        volume = volume / real ( i, dp)
+        volume = volume / real ( i, real64)
       end do
     else
       m = ( dim_num - 1 ) / 2
-      volume = r8_pi ** m * 2.0_dp**dim_num
+      volume = r8_pi ** m * 2.0e+00_real64**dim_num
       do i = m + 1, 2 * m + 1
-        volume = volume / real ( i, dp)
+        volume = volume / real ( i, real64)
       end do
     end if
 
     sphere01_volume_nd = volume
-  end function sphere01_volume_nd
+  end
 
-  subroutine sphere01_volume_values ( n_data, n, volume ) &
-        bind(C, name="sphere01_volume_values")
+  subroutine sphere01_volume_values ( n_data, n, volume )
 
   !*****************************************************************************80
   !
@@ -31152,22 +30733,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) N_DATA.  The user sets N_DATA to 0
+  !    Input/output, integer(int32) N_DATA.  The user sets N_DATA to 0
   !    before the first call.  On each call, the routine increments N_DATA by 1,
   !    and returns the corresponding data; when there is no more data, the
   !    output value of N_DATA will be 0 again.
   !
-  !    Output, integer(ip) N, the spatial dimension.
+  !    Output, integer(int32) N, the spatial dimension.
   !
-  !    Output, real(dp) VOLUME, the volume of the unit
+  !    Output, real(real64) VOLUME, the volume of the unit
   !    sphere in that dimension.
   !
 
-    integer(ip), parameter :: n_max = 20
+    integer(int32), parameter :: n_max = 20
 
-    integer(ip), intent(inout) :: n_data
-    integer(ip), intent(out) :: n
-    integer(ip), save, dimension ( n_max ) :: n_vec = (/ &
+    integer(int32) n_data
+    integer(int32) n
+    integer(int32), save, dimension ( n_max ) :: n_vec = (/ &
        1,  2, &
        3,  4, &
        5,  6, &
@@ -31178,28 +30759,28 @@ contains
       15, 16, &
       17, 18, &
       19, 20 /)
-    real(dp) :: volume
-    real(dp), save, dimension ( n_max ) :: volume_vec = (/ &
-      0.2000000000000000e+01_dp, &
-      0.3141592653589793e+01_dp, &
-      0.4188790204786391e+01_dp, &
-      0.4934802200544679e+01_dp, &
-      0.5263789013914325e+01_dp, &
-      0.5167712780049970e+01_dp, &
-      0.4724765970331401e+01_dp, &
-      0.4058712126416768e+01_dp, &
-      0.3298508902738707e+01_dp, &
-      0.2550164039877345e+01_dp, &
-      0.1884103879389900e+01_dp, &
-      0.1335262768854589e+01_dp, &
-      0.9106287547832831_dp, &
-      0.5992645293207921_dp, &
-      0.3814432808233045_dp, &
-      0.2353306303588932_dp, &
-      0.1409811069171390_dp, &
-      0.8214588661112823e-01_dp, &
-      0.4662160103008855e-01_dp, &
-      0.2580689139001406e-01_dp /)
+    real(real64) volume
+    real(real64), save, dimension ( n_max ) :: volume_vec = (/ &
+      0.2000000000000000e+01_real64, &
+      0.3141592653589793e+01_real64, &
+      0.4188790204786391e+01_real64, &
+      0.4934802200544679e+01_real64, &
+      0.5263789013914325e+01_real64, &
+      0.5167712780049970e+01_real64, &
+      0.4724765970331401e+01_real64, &
+      0.4058712126416768e+01_real64, &
+      0.3298508902738707e+01_real64, &
+      0.2550164039877345e+01_real64, &
+      0.1884103879389900e+01_real64, &
+      0.1335262768854589e+01_real64, &
+      0.9106287547832831e+00_real64, &
+      0.5992645293207921e+00_real64, &
+      0.3814432808233045e+00_real64, &
+      0.2353306303588932e+00_real64, &
+      0.1409811069171390e+00_real64, &
+      0.8214588661112823e-01_real64, &
+      0.4662160103008855e-01_real64, &
+      0.2580689139001406e-01_real64 /)
 
     if ( n_data < 0 ) then
       n_data = 0
@@ -31210,15 +30791,14 @@ contains
     if ( n_max < n_data ) then
       n_data = 0
       n = 0
-      volume = 0.0_dp
+      volume = 0.0e+00_real64
     else
       n = n_vec(n_data)
       volume = volume_vec(n_data)
     end if
-  end subroutine sphere01_volume_values
+  end
 
-  subroutine sphere01_distance_xyz ( xyz1, xyz2, dist ) &
-        bind(C, name="sphere01_distance_xyz")
+  subroutine sphere01_distance_xyz ( xyz1, xyz2, dist )
 
   !*****************************************************************************80
   !
@@ -31253,25 +30833,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XYZ1(3), the coordinates of the first point.
+  !    Input, real(real64) XYZ1(3), the coordinates of the first point.
   !
-  !    Input, real(dp) XYZ2(3), the coordinates of the second point.
+  !    Input, real(real64) XYZ2(3), the coordinates of the second point.
   !
-  !    Output, real(dp) DIST, the great circle distance between
+  !    Output, real(real64) DIST, the great circle distance between
   !    the points.
   !
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp) :: lat1
-    real(dp) :: lat2
-    real(dp) :: lon1
-    real(dp) :: lon2
-    real(dp) :: r8_asin
-    real(dp) :: r8_atan
-    real(dp) :: top
-    real(dp), intent(in) :: xyz1(3)
-    real(dp), intent(in) :: xyz2(3)
+    real(real64) bot
+    real(real64) dist
+    real(real64) lat1
+    real(real64) lat2
+    real(real64) lon1
+    real(real64) lon2
+    real(real64) r8_asin
+    real(real64) r8_atan
+    real(real64) top
+    real(real64) xyz1(3)
+    real(real64) xyz2(3)
 
     lat1 = r8_asin ( xyz1(3) )
     lon1 = r8_atan ( xyz1(2), xyz1(1) )
@@ -31289,10 +30869,9 @@ contains
         + cos ( lat1 ) * cos ( lat2 ) * cos ( lon1 - lon2 )
 
     dist = atan2 ( top, bot )
-  end subroutine sphere01_distance_xyz
+  end
 
-  function sphere01_polygon_area ( n, lat, lon ) &
-        bind(C, name="sphere01_polygon_area")
+  function sphere01_polygon_area ( n, lat, lon )
 
   !*****************************************************************************80
   !
@@ -31347,41 +30926,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of vertices.
+  !    Input, integer(int32) N, the number of vertices.
   !
-  !    Input, real(dp) LAT[N], LON[N], the latitudes and longitudes 
+  !    Input, real(real64) LAT[N], LON[N], the latitudes and longitudes 
   !    of the vertices of the spherical polygon.
   !
-  !    Output, real(dp) SPHERE01_POLYGON_AREA, the area of the 
+  !    Output, real(real64) SPHERE01_POLYGON_AREA, the area of the 
   !    spherical polygon, measured in spherical radians.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a
-    real(dp) :: area
-    real(dp) :: b
-    real(dp) :: beta1
-    real(dp) :: beta2
-    real(dp) :: c
-    real(dp) :: cos_b1
-    real(dp) :: cos_b2
-    real(dp) :: excess
-    real(dp) :: hav_a
-    real(dp) :: haversine
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp) :: lam
-    real(dp) :: lam1
-    real(dp) :: lam2
-    real(dp) :: lat(n)
-    real(dp) :: lon(n)
-    real(dp), parameter :: r8_pi_half = 1.5707963267948966192313_dp
-    real(dp) :: s
-    real(dp) :: sphere01_polygon_area
-    real(dp) :: t
+    real(real64) a
+    real(real64) area
+    real(real64) b
+    real(real64) beta1
+    real(real64) beta2
+    real(real64) c
+    real(real64) cos_b1
+    real(real64) cos_b2
+    real(real64) excess
+    real(real64) hav_a
+    real(real64) haversine
+    integer(int32) j
+    integer(int32) k
+    real(real64) lam
+    real(real64) lam1
+    real(real64) lam2
+    real(real64) lat(n)
+    real(real64) lon(n)
+    real(real64), parameter :: r8_pi_half = 1.5707963267948966192313e+00_real64
+    real(real64) s
+    real(real64) sphere01_polygon_area
+    real(real64) t
 
-    area = 0.0_dp
+    area = 0.0e+00_real64
 
     do j = 1, n + 1
 
@@ -31406,27 +30985,27 @@ contains
 
         hav_a = haversine ( beta2 - beta1 ) &
           + cos_b1 * cos_b2 * haversine ( lam2 - lam1 )
-        a = 2.0_dp * asin ( sqrt ( hav_a ) )
+        a = 2.0e+00_real64 * asin ( sqrt ( hav_a ) )
 
         b = r8_pi_half - beta2
         c = r8_pi_half - beta1
-        s = 0.5_dp * ( a + b + c )
+        s = 0.5e+00_real64 * ( a + b + c )
   !
   !  Given the three sides of a spherical triangle, we can use a formula
   !  to find the spherical excess.
   !
-        t = tan ( s / 2.0_dp ) * tan ( ( s - a ) / 2.0_dp ) &
-          * tan ( ( s - b ) / 2.0_dp ) * tan ( ( s - c ) / 2.0_dp )
+        t = tan ( s / 2.0e+00_real64 ) * tan ( ( s - a ) / 2.0e+00_real64 ) &
+          * tan ( ( s - b ) / 2.0e+00_real64 ) * tan ( ( s - c ) / 2.0e+00_real64 )
 
-        excess = abs ( 4.0_dp * atan ( sqrt ( abs ( t ) ) ) )
+        excess = abs ( 4.0e+00_real64 * atan ( sqrt ( abs ( t ) ) ) )
 
         if ( lam1 < lam2 ) then
           lam = lam2 - lam1
         else
-          lam = lam2 - lam1 + 4.0_dp * r8_pi_half
+          lam = lam2 - lam1 + 4.0e+00_real64 * r8_pi_half
         end if
 
-        if ( 2.0_dp * r8_pi_half < lam ) then
+        if ( 2.0e+00_real64 * r8_pi_half < lam ) then
           excess = -excess 
         end if
 
@@ -31437,10 +31016,9 @@ contains
     end do
 
     sphere01_polygon_area = abs ( area )
-  end function sphere01_polygon_area
+  end
 
-  subroutine sphere01_triangle_angles_to_area ( a, b, c, area ) &
-        bind(C, name="sphere01_triangle_angles_to_area")
+  subroutine sphere01_triangle_angles_to_area ( a, b, c, area )
 
   !*****************************************************************************80
   !
@@ -31477,24 +31055,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, the angles of the triangle.
+  !    Input, real(real64) A, B, C, the angles of the triangle.
   !
-  !    Output, real(dp) AREA, the area of the sphere.
+  !    Output, real(real64) AREA, the area of the sphere.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
   !
   !  Apply Girard's formula.
   !
     area = a + b + c - r8_pi
-  end subroutine sphere01_triangle_angles_to_area
+  end
 
-  subroutine sphere01_triangle_sides_to_angles ( as, bs, cs, a, b, c ) &
-        bind(C, name="sphere01_triangle_sides_to_angles")
+  subroutine sphere01_triangle_sides_to_angles ( as, bs, cs, a, b, c )
 
   !*****************************************************************************80
   !
@@ -31514,50 +31091,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) AS, BS, CS, the (geodesic) length of the 
+  !    Input, real(real64) AS, BS, CS, the (geodesic) length of the 
   !    sides of the triangle.
   !
-  !    Output, real(dp) A, B, C, the spherical angles of the triangle.
+  !    Output, real(real64) A, B, C, the spherical angles of the triangle.
   !    Angle A is opposite the side of length AS, and so on.
   !
 
-    real(dp), intent(out) :: a
-    real(dp), intent(in), value :: as
-    real(dp) :: asu
-    real(dp), intent(out) :: b
-    real(dp), intent(in), value :: bs
-    real(dp) :: bsu
-    real(dp), intent(out) :: c
-    real(dp), intent(in), value :: cs
-    real(dp) :: csu
-    real(dp) :: ssu
-    real(dp) :: tan_a2
-    real(dp) :: tan_b2
-    real(dp) :: tan_c2
+    real(real64) a
+    real(real64) as
+    real(real64) asu
+    real(real64) b
+    real(real64) bs
+    real(real64) bsu
+    real(real64) c
+    real(real64) cs
+    real(real64) csu
+    real(real64) ssu
+    real(real64) tan_a2
+    real(real64) tan_b2
+    real(real64) tan_c2
 
     asu = as
     bsu = bs
     csu = cs
-    ssu = ( asu + bsu + csu ) / 2.0_dp
+    ssu = ( asu + bsu + csu ) / 2.0e+00_real64
 
     tan_a2 = sqrt ( ( sin ( ssu - bsu ) * sin ( ssu - csu ) ) / &
                     ( sin ( ssu ) * sin ( ssu - asu )     ) )
 
-    a = 2.0_dp * atan ( tan_a2 )
+    a = 2.0e+00_real64 * atan ( tan_a2 )
 
     tan_b2 = sqrt ( ( sin ( ssu - asu ) * sin ( ssu - csu ) ) / &
                     ( sin ( ssu ) * sin ( ssu - bsu )     ) )
 
-    b = 2.0_dp * atan ( tan_b2 )
+    b = 2.0e+00_real64 * atan ( tan_b2 )
 
     tan_c2 = sqrt ( ( sin ( ssu - asu ) * sin ( ssu - bsu ) ) / &
                     ( sin ( ssu ) * sin ( ssu - csu )     ) )
 
-    c = 2.0_dp * atan ( tan_c2 )
-  end subroutine sphere01_triangle_sides_to_angles
+    c = 2.0e+00_real64 * atan ( tan_c2 )
+  end
 
-  subroutine sphere01_triangle_vertices_to_angles ( v1, v2, v3, a, b, c ) &
-        bind(C, name="sphere01_triangle_vertices_to_angles")
+  subroutine sphere01_triangle_vertices_to_angles ( v1, v2, v3, a, b, c )
 
   !*****************************************************************************80
   !
@@ -31586,20 +31162,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) A, B, C, the angles of the spherical triangle.
+  !    Output, real(real64) A, B, C, the angles of the spherical triangle.
   !
 
-    real(dp), intent(out) :: a
-    real(dp) :: as
-    real(dp), intent(out) :: b
-    real(dp) :: bs
-    real(dp), intent(out) :: c
-    real(dp) :: cs
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) a
+    real(real64) as
+    real(real64) b
+    real(real64) bs
+    real(real64) c
+    real(real64) cs
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
   !
   !  Compute the lengths of the sides of the spherical triangle.
   !
@@ -31608,10 +31184,9 @@ contains
   !  Get the spherical angles.
   !
     call sphere01_triangle_sides_to_angles ( as, bs, cs, a, b, c )
-  end subroutine sphere01_triangle_vertices_to_angles
+  end
 
-  subroutine sphere01_triangle_vertices_to_area ( v1, v2, v3, area ) &
-        bind(C, name="sphere01_triangle_vertices_to_area")
+  subroutine sphere01_triangle_vertices_to_area ( v1, v2, v3, area )
 
   !*****************************************************************************80
   !
@@ -31648,21 +31223,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) AREA, the area of the sphere.
+  !    Output, real(real64) AREA, the area of the sphere.
   !
 
-    real(dp), intent(out) :: area
-    real(dp) :: a
-    real(dp) :: as
-    real(dp) :: b
-    real(dp) :: bs
-    real(dp) :: c
-    real(dp) :: cs
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) area
+    real(real64) a
+    real(real64) as
+    real(real64) b
+    real(real64) bs
+    real(real64) c
+    real(real64) cs
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
   !
   !  Compute the lengths of the sides of the spherical triangle.
   !
@@ -31675,10 +31250,9 @@ contains
   !  Get the area.
   !
     call sphere01_triangle_angles_to_area ( a, b, c, area )
-  end subroutine sphere01_triangle_vertices_to_area
+  end
 
-  subroutine sphere01_triangle_vertices_to_centroid ( v1, v2, v3, vs ) &
-        bind(C, name="sphere01_triangle_vertices_to_centroid")
+  subroutine sphere01_triangle_vertices_to_centroid ( v1, v2, v3, vs )
 
   !*****************************************************************************80
   !
@@ -31726,27 +31300,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) VS(3), the coordinates of the "spherical
+  !    Output, real(real64) VS(3), the coordinates of the "spherical
   !    centroid" of the spherical triangle.
   !
 
-    real(dp) :: norm
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
-    real(dp), intent(out) :: vs(3)
+    real(real64) norm
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) vs(3)
 
-    vs(1:3) = ( v1(1:3) + v2(1:3) + v3(1:3) ) / 3.0_dp
+    vs(1:3) = ( v1(1:3) + v2(1:3) + v3(1:3) ) / 3.0e+00_real64
 
     norm = sqrt ( sum ( vs(1:3)**2 ) )
 
     vs(1:3) = vs(1:3) / norm
-  end subroutine sphere01_triangle_vertices_to_centroid
+  end
 
-  subroutine sphere01_triangle_vertices_to_midpoints ( v1, v2, v3, m1, m2, m3 ) &
-        bind(C, name="sphere01_triangle_vertices_to_midpoints")
+  subroutine sphere01_triangle_vertices_to_midpoints ( v1, v2, v3, m1, m2, m3 )
 
   !*****************************************************************************80
   !
@@ -31770,35 +31343,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) M1(3), M2(3), M3(3), the coordinates of 
+  !    Output, real(real64) M1(3), M2(3), M3(3), the coordinates of 
   !    the midpoints of the sides of the spherical triangle.
   !
 
-    real(dp), intent(out) :: m1(3)
-    real(dp), intent(out) :: m2(3)
-    real(dp), intent(out) :: m3(3)
-    real(dp) :: norm
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) m1(3)
+    real(real64) m2(3)
+    real(real64) m3(3)
+    real(real64) norm
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
-    m1(1:3) = ( v1(1:3) + v2(1:3) ) / 2.0_dp
+    m1(1:3) = ( v1(1:3) + v2(1:3) ) / 2.0e+00_real64
     norm = sqrt ( sum ( m1(1:3)**2 ) )
     m1(1:3) = m1(1:3) / norm
 
-    m2(1:3) = ( v2(1:3) + v3(1:3) ) / 2.0_dp
+    m2(1:3) = ( v2(1:3) + v3(1:3) ) / 2.0e+00_real64
     norm = sqrt ( sum ( m2(1:3)**2 ) )
     m2(1:3) = m2(1:3) / norm
 
-    m3(1:3) = ( v3(1:3) + v1(1:3) ) / 2.0_dp
+    m3(1:3) = ( v3(1:3) + v1(1:3) ) / 2.0e+00_real64
     norm = sqrt ( sum ( m3(1:3)**2 ) )
     m3(1:3) = m3(1:3) / norm
-  end subroutine sphere01_triangle_vertices_to_midpoints
+  end
 
-  subroutine sphere01_triangle_vertices_to_sides ( v1, v2, v3, as, bs, cs ) &
-        bind(C, name="sphere01_triangle_vertices_to_sides")
+  subroutine sphere01_triangle_vertices_to_sides ( v1, v2, v3, as, bs, cs )
 
   !*****************************************************************************80
   !
@@ -31818,27 +31390,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the spherical
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the spherical
   !    triangle.
   !
-  !    Output, real(dp) AS, BS, CS, the (geodesic) length of the 
+  !    Output, real(real64) AS, BS, CS, the (geodesic) length of the 
   !    sides of the triangle.
   !
 
-    real(dp), intent(out) :: as
-    real(dp), intent(out) :: bs
-    real(dp), intent(out) :: cs
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) as
+    real(real64) bs
+    real(real64) cs
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     as = acos ( dot_product ( v2(1:3), v3(1:3) ) )
     bs = acos ( dot_product ( v3(1:3), v1(1:3) ) )
     cs = acos ( dot_product ( v1(1:3), v2(1:3) ) )
-  end subroutine sphere01_triangle_vertices_to_sides
+  end
 
-  subroutine string_2d ( nvec, p1, p2, string_num, order, string ) &
-        bind(C, name="string_2d")
+  subroutine string_2d ( nvec, p1, p2, string_num, order, string )
 
   !*****************************************************************************80
   !
@@ -31890,40 +31461,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NVEC, the number of line segments to be 
+  !    Input, integer(int32) NVEC, the number of line segments to be 
   !    analyzed.
   !
-  !    Input/output, real(dp) P1(2,NVEC), P2VEC(2,NVEC), the 
+  !    Input/output, real(real64) P1(2,NVEC), P2VEC(2,NVEC), the 
   !    line segments.
   !
-  !    Output, integer(ip) ORDER(NVEC), the order vector.
+  !    Output, integer(int32) ORDER(NVEC), the order vector.
   !
-  !    Output, integer(ip) STRING(NVEC), the string to which each 
+  !    Output, integer(int32) STRING(NVEC), the string to which each 
   !    segment belongs.
   !
-  !    Output, integer(ip) STRING_NUM, the number of strings created.
+  !    Output, integer(int32) STRING_NUM, the number of strings created.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: nvec
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) nvec
 
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
-    integer(ip) :: jval
-    integer(ip) :: kval
-    integer(ip) :: match
-    integer(ip), intent(out) :: order(nvec)
-    real(dp), intent(inout) :: p1(dim_num,nvec)
-    real(dp) :: p2(dim_num,nvec)
-    integer(ip) :: seed
-    integer(ip), intent(out) :: string(nvec)
-    integer(ip), intent(out) :: string_num
-    real(dp) :: x1val
-    real(dp) :: x2val
-    real(dp) :: y1val
-    real(dp) :: y2val
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32) jval
+    integer(int32) kval
+    integer(int32) match
+    integer(int32) order(nvec)
+    real(real64) p1(dim_num,nvec)
+    real(real64) p2(dim_num,nvec)
+    integer(int32) seed
+    integer(int32) string(nvec)
+    integer(int32) string_num
+    real(real64) x1val
+    real(real64) x2val
+    real(real64) y1val
+    real(real64) y2val
   !
   !  Mark STRING so that each segment is alone.
   !
@@ -32092,10 +31663,9 @@ contains
       end if
 
     end do
-  end subroutine string_2d
+  end
 
-  subroutine super_ellipse_points_2d ( pc, r1, r2, expo, psi, n, p ) &
-        bind(C, name="super_ellipse_points_2d")
+  subroutine super_ellipse_points_2d ( pc, r1, r2, expo, psi, n, p )
 
   !*****************************************************************************80
   !
@@ -32135,56 +31705,56 @@ contains
   ! 
   !  Parameters:
   !
-  !    Input, real(dp) PC(2), the center of the superellipse.
+  !    Input, real(real64) PC(2), the center of the superellipse.
   !
-  !    Input, real(dp) R1, R2, the "radius" of the superellipse
+  !    Input, real(real64) R1, R2, the "radius" of the superellipse
   !    in the major and minor axis directions.  A circle has these values equal.
   !
-  !    Input, real(dp) EXPO, the exponent of the superellipse. 
+  !    Input, real(real64) EXPO, the exponent of the superellipse. 
   !    0 = a rectangle;
   !    between 0 and 1, a "rounded" rectangle;
   !    1.0 = an ellipse;
   !    2.0 = a diamond;
   !    > 2.0 a pinched shape.
   !
-  !    Input, real(dp) PSI, the angle that the major axis of the
+  !    Input, real(real64) PSI, the angle that the major axis of the
   !    superellipse makes with the X axis.  A value of 0.0 means that the
   !    major and minor axes of the superellipse will be the X and Y 
   !    coordinate axes.
   !
-  !    Input, integer(ip) N, the number of points desired.  N must
+  !    Input, integer(int32) N, the number of points desired.  N must
   !    be at least 1.
   !
-  !    Output, real(dp) P(2,N), the coordinates of points 
+  !    Output, real(real64) P(2,N), the coordinates of points 
   !    on the superellipse.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: act
-    real(dp) :: ast
-    integer(ip) :: i
-    real(dp), intent(in), value :: expo
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp), intent(in) :: pc(dim_num)
-    real(dp), intent(in), value :: psi
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: sct
-    real(dp) :: sst
-    real(dp) :: theta
+    real(real64) act
+    real(real64) ast
+    integer(int32) i
+    real(real64) expo
+    real(real64) p(dim_num,n)
+    real(real64) pc(dim_num)
+    real(real64) psi
+    real(real64) r1
+    real(real64) r2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) sct
+    real(real64) sst
+    real(real64) theta
 
     do i = 1, n
 
-      theta = ( 2.0_dp * r8_pi * real ( i - 1, dp) ) &
-        / real ( n, dp)
+      theta = ( 2.0e+00_real64 * r8_pi * real ( i - 1, real64) ) &
+        / real ( n, real64)
 
       act = abs ( cos ( theta ) )
-      sct = sign ( 1.0_dp, cos ( theta ) )
+      sct = sign ( 1.0e+00_real64, cos ( theta ) )
       ast = abs ( sin ( theta ) )
-      sst = sign ( 1.0_dp, sin ( theta ) )
+      sst = sign ( 1.0e+00_real64, sin ( theta ) )
 
       p(1,i) = pc(1) + r1 * cos ( psi ) * sct * ( act ) ** expo &
                      - r2 * sin ( psi ) * sst * ( ast ) ** expo
@@ -32193,10 +31763,9 @@ contains
                      + r2 * cos ( psi ) * sst * ( ast ) ** expo
 
     end do
-  end subroutine super_ellipse_points_2d
+  end
 
-  subroutine tetrahedron_barycentric_3d ( tetra, p, c ) &
-        bind(C, name="tetrahedron_barycentric_3d")
+  subroutine tetrahedron_barycentric_3d ( tetra, p, c )
 
   !*****************************************************************************80
   !
@@ -32229,23 +31798,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Input, real(dp) P(3), the point to be checked.
+  !    Input, real(real64) P(3), the point to be checked.
   !
-  !    Output, real(dp) C(4), the barycentric coordinates of P with
+  !    Output, real(real64) C(4), the barycentric coordinates of P with
   !    respect to the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), parameter :: rhs_num = 1
+    integer(int32), parameter :: dim_num = 3
+    integer(int32), parameter :: rhs_num = 1
 
-    real(dp) :: a(dim_num,dim_num+rhs_num)
-    real(dp), intent(out) :: c(dim_num+1)
-    integer(ip) :: i
-    integer(ip) :: info
-    real(dp), intent(in) :: p(dim_num)
-    real(dp) :: tetra(dim_num,4)
+    real(real64) a(dim_num,dim_num+rhs_num)
+    real(real64) c(dim_num+1)
+    integer(int32) i
+    integer(int32) info
+    real(real64) p(dim_num)
+    real(real64) tetra(dim_num,4)
   !
   !  Set up the linear system
   !
@@ -32276,11 +31845,10 @@ contains
 
     c(2:4) = a(1:dim_num,4)
 
-    c(1) = 1.0_dp - sum ( c(2:4) )
-  end subroutine tetrahedron_barycentric_3d
+    c(1) = 1.0e+00_real64 - sum ( c(2:4) )
+  end
 
-  subroutine tetrahedron_centroid_3d ( tetra, centroid ) &
-        bind(C, name="tetrahedron_centroid_3d")
+  subroutine tetrahedron_centroid_3d ( tetra, centroid )
 
   !*****************************************************************************80
   !
@@ -32300,24 +31868,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) CENTROID(3), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(3), the coordinates of the centroid.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: centroid(dim_num)
-    integer(ip) :: i
-    real(dp) :: tetra(dim_num,4)
+    real(real64) centroid(dim_num)
+    integer(int32) i
+    real(real64) tetra(dim_num,4)
 
     do i = 1, dim_num
-      centroid(i) = sum ( tetra(i,1:4) ) / 4.0_dp
+      centroid(i) = sum ( tetra(i,1:4) ) / 4.0e+00_real64
     end do
-  end subroutine tetrahedron_centroid_3d
+  end
 
-  subroutine tetrahedron_circumsphere_3d ( tetra, r, pc ) &
-        bind(C, name="tetrahedron_circumsphere_3d")
+  subroutine tetrahedron_circumsphere_3d ( tetra, r, pc )
 
   !*****************************************************************************80
   !
@@ -32359,23 +31926,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) R, PC(3), the center of the
+  !    Output, real(real64) R, PC(3), the center of the
   !    circumscribed sphere, and its radius.  If the linear system is
   !    singular, then R = -1, PC(1:3) = 0.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), parameter :: rhs_num = 1
+    integer(int32), parameter :: dim_num = 3
+    integer(int32), parameter :: rhs_num = 1
 
-    real(dp) :: a(dim_num,dim_num+rhs_num)
-    integer(ip) :: i
-    integer(ip) :: info
-    integer(ip) :: j
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(out) :: r
-    real(dp) :: tetra(dim_num,4)
+    real(real64) a(dim_num,dim_num+rhs_num)
+    integer(int32) i
+    integer(int32) info
+    integer(int32) j
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) tetra(dim_num,4)
   !
   !  Set up the linear system.
   !
@@ -32396,19 +31963,18 @@ contains
   !  If the system was singular, return a consolation prize.
   !
     if ( info /= 0 ) then
-      r = -1.0_dp
-      pc(1:dim_num) = 0.0_dp
+      r = -1.0e+00_real64
+      pc(1:dim_num) = 0.0e+00_real64
     end if
   !
   !  Compute the radius and center.
   !
-    r = 0.5_dp * sqrt ( sum ( a(1:dim_num,4)**2 ) )
+    r = 0.5e+00_real64 * sqrt ( sum ( a(1:dim_num,4)**2 ) )
 
-    pc(1:dim_num) = tetra(1:dim_num,1) + 0.5_dp * a(1:dim_num,4)
-  end subroutine tetrahedron_circumsphere_3d
+    pc(1:dim_num) = tetra(1:dim_num,1) + 0.5e+00_real64 * a(1:dim_num,4)
+  end
 
-  subroutine tetrahedron_contains_point_3d ( tetra, p, inside ) &
-        bind(C, name="tetrahedron_contains_point_3d")
+  subroutine tetrahedron_contains_point_3d ( tetra, p, inside )
 
   !*****************************************************************************80
   !
@@ -32434,35 +32000,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Input, real(dp) P(3), the point to be checked.
+  !    Input, real(real64) P(3), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if P is inside the 
   !    tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: c(dim_num+1)
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: tetra(dim_num,4)
+    real(real64) c(dim_num+1)
+    logical inside
+    real(real64) p(dim_num)
+    real(real64) tetra(dim_num,4)
 
     call tetrahedron_barycentric_3d ( tetra, p, c )
   !
   !  If the point is in the tetrahedron, its barycentric coordinates
   !  must be nonnegative.
   !
-    if ( any ( c(1:dim_num+1) < 0.0_dp ) ) then
+    if ( any ( c(1:dim_num+1) < 0.0e+00_real64 ) ) then
       inside = .false.
     else
       inside = .true.
     end if
-  end subroutine tetrahedron_contains_point_3d
+  end
 
-  subroutine tetrahedron_dihedral_angles_3d ( tetra, angle ) &
-        bind(C, name="tetrahedron_dihedral_angles_3d")
+  subroutine tetrahedron_dihedral_angles_3d ( tetra, angle )
 
   !*****************************************************************************80
   !
@@ -32482,25 +32047,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron,
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron,
   !    which can be labeled as A, B, C and D.
   !
-  !    Output, real(dp) ANGLE(6), the dihedral angles along the
+  !    Output, real(real64) ANGLE(6), the dihedral angles along the
   !    axes AB, AC, AD, BC, BD and CD, respectively.
   !
 
-    real(dp) :: ab(3)
-    real(dp) :: abc_normal(3)
-    real(dp) :: abd_normal(3)
-    real(dp) :: ac(3)
-    real(dp) :: acd_normal(3)
-    real(dp) :: ad(3)
-    real(dp), intent(out) :: angle(6)
-    real(dp) :: bc(3)
-    real(dp) :: bcd_normal(3)
-    real(dp) :: bd(3)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) ab(3)
+    real(real64) abc_normal(3)
+    real(real64) abd_normal(3)
+    real(real64) ac(3)
+    real(real64) acd_normal(3)
+    real(real64) ad(3)
+    real(real64) angle(6)
+    real(real64) bc(3)
+    real(real64) bcd_normal(3)
+    real(real64) bd(3)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) tetra(3,4)
 
     ab(1:3) = tetra(1:3,2) - tetra(1:3,1)
     ac(1:3) = tetra(1:3,3) - tetra(1:3,1)
@@ -32521,10 +32086,9 @@ contains
     call r8vec_angle_3d ( acd_normal, bcd_normal, angle(6) )
 
     angle(1:6) = r8_pi - angle(1:6)
-  end subroutine tetrahedron_dihedral_angles_3d
+  end
 
-  subroutine tetrahedron_edge_length_3d ( tetra, edge_length ) &
-        bind(C, name="tetrahedron_edge_length_3d")
+  subroutine tetrahedron_edge_length_3d ( tetra, edge_length )
 
   !*****************************************************************************80
   !
@@ -32544,19 +32108,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) EDGE_LENGTH(6), the length of the edges.
+  !    Output, real(real64) EDGE_LENGTH(6), the length of the edges.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: r8vec_norm
-    real(dp), intent(out) :: edge_length(6)
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip) :: k
-    real(dp), intent(in) :: tetra(dim_num,4)
+    real(real64) r8vec_norm
+    real(real64) edge_length(6)
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) k
+    real(real64) tetra(dim_num,4)
 
     k = 0
     do j1 = 1, 3
@@ -32566,10 +32130,9 @@ contains
           tetra(1:dim_num,j2) - tetra(1:dim_num,j1) )
       end do
     end do
-  end subroutine tetrahedron_edge_length_3d
+  end
 
-  subroutine tetrahedron_face_angles_3d ( tetra, angles ) &
-        bind(C, name="tetrahedron_face_angles_3d")
+  subroutine tetrahedron_face_angles_3d ( tetra, angles )
 
   !*****************************************************************************80
   !
@@ -32594,14 +32157,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) ANGLES(3,4), the face angles.
+  !    Output, real(real64) ANGLES(3,4), the face angles.
   !
 
-    real(dp), intent(out) :: angles(3,4)
-    real(dp) :: tri(3,3)
-    real(dp) :: tetra(3,4)
+    real(real64) angles(3,4)
+    real(real64) tri(3,3)
+    real(real64) tetra(3,4)
   !
   !  Face 123
   !
@@ -32624,10 +32187,9 @@ contains
   !
     tri(1:3,1:3) = tetra(1:3,2:4)
     call triangle_angles_3d ( tri, angles(1:3,4) )
-  end subroutine tetrahedron_face_angles_3d
+  end
 
-  subroutine tetrahedron_face_areas_3d ( tetra, areas ) &
-        bind(C, name="tetrahedron_face_areas_3d")
+  subroutine tetrahedron_face_areas_3d ( tetra, areas )
 
   !*****************************************************************************80
   !
@@ -32652,14 +32214,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4) the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4) the tetrahedron vertices.
   !
-  !    Output, real(dp) AREAS(4), the face areas.
+  !    Output, real(real64) AREAS(4), the face areas.
   !
 
-    real(dp), intent(out) :: areas(4)
-    real(dp) :: tri(3,3)
-    real(dp) :: tetra(3,4)
+    real(real64) areas(4)
+    real(real64) tri(3,3)
+    real(real64) tetra(3,4)
   !
   !  Face 123
   !
@@ -32682,10 +32244,9 @@ contains
   !
     tri(1:3,1:3) = tetra(1:3,2:4)
     call triangle_area_3d ( tri, areas(4) )
-  end subroutine tetrahedron_face_areas_3d
+  end
 
-  subroutine tetrahedron_insphere_3d ( tetra, r, pc ) &
-        bind(C, name="tetrahedron_insphere_3d")
+  subroutine tetrahedron_insphere_3d ( tetra, r, pc )
 
   !*****************************************************************************80
   !
@@ -32725,35 +32286,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) R, PC(3), the radius and the center
+  !    Output, real(real64) R, PC(3), the radius and the center
   !    of the sphere.  
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: b(4,4)
-    real(dp) :: r8mat_det_4d
-    real(dp) :: r8vec_norm
-    real(dp) :: gamma
-    real(dp) :: l123
-    real(dp) :: l124
-    real(dp) :: l134
-    real(dp) :: l234
-    real(dp) :: n123(1:dim_num)
-    real(dp) :: n124(1:dim_num)
-    real(dp) :: n134(1:dim_num)
-    real(dp) :: n234(1:dim_num)
-    real(dp), intent(out) :: pc(1:dim_num)
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: tetra(1:dim_num,4)
-    real(dp) :: v21(1:dim_num)
-    real(dp) :: v31(1:dim_num)
-    real(dp) :: v41(1:dim_num)
-    real(dp) :: v32(1:dim_num)
-    real(dp) :: v42(1:dim_num)
-    real(dp) :: v43(1:dim_num)
+    real(real64) b(4,4)
+    real(real64) r8mat_det_4d
+    real(real64) r8vec_norm
+    real(real64) gamma
+    real(real64) l123
+    real(real64) l124
+    real(real64) l134
+    real(real64) l234
+    real(real64) n123(1:dim_num)
+    real(real64) n124(1:dim_num)
+    real(real64) n134(1:dim_num)
+    real(real64) n234(1:dim_num)
+    real(real64) pc(1:dim_num)
+    real(real64) r
+    real(real64) tetra(1:dim_num,4)
+    real(real64) v21(1:dim_num)
+    real(real64) v31(1:dim_num)
+    real(real64) v41(1:dim_num)
+    real(real64) v32(1:dim_num)
+    real(real64) v42(1:dim_num) 
+    real(real64) v43(1:dim_num) 
 
     v21(1:dim_num) = tetra(1:dim_num,2) - tetra(1:dim_num,1)
     v31(1:dim_num) = tetra(1:dim_num,3) - tetra(1:dim_num,1)
@@ -32779,7 +32340,7 @@ contains
                   / ( l234 + l134 + l124 + l123 )
 
     b(1:dim_num,1:4) = tetra(1:dim_num,1:4)
-    b(4,1:4) = 1.0_dp
+    b(4,1:4) = 1.0e+00_real64
 
     gamma = abs ( r8mat_det_4d ( b ) )
 
@@ -32798,10 +32359,9 @@ contains
   !     + tetra(1,3) * tetra(2,1) * tetra(3,2) ) )
 
     r = gamma / ( l234 + l134 + l124 + l123 )
-  end subroutine tetrahedron_insphere_3d
+  end
 
-  subroutine tetrahedron_lattice_layer_point_next ( c, v, more ) &
-        bind(C, name="tetrahedron_lattice_layer_point_next")
+  subroutine tetrahedron_lattice_layer_point_next ( c, v, more )
 
   !*****************************************************************************80
   !
@@ -32835,11 +32395,11 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) C(4), coefficients defining the 
+  !    Input, integer(int32) C(4), coefficients defining the 
   !    lattice layer in entries 1 to 3, and the laver index in C(4).  
   !    The coefficients should be positive, and C(4) must be nonnegative.
   !
-  !    Input/output, integer(ip) V(3).  On first call for a given layer,
+  !    Input/output, integer(int32) V(3).  On first call for a given layer,
   !    the input value of V is not important.  On a repeated call for the same
   !    layer, the input value of V should be the output value from the previous 
   !    call.  On output, V contains the next lattice layer point.
@@ -32852,15 +32412,15 @@ contains
   !    and V was reset to 0, and the lattice layer has been exhausted.
   !
 
-    integer(ip), intent(in) :: c(4)
-    integer(ip) :: c1n
-    integer(ip) :: i4vec_lcm
-    integer(ip) :: lhs
-    logical, intent(inout) :: more
-    integer(ip), parameter :: n = 3
-    integer(ip) :: rhs1
-    integer(ip) :: rhs2
-    integer(ip), intent(inout) :: v(3)
+    integer(int32) c(4)
+    integer(int32) c1n
+    integer(int32) i4vec_lcm
+    integer(int32) lhs
+    logical more
+    integer(int32), parameter :: n = 3
+    integer(int32) rhs1
+    integer(int32) rhs2
+    integer(int32) v(3)
   !
   !  Treat layer C(N+1) = 0 specially.
   !
@@ -32950,10 +32510,9 @@ contains
         end if
       end if
     end if
-  end subroutine tetrahedron_lattice_layer_point_next
+  end
 
-  subroutine tetrahedron_lattice_point_next ( c, v, more ) &
-        bind(C, name="tetrahedron_lattice_point_next")
+  subroutine tetrahedron_lattice_point_next ( c, v, more )
 
   !*****************************************************************************80
   !
@@ -32989,10 +32548,10 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) C(4), coefficients defining the 
+  !    Input, integer(int32) C(4), coefficients defining the 
   !    lattice tetrahedron.  These should be positive.
   !
-  !    Input/output, integer(ip) V(3).  On first call, the input
+  !    Input/output, integer(int32) V(3).  On first call, the input
   !    value is not important.  On a repeated call, the input value should
   !    be the output value from the previous call.  On output, V contains
   !    the next lattice point.
@@ -33007,14 +32566,14 @@ contains
   !    for this tetrahedron.
   !
 
-    integer(ip), intent(in) :: c(4)
-    integer(ip) :: c1n
-    integer(ip) :: i4vec_lcm
-    integer(ip) :: lhs
-    logical, intent(inout) :: more
-    integer(ip), parameter :: n = 3
-    integer(ip) :: rhs
-    integer(ip), intent(inout) :: v(3)
+    integer(int32) c(4)
+    integer(int32) c1n
+    integer(int32) i4vec_lcm
+    integer(int32) lhs
+    logical more
+    integer(int32), parameter :: n = 3
+    integer(int32) rhs
+    integer(int32) v(3)
 
     if ( .not. more ) then
 
@@ -33065,10 +32624,9 @@ contains
       end if
 
     end if
-  end subroutine tetrahedron_lattice_point_next
+  end
 
-  subroutine tetrahedron_quality1_3d ( tetra, quality ) &
-        bind(C, name="tetrahedron_quality1_3d")
+  subroutine tetrahedron_quality1_3d ( tetra, quality )
 
   !*****************************************************************************80
   !
@@ -33095,26 +32653,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) QUALITY, the quality of the tetrahedron.
+  !    Output, real(real64) QUALITY, the quality of the tetrahedron.
   !
 
-    real(dp) :: pc(3)
-    real(dp), intent(out) :: quality
-    real(dp) :: r_in
-    real(dp) :: r_out
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) pc(3)
+    real(real64) quality
+    real(real64) r_in
+    real(real64) r_out
+    real(real64) tetra(3,4)
 
     call tetrahedron_circumsphere_3d ( tetra, r_out, pc )
 
     call tetrahedron_insphere_3d ( tetra, r_in, pc )
 
-    quality = 3.0_dp * r_in / r_out
-  end subroutine tetrahedron_quality1_3d
+    quality = 3.0e+00_real64 * r_in / r_out
+  end
 
-  subroutine tetrahedron_quality2_3d ( tetra, quality2 ) &
-        bind(C, name="tetrahedron_quality2_3d")
+  subroutine tetrahedron_quality2_3d ( tetra, quality2 )
 
   !*****************************************************************************80
   !
@@ -33155,17 +32712,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the tetrahedron vertices.
+  !    Input, real(real64) TETRA(3,4), the tetrahedron vertices.
   !
-  !    Output, real(dp) QUALITY2, the quality of the tetrahedron.
+  !    Output, real(real64) QUALITY2, the quality of the tetrahedron.
   !
 
-    real(dp) :: edge_length(6)
-    real(dp) :: l_max
-    real(dp) :: pc(3)
-    real(dp), intent(out) :: quality2
-    real(dp) :: r_in
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) edge_length(6)
+    real(real64) l_max
+    real(real64) pc(3)
+    real(real64) quality2
+    real(real64) r_in
+    real(real64) tetra(3,4)
 
     call tetrahedron_edge_length_3d ( tetra, edge_length )
 
@@ -33173,11 +32730,10 @@ contains
 
     call tetrahedron_insphere_3d ( tetra, r_in, pc )
 
-    quality2 = 2.0_dp * sqrt ( 6.0_dp ) * r_in / l_max
-  end subroutine tetrahedron_quality2_3d
+    quality2 = 2.0e+00_real64 * sqrt ( 6.0e+00_real64 ) * r_in / l_max
+  end
 
-  subroutine tetrahedron_quality3_3d ( tetra, quality3 ) &
-        bind(C, name="tetrahedron_quality3_3d")
+  subroutine tetrahedron_quality3_3d ( tetra, quality3 )
 
   !*****************************************************************************80
   !
@@ -33219,29 +32775,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) QUALITY3, the mean ratio of the tetrahedron.
+  !    Output, real(real64) QUALITY3, the mean ratio of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: ab(dim_num)
-    real(dp) :: ac(dim_num)
-    real(dp) :: ad(dim_num)
-    real(dp) :: bc(dim_num)
-    real(dp) :: bd(dim_num)
-    real(dp) :: cd(dim_num)
-    real(dp) :: denom
-    real(dp) :: lab
-    real(dp) :: lac
-    real(dp) :: lad
-    real(dp) :: lbc
-    real(dp) :: lbd
-    real(dp) :: lcd
-    real(dp), intent(out) :: quality3
-    real(dp), intent(in) :: tetra(dim_num,4)
-    real(dp) :: volume
+    real(real64) ab(dim_num)
+    real(real64) ac(dim_num)
+    real(real64) ad(dim_num)
+    real(real64) bc(dim_num)
+    real(real64) bd(dim_num)
+    real(real64) cd(dim_num)
+    real(real64) denom
+    real(real64) lab
+    real(real64) lac
+    real(real64) lad
+    real(real64) lbc
+    real(real64) lbd
+    real(real64) lcd
+    real(real64) quality3
+    real(real64) tetra(dim_num,4)
+    real(real64) volume
   !
   !  Compute the vectors representing the sides of the tetrahedron.
   !
@@ -33266,19 +32822,18 @@ contains
     volume = abs ( &
         ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
       + ab(2) * ( ac(3) * ad(1) - ac(1) * ad(3) ) &
-      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0_dp
+      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0e+00_real64
 
     denom = lab + lac + lad + lbc + lbd + lcd
 
-    if ( denom == 0.0_dp ) then
-      quality3 = 0.0_dp
+    if ( denom == 0.0e+00_real64 ) then
+      quality3 = 0.0e+00_real64
     else
-      quality3 = 12.0_dp * ( 3.0_dp * volume )**( 2.0_dp / 3.0_dp ) / denom
+      quality3 = 12.0e+00_real64 * ( 3.0e+00_real64 * volume )**( 2.0e+00_real64 / 3.0e+00_real64 ) / denom
     end if
-  end subroutine tetrahedron_quality3_3d
+  end
 
-  subroutine tetrahedron_quality4_3d ( tetra, quality4 ) &
-        bind(C, name="tetrahedron_quality4_3d")
+  subroutine tetrahedron_quality4_3d ( tetra, quality4 )
 
   !*****************************************************************************80
   !
@@ -33315,32 +32870,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) QUALITY4, the value of the quality measure.
+  !    Output, real(real64) QUALITY4, the value of the quality measure.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: ab(dim_num)
-    real(dp) :: ac(dim_num)
-    real(dp) :: ad(dim_num)
-    real(dp) :: bc(dim_num)
-    real(dp) :: bd(dim_num)
-    real(dp) :: cd(dim_num)
-    real(dp) :: denom
-    real(dp) :: l1
-    real(dp) :: l2
-    real(dp) :: l3
-    real(dp) :: lab
-    real(dp) :: lac
-    real(dp) :: lad
-    real(dp) :: lbc
-    real(dp) :: lbd
-    real(dp) :: lcd
-    real(dp), intent(out) :: quality4
-    real(dp), intent(in) :: tetra(dim_num,4)
-    real(dp) :: volume
+    real(real64) ab(dim_num)
+    real(real64) ac(dim_num)
+    real(real64) ad(dim_num)
+    real(real64) bc(dim_num)
+    real(real64) bd(dim_num)
+    real(real64) cd(dim_num)
+    real(real64) denom
+    real(real64) l1
+    real(real64) l2
+    real(real64) l3
+    real(real64) lab
+    real(real64) lac
+    real(real64) lad
+    real(real64) lbc
+    real(real64) lbd
+    real(real64) lcd
+    real(real64) quality4
+    real(real64) tetra(dim_num,4)
+    real(real64) volume
   !
   !  Compute the vectors that represent the sides.
   !
@@ -33365,9 +32920,9 @@ contains
     volume = abs ( &
         ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
       + ab(2) * ( ac(3) * ad(1) - ac(1) * ad(3) ) &
-      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0_dp
+      + ab(3) * ( ac(1) * ad(2) - ac(2) * ad(1) ) ) / 6.0e+00_real64
 
-    quality4 = 1.0_dp
+    quality4 = 1.0e+00_real64
 
     l1 = lab + lac
     l2 = lab + lad
@@ -33377,10 +32932,10 @@ contains
           * ( l2 + lbd ) * ( l2 - lbd ) &
           * ( l3 + lcd ) * ( l3 - lcd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lab + lbc
@@ -33391,10 +32946,10 @@ contains
           * ( l2 + lad ) * ( l2 - lad ) &
           * ( l3 + lcd ) * ( l3 - lcd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lac + lbc
@@ -33405,10 +32960,10 @@ contains
           * ( l2 + lad ) * ( l2 - lad ) &
           * ( l3 + lbd ) * ( l3 - lbd )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
     l1 = lad + lbd
@@ -33419,18 +32974,17 @@ contains
           * ( l2 + lac ) * ( l2 - lac ) &
           * ( l3 + lbc ) * ( l3 - lbc )
 
-    if ( denom <= 0.0_dp ) then
-      quality4 = 0.0_dp
+    if ( denom <= 0.0e+00_real64 ) then
+      quality4 = 0.0e+00_real64
     else
-      quality4 = min ( quality4, 12.0_dp * volume / sqrt ( denom ) )
+      quality4 = min ( quality4, 12.0e+00_real64 * volume / sqrt ( denom ) )
     end if
 
-    quality4 = quality4 * 1.5_dp * sqrt ( 6.0_dp )
-  end subroutine tetrahedron_quality4_3d
+    quality4 = quality4 * 1.5e+00_real64 * sqrt ( 6.0e+00_real64 )
+  end
 
   subroutine tetrahedron_rhombic_shape_3d ( point_num, face_num, &
-    face_order_max, point_coord, face_order, face_point ) &
-        bind(C, name="tetrahedron_rhombic_shape_3d")
+    face_order_max, point_coord, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -33466,43 +33020,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of 
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of 
   !    vertices per face.
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the vertices.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the vertices.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    for each face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) contains the index of the I-th point in the J-th face.
   !    The points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(in), value :: point_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    real(dp), intent(out) :: point_coord(dim_num,point_num)
-    real(dp), parameter :: z = 0.0_dp
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) point_coord(dim_num,point_num)
+    real(real64), parameter :: z = 0.0e+00_real64
 
-    a =        1.0_dp   / sqrt ( 3.0_dp )
-    b = sqrt ( 2.0_dp ) / sqrt ( 3.0_dp )
-    c = sqrt ( 3.0_dp ) /        6.0_dp
-    d =        1.0_dp   / sqrt ( 6.0_dp )
+    a =        1.0e+00_real64   / sqrt ( 3.0e+00_real64 )
+    b = sqrt ( 2.0e+00_real64 ) / sqrt ( 3.0e+00_real64 )
+    c = sqrt ( 3.0e+00_real64 ) /        6.0e+00_real64
+    d =        1.0e+00_real64   / sqrt ( 6.0e+00_real64 )
   !
   !  Set the point coordinates.
   !
@@ -33529,11 +33083,10 @@ contains
        2,  8,  3, 10,  4,  9, &
        3,  6,  1,  7,  4, 10, &
        1,  6,  3,  8,  2,  5 /), (/ face_order_max, face_num /) )
-  end subroutine tetrahedron_rhombic_shape_3d
+  end
 
   subroutine tetrahedron_rhombic_size_3d ( point_num, edge_num, face_num, &
-    face_order_max ) &
-        bind(C, name="tetrahedron_rhombic_size_3d")
+    face_order_max )
 
   !*****************************************************************************80
   !
@@ -33558,28 +33111,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of vertices.
+  !    Output, integer(int32) POINT_NUM, the number of vertices.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 10
     edge_num = 6
     face_num = 4
     face_order_max = 6
-  end subroutine tetrahedron_rhombic_size_3d
+  end
 
-  subroutine tetrahedron_sample_3d ( t, n, seed, p ) &
-        bind(C, name="tetrahedron_sample_3d")
+  subroutine tetrahedron_sample_3d ( t, n, seed, p )
 
   !*****************************************************************************80
   !
@@ -33599,31 +33151,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,4), the tetrahedron vertices.
+  !    Input, real(real64) T(3,4), the tetrahedron vertices.
   !
-  !    Input, integer(ip) N, the number of points to sample.
+  !    Input, integer(int32) N, the number of points to sample.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) P(3,N), random points in the tetrahedron.
+  !    Output, real(real64) P(3,N), random points in the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) n
 
-    real(dp) :: alpha
-    real(dp) :: beta
-    real(dp) :: gamma
-    integer(ip) :: j
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp) :: p12(dim_num)
-    real(dp) :: p13(dim_num)
-    real(dp) :: r
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(in) :: t(dim_num,dim_num+1)
-    real(dp) :: tr(dim_num,3)
+    real(real64) alpha
+    real(real64) beta
+    real(real64) gamma
+    integer(int32) j
+    real(real64) p(dim_num,n)
+    real(real64) p12(dim_num)
+    real(real64) p13(dim_num)
+    real(real64) r
+    real(real64) r8_uniform_01
+    integer(int32) seed
+    real(real64) t(dim_num,dim_num+1)
+    real(real64) tr(dim_num,3)
 
     do j = 1, n
 
@@ -33637,16 +33189,16 @@ contains
   !  The plane will intersect sides 12, 13, and 14 at a fraction
   !  ALPHA = R^1/3 of the distance from vertex 1 to vertices 2, 3, and 4.
   !  
-      alpha = r**( 1.0_dp / 3.0_dp )
+      alpha = r**( 1.0e+00_real64 / 3.0e+00_real64 )
   !
   !  Determine the coordinates of the points on sides 12, 13 and 14 intersected
   !  by the plane, which form a triangle TR.
   !
-      tr(1:dim_num,1) = ( 1.0_dp - alpha ) * t(1:dim_num,1) &
+      tr(1:dim_num,1) = ( 1.0e+00_real64 - alpha ) * t(1:dim_num,1) &
                                   + alpha   * t(1:dim_num,2)
-      tr(1:dim_num,2) = ( 1.0_dp - alpha ) * t(1:dim_num,1) &
+      tr(1:dim_num,2) = ( 1.0e+00_real64 - alpha ) * t(1:dim_num,1) &
                                   + alpha   * t(1:dim_num,3)
-      tr(1:dim_num,3) = ( 1.0_dp - alpha ) * t(1:dim_num,1) &
+      tr(1:dim_num,3) = ( 1.0e+00_real64 - alpha ) * t(1:dim_num,1) &
                                   + alpha   * t(1:dim_num,4)
   !
   !  Now choose, uniformly at random, a point in this triangle.
@@ -33666,24 +33218,23 @@ contains
   !  Determine the coordinates of the points on sides 2 and 3 intersected
   !  by line L.
   !
-      p12(1:dim_num) = ( 1.0_dp - beta ) * tr(1:dim_num,1) &
+      p12(1:dim_num) = ( 1.0e+00_real64 - beta ) * tr(1:dim_num,1) &
                                  + beta   * tr(1:dim_num,2)
-      p13(1:dim_num) = ( 1.0_dp - beta ) * tr(1:dim_num,1) &
+      p13(1:dim_num) = ( 1.0e+00_real64 - beta ) * tr(1:dim_num,1) &
                                  + beta   * tr(1:dim_num,3)
   !
   !  Now choose, uniformly at random, a point on the line L.
   !
       gamma = r8_uniform_01 ( seed )
 
-      p(1:dim_num,j) = ( 1.0_dp - gamma ) * p12(1:dim_num) &
+      p(1:dim_num,j) = ( 1.0e+00_real64 - gamma ) * p12(1:dim_num) &
                      +             gamma   * p13(1:dim_num)
 
     end do
-  end subroutine tetrahedron_sample_3d
+  end
 
   subroutine tetrahedron_shape_3d ( point_num, face_num, face_order_max, &
-    point_coord, face_order, face_point ) &
-        bind(C, name="tetrahedron_shape_3d")
+    point_coord, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -33711,41 +33262,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces.
+  !    Input, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of 
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of 
   !    vertices per face.
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the vertices.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the vertices.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    for each face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) contains the index of the I-th point in the J-th face.
   !    The points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(in), value :: point_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    real(dp), intent(out) :: point_coord(dim_num,point_num)
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) point_coord(dim_num,point_num)
   !
   !  Set the point coordinates.
   !
     point_coord(1:dim_num,1:point_num) = reshape ( (/ &
-          0.942809_dp,    0.000000_dp,   -0.333333_dp, &
-         -0.471405_dp,    0.816497_dp,   -0.333333_dp, &
-         -0.471405_dp,   -0.816497_dp,   -0.333333_dp, &
-          0.000000_dp,    0.000000_dp,    1.000000_dp /), &
+          0.942809e+00_real64,    0.000000e+00_real64,   -0.333333e+00_real64, &
+         -0.471405e+00_real64,    0.816497e+00_real64,   -0.333333e+00_real64, &
+         -0.471405e+00_real64,   -0.816497e+00_real64,   -0.333333e+00_real64, &
+          0.000000e+00_real64,    0.000000e+00_real64,    1.000000e+00_real64 /), &
       (/ dim_num, point_num /) )
   !
   !  Set the face orders.
@@ -33760,11 +33311,10 @@ contains
          1, 2, 4, &
          1, 4, 3, &
          2, 3, 4 /), (/ face_order_max, face_num /) )
-  end subroutine tetrahedron_shape_3d
+  end
 
   subroutine tetrahedron_size_3d ( point_num, edge_num, face_num, &
-    face_order_max ) &
-        bind(C, name="tetrahedron_size_3d")
+    face_order_max )
 
   !*****************************************************************************80
   !
@@ -33789,28 +33339,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of vertices.
+  !    Output, integer(int32) POINT_NUM, the number of vertices.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 4
     edge_num = 6
     face_num = 4
     face_order_max = 3
-  end subroutine tetrahedron_size_3d
+  end
 
-  subroutine tetrahedron_solid_angles_3d ( tetra, angle ) &
-        bind(C, name="tetrahedron_solid_angles_3d")
+  subroutine tetrahedron_solid_angles_3d ( tetra, angle )
 
   !*****************************************************************************80
   !
@@ -33830,15 +33379,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) ANGLE(4), the solid angles.
+  !    Output, real(real64) ANGLE(4), the solid angles.
   !
 
-    real(dp), intent(out) :: angle(6)
-    real(dp) :: dihedral_angle(6)
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in) :: tetra(3,4)
+    real(real64) angle(6)
+    real(real64) dihedral_angle(6)
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) tetra(3,4)
 
     call tetrahedron_dihedral_angles_3d ( tetra, dihedral_angle )
 
@@ -33846,10 +33395,9 @@ contains
     angle(2) = dihedral_angle(1) + dihedral_angle(4) + dihedral_angle(5) - r8_pi
     angle(3) = dihedral_angle(2) + dihedral_angle(4) + dihedral_angle(6) - r8_pi
     angle(4) = dihedral_angle(3) + dihedral_angle(5) + dihedral_angle(6) - r8_pi
-  end subroutine tetrahedron_solid_angles_3d
+  end
 
-  subroutine tetrahedron_volume_3d ( tetra, volume ) &
-        bind(C, name="tetrahedron_volume_3d")
+  subroutine tetrahedron_volume_3d ( tetra, volume )
 
   !*****************************************************************************80
   !
@@ -33869,26 +33417,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) TETRA(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) TETRA(3,4), the vertices of the tetrahedron.
   !
-  !    Output, real(dp) VOLUME, the volume of the tetrahedron.
+  !    Output, real(real64) VOLUME, the volume of the tetrahedron.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a(4,4)
-    real(dp) :: r8mat_det_4d
-    real(dp), intent(in) :: tetra(dim_num,4)
-    real(dp), intent(out) :: volume
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
+    real(real64) tetra(dim_num,4)
+    real(real64) volume
 
     a(1:dim_num,1:4) = tetra(1:dim_num,1:4)
-    a(4,1:4) = 1.0_dp
+    a(4,1:4) = 1.0e+00_real64
 
-    volume = abs ( r8mat_det_4d ( a ) ) / 6.0_dp
-  end subroutine tetrahedron_volume_3d
+    volume = abs ( r8mat_det_4d ( a ) ) / 6.0e+00_real64
+  end
 
-  subroutine tetrahedron01_lattice_point_num_3d ( s, n ) &
-        bind(C, name="tetrahedron01_lattice_point_num_3d")
+  subroutine tetrahedron01_lattice_point_num_3d ( s, n )
 
   !*****************************************************************************80
   !
@@ -33929,19 +33476,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) S, the scale factor.
+  !    Input, integer(int32) S, the scale factor.
   !
-  !    Output, integer(ip) N, the number of lattice points.
+  !    Output, integer(int32) N, the number of lattice points.
   !
 
-    integer(ip), intent(out) :: n
-    integer(ip), intent(in), value :: s
+    integer(int32) n
+    integer(int32) s
 
     n = ( ( s + 3 ) * ( s + 2 ) * ( s + 1 ) ) / 6
-  end subroutine tetrahedron01_lattice_point_num_3d
+  end
 
-  function tetrahedron01_volume ( ) &
-        bind(C, name="tetrahedron01_volume")
+  function tetrahedron01_volume ( )
 
   !*****************************************************************************80
   !
@@ -33961,16 +33507,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) TETRAHEDRON01_VOLUME, the volume.
+  !    Output, real(real64) TETRAHEDRON01_VOLUME, the volume.
   !
 
-    real(dp) :: tetrahedron01_volume
+    real(real64) tetrahedron01_volume
 
-    tetrahedron01_volume = 1.0_dp / 6.0_dp
-  end function tetrahedron01_volume
+    tetrahedron01_volume = 1.0e+00_real64 / 6.0e+00_real64
+  end
 
-  subroutine tmat_init ( a ) &
-        bind(C, name="tmat_init")
+  subroutine tmat_init ( a )
 
   !*****************************************************************************80
   !
@@ -34022,26 +33567,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the geometric transformation matrix.
+  !    Input, real(real64) A(4,4), the geometric transformation matrix.
   !
 
-    real(dp) :: a(4,4)
-    integer(ip) :: i
-    integer(ip) :: j
+    real(real64) a(4,4)
+    integer(int32) i
+    integer(int32) j
 
     do i = 1, 4
       do j = 1, 4
         if ( i == j ) then
-          a(i,j) = 1.0_dp
+          a(i,j) = 1.0e+00_real64
         else
-          a(i,j) = 0.0_dp
+          a(i,j) = 0.0e+00_real64
         end if
       end do
     end do
-  end subroutine tmat_init
+  end
 
-  subroutine tmat_mxm ( a, b, c ) &
-        bind(C, name="tmat_mxm")
+  subroutine tmat_mxm ( a, b, c )
 
   !*****************************************************************************80
   !
@@ -34074,23 +33618,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the first geometric transformation matrix.
+  !    Input, real(real64) A(4,4), the first geometric transformation matrix.
   !
-  !    Input, real(dp) B(4,4), the second geometric transformation
+  !    Input, real(real64) B(4,4), the second geometric transformation
   !    matrix.
   !
-  !    Output, real(dp) C(4,4), the product A * B.
+  !    Output, real(real64) C(4,4), the product A * B.
   !
 
-    real(dp) :: a(4,4)
-    real(dp), intent(out) :: b(4,4)
-    real(dp), intent(out) :: c(4,4)
+    real(real64) a(4,4)
+    real(real64) b(4,4)
+    real(real64) c(4,4)
 
     c(1:4,1:4) = matmul ( a(1:4,1:4), b(1:4,1:4) )
-  end subroutine tmat_mxm
+  end
 
-  subroutine tmat_mxp ( a, x, y ) &
-        bind(C, name="tmat_mxp")
+  subroutine tmat_mxp ( a, x, y )
 
   !*****************************************************************************80
   !
@@ -34129,25 +33672,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the geometric transformation matrix.
+  !    Input, real(real64) A(4,4), the geometric transformation matrix.
   !
-  !    Input, real(dp) X(3), the point to be multiplied.  The fourth
+  !    Input, real(real64) X(3), the point to be multiplied.  The fourth
   !    component of X is implicitly assigned the value of 1.
   !
-  !    Output, real(dp) Y(3), the result of A*X.  The product is
+  !    Output, real(real64) Y(3), the result of A*X.  The product is
   !    accumulated in a temporary vector, and then assigned to the result.
   !    Therefore, it is legal for X and Y to share memory.
   !
 
-    real(dp) :: a(4,4)
-    real(dp), intent(out) :: x(3)
-    real(dp), intent(out) :: y(3)
+    real(real64) a(4,4)
+    real(real64) x(3)
+    real(real64) y(3)
 
     y(1:3) = a(1:3,4) + matmul ( a(1:3,1:3), x(1:3) )
-  end subroutine tmat_mxp
+  end
 
-  subroutine tmat_mxp2 ( a, n, x, y ) &
-        bind(C, name="tmat_mxp2")
+  subroutine tmat_mxp2 ( a, n, x, y )
 
   !*****************************************************************************80
   !
@@ -34174,33 +33716,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the geometric transformation matrix.
+  !    Input, real(real64) A(4,4), the geometric transformation matrix.
   !
-  !    Input, integer(ip) N, the number of points to be multiplied.
+  !    Input, integer(int32) N, the number of points to be multiplied.
   !
-  !    Input, real(dp) X(3,N), the points to be multiplied.
+  !    Input, real(real64) X(3,N), the points to be multiplied.
   !
-  !    Output, real(dp) Y(3,N), the transformed points.  Each product is
+  !    Output, real(real64) Y(3,N), the transformed points.  Each product is
   !    accumulated in a temporary vector, and then assigned to the
   !    result.  Therefore, it is legal for X and Y to share memory.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a(4,4)
-    integer(ip) :: i
-    real(dp), intent(in) :: x(3,n)
-    real(dp), intent(out) :: y(3,n)
+    real(real64) a(4,4)
+    integer(int32) i
+    real(real64) x(3,n)
+    real(real64) y(3,n)
 
     do i = 1, 3
       y(i,1:n) = a(i,4)
     end do
 
     y(1:3,1:n) = y(1:3,1:n) + matmul ( a(1:3,1:3), x(1:3,1:n) )
-  end subroutine tmat_mxp2
+  end
 
-  subroutine tmat_mxv ( a, x, y ) &
-        bind(C, name="tmat_mxv")
+  subroutine tmat_mxv ( a, x, y )
 
   !*****************************************************************************80
   !
@@ -34227,25 +33768,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the geometric transformation matrix.
+  !    Input, real(real64) A(4,4), the geometric transformation matrix.
   !
-  !    Input, real(dp) X(3), the vector to be multiplied.  The fourth
+  !    Input, real(real64) X(3), the vector to be multiplied.  The fourth
   !    component of X is implicitly assigned the value of 1.
   !
-  !    Output, real(dp) Y(3), the result of A*X.  The product is
+  !    Output, real(real64) Y(3), the result of A*X.  The product is
   !    accumulated in a temporary vector, and then assigned to the result. 
   !    Therefore, it is legal for X and Y to share memory.
   !
 
-    real(dp) :: a(4,4)
-    real(dp), intent(out) :: x(3)
-    real(dp), intent(out) :: y(3)
+    real(real64) a(4,4)
+    real(real64) x(3)
+    real(real64) y(3)
 
     y(1:3) = a(1:3,4) + matmul ( a(1:3,1:3), x(1:3) )
-  end subroutine tmat_mxv
+  end
 
-  subroutine tmat_rot_axis ( a, angle, axis, b ) &
-        bind(C, name="tmat_rot_axis")
+  subroutine tmat_rot_axis ( a, angle, axis, b )
 
   !*****************************************************************************80
   !
@@ -34272,26 +33812,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the current geometric transformation
+  !    Input, real(real64) A(4,4), the current geometric transformation
   !    matrix.
   !
-  !    Input, real(dp) ANGLE, the angle, in degrees, of the rotation.
+  !    Input, real(real64) ANGLE, the angle, in degrees, of the rotation.
   !
   !    Input, character AXIS, is 'X', 'Y' or 'Z', specifying the coordinate
   !    axis about which the rotation occurs.
   !
-  !    Output, real(dp) B(4,4), the modified geometric 
+  !    Output, real(real64) B(4,4), the modified geometric 
   !    transformation matrix.
   !    A and B may share the same memory.
   !
 
-    real(dp) :: a(4,4)
-    real(dp), intent(in), value :: angle
-    real(dp) :: angle_rad
-    character, intent(in), value :: axis
-    real(dp), intent(out) :: b(4,4)
-    real(dp) :: c(4,4)
-    real(dp) :: degrees_to_radians
+    real(real64) a(4,4)
+    real(real64) angle
+    real(real64) angle_rad
+    character              axis
+    real(real64) b(4,4)
+    real(real64) c(4,4)
+    real(real64) degrees_to_radians
 
     angle_rad = degrees_to_radians ( angle )
 
@@ -34321,10 +33861,9 @@ contains
     end if
 
     b(1:4,1:4) = matmul ( c(1:4,1:4), a(1:4,1:4) )
-  end subroutine tmat_rot_axis
+  end
 
-  subroutine tmat_rot_vector ( a, angle, axis, b ) &
-        bind(C, name="tmat_rot_vector")
+  subroutine tmat_rot_vector ( a, angle, axis, b )
 
   !*****************************************************************************80
   !
@@ -34351,32 +33890,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the current geometric transformation
+  !    Input, real(real64) A(4,4), the current geometric transformation
   !    matrix.
   !
-  !    Input, real(dp) ANGLE, the angle, in degrees, of the rotation.
+  !    Input, real(real64) ANGLE, the angle, in degrees, of the rotation.
   !
-  !    Input, real(dp) AXIS(3), the axis vector about which 
+  !    Input, real(real64) AXIS(3), the axis vector about which 
   !    rotation occurs.  AXIS may not be the zero vector.
   !
-  !    Output, real(dp) B(4,4), the modified geometric 
+  !    Output, real(real64) B(4,4), the modified geometric 
   !    transformation matrix.
   !    A and B may share the same memory.
   !
 
-    real(dp) :: a(4,4)
-    real(dp), intent(in), value :: angle
-    real(dp) :: angle_rad
-    real(dp), intent(in) :: axis(3)
-    real(dp), intent(out) :: b(4,4)
-    real(dp) :: c(4,4)
-    real(dp) :: ca
-    real(dp) :: degrees_to_radians
-    real(dp) :: norm
-    real(dp) :: sa
-    real(dp) :: v1
-    real(dp) :: v2
-    real(dp) :: v3
+    real(real64) a(4,4)
+    real(real64) angle
+    real(real64) angle_rad
+    real(real64) axis(3)
+    real(real64) b(4,4)
+    real(real64) c(4,4)
+    real(real64) ca
+    real(real64) degrees_to_radians
+    real(real64) norm
+    real(real64) sa
+    real(real64) v1
+    real(real64) v2
+    real(real64) v3
 
     v1 = axis(1)
     v2 = axis(2)
@@ -34384,7 +33923,7 @@ contains
 
     norm = sqrt ( v1 * v1 + v2 * v2 + v3 * v3 )
 
-    if ( norm == 0.0_dp ) then
+    if ( norm == 0.0e+00_real64 ) then
     end if
 
     v1 = v1 / norm
@@ -34397,23 +33936,22 @@ contains
 
     call tmat_init ( c )
 
-    c(1,1) =                    v1 * v1 + ca * ( 1.0_dp - v1 * v1 )
-    c(1,2) = ( 1.0_dp - ca ) * v1 * v2 - sa * v3
-    c(1,3) = ( 1.0_dp - ca ) * v1 * v3 + sa * v2
+    c(1,1) =                    v1 * v1 + ca * ( 1.0e+00_real64 - v1 * v1 )
+    c(1,2) = ( 1.0e+00_real64 - ca ) * v1 * v2 - sa * v3
+    c(1,3) = ( 1.0e+00_real64 - ca ) * v1 * v3 + sa * v2
 
-    c(2,1) = ( 1.0_dp - ca ) * v2 * v1 + sa * v3
-    c(2,2) =                    v2 * v2 + ca * ( 1.0_dp - v2 * v2 )
-    c(2,3) = ( 1.0_dp - ca ) * v2 * v3 - sa * v1
+    c(2,1) = ( 1.0e+00_real64 - ca ) * v2 * v1 + sa * v3
+    c(2,2) =                    v2 * v2 + ca * ( 1.0e+00_real64 - v2 * v2 )
+    c(2,3) = ( 1.0e+00_real64 - ca ) * v2 * v3 - sa * v1
 
-    c(3,1) = ( 1.0_dp - ca ) * v3 * v1 - sa * v2
-    c(3,2) = ( 1.0_dp - ca ) * v3 * v2 + sa * v1
-    c(3,3) =                    v3 * v3 + ca * ( 1.0_dp - v3 * v3 )
+    c(3,1) = ( 1.0e+00_real64 - ca ) * v3 * v1 - sa * v2
+    c(3,2) = ( 1.0e+00_real64 - ca ) * v3 * v2 + sa * v1
+    c(3,3) =                    v3 * v3 + ca * ( 1.0e+00_real64 - v3 * v3 )
 
     b(1:4,1:4) = matmul ( c(1:4,1:4), a(1:4,1:4) )
-  end subroutine tmat_rot_vector
+  end
 
-  subroutine tmat_scale ( a, s, b ) &
-        bind(C, name="tmat_scale")
+  subroutine tmat_scale ( a, s, b )
 
   !*****************************************************************************80
   !
@@ -34440,20 +33978,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the current geometric transformation
+  !    Input, real(real64) A(4,4), the current geometric transformation
   !    matrix.
   !
-  !    Input, real(dp) S(3), the scalings to be applied to the 
+  !    Input, real(real64) S(3), the scalings to be applied to the 
   !    X, Y and Z coordinates.
   !
-  !    Output, real(dp) B(4,4), the modified geometric transformation
+  !    Output, real(real64) B(4,4), the modified geometric transformation
   !    matrix.  A and B may share the same memory.
   !
 
-    real(dp) :: a(4,4)
-    real(dp), intent(out) :: b(4,4)
-    real(dp) :: c(4,4)
-    real(dp), intent(in) :: s(3)
+    real(real64) a(4,4)
+    real(real64) b(4,4)
+    real(real64) c(4,4)
+    real(real64) s(3)
 
     call tmat_init ( c )
 
@@ -34462,10 +34000,9 @@ contains
     c(3,3) = s(3)
 
     b(1:4,1:4) = matmul ( c(1:4,1:4), a(1:4,1:4) )
-  end subroutine tmat_scale
+  end
 
-  subroutine tmat_shear ( a, axis, s, b ) &
-        bind(C, name="tmat_shear")
+  subroutine tmat_shear ( a, axis, s, b )
 
   !*****************************************************************************80
   !
@@ -34492,7 +34029,7 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the current geometric transformation
+  !    Input, real(real64) A(4,4), the current geometric transformation
   !    matrix.
   !
   !    Input, character ( len = 2 ) AXIS, is 'XY', 'XZ', 'YX', 'YZ', 'ZX' or 'ZY',
@@ -34505,17 +34042,17 @@ contains
   !      ZX:  z' = z + s * x;
   !      ZY:  z' = z + s * y.
   !
-  !    Input, real(dp) S, the shear coefficient.
+  !    Input, real(real64) S, the shear coefficient.
   !
-  !    Output, real(dp) B(4,4), the modified geometric transformation
+  !    Output, real(real64) B(4,4), the modified geometric transformation
   !    matrix.  A and B may share the same memory.
   !
 
-    real(dp) :: a(4,4)
-    character ( len = 2 ), intent(in), value :: axis
-    real(dp), intent(out) :: b(4,4)
-    real(dp) :: c(4,4)
-    real(dp), intent(in), value :: s
+    real(real64) a(4,4)
+    character ( len = 2 ) axis
+    real(real64) b(4,4)
+    real(real64) c(4,4)
+    real(real64) s
 
     call tmat_init ( c )
 
@@ -34540,10 +34077,9 @@ contains
     end if
 
     b(1:4,1:4) = matmul ( c(1:4,1:4), a(1:4,1:4) )
-  end subroutine tmat_shear
+  end
 
-  subroutine tmat_trans ( a, t, b ) &
-        bind(C, name="tmat_trans")
+  subroutine tmat_trans ( a, t, b )
 
   !*****************************************************************************80
   !
@@ -34570,27 +34106,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the current geometric transformation
+  !    Input, real(real64) A(4,4), the current geometric transformation
   !    matrix.
   !
-  !    Input, real(dp) T(3), the translation.  This may be thought
+  !    Input, real(real64) T(3), the translation.  This may be thought
   !    of as the point that the origin moves to under the translation.
   !
-  !    Output, real(dp) B(4,4), the modified transformation matrix.
+  !    Output, real(real64) B(4,4), the modified transformation matrix.
   !    A and B may share the same memory.
   !
 
-    real(dp) :: a(4,4)
-    real(dp), intent(out) :: b(4,4)
-    real(dp), intent(in) :: t(3)
+    real(real64) a(4,4)
+    real(real64) b(4,4)
+    real(real64) t(3)
 
     b(1:4,1:4) = a(1:4,1:4)
 
     b(1:3,4) = b(1:3,4) + t(1:3)
-  end subroutine tmat_trans
+  end
 
-  function torus_area_3d ( r1, r2 ) &
-        bind(C, name="torus_area_3d")
+  function torus_area_3d ( r1, r2 )
 
   !*****************************************************************************80
   !
@@ -34616,21 +34151,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, the two radii that define the torus.
+  !    Input, real(real64) R1, R2, the two radii that define the torus.
   !
-  !    Output, real(dp) TORUS_AREA_3D, the area of the torus.
+  !    Output, real(real64) TORUS_AREA_3D, the area of the torus.
   !
 
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: torus_area_3d
+    real(real64) r1
+    real(real64) r2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) torus_area_3d
 
-    torus_area_3d = 4.0_dp * r8_pi * r8_pi * r1 * r2
-  end function torus_area_3d
+    torus_area_3d = 4.0e+00_real64 * r8_pi * r8_pi * r1 * r2
+  end
 
-  subroutine torus_volume_3d ( r1, r2, volume ) &
-        bind(C, name="torus_volume_3d")
+  subroutine torus_volume_3d ( r1, r2, volume )
 
   !*****************************************************************************80
   !
@@ -34656,22 +34190,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R1, R2, the "inner" and "outer" radii of the
+  !    Input, real(real64) R1, R2, the "inner" and "outer" radii of the
   !    torus.
   !
-  !    Output, real(dp) VOLUME, the volume of the torus.
+  !    Output, real(real64) VOLUME, the volume of the torus.
   !
 
-    real(dp), intent(in), value :: r1
-    real(dp), intent(in), value :: r2
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(out) :: volume
+    real(real64) r1
+    real(real64) r2
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) volume
 
-    volume = 2.0_dp * r8_pi * r8_pi * r1 * r2 * r2
-  end subroutine torus_volume_3d
+    volume = 2.0e+00_real64 * r8_pi * r8_pi * r1 * r2 * r2
+  end
 
-  subroutine tp_to_xyz ( theta, phi, v ) &
-        bind(C, name="tp_to_xyz")
+  subroutine tp_to_xyz ( theta, phi, v )
 
   !*****************************************************************************80
   !
@@ -34695,23 +34228,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) THETA, PHI, the angular coordinates of a point
+  !    Input, real(real64) THETA, PHI, the angular coordinates of a point
   !    on the unit sphere.
   !
-  !    Output, real(dp) V(3), the XYZ coordinates.
+  !    Output, real(real64) V(3), the XYZ coordinates.
   !
 
-    real(dp), intent(in), value :: phi
-    real(dp), intent(in), value :: theta
-    real(dp), intent(out) :: v(3)
+    real(real64) phi
+    real(real64) theta
+    real(real64) v(3)
 
     v(1) = cos ( theta ) * sin ( phi )
     v(2) = sin ( theta ) * sin ( phi )
     v(3) =                 cos ( phi )
-  end subroutine tp_to_xyz
+  end
 
-  subroutine triangle_angles_2d ( t, angle ) &
-        bind(C, name="triangle_angles_2d")
+  subroutine triangle_angles_2d ( t, angle )
 
   !*****************************************************************************80
   !
@@ -34739,21 +34271,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) ANGLE(3), the angles opposite
+  !    Output, real(real64) ANGLE(3), the angles opposite
   !    sides P1-P2, P2-P3 and P3-P1, in radians.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp), intent(out) :: angle(3)
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: r8_acos
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) angle(3)
+    real(real64) b
+    real(real64) c
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) r8_acos
+    real(real64) t(dim_num,3)
   !
   !  Compute the length of each side.
   !
@@ -34763,31 +34295,30 @@ contains
   !
   !  Take care of ridiculous special cases.
   !
-    if ( a == 0.0_dp .and. b == 0.0_dp .and. c == 0.0_dp ) then
-      angle(1:3) = 2.0_dp * r8_pi / 3.0_dp
+    if ( a == 0.0e+00_real64 .and. b == 0.0e+00_real64 .and. c == 0.0e+00_real64 ) then
+      angle(1:3) = 2.0e+00_real64 * r8_pi / 3.0e+00_real64
     end if
 
-    if ( c == 0.0_dp .or. a == 0.0_dp ) then
+    if ( c == 0.0e+00_real64 .or. a == 0.0e+00_real64 ) then
       angle(1) = r8_pi
     else
-      angle(1) = r8_acos ( ( c * c + a * a - b * b ) / ( 2.0_dp * c * a ) )
+      angle(1) = r8_acos ( ( c * c + a * a - b * b ) / ( 2.0e+00_real64 * c * a ) )
     end if
 
-    if ( a == 0.0_dp .or. b == 0.0_dp ) then
+    if ( a == 0.0e+00_real64 .or. b == 0.0e+00_real64 ) then
       angle(2) = r8_pi
     else
-      angle(2) = r8_acos ( ( a * a + b * b - c * c ) / ( 2.0_dp * a * b ) )
+      angle(2) = r8_acos ( ( a * a + b * b - c * c ) / ( 2.0e+00_real64 * a * b ) )
     end if
 
-    if ( b == 0.0_dp .or. c == 0.0_dp ) then
+    if ( b == 0.0e+00_real64 .or. c == 0.0e+00_real64 ) then
       angle(3) = r8_pi
     else
-      angle(3) = r8_acos ( ( b * b + c * c - a * a ) / ( 2.0_dp * b * c ) )
+      angle(3) = r8_acos ( ( b * b + c * c - a * a ) / ( 2.0e+00_real64 * b * c ) )
     end if
-  end subroutine triangle_angles_2d
+  end
 
-  subroutine triangle_angles_3d ( t, angle ) &
-        bind(C, name="triangle_angles_3d")
+  subroutine triangle_angles_3d ( t, angle )
 
   !*****************************************************************************80
   !
@@ -34815,21 +34346,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Output, real(dp) ANGLE(3), the angles opposite
+  !    Output, real(real64) ANGLE(3), the angles opposite
   !    sides P1-P2, P2-P3 and P3-P1, in radians.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a
-    real(dp), intent(out) :: angle(3)
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: r8_acos
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) angle(3)
+    real(real64) b
+    real(real64) c
+    real(real64) r8_acos
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) t(dim_num,3)
   !
   !  Compute the length of each side.
   !
@@ -34839,31 +34370,30 @@ contains
   !
   !  Take care of a ridiculous special case.
   !
-    if ( a == 0.0_dp .and. b == 0.0_dp .and. c == 0.0_dp ) then
-      angle(1:3) = 2.0_dp * r8_pi / 3.0_dp
+    if ( a == 0.0e+00_real64 .and. b == 0.0e+00_real64 .and. c == 0.0e+00_real64 ) then
+      angle(1:3) = 2.0e+00_real64 * r8_pi / 3.0e+00_real64
     end if
 
-    if ( c == 0.0_dp .or. a == 0.0_dp ) then
+    if ( c == 0.0e+00_real64 .or. a == 0.0e+00_real64 ) then
       angle(1) = r8_pi
     else
-      angle(1) = r8_acos ( ( c * c + a * a - b * b ) / ( 2.0_dp * c * a ) )
+      angle(1) = r8_acos ( ( c * c + a * a - b * b ) / ( 2.0e+00_real64 * c * a ) )
     end if
 
-    if ( a == 0.0_dp .or. b == 0.0_dp ) then
+    if ( a == 0.0e+00_real64 .or. b == 0.0e+00_real64 ) then
       angle(2) = r8_pi
     else
-      angle(2) = r8_acos ( ( a * a + b * b - c * c ) / ( 2.0_dp * a * b ) )
+      angle(2) = r8_acos ( ( a * a + b * b - c * c ) / ( 2.0e+00_real64 * a * b ) )
     end if
 
-    if ( b == 0.0_dp .or. c == 0.0_dp ) then
+    if ( b == 0.0e+00_real64 .or. c == 0.0e+00_real64 ) then
       angle(3) = r8_pi
     else
-      angle(3) = r8_acos ( ( b * b + c * c - a * a ) / ( 2.0_dp * b * c ) )
+      angle(3) = r8_acos ( ( b * b + c * c - a * a ) / ( 2.0e+00_real64 * b * c ) )
     end if
-  end subroutine triangle_angles_3d
+  end
 
-  subroutine triangle_area_2d ( t, area ) &
-        bind(C, name="triangle_area_2d")
+  subroutine triangle_area_2d ( t, area )
 
   !*****************************************************************************80
   !
@@ -34896,24 +34426,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) AREA, the area of the triangle.
+  !    Output, real(real64) AREA, the area of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) area
+    real(real64) t(dim_num,3)
 
-    area = 0.5_dp * ( &
+    area = 0.5e+00_real64 * ( &
         t(1,1) * ( t(2,2) - t(2,3) ) &
       + t(1,2) * ( t(2,3) - t(2,1) ) &
       + t(1,3) * ( t(2,1) - t(2,2) ) )
-  end subroutine triangle_area_2d
+  end
 
-  subroutine triangle_area_3d ( t, area ) &
-        bind(C, name="triangle_area_3d")
+  subroutine triangle_area_3d ( t, area )
 
   !*****************************************************************************80
   !
@@ -34947,16 +34476,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Output, real(dp) AREA, the area of the triangle.
+  !    Output, real(real64) AREA, the area of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: area
-    real(dp) :: cross(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) area
+    real(real64) cross(dim_num)
+    real(real64) t(dim_num,3)
   !
   !  Compute the cross product vector.
   !
@@ -34969,11 +34498,10 @@ contains
     cross(3) = ( t(1,2) - t(1,1) ) * ( t(2,3) - t(2,1) ) &
              - ( t(2,2) - t(2,1) ) * ( t(1,3) - t(1,1) )
 
-    area = 0.5_dp * sqrt ( sum ( cross(1:3)**2 ) )
-  end subroutine triangle_area_3d
+    area = 0.5e+00_real64 * sqrt ( sum ( cross(1:3)**2 ) )
+  end
 
-  subroutine triangle_area_3d_2 ( t, area ) &
-        bind(C, name="triangle_area_3d_2")
+  subroutine triangle_area_3d_2 ( t, area )
 
   !*****************************************************************************80
   !
@@ -34997,19 +34525,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Output, real(dp) AREA, the area of the triangle.
+  !    Output, real(real64) AREA, the area of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: alpha
-    real(dp), intent(out) :: area
-    real(dp) :: base
-    real(dp) :: dot
-    real(dp) :: height
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) alpha
+    real(real64) area
+    real(real64) base
+    real(real64) dot
+    real(real64) height
+    real(real64) t(dim_num,3)
   !
   !  Find the projection of (P3-P1) onto (P2-P1).
   !
@@ -35026,9 +34554,9 @@ contains
   !  The height of the triangle is the length of (P3-P1) after its
   !  projection onto (P2-P1) has been subtracted.
   !
-    if ( base == 0.0_dp ) then
+    if ( base == 0.0e+00_real64 ) then
 
-      height = 0.0_dp
+      height = 0.0e+00_real64
 
     else
 
@@ -35041,11 +34569,10 @@ contains
 
     end if
 
-    area = 0.5_dp * base * height
-  end subroutine triangle_area_3d_2
+    area = 0.5e+00_real64 * base * height
+  end
 
-  subroutine triangle_area_3d_3 ( t, area ) &
-        bind(C, name="triangle_area_3d_3")
+  subroutine triangle_area_3d_3 ( t, area )
 
   !*****************************************************************************80
   !
@@ -35076,23 +34603,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Output, real(dp) AREA, the area of the triangle.
+  !    Output, real(real64) AREA, the area of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: area
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp) :: s(3)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) area
+    integer(int32) i
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) s(3)
+    real(real64) t(dim_num,3)
 
     do j = 1, 3
       jp1 = mod ( j, 3 ) + 1
-      s(j) = 0.0_dp
+      s(j) = 0.0e+00_real64
       do i = 1, dim_num
         s(j) = s(j) + ( t(i,j) - t(i,jp1) )**2
       end do
@@ -35104,15 +34631,14 @@ contains
          * (   s(1) - s(2) + s(3) ) &
          * (   s(1) + s(2) - s(3) )
 
-    if ( area < 0.0_dp ) then
-      area = -1.0_dp
+    if ( area < 0.0e+00_real64 ) then
+      area = -1.0e+00_real64
     end if
 
-    area = 0.25_dp * sqrt ( area )
-  end subroutine triangle_area_3d_3
+    area = 0.25e+00_real64 * sqrt ( area )
+  end
 
-  subroutine triangle_area_heron ( s, area ) &
-        bind(C, name="triangle_area_heron")
+  subroutine triangle_area_heron ( s, area )
 
   !*****************************************************************************80
   !
@@ -35137,29 +34663,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) S(3), the lengths of the three sides.
+  !    Input, real(real64) S(3), the lengths of the three sides.
   !
-  !    Output, real(dp) AREA, the area of the triangle, or -1.0 if the
+  !    Output, real(real64) AREA, the area of the triangle, or -1.0 if the
   !    sides cannot constitute a triangle.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in) :: s(3)
+    real(real64) area
+    real(real64) s(3)
 
     area = (   s(1) + s(2) + s(3) ) &
          * ( - s(1) + s(2) + s(3) ) &
          * (   s(1) - s(2) + s(3) ) &
          * (   s(1) + s(2) - s(3) )
 
-    if ( area < 0.0_dp ) then
-      area = -1.0_dp
+    if ( area < 0.0e+00_real64 ) then
+      area = -1.0e+00_real64
     end if
 
-    area = 0.25_dp * sqrt ( area )
-  end subroutine triangle_area_heron
+    area = 0.25e+00_real64 * sqrt ( area )
+  end
 
-  subroutine triangle_area_vector_3d ( t, area_vector ) &
-        bind(C, name="triangle_area_vector_3d")
+  subroutine triangle_area_vector_3d ( t, area_vector )
 
   !*****************************************************************************80
   !
@@ -35207,15 +34732,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Output, real(dp) AREA_VECTOR(3), the area vector of the triangle.
+  !    Output, real(real64) AREA_VECTOR(3), the area vector of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: area_vector(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) area_vector(dim_num)
+    real(real64) t(dim_num,3)
 
     area_vector(1) = ( t(2,2) - t(2,1) ) * ( t(3,3) - t(3,1) ) &
                    - ( t(3,2) - t(3,1) ) * ( t(2,3) - t(2,1) )
@@ -35225,10 +34750,9 @@ contains
 
     area_vector(3) = ( t(1,2) - t(1,1) ) * ( t(2,3) - t(2,1) ) &
                    - ( t(2,2) - t(2,1) ) * ( t(1,3) - t(1,1) )
-  end subroutine triangle_area_vector_3d
+  end
 
-  subroutine triangle_barycentric_2d ( t, p, xsi ) &
-        bind(C, name="triangle_barycentric_2d")
+  subroutine triangle_barycentric_2d ( t, p, xsi )
 
   !*****************************************************************************80
   !
@@ -35258,23 +34782,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !    The vertices should be given in counter clockwise order.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) XSI(3), the barycentric coordinates of P
+  !    Output, real(real64) XSI(3), the barycentric coordinates of P
   !    with respect to the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), parameter :: rhs_num = 1
+    integer(int32), parameter :: dim_num = 2
+    integer(int32), parameter :: rhs_num = 1
 
-    real(dp) :: a(dim_num,dim_num+rhs_num)
-    integer(ip) :: info
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp), intent(out) :: xsi(dim_num+1)
+    real(real64) a(dim_num,dim_num+rhs_num)
+    integer(int32) info
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
+    real(real64) xsi(dim_num+1)
   !
   !  Set up the linear system
   !
@@ -35305,11 +34829,10 @@ contains
 
     xsi(1) = a(1,3)
     xsi(2) = a(2,3)
-    xsi(3) = 1.0_dp - xsi(1) - xsi(2)
-  end subroutine triangle_barycentric_2d
+    xsi(3) = 1.0e+00_real64 - xsi(1) - xsi(2)
+  end
 
-  subroutine triangle_centroid_2d ( t, centroid ) &
-        bind(C, name="triangle_centroid_2d")
+  subroutine triangle_centroid_2d ( t, centroid )
 
   !*****************************************************************************80
   !
@@ -35353,24 +34876,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) CENTROID(2), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(2), the coordinates of the centroid.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: centroid(dim_num)
-    integer(ip) :: i
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) centroid(dim_num)
+    integer(int32) i
+    real(real64) t(dim_num,3)
 
     do i = 1, dim_num
-      centroid(i) = sum ( t(i,1:3) ) / 3.0_dp
+      centroid(i) = sum ( t(i,1:3) ) / 3.0e+00_real64
     end do
-  end subroutine triangle_centroid_2d
+  end
 
-  subroutine triangle_centroid_3d ( t, centroid ) &
-        bind(C, name="triangle_centroid_3d")
+  subroutine triangle_centroid_3d ( t, centroid )
 
   !*****************************************************************************80
   !
@@ -35400,24 +34922,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Output, real(dp) CENTROID(3), the coordinates of the centroid.
+  !    Output, real(real64) CENTROID(3), the coordinates of the centroid.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: centroid(dim_num)
-    integer(ip) :: i
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) centroid(dim_num)
+    integer(int32) i
+    real(real64) t(dim_num,3)
 
     do i = 1, dim_num
-      centroid(i) = sum ( t(i,1:3) ) / 3.0_dp
+      centroid(i) = sum ( t(i,1:3) ) / 3.0e+00_real64
     end do
-  end subroutine triangle_centroid_3d
+  end
 
-  subroutine triangle_circumcenter_2d ( t, pc ) &
-        bind(C, name="triangle_circumcenter_2d")
+  subroutine triangle_circumcenter_2d ( t, pc )
 
   !*****************************************************************************80
   !
@@ -35454,18 +34975,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) PC(2), the circumcenter of the triangle.
+  !    Output, real(real64) PC(2), the circumcenter of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: det
-    real(dp) :: f(2)
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp) :: top(dim_num)
+    real(real64) det
+    real(real64) f(2)
+    real(real64) pc(dim_num)
+    real(real64) t(dim_num,3)
+    real(real64) top(dim_num)
 
     f(1) = ( t(1,2) - t(1,1) )**2 + ( t(2,2) - t(2,1) )**2
     f(2) = ( t(1,3) - t(1,1) )**2 + ( t(2,3) - t(2,1) )**2
@@ -35476,11 +34997,10 @@ contains
     det  =    ( t(2,3) - t(2,1) ) * ( t(1,2) - t(1,1) ) &
             - ( t(2,2) - t(2,1) ) * ( t(1,3) - t(1,1) ) 
 
-    pc(1:2) = t(1:2,1) + 0.5_dp * top(1:2) / det
-  end subroutine triangle_circumcenter_2d
+    pc(1:2) = t(1:2,1) + 0.5e+00_real64 * top(1:2) / det
+  end
 
-  subroutine triangle_circumcenter_2d_2 ( t, pc ) &
-        bind(C, name="triangle_circumcenter_2d_2")
+  subroutine triangle_circumcenter_2d_2 ( t, pc )
 
   !*****************************************************************************80
   !
@@ -35534,18 +35054,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) PC(2), the circumcenter of the triangle.
+  !    Output, real(real64) PC(2), the circumcenter of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), parameter :: rhs_num = 1
+    integer(int32), parameter :: dim_num = 2
+    integer(int32), parameter :: rhs_num = 1
 
-    real(dp) :: a(dim_num,dim_num+rhs_num)
-    integer(ip) :: info
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a(dim_num,dim_num+rhs_num)
+    integer(int32) info
+    real(real64) pc(dim_num)
+    real(real64) t(dim_num,3)
   !
   !  Set up the linear system.
   !
@@ -35564,14 +35084,13 @@ contains
   !  Compute the center
   !
     if ( info /= 0 ) then
-      pc(1:dim_num) = 0.0_dp
+      pc(1:dim_num) = 0.0e+00_real64
     else
-      pc(1:dim_num) = t(1:dim_num,1) + 0.5_dp * a(1:dim_num,dim_num+1)
+      pc(1:dim_num) = t(1:dim_num,1) + 0.5e+00_real64 * a(1:dim_num,dim_num+1)
     end if
-  end subroutine triangle_circumcenter_2d_2
+  end
 
-  subroutine triangle_circumcenter ( n, t, p ) &
-        bind(C, name="triangle_circumcenter")
+  subroutine triangle_circumcenter ( n, t, p )
 
   !*****************************************************************************80
   !
@@ -35603,24 +35122,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the spatial dimension.
+  !    Input, integer(int32) N, the spatial dimension.
   !
-  !    Input, real(dp) T(N,3), the triangle vertices.
+  !    Input, real(real64) T(N,3), the triangle vertices.
   !
-  !    Output, real(dp) P(N), the circumcenter of the triangle.
+  !    Output, real(real64) P(N), the circumcenter of the triangle.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp) :: a
-    real(dp) :: abp
-    real(dp) :: apc
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), intent(out) :: p(n)
-    real(dp) :: pbc
-    real(dp) :: r8vec_normsq_affine
-    real(dp), intent(in) :: t(n,3)
+    real(real64) a
+    real(real64) abp
+    real(real64) apc
+    real(real64) b
+    real(real64) c
+    real(real64) p(n)
+    real(real64) pbc
+    real(real64) r8vec_normsq_affine
+    real(real64) t(n,3)
 
     a = r8vec_normsq_affine ( n, t(1:n,2), t(1:n,3) )
     b = r8vec_normsq_affine ( n, t(1:n,3), t(1:n,1) )
@@ -35632,10 +35151,9 @@ contains
 
     p(1:n) = ( pbc * t(1:n,1) + apc * t(1:n,2) + abp * t(1:n,3) ) &
            / ( pbc            + apc            + abp )
-  end subroutine triangle_circumcenter
+  end
 
-  subroutine triangle_circumcircle_2d ( t, r, pc ) &
-        bind(C, name="triangle_circumcircle_2d")
+  subroutine triangle_circumcircle_2d ( t, r, pc )
 
   !*****************************************************************************80
   !
@@ -35672,24 +35190,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) R, PC(2), the circumradius and circumcenter
+  !    Output, real(real64) R, PC(2), the circumradius and circumcenter
   !    of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: bot
-    real(dp) :: c
-    real(dp) :: det
-    real(dp) :: f(2)
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(out) :: r
-    real(dp) :: top(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) bot
+    real(real64) c
+    real(real64) det
+    real(real64) f(2)
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) top(dim_num)
+    real(real64) t(dim_num,3)
   !
   !  Circumradius.
   !
@@ -35699,9 +35217,9 @@ contains
 
     bot = ( a + b + c ) * ( - a + b + c ) * (   a - b + c ) * (   a + b - c )
 
-    if ( bot <= 0.0_dp ) then
-      r = -1.0_dp
-      pc(1:2) = 0.0_dp
+    if ( bot <= 0.0e+00_real64 ) then
+      r = -1.0e+00_real64
+      pc(1:2) = 0.0e+00_real64
     end if
 
     r = a * b * c / sqrt ( bot )
@@ -35717,11 +35235,10 @@ contains
     det  =    ( t(2,3) - t(2,1) ) * ( t(1,2) - t(1,1) ) &
             - ( t(2,2) - t(2,1) ) * ( t(1,3) - t(1,1) ) 
 
-    pc(1:2) = t(1:2,1) + 0.5_dp * top(1:2) / det
-  end subroutine triangle_circumcircle_2d
+    pc(1:2) = t(1:2,1) + 0.5e+00_real64 * top(1:2) / det
+  end
 
-  subroutine triangle_circumcircle_2d_2 ( t, r, pc ) &
-        bind(C, name="triangle_circumcircle_2d_2")
+  subroutine triangle_circumcircle_2d_2 ( t, r, pc )
 
   !*****************************************************************************80
   !
@@ -35766,19 +35283,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) R, PC(2), the circumradius and circumcenter.
+  !    Output, real(real64) R, PC(2), the circumradius and circumcenter.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), parameter :: rhs_num = 1
+    integer(int32), parameter :: dim_num = 2
+    integer(int32), parameter :: rhs_num = 1
 
-    real(dp) :: a(dim_num,dim_num+rhs_num)
-    integer(ip) :: info
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a(dim_num,dim_num+rhs_num)
+    integer(int32) info
+    real(real64) pc(dim_num)
+    real(real64) r
+    real(real64) t(dim_num,3)
   !
   !  Set up the linear system.
   !
@@ -35795,17 +35312,16 @@ contains
     call r8mat_solve ( dim_num, rhs_num, a, info )
 
     if ( info /= 0 ) then
-      r = -1.0_dp
-      pc(1:dim_num) = 0.0_dp
+      r = -1.0e+00_real64
+      pc(1:dim_num) = 0.0e+00_real64
     end if
 
-    r = 0.5_dp * sqrt ( a(1,dim_num+1) * a(1,dim_num+1) &
+    r = 0.5e+00_real64 * sqrt ( a(1,dim_num+1) * a(1,dim_num+1) &
                        + a(2,dim_num+1) * a(2,dim_num+1) )
-    pc(1:dim_num) = t(1:dim_num,1) + 0.5_dp * a(1:dim_num,dim_num+1)
-  end subroutine triangle_circumcircle_2d_2
+    pc(1:dim_num) = t(1:dim_num,1) + 0.5e+00_real64 * a(1:dim_num,dim_num+1)
+  end
 
-  subroutine triangle_circumradius_2d ( t, r ) &
-        bind(C, name="triangle_circumradius_2d")
+  subroutine triangle_circumradius_2d ( t, r )
 
   !*****************************************************************************80
   !
@@ -35834,19 +35350,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) R, the circumradius of the circumscribed circle.
+  !    Output, real(real64) R, the circumradius of the circumscribed circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: bot
-    real(dp) :: c
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) bot
+    real(real64) c
+    real(real64) r
+    real(real64) t(dim_num,3)
   !
   !  Compute the length of each side.
   !
@@ -35856,15 +35372,14 @@ contains
 
     bot = ( a + b + c ) * ( - a + b + c ) * (   a - b + c ) * (   a + b - c )
 
-    if ( bot <= 0.0_dp ) then
-      r = -1.0_dp
+    if ( bot <= 0.0e+00_real64 ) then
+      r = -1.0e+00_real64
     end if
 
     r = a * b * c / sqrt ( bot )
-  end subroutine triangle_circumradius_2d
+  end
 
-  subroutine triangle_contains_line_exp_3d ( t, p1, p2, inside, pint ) &
-        bind(C, name="triangle_contains_line_exp_3d")
+  subroutine triangle_contains_line_exp_3d ( t, p1, p2, inside, pint )
 
   !*****************************************************************************80
   !
@@ -35910,32 +35425,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Input, real(dp) P1(3), P2(3), two points on the line.
+  !    Input, real(real64) P1(3), P2(3), two points on the line.
   !
   !    Output, logical INSIDE, is TRUE if (the intersection point of)
   !    the line is inside the triangle.
   !
-  !    Output, real(dp) PINT(3), the point where the line
+  !    Output, real(real64) PINT(3), the point where the line
   !    intersects the plane of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    logical, intent(out) :: inside
-    integer(ip) :: ival
-    logical :: line_exp_is_degenerate_nd
-    real(dp) :: normal(dim_num)
-    real(dp) :: normal2(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(out) :: pint(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp) :: temp
-    logical :: triangle_is_degenerate_nd
-    real(dp) :: v1(dim_num)
-    real(dp) :: v2(dim_num)
+    logical inside
+    integer(int32) ival
+    logical line_exp_is_degenerate_nd
+    real(real64) normal(dim_num)
+    real(real64) normal2(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) pint(dim_num)
+    real(real64) t(dim_num,3)
+    real(real64) temp
+    logical triangle_is_degenerate_nd
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
   !
   !  Make sure the line is not degenerate.
   !
@@ -35993,7 +35508,7 @@ contains
     normal2(2) = v1(3) * v2(1) - v1(1) * v2(3)
     normal2(3) = v1(1) * v2(2) - v1(2) * v2(1)
 
-    if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0_dp ) then
+    if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0e+00_real64 ) then
       inside = .false.
     end if
 
@@ -36004,7 +35519,7 @@ contains
     normal2(2) = v1(3) * v2(1) - v1(1) * v2(3)
     normal2(3) = v1(1) * v2(2) - v1(2) * v2(1)
 
-    if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0_dp ) then
+    if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0e+00_real64 ) then
       inside = .false.
     end if
 
@@ -36015,15 +35530,14 @@ contains
     normal2(2) = v1(3) * v2(1) - v1(1) * v2(3)
     normal2(3) = v1(1) * v2(2) - v1(2) * v2(1)
 
-    if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0_dp ) then
+    if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0e+00_real64 ) then
       inside = .false.
     end if
 
     inside = .true.
-  end subroutine triangle_contains_line_exp_3d
+  end
 
-  subroutine triangle_contains_line_par_3d ( t, p0, pd, inside, p ) &
-        bind(C, name="triangle_contains_line_par_3d")
+  subroutine triangle_contains_line_par_3d ( t, p0, pd, inside, p )
 
   !*****************************************************************************80
   !
@@ -36075,43 +35589,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the three points that define
+  !    Input, real(real64) T(3,3), the three points that define
   !    the triangle.
   !
-  !    Input, real(dp) P0(3), PD(3), parameters that define the
+  !    Input, real(real64) P0(3), PD(3), parameters that define the
   !    parametric line.
   !
   !    Output, logical INSIDE, is TRUE if (the intersection point of)
   !    the line is inside the triangle.
   !
-  !    Output, real(dp) P(3), is the point of intersection of the line
+  !    Output, real(real64) P(3), is the point of intersection of the line
   !    and the plane of the triangle, unless they are parallel.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: a
-    real(dp) :: angle_sum
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    real(dp) :: denom
-    logical, intent(out) :: inside
-    logical :: intersect
-    real(dp) :: norm
-    real(dp) :: norm1
-    real(dp) :: norm2
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(in) :: p0(dim_num)
-    real(dp), intent(in) :: pd(dim_num)
-    real(dp) :: r8_acos
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp) :: t_int
-    real(dp), parameter :: tol = 0.00001_dp
-    real(dp) :: v1(dim_num)
-    real(dp) :: v2(dim_num)
-    real(dp) :: v3(dim_num)
+    real(real64) a
+    real(real64) angle_sum
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) denom
+    logical inside
+    logical intersect
+    real(real64) norm
+    real(real64) norm1
+    real(real64) norm2
+    real(real64) p(dim_num)
+    real(real64) p0(dim_num)
+    real(real64) pd(dim_num)
+    real(real64) r8_acos
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) t(dim_num,3)
+    real(real64) t_int
+    real(real64), parameter :: tol = 0.00001e+00_real64
+    real(real64) v1(dim_num)
+    real(real64) v2(dim_num)
+    real(real64) v3(dim_num)
   !
   !  Determine the implicit form (A,B,C,D) of the plane containing the
   !  triangle.
@@ -36131,12 +35645,12 @@ contains
   !
     norm1 = sqrt ( a * a + b * b + c * c )
 
-    if ( norm1 == 0.0_dp ) then
+    if ( norm1 == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'TRIANGLE_LINE_PAR_INT_3D - Fatal error!'
       write ( *, '(a)' ) '  The plane normal vector is null.'
       inside = .false.
-      p(1:dim_num) = 0.0_dp
+      p(1:dim_num) = 0.0e+00_real64
       stop 1
     end if
   !
@@ -36144,12 +35658,12 @@ contains
   !
     norm2 = sqrt ( sum ( pd(1:dim_num)**2 ) )
 
-    if ( norm2 == 0.0_dp ) then
+    if ( norm2 == 0.0e+00_real64 ) then
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'TRIANGLE_LINE_PAR_INT_3D - Fatal error!'
       write ( *, '(a)' ) '  The line direction vector is null.'
       inside = .false.
-      p(1:dim_num) = 0.0_dp
+      p(1:dim_num) = 0.0e+00_real64
       stop 1
     end if
   !
@@ -36167,7 +35681,7 @@ contains
   !  The line may actually lie in the plane.  We're not going
   !  to try to address this possibility.
   !
-      if ( a * p0(1) + b * p0(2) + c * p0(3) + d == 0.0_dp ) then
+      if ( a * p0(1) + b * p0(2) + c * p0(3) + d == 0.0e+00_real64 ) then
 
         intersect = .true.
         inside = .false.
@@ -36179,7 +35693,7 @@ contains
 
         intersect = .false.
         inside = .false.
-        p(1:dim_num) = 0.0_dp
+        p(1:dim_num) = 0.0e+00_real64
 
       end if
   !
@@ -36202,7 +35716,7 @@ contains
 
       norm = sqrt ( sum ( v1(1:dim_num)**2 ) )
 
-      if ( norm == 0.0_dp ) then
+      if ( norm == 0.0e+00_real64 ) then
         inside = .true.
       end if
 
@@ -36210,7 +35724,7 @@ contains
 
       norm = sqrt ( sum ( v2(1:dim_num)**2 ) )
 
-      if ( norm == 0.0_dp ) then
+      if ( norm == 0.0e+00_real64 ) then
         inside = .true.
       end if
 
@@ -36218,7 +35732,7 @@ contains
 
       norm = sqrt ( sum ( v3(1:dim_num)**2 ) )
 
-      if ( norm == 0.0_dp ) then
+      if ( norm == 0.0e+00_real64 ) then
         inside = .true.
       end if
 
@@ -36235,10 +35749,9 @@ contains
       end if
 
     end if
-  end subroutine triangle_contains_line_par_3d
+  end
 
-  subroutine triangle_contains_point_2d_1 ( t, p, inside ) &
-        bind(C, name="triangle_contains_point_2d_1")
+  subroutine triangle_contains_point_2d_1 ( t, p, inside )
 
   !*****************************************************************************80
   !
@@ -36264,32 +35777,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside 
   !    the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical, intent(out) :: inside
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp) :: xsi(dim_num+1)
+    logical inside
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
+    real(real64) xsi(dim_num+1)
 
     call triangle_barycentric_2d ( t, p, xsi )
 
-    if ( any ( xsi(1:3) < 0.0_dp ) ) then
+    if ( any ( xsi(1:3) < 0.0e+00_real64 ) ) then
       inside = .false.
     else
       inside = .true.
     end if
-  end subroutine triangle_contains_point_2d_1
+  end
 
-  subroutine triangle_contains_point_2d_2 ( t, p, inside ) &
-        bind(C, name="triangle_contains_point_2d_2")
+  subroutine triangle_contains_point_2d_2 ( t, p, inside )
 
   !*****************************************************************************80
   !
@@ -36320,28 +35832,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !    The vertices should be given in counter clockwise order.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is 
   !    inside the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical, intent(out) :: inside
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    logical inside
+    integer(int32) j
+    integer(int32) k
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
 
     do j = 1, 3
 
       k = mod ( j, 3 ) + 1
 
-      if ( 0.0_dp < ( p(1) - t(1,j) ) * ( t(2,k) - t(2,j) ) &
+      if ( 0.0e+00_real64 < ( p(1) - t(1,j) ) * ( t(2,k) - t(2,j) ) &
                    - ( p(2) - t(2,j) ) * ( t(1,k) - t(1,j) ) ) then
         inside = .false.
       end if
@@ -36349,10 +35861,9 @@ contains
     end do
 
     inside = .true.
-  end subroutine triangle_contains_point_2d_2
+  end
 
-  subroutine triangle_contains_point_2d_3 ( t, p, inside ) &
-        bind(C, name="triangle_contains_point_2d_3")
+  subroutine triangle_contains_point_2d_3 ( t, p, inside )
 
   !*****************************************************************************80
   !
@@ -36388,25 +35899,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is 
   !    inside the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: dir_new
-    real(dp) :: dir_old
-    logical, intent(out) :: inside
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) dir_new
+    real(real64) dir_old
+    logical inside
+    integer(int32) j
+    integer(int32) k
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
 
-    dir_old = 0.0_dp
+    dir_old = 0.0e+00_real64
 
     do j = 1, 3
 
@@ -36415,21 +35926,20 @@ contains
       dir_new = ( p(1) - t(1,j) ) * ( t(2,k) - t(2,j) ) &
               - ( p(2) - t(2,j) ) * ( t(1,k) - t(1,j) )
 
-      if ( dir_new * dir_old < 0.0_dp ) then
+      if ( dir_new * dir_old < 0.0e+00_real64 ) then
         inside = .false.
       end if
 
-      if ( dir_new /= 0.0_dp ) then
+      if ( dir_new /= 0.0e+00_real64 ) then
         dir_old = dir_new
       end if
 
     end do
 
     inside = .true.
-  end subroutine triangle_contains_point_2d_3
+  end
 
-  subroutine triangle_diameter_2d ( t, diameter ) &
-        bind(C, name="triangle_diameter_2d")
+  subroutine triangle_diameter_2d ( t, diameter )
 
   !*****************************************************************************80
   !
@@ -36456,21 +35966,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) DIAMETER, the diameter of the triangle.
+  !    Output, real(real64) DIAMETER, the diameter of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: asq
-    real(dp) :: b
-    real(dp) :: bsq
-    real(dp) :: c
-    real(dp) :: csq
-    real(dp), intent(out) :: diameter
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) asq
+    real(real64) b
+    real(real64) bsq
+    real(real64) c
+    real(real64) csq
+    real(real64) diameter
+    real(real64) t(dim_num,3)
   !
   !  Compute the squared length of each side.
   !
@@ -36480,13 +35990,13 @@ contains
   !
   !  Take care of a zero side.
   !
-    if ( asq == 0.0_dp ) then
+    if ( asq == 0.0e+00_real64 ) then
       diameter = sqrt ( bsq )
       return
-    else if ( bsq == 0.0_dp ) then
+    else if ( bsq == 0.0e+00_real64 ) then
       diameter = sqrt ( csq )
       return
-    else if ( csq == 0.0_dp ) then
+    else if ( csq == 0.0e+00_real64 ) then
       diameter = sqrt ( asq )
     end if
   !
@@ -36512,14 +36022,13 @@ contains
       b = sqrt ( bsq )
       c = sqrt ( csq )
 
-      diameter = 2.0_dp * a * b * c / sqrt ( ( a + b + c ) * ( - a + b + c ) &
+      diameter = 2.0e+00_real64 * a * b * c / sqrt ( ( a + b + c ) * ( - a + b + c ) &
         * ( a - b + c ) * ( a + b - c ) )
 
     end if
-  end subroutine triangle_diameter_2d
+  end
 
-  subroutine triangle_edge_length_2d ( t, edge_length ) &
-        bind(C, name="triangle_edge_length_2d")
+  subroutine triangle_edge_length_2d ( t, edge_length )
 
   !*****************************************************************************80
   !
@@ -36539,29 +36048,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) EDGE_LENGTH(3), the length of the edges.
+  !    Output, real(real64) EDGE_LENGTH(3), the length of the edges.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: edge_length(3)
-    integer(ip) :: i4_wrap
-    integer(ip) :: j1
-    integer(ip) :: j2
-    real(dp) :: r8vec_norm
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) edge_length(3)
+    integer(int32) i4_wrap
+    integer(int32) j1
+    integer(int32) j2
+    real(real64) r8vec_norm
+    real(real64) t(dim_num,3)
 
     do j1 = 1, 3
       j2 = i4_wrap ( j1 + 1, 1, 3 )
       edge_length(j1) = &
         r8vec_norm ( dim_num, t(1:dim_num,j2) - t(1:dim_num,j1) )
     end do
-  end subroutine triangle_edge_length_2d
+  end
 
-  subroutine triangle_gridpoints_2d ( t, sub_num, grid_max, grid_num, g ) &
-        bind(C, name="triangle_gridpoints_2d")
+  subroutine triangle_gridpoints_2d ( t, sub_num, grid_max, grid_num, g )
 
   !*****************************************************************************80
   !
@@ -36602,26 +36110,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, integer(ip) SUB_NUM, the number of subdivisions.
+  !    Input, integer(int32) SUB_NUM, the number of subdivisions.
   !
-  !    Input, integer(ip) GRID_MAX, the maximum number of grid points.
+  !    Input, integer(int32) GRID_MAX, the maximum number of grid points.
   !
-  !    Output, integer(ip) GRID_NUM, the number of grid points returned.
+  !    Output, integer(int32) GRID_NUM, the number of grid points returned.
   !
-  !    Output, real(dp) G(2,GRID_MAX), the grid points.
+  !    Output, real(real64) G(2,GRID_MAX), the grid points.
   !
 
-    integer(ip), intent(in), value :: grid_max
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) grid_max
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: g(dim_num,grid_max)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(out) :: grid_num
-    integer(ip), intent(in), value :: sub_num
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) g(dim_num,grid_max)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) grid_num
+    integer(int32) sub_num
+    real(real64) t(dim_num,3)
 
     grid_num = 0
   !
@@ -36630,8 +36138,8 @@ contains
     if ( sub_num == 0 ) then
       if ( 1 <= grid_max ) then
         grid_num = 1
-        g(1,1) = ( t(1,1) + t(1,2) + t(1,3) ) / 3.0_dp
-        g(2,1) = ( t(2,1) + t(2,2) + t(2,3) ) / 3.0_dp
+        g(1,1) = ( t(1,1) + t(1,2) + t(1,3) ) / 3.0e+00_real64
+        g(2,1) = ( t(2,1) + t(2,2) + t(2,3) ) / 3.0e+00_real64
       end if
     end if
 
@@ -36643,23 +36151,22 @@ contains
 
           grid_num = grid_num + 1
 
-          g(1,grid_num) = ( real (           i, dp) * t(1,1) &
-                          + real (               j, dp) * t(1,2) &
-                          + real ( sub_num - i - j, dp) * t(1,3) ) &
-                          / real ( sub_num, dp)
+          g(1,grid_num) = ( real (           i, real64) * t(1,1) &
+                          + real (               j, real64) * t(1,2) &
+                          + real ( sub_num - i - j, real64) * t(1,3) ) &
+                          / real ( sub_num, real64)
 
-          g(2,grid_num) = ( real (           i, dp) * t(2,1) &
-                          + real (               j, dp) * t(2,2) &
-                          + real ( sub_num - i - j, dp) * t(2,3) ) &
-                          / real ( sub_num, dp)
+          g(2,grid_num) = ( real (           i, real64) * t(2,1) &
+                          + real (               j, real64) * t(2,2) &
+                          + real ( sub_num - i - j, real64) * t(2,3) ) &
+                          / real ( sub_num, real64)
         end if
 
       end do
     end do
-  end subroutine triangle_gridpoints_2d
+  end
 
-  subroutine triangle_incenter_2d ( t, pc ) &
-        bind(C, name="triangle_incenter_2d")
+  subroutine triangle_incenter_2d ( t, pc )
 
   !*****************************************************************************80
   !
@@ -36700,19 +36207,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) PC(2), the incenter.
+  !    Output, real(real64) PC(2), the incenter.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp) :: perimeter
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) pc(dim_num)
+    real(real64) perimeter
+    real(real64) t(dim_num,3)
   !
   !  Compute the length of each side.
   !
@@ -36722,17 +36229,16 @@ contains
 
     perimeter = a + b + c
 
-    if ( perimeter == 0.0_dp ) then
+    if ( perimeter == 0.0e+00_real64 ) then
       pc(1:dim_num) = t(1:dim_num,1)
     else
       pc(1:dim_num) = ( b * t(1:dim_num,1) &
                       + c * t(1:dim_num,2) &
                       + a * t(1:dim_num,3) ) / perimeter
     end if
-  end subroutine triangle_incenter_2d
+  end
 
-  subroutine triangle_incircle_2d ( t, r, pc ) &
-        bind(C, name="triangle_incircle_2d")
+  subroutine triangle_incircle_2d ( t, r, pc )
 
   !*****************************************************************************80
   !
@@ -36766,21 +36272,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) R, PC(2), the radius and center of the
+  !    Output, real(real64) R, PC(2), the radius and center of the
   !    inscribed circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp) :: perimeter
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) pc(dim_num)
+    real(real64) perimeter
+    real(real64) r
+    real(real64) t(dim_num,3)
   !
   !  Compute the length of each side.
   !
@@ -36790,9 +36296,9 @@ contains
 
     perimeter = a + b + c
 
-    if ( perimeter == 0.0_dp ) then
+    if ( perimeter == 0.0e+00_real64 ) then
       pc(1:dim_num) = t(1:dim_num,1)
-      r = 0.0_dp
+      r = 0.0e+00_real64
     end if
 
     pc(1:dim_num) = (  &
@@ -36800,14 +36306,13 @@ contains
       + c * t(1:dim_num,2) &
       + a * t(1:dim_num,3) ) / perimeter
 
-    r = 0.5_dp * sqrt ( &
+    r = 0.5e+00_real64 * sqrt ( &
         ( - a + b + c )  &
       * ( + a - b + c )  &
       * ( + a + b - c ) / perimeter )
-  end subroutine triangle_incircle_2d
+  end
 
-  subroutine triangle_inradius_2d ( t, r ) &
-        bind(C, name="triangle_inradius_2d")
+  subroutine triangle_inradius_2d ( t, r )
 
   !*****************************************************************************80
   !
@@ -36841,19 +36346,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) R, the radius of the inscribed circle.
+  !    Output, real(real64) R, the radius of the inscribed circle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: perimeter
-    real(dp), intent(out) :: r
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) perimeter
+    real(real64) r
+    real(real64) t(dim_num,3)
   !
   !  Compute the length of each side.
   !
@@ -36863,18 +36368,17 @@ contains
 
     perimeter = a + b + c
 
-    if ( perimeter == 0.0_dp ) then
-      r = 0.0_dp
+    if ( perimeter == 0.0e+00_real64 ) then
+      r = 0.0e+00_real64
     end if
 
-    r = 0.5_dp * sqrt ( &
+    r = 0.5e+00_real64 * sqrt ( &
         ( - a + b + c )  &
       * ( + a - b + c )  &
       * ( + a + b - c ) / perimeter )
-  end subroutine triangle_inradius_2d
+  end
 
-  function triangle_is_degenerate_nd ( dim_num, t ) &
-        bind(C, name="triangle_is_degenerate_nd")
+  function triangle_is_degenerate_nd ( dim_num, t )
 
   !*****************************************************************************80
   !
@@ -36900,27 +36404,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) T(DIM_NUM,3), the triangle vertices.
+  !    Input, real(real64) T(DIM_NUM,3), the triangle vertices.
   !
   !    Output, logical TRIANGLE_IS_DEGENERATE_ND, is TRUE if the
   !    triangle is degenerate.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp), intent(in) :: t(dim_num,3)
-    logical :: triangle_is_degenerate_nd
+    real(real64) t(dim_num,3)
+    logical triangle_is_degenerate_nd
 
     triangle_is_degenerate_nd = &
        ( all ( t(1:dim_num,1) == t(1:dim_num,2) ) .or. &
          all ( t(1:dim_num,2) == t(1:dim_num,3) ) .or. &
          all ( t(1:dim_num,3) == t(1:dim_num,1) ) )
-  end function triangle_is_degenerate_nd
+  end
 
-  subroutine triangle_lattice_layer_point_next ( c, v, more ) &
-        bind(C, name="triangle_lattice_layer_point_next")
+  subroutine triangle_lattice_layer_point_next ( c, v, more )
 
   !*****************************************************************************80
   !
@@ -36960,11 +36463,11 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) C(3), coefficients defining the 
+  !    Input, integer(int32) C(3), coefficients defining the 
   !    lattice layer.  Entry C(3) contains the layer index.
   !    C(1) and C(2) should be positive, and C(3) must be nonnegative.
   !
-  !    Input/output, integer(ip) V(2).  On first call for a given layer,
+  !    Input/output, integer(int32) V(2).  On first call for a given layer,
   !    the input value of V is not important.  On a repeated call for the same
   !    layer, the input value of V should be the output value from the previous 
   !    call.  On output, V contains the next lattice layer point.
@@ -36977,14 +36480,14 @@ contains
   !    and V was reset to 0, and the lattice layer has been exhausted.
   !
 
-    integer(ip), intent(in) :: c(3)
-    integer(ip) :: c1n
-    integer(ip) :: i4vec_lcm
-    logical, intent(inout) :: more
-    integer(ip), parameter :: n = 2
-    integer(ip) :: rhs1
-    integer(ip) :: rhs2
-    integer(ip), intent(inout) :: v(2)
+    integer(int32) c(3)
+    integer(int32) c1n
+    integer(int32) i4vec_lcm
+    logical more
+    integer(int32), parameter :: n = 2
+    integer(int32) rhs1
+    integer(int32) rhs2
+    integer(int32) v(2)
   !
   !  Treat layer C(N+1) = 0 specially.
   !
@@ -37029,10 +36532,9 @@ contains
         end if
       end if    
     end if
-  end subroutine triangle_lattice_layer_point_next
+  end
 
-  subroutine triangle_lattice_point_next ( c, v, more ) &
-        bind(C, name="triangle_lattice_point_next")
+  subroutine triangle_lattice_point_next ( c, v, more )
 
   !*****************************************************************************80
   !
@@ -37067,10 +36569,10 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) C(3), coefficients defining the 
+  !    Input, integer(int32) C(3), coefficients defining the 
   !    lattice triangle.  These should be positive.
   !
-  !    Input/output, integer(ip) V(2).  On first call, the input
+  !    Input/output, integer(int32) V(2).  On first call, the input
   !    value is not important.  On a repeated call, the input value should
   !    be the output value from the previous call.  On output, V contains
   !    the next lattice point.
@@ -37084,13 +36586,13 @@ contains
   !    for this triangle.
   !
 
-    integer(ip), intent(in) :: c(3)
-    integer(ip) :: c1n
-    integer(ip) :: i4vec_lcm
-    logical, intent(inout) :: more
-    integer(ip), parameter :: n = 2
-    integer(ip) :: rhs
-    integer(ip), intent(inout) :: v(2)
+    integer(int32) c(3)
+    integer(int32) c1n
+    integer(int32) i4vec_lcm
+    logical more
+    integer(int32), parameter :: n = 2
+    integer(int32) rhs
+    integer(int32) v(2)
 
     if ( .not. more ) then
 
@@ -37115,10 +36617,9 @@ contains
         end if
       end if    
     end if
-  end subroutine triangle_lattice_point_next
+  end
 
-  subroutine triangle_line_imp_int_2d ( t, a, b, c, int_num, pint ) &
-        bind(C, name="triangle_line_imp_int_2d")
+  subroutine triangle_line_imp_int_2d ( t, a, b, c, int_num, pint )
 
   !*****************************************************************************80
   !
@@ -37146,35 +36647,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, real(dp) A, B, C, determine the equation of the line:
+  !    Input, real(real64) A, B, C, determine the equation of the line:
   !    A*X + B*Y + C = 0.
   !
-  !    Output, integer(ip) INT_NUM, the number of points of intersection
+  !    Output, integer(int32) INT_NUM, the number of points of intersection
   !    of the line with the triangle.  INT_NUM may be 0, 1, 2 or 3.
   !
-  !    Output, real(dp) PINT(2,3), contains the intersection points.
+  !    Output, real(real64) PINT(2,3), contains the intersection points.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: a
-    real(dp) :: a1
-    real(dp), intent(in), value :: b
-    real(dp) :: b1
-    real(dp), intent(in), value :: c
-    real(dp) :: c1
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip), intent(out) :: int_num
-    integer(ip) :: ival
-    integer(ip) :: j
-    real(dp) :: p(dim_num)
-    real(dp), intent(out) :: pint(dim_num,3)
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp) :: test1
-    real(dp) :: test2
+    real(real64) a
+    real(real64) a1
+    real(real64) b
+    real(real64) b1
+    real(real64) c
+    real(real64) c1
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) int_num
+    integer(int32) ival
+    integer(int32) j
+    real(real64) p(dim_num)
+    real(real64) pint(dim_num,3)
+    real(real64) t(dim_num,3)
+    real(real64) test1
+    real(real64) test2
 
     int_num = 0
 
@@ -37207,10 +36708,9 @@ contains
       end if
 
     end do
-  end subroutine triangle_line_imp_int_2d
+  end
 
-  function triangle_orientation_2d ( t ) &
-        bind(C, name="triangle_orientation_2d")
+  function triangle_orientation_2d ( t )
 
   !*****************************************************************************80
   !
@@ -37237,9 +36737,9 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, integer(ip) TRIANGLE_ORIENTATION_2D, reports if the 
+  !    Output, integer(int32) TRIANGLE_ORIENTATION_2D, reports if the 
   !    three points lie clockwise on the circle that passes through them.  
   !    The possible return values are:
   !    0, the points are distinct, noncolinear, and lie counter clockwise
@@ -37250,11 +36750,11 @@ contains
   !    3, at least two of the points are identical.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: det
-    integer(ip) :: triangle_orientation_2d
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) det
+    integer(int32) triangle_orientation_2d
+    real(real64) t(dim_num,3)
 
     if ( all ( t(1:dim_num,1) == t(1:dim_num,2) ) .or. &
          all ( t(1:dim_num,2) == t(1:dim_num,3) ) .or. &
@@ -37265,17 +36765,16 @@ contains
     det = ( t(1,1) - t(1,3) ) * ( t(2,2) - t(2,3) ) &
         - ( t(1,2) - t(1,3) ) * ( t(2,1) - t(2,3) )
 
-    if ( det == 0.0_dp ) then
+    if ( det == 0.0e+00_real64 ) then
       triangle_orientation_2d = 2
-    else if ( det < 0.0_dp ) then
+    else if ( det < 0.0e+00_real64 ) then
       triangle_orientation_2d = 1
-    else if ( 0.0_dp < det ) then
+    else if ( 0.0e+00_real64 < det ) then
       triangle_orientation_2d = 0
     end if
-  end function triangle_orientation_2d
+  end
 
-  subroutine triangle_orthocenter_2d ( t, pc ) &
-        bind(C, name="triangle_orthocenter_2d")
+  subroutine triangle_orthocenter_2d ( t, pc )
 
   !*****************************************************************************80
   !
@@ -37312,23 +36811,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) PC(2), the orthocenter of the triangle.
+  !    Output, real(real64) PC(2), the orthocenter of the triangle.
   !
   !    Output, logical FLAG, is TRUE if the value could not 
   !    be computed.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    logical :: flag
-    integer(ip) :: ival
-    real(dp) :: p23(dim_num)
-    real(dp) :: p31(dim_num)
-    real(dp), intent(out) :: pc(dim_num)
-    real(dp) :: r8_huge
-    real(dp), intent(in) :: t(dim_num,3)
+    logical flag
+    integer(int32) ival
+    real(real64) p23(dim_num)
+    real(real64) p31(dim_num)
+    real(real64) pc(dim_num)
+    real(real64) r8_huge
+    real(real64) t(dim_num,3)
   !
   !  Determine a point P23 common to the line (P2,P3) and
   !  its perpendicular through P1.
@@ -37356,10 +36855,9 @@ contains
       pc(1:2) = r8_huge ( )
       flag = .true.
     end if
-  end subroutine triangle_orthocenter_2d
+  end
 
-  subroutine triangle_point_dist_2d ( t, p, dist ) &
-        bind(C, name="triangle_point_dist_2d")
+  subroutine triangle_point_dist_2d ( t, p, dist )
 
   !*****************************************************************************80
   !
@@ -37379,24 +36877,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, real(dp) P(2), the point to be checked.
+  !    Input, real(real64) P(2), the point to be checked.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), parameter :: side_num = 3
+    integer(int32), parameter :: dim_num = 2
+    integer(int32), parameter :: side_num = 3
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,side_num)
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,side_num)
   !
   !  Find the distance to each of the line segments.
   !
@@ -37413,10 +36911,9 @@ contains
       end if
 
     end do
-  end subroutine triangle_point_dist_2d
+  end
 
-  subroutine triangle_point_dist_3d ( t, p, dist ) &
-        bind(C, name="triangle_point_dist_3d")
+  subroutine triangle_point_dist_3d ( t, p, dist )
 
   !*****************************************************************************80
   !
@@ -37436,20 +36933,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(3,3), the triangle vertices.
+  !    Input, real(real64) T(3,3), the triangle vertices.
   !
-  !    Input, real(dp) P(3), the point which is to be checked.
+  !    Input, real(real64) P(3), the point which is to be checked.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    triangle.  DIST is zero if the point lies exactly on the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) dist
+    real(real64) dist2
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
   !
   !  Compute the distances from the point to each of the sides.
   !
@@ -37464,10 +36961,9 @@ contains
     call segment_point_dist_3d ( t(1:dim_num,3), t(1:dim_num,1), p, dist2 )
 
     dist = min ( dist, dist2 )
-  end subroutine triangle_point_dist_3d
+  end
 
-  subroutine triangle_point_dist_signed_2d ( t, p, dist_signed ) &
-        bind(C, name="triangle_point_dist_signed_2d")
+  subroutine triangle_point_dist_signed_2d ( t, p, dist_signed )
 
   !*****************************************************************************80
   !
@@ -37494,23 +36990,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !    These should be given in counter clockwise order.
   !
-  !    Input, real(dp) P(2), the point which is to be checked.
+  !    Input, real(real64) P(2), the point which is to be checked.
   !
-  !    Output, real(dp) DIST_SIGNED, the signed distance from the
+  !    Output, real(real64) DIST_SIGNED, the signed distance from the
   !    point to the triangle.  
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: dis12
-    real(dp) :: dis23
-    real(dp) :: dis31
-    real(dp), intent(out) :: dist_signed
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) dis12
+    real(real64) dis23
+    real(real64) dis31
+    real(real64) dist_signed
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
   !
   !  Compute the signed line distances to the point.
   !
@@ -37524,7 +37020,7 @@ contains
   !  The largest (negative) line distance has the smallest magnitude,
   !  and is the signed triangle distance.
   !
-    if ( dis12 <= 0.0_dp .and. dis23 <= 0.0_dp .and. dis31 <= 0.0_dp ) then
+    if ( dis12 <= 0.0e+00_real64 .and. dis23 <= 0.0e+00_real64 .and. dis31 <= 0.0e+00_real64 ) then
       dist_signed = max ( dis12, dis23, dis31 )
   !
   !  If the point is outside the triangle, then we have to compute
@@ -37539,10 +37035,9 @@ contains
       dist_signed = min ( dis12, dis23, dis31 )
 
     end if
-  end subroutine triangle_point_dist_signed_2d
+  end
 
-  subroutine triangle_point_near_2d ( t, p, pn, dist ) &
-        bind(C, name="triangle_point_near_2d")
+  subroutine triangle_point_near_2d ( t, p, pn, dist )
 
   !*****************************************************************************80
   !
@@ -37562,36 +37057,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, real(dp) P(2), the point whose nearest triangle point
+  !    Input, real(real64) P(2), the point whose nearest triangle point
   !    is to be determined.
   !
-  !    Output, real(dp) PN(2), the nearest point to P.
+  !    Output, real(real64) PN(2), the nearest point to P.
   !
-  !    Output, real(dp) DIST, the distance from the point to the
+  !    Output, real(real64) DIST, the distance from the point to the
   !    triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), parameter :: side_num = 3
+    integer(int32), parameter :: dim_num = 2
+    integer(int32), parameter :: side_num = 3
 
-    real(dp), intent(out) :: dist
-    real(dp) :: dist2
-    integer(ip) :: i4_wrap
-    integer(ip) :: j
-    integer(ip) :: jp1
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(out) :: pn(dim_num)
-    real(dp) :: pn2(dim_num)
-    real(dp), intent(in) :: t(dim_num,side_num)
-    real(dp) :: tval
+    real(real64) dist
+    real(real64) dist2
+    integer(int32) i4_wrap
+    integer(int32) j
+    integer(int32) jp1
+    real(real64) p(dim_num)
+    real(real64) pn(dim_num)
+    real(real64) pn2(dim_num)
+    real(real64) t(dim_num,side_num)
+    real(real64) tval
   !
   !  Find the distance to each of the line segments that make up the edges
   !  of the triangle.
   !
     dist = huge ( dist )
-    pn(1:dim_num) = 0.0_dp
+    pn(1:dim_num) = 0.0e+00_real64
 
     do j = 1, side_num
 
@@ -37606,10 +37101,9 @@ contains
       end if
 
     end do
-  end subroutine triangle_point_near_2d
+  end
 
-  subroutine triangle_quality_2d ( t, quality ) &
-        bind(C, name="triangle_quality_2d")
+  subroutine triangle_quality_2d ( t, quality )
 
   !*****************************************************************************80
   !
@@ -37642,18 +37136,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Output, real(dp) QUALITY, the quality of the triangle.
+  !    Output, real(real64) QUALITY, the quality of the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), intent(out) :: quality
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) quality
+    real(real64) t(dim_num,3)
   !
   !  Compute the length of each side.
   !
@@ -37661,16 +37155,15 @@ contains
     b = sqrt ( sum ( ( t(1:dim_num,2) - t(1:dim_num,3) )**2 ) )
     c = sqrt ( sum ( ( t(1:dim_num,3) - t(1:dim_num,1) )**2 ) )
 
-    if ( a * b * c == 0.0_dp ) then
-      quality = 0.0_dp
+    if ( a * b * c == 0.0e+00_real64 ) then
+      quality = 0.0e+00_real64
     else
       quality = ( - a + b + c ) * ( a - b + c ) * ( a + b - c ) &
         / ( a * b * c )
     end if
-  end subroutine triangle_quality_2d
+  end
 
-  subroutine triangle_right_lattice_point_num_2d ( a, b, n ) &
-        bind(C, name="triangle_right_lattice_point_num_2d")
+  subroutine triangle_right_lattice_point_num_2d ( a, b, n )
 
   !*****************************************************************************80
   !
@@ -37703,21 +37196,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) A, B, define the vertices.
+  !    Input, integer(int32) A, B, define the vertices.
   !
-  !    Output, integer(ip) N, the number of lattice points.
+  !    Output, integer(int32) N, the number of lattice points.
   !
 
-    integer(ip), intent(in), value :: a
-    integer(ip), intent(in), value :: b
-    integer(ip) :: i4_gcd
-    integer(ip), intent(out) :: n
+    integer(int32) a
+    integer(int32) b
+    integer(int32) i4_gcd
+    integer(int32) n
 
     n = ( ( a + 1 ) * ( b + 1 ) + i4_gcd ( a, b ) + 1 ) / 2
-  end subroutine triangle_right_lattice_point_num_2d
+  end
 
-  subroutine triangle_sample ( t, n, seed, p ) &
-        bind(C, name="triangle_sample")
+  subroutine triangle_sample ( t, n, seed, p )
 
   !*****************************************************************************80
   !
@@ -37737,26 +37229,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, integer(ip) N, the number of points to generate.
+  !    Input, integer(int32) N, the number of points to generate.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) P(2,N), random points in the triangle.
+  !    Output, real(real64) P(2,N), random points in the triangle.
   !
 
-    integer(ip), parameter :: dim_num = 2
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: dim_num = 2
+    integer(int32) n
 
-    real(dp) :: alpha(n)
-    integer(ip) :: dim
-    real(dp), intent(out) :: p(dim_num,n)
-    real(dp) :: p12(dim_num,n)
-    real(dp) :: p13(dim_num,n)
-    integer(ip), intent(inout) :: seed
-    real(dp), intent(in) :: t(dim_num,3)
+    real(real64) alpha(n)
+    integer(int32) dim
+    real(real64) p(dim_num,n)
+    real(real64) p12(dim_num,n)
+    real(real64) p13(dim_num,n)
+    integer(int32) seed
+    real(real64) t(dim_num,3)
   !
   !  For comparison between F90, C++ and MATLAB codes, call R8VEC_UNIFORM_01.
   !  For faster execution, call RANDOM_NUMBER.
@@ -37786,10 +37278,10 @@ contains
   !
     do dim = 1, dim_num
 
-      p12(dim,1:n) = ( 1.0_dp - alpha(1:n) ) * t(dim,1) &
+      p12(dim,1:n) = ( 1.0e+00_real64 - alpha(1:n) ) * t(dim,1) &
                                + alpha(1:n)   * t(dim,2)
 
-      p13(dim,1:n) = ( 1.0_dp - alpha(1:n) ) * t(dim,1) &
+      p13(dim,1:n) = ( 1.0e+00_real64 - alpha(1:n) ) * t(dim,1) &
                                + alpha(1:n)   * t(dim,3)
 
     end do
@@ -37811,14 +37303,13 @@ contains
 
     do dim = 1, dim_num
 
-      p(dim,1:n) = ( 1.0_dp - alpha(1:n) ) * p12(dim,1:n) &
+      p(dim,1:n) = ( 1.0e+00_real64 - alpha(1:n) ) * p12(dim,1:n) &
                              + alpha(1:n)   * p13(dim,1:n)
 
     end do
-  end subroutine triangle_sample
+  end
 
-  subroutine triangle01_lattice_point_num_2d ( s, n ) &
-        bind(C, name="triangle01_lattice_point_num_2d")
+  subroutine triangle01_lattice_point_num_2d ( s, n )
 
   !*****************************************************************************80
   !
@@ -37859,19 +37350,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) S, the scale factor.
+  !    Input, integer(int32) S, the scale factor.
   !
-  !    Output, integer(ip) N, the number of lattice points.
+  !    Output, integer(int32) N, the number of lattice points.
   !
 
-    integer(ip), intent(out) :: n
-    integer(ip), intent(in), value :: s
+    integer(int32) n
+    integer(int32) s
 
     n = ( ( s + 2 ) * ( s + 1 ) ) / 2
-  end subroutine triangle01_lattice_point_num_2d
+  end
 
-  subroutine triangle_xsi_to_xy_2d ( t, xsi, p ) &
-        bind(C, name="triangle_xsi_to_xy_2d")
+  subroutine triangle_xsi_to_xy_2d ( t, xsi, p )
 
   !*****************************************************************************80
   !
@@ -37891,25 +37381,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, real(dp) XSI(3), the barycentric coordinates of a point.
+  !    Input, real(real64) XSI(3), the barycentric coordinates of a point.
   !    XSI(1) + XSI(2) + XSI(3) should equal 1, but this is not checked.
   !
-  !    Output, real(dp) P(2), the XY coordinates of the point.
+  !    Output, real(real64) P(2), the XY coordinates of the point.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(out) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp), intent(in) :: xsi(dim_num+1)
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
+    real(real64) xsi(dim_num+1)
 
     p(1:dim_num) = matmul ( t(1:dim_num,1:3), xsi(1:dim_num+1) )
-  end subroutine triangle_xsi_to_xy_2d
+  end
 
-  subroutine triangle_xy_to_xsi_2d ( t, p, xsi ) &
-        bind(C, name="triangle_xy_to_xsi_2d")
+  subroutine triangle_xy_to_xsi_2d ( t, p, xsi )
 
   !*****************************************************************************80
   !
@@ -37929,20 +37418,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) T(2,3), the triangle vertices.
+  !    Input, real(real64) T(2,3), the triangle vertices.
   !
-  !    Input, real(dp) P(2), the XY coordinates of a point.
+  !    Input, real(real64) P(2), the XY coordinates of a point.
   !
-  !    Output, real(dp) XSI(3), the barycentric coordinates of the point.
+  !    Output, real(real64) XSI(3), the barycentric coordinates of the point.
   !    XSI1 + XSI2 + XSI3 should equal 1.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: det
-    real(dp), intent(in) :: p(dim_num)
-    real(dp), intent(in) :: t(dim_num,3)
-    real(dp), intent(out) :: xsi(3)
+    real(real64) det
+    real(real64) p(dim_num)
+    real(real64) t(dim_num,3)
+    real(real64) xsi(3)
 
     det = ( t(1,1) - t(1,3) ) * ( t(2,2) - t(2,3) ) &
         - ( t(1,2) - t(1,3) ) * ( t(2,1) - t(2,3) )
@@ -37953,12 +37442,11 @@ contains
     xsi(2) = ( - ( t(2,1) - t(2,3) ) * ( p(1) - t(1,3) ) &
                + ( t(1,1) - t(1,3) ) * ( p(2) - t(2,3) ) ) / det
 
-    xsi(3) = 1.0_dp - xsi(1) - xsi(2)
-  end subroutine triangle_xy_to_xsi_2d
+    xsi(3) = 1.0e+00_real64 - xsi(1) - xsi(2)
+  end
 
   subroutine truncated_octahedron_shape_3d ( point_num, face_num, &
-    face_order_max, point_coord, face_order, face_point ) &
-        bind(C, name="truncated_octahedron_shape_3d")
+    face_order_max, point_coord, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -37994,60 +37482,60 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points (24).
+  !    Input, integer(int32) POINT_NUM, the number of points (24).
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces (14).
+  !    Input, integer(int32) FACE_NUM, the number of faces (14).
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum order of any 
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum order of any 
   !    face (6).
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the vertices.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the vertices.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of 
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of 
   !    vertices per face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) contains the index of the I-th point in the J-th face.  
   !    The points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.
   !
 
-    integer(ip), intent(in), value :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), intent(in), value :: point_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32), parameter :: dim_num = 3
+    integer(int32) point_num
 
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip) :: face_point(face_order_max,face_num)
-    real(dp), intent(out) :: point_coord(dim_num,point_num)
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) point_coord(dim_num,point_num)
   !
   !  Set the point coordinates.
   !
     point_coord(1:dim_num,1:point_num) = reshape ( (/ &
-      -1.5_dp, -0.5_dp,  0.0_dp,        &
-      -1.5_dp,  0.5_dp,  0.0_dp,        &
-      -1.0_dp, -1.0_dp, -0.70710677_dp, &
-      -1.0_dp, -1.0_dp,  0.70710677_dp, &
-      -1.0_dp,  1.0_dp, -0.70710677_dp, &
-      -1.0_dp,  1.0_dp,  0.70710677_dp, &
-      -0.5_dp, -1.5_dp,  0.0_dp,        &
-      -0.5_dp, -0.5_dp, -1.4142135_dp,  &
-      -0.5_dp, -0.5_dp,  1.4142135_dp,  &
-      -0.5_dp,  0.5_dp, -1.4142135_dp,  &
-      -0.5_dp,  0.5_dp,  1.4142135_dp,  &
-      -0.5_dp,  1.5_dp,  0.0_dp,        &
-       0.5_dp, -1.5_dp,  0.0_dp,        &
-       0.5_dp, -0.5_dp, -1.4142135_dp,  &
-       0.5_dp, -0.5_dp,  1.4142135_dp,  &
-       0.5_dp,  0.5_dp, -1.4142135_dp,  &
-       0.5_dp,  0.5_dp,  1.4142135_dp,  &
-       0.5_dp,  1.5_dp,  0.0_dp,        &
-       1.0_dp, -1.0_dp, -0.70710677_dp, &
-       1.0_dp, -1.0_dp,  0.70710677_dp, &
-       1.0_dp,  1.0_dp, -0.70710677_dp, &
-       1.0_dp,  1.0_dp,  0.70710677_dp, &
-       1.5_dp, -0.5_dp,  0.0_dp,        &
-       1.5_dp,  0.5_dp,  0.0_dp /), (/ dim_num, point_num /) )
+      -1.5e+00_real64, -0.5e+00_real64,  0.0e+00_real64,        &
+      -1.5e+00_real64,  0.5e+00_real64,  0.0e+00_real64,        &
+      -1.0e+00_real64, -1.0e+00_real64, -0.70710677e+00_real64, &
+      -1.0e+00_real64, -1.0e+00_real64,  0.70710677e+00_real64, &
+      -1.0e+00_real64,  1.0e+00_real64, -0.70710677e+00_real64, &
+      -1.0e+00_real64,  1.0e+00_real64,  0.70710677e+00_real64, &
+      -0.5e+00_real64, -1.5e+00_real64,  0.0e+00_real64,        &
+      -0.5e+00_real64, -0.5e+00_real64, -1.4142135e+00_real64,  &
+      -0.5e+00_real64, -0.5e+00_real64,  1.4142135e+00_real64,  &
+      -0.5e+00_real64,  0.5e+00_real64, -1.4142135e+00_real64,  &
+      -0.5e+00_real64,  0.5e+00_real64,  1.4142135e+00_real64,  &
+      -0.5e+00_real64,  1.5e+00_real64,  0.0e+00_real64,        &
+       0.5e+00_real64, -1.5e+00_real64,  0.0e+00_real64,        &
+       0.5e+00_real64, -0.5e+00_real64, -1.4142135e+00_real64,  &
+       0.5e+00_real64, -0.5e+00_real64,  1.4142135e+00_real64,  &
+       0.5e+00_real64,  0.5e+00_real64, -1.4142135e+00_real64,  &
+       0.5e+00_real64,  0.5e+00_real64,  1.4142135e+00_real64,  &
+       0.5e+00_real64,  1.5e+00_real64,  0.0e+00_real64,        &
+       1.0e+00_real64, -1.0e+00_real64, -0.70710677e+00_real64, &
+       1.0e+00_real64, -1.0e+00_real64,  0.70710677e+00_real64, &
+       1.0e+00_real64,  1.0e+00_real64, -0.70710677e+00_real64, &
+       1.0e+00_real64,  1.0e+00_real64,  0.70710677e+00_real64, &
+       1.5e+00_real64, -0.5e+00_real64,  0.0e+00_real64,        &
+       1.5e+00_real64,  0.5e+00_real64,  0.0e+00_real64 /), (/ dim_num, point_num /) )
   !
   !  Set the face orders.
   !
@@ -38072,11 +37560,10 @@ contains
       14, 16, 21, 24, 23, 19, &
        9, 11,  6,  2,  1,  4, &
        3,  1,  2,  5, 10,  8 /), (/ face_order_max, face_num /) )
-  end subroutine truncated_octahedron_shape_3d
+  end
 
   subroutine truncated_octahedron_size_3d ( point_num, edge_num, face_num, &
-    face_order_max ) &
-        bind(C, name="truncated_octahedron_size_3d")
+    face_order_max )
 
   !*****************************************************************************80
   !
@@ -38100,28 +37587,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of points.
+  !    Output, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 24
     edge_num = 36
     face_num = 14
     face_order_max = 6
-  end subroutine truncated_octahedron_size_3d
+  end
 
-  subroutine tube_2d ( dist, n, p, p1, p2 ) &
-        bind(C, name="tube_2d")
+  subroutine tube_2d ( dist, n, p, p1, p2 )
 
   !*****************************************************************************80
   !
@@ -38149,38 +37635,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) DIST, the radius of the tube.
+  !    Input, real(real64) DIST, the radius of the tube.
   !
-  !    Input, integer(ip) N, the number of points defining the line.
+  !    Input, integer(int32) N, the number of points defining the line.
   !    N must be at least 2.
   !
-  !    Input, real(dp) P(2,N), the points which comprise the broken
+  !    Input, real(real64) P(2,N), the points which comprise the broken
   !    line which is to be surrounded by the tube.  Points should
   !    not be immediately repeated, that is, it should never be
   !    the case that
   !      P(1,I) = P(1,I+1) and P(2,I) = P(2,I+1).
   !
-  !    Output, real(dp) P1(2,N), P2(2,N), the points P1 form
+  !    Output, real(real64) P1(2,N), P2(2,N), the points P1 form
   !    one side of the tube, and P2 the other.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: dis1
-    real(dp) :: dis2
-    real(dp), intent(in), value :: dist
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: im1
-    integer(ip) :: ip1
-    real(dp), intent(in) :: p(dim_num,n)
-    real(dp), intent(out) :: p1(dim_num,n)
-    real(dp), intent(out) :: p2(dim_num,n)
-    real(dp) :: temp
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) dis1
+    real(real64) dis2
+    real(real64) dist
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) im1
+    integer(int32) ip1
+    real(real64) p(dim_num,n)
+    real(real64) p1(dim_num,n)
+    real(real64) p2(dim_num,n)
+    real(real64) temp
   !
   !  Check that N is at least 3.
   !
@@ -38243,7 +37729,7 @@ contains
 
         dis2 = ( a * p1(1,i) + b * p1(2,i) + c ) / sqrt ( a * a + b * b )
 
-        if ( sign ( 1.0_dp, dis1 ) /= sign ( 1.0_dp, dis2 ) ) then
+        if ( sign ( 1.0e+00_real64, dis1 ) /= sign ( 1.0e+00_real64, dis2 ) ) then
 
           call r8_swap ( p1(1,i), p2(1,i) )
           call r8_swap ( p1(2,i), p2(2,i) )
@@ -38253,10 +37739,9 @@ contains
       end if
 
     end do
-  end subroutine tube_2d
+  end
 
-  subroutine vector_directions_nd ( dim_num, v, angle ) &
-        bind(C, name="vector_directions_nd")
+  subroutine vector_directions_nd ( dim_num, v, angle )
 
   !*****************************************************************************80
   !
@@ -38288,33 +37773,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) V(DIM_NUM), the vector.
+  !    Input, real(real64) V(DIM_NUM), the vector.
   !
-  !    Output, real(dp) ANGLE(DIM_NUM), the direction angles, in radians,
+  !    Output, real(real64) ANGLE(DIM_NUM), the direction angles, in radians,
   !    that the vector V makes with the coordinate axes.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp), intent(out) :: angle(dim_num)
-    real(dp), intent(in) :: v(dim_num)
-    real(dp) :: vnorm
+    real(real64) angle(dim_num)
+    real(real64) v(dim_num)
+    real(real64) vnorm
   !
   !  Get the norm of the vector.
   !
     vnorm = sqrt ( sum ( v(1:dim_num)**2 ) )
 
-    if ( vnorm == 0.0_dp ) then
-      angle(1:dim_num) = 0.0_dp
+    if ( vnorm == 0.0e+00_real64 ) then
+      angle(1:dim_num) = 0.0e+00_real64
     end if
 
     angle(1:dim_num) = acos ( v(1:dim_num) / vnorm )
-  end subroutine vector_directions_nd
+  end
 
-  subroutine vector_rotate_2d ( v, angle, w ) &
-        bind(C, name="vector_rotate_2d")
+  subroutine vector_rotate_2d ( v, angle, w )
 
   !*****************************************************************************80
   !
@@ -38345,28 +37829,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V(2), the components of the vector to be
+  !    Input, real(real64) V(2), the components of the vector to be
   !    rotated.
   !
-  !    Input, real(dp) ANGLE, the angle, in radians, of the rotation
+  !    Input, real(real64) ANGLE, the angle, in radians, of the rotation
   !    to be carried out.  A positive angle rotates the vector in the
   !    counter clockwise direction.
   !
-  !    Output, real(dp) W(2), the rotated vector.
+  !    Output, real(real64) W(2), the rotated vector.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: angle
-    real(dp), intent(in) :: v(dim_num)
-    real(dp), intent(out) :: w(dim_num)
+    real(real64) angle
+    real(real64) v(dim_num)
+    real(real64) w(dim_num)
 
     w(1) = cos ( angle ) * v(1) - sin ( angle ) * v(2)
     w(2) = sin ( angle ) * v(1) + cos ( angle ) * v(2)
-  end subroutine vector_rotate_2d
+  end
 
-  subroutine vector_rotate_3d ( v1, axis, angle, v2 ) &
-        bind(C, name="vector_rotate_3d")
+  subroutine vector_rotate_3d ( v1, axis, angle, v2 )
 
   !*****************************************************************************80
   !
@@ -38391,35 +37874,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), the vector to be rotated.
+  !    Input, real(real64) V1(3), the vector to be rotated.
   !
-  !    Input, real(dp) AXIS(3), the vector about which the
+  !    Input, real(real64) AXIS(3), the vector about which the
   !    rotation is to be carried out.
   !
-  !    Input, real(dp) ANGLE, the angle, in radians, of the rotation
+  !    Input, real(real64) ANGLE, the angle, in radians, of the rotation
   !    to be carried out.
   !
-  !    Output, real(dp) V2(3), the rotated vector.
+  !    Output, real(real64) V2(3), the rotated vector.
   !
 
-    real(dp), intent(in), value :: angle
-    real(dp), intent(in) :: axis(3)
-    real(dp) :: dot
-    real(dp) :: norm
-    real(dp) :: norm_vn
-    real(dp) :: normal2(3)
-    real(dp) :: r8vec_norm
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(out) :: v2(3)
-    real(dp) :: vn(3)
-    real(dp) :: vp(3)
-    real(dp) :: vr(3)
+    real(real64) angle
+    real(real64) axis(3)
+    real(real64) dot
+    real(real64) norm
+    real(real64) norm_vn
+    real(real64) normal2(3)
+    real(real64) r8vec_norm
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) vn(3)
+    real(real64) vp(3)
+    real(real64) vr(3)
   !
   !  Compute the length of the rotation axis.
   !
     norm = r8vec_norm ( 3, axis )
 
-    if ( norm == 0.0_dp ) then
+    if ( norm == 0.0e+00_real64 ) then
       v2(1:3) = v1(1:3)
     end if
   !
@@ -38437,7 +37920,7 @@ contains
 
     norm_vn = r8vec_norm ( 3, vn )
 
-    if ( norm_vn == 0.0_dp ) then
+    if ( norm_vn == 0.0e+00_real64 ) then
       v2(1:3) = vp(1:3)
     end if
 
@@ -38451,7 +37934,7 @@ contains
     normal2(3) = axis(1) * vn(2) - axis(2) * vn(1)
 
     norm = r8vec_norm ( 3, normal2 )
-    if ( norm /= 0.0_dp ) then
+    if ( norm /= 0.0e+00_real64 ) then
       normal2(1:3) = normal2(1:3) / norm
     end if
   !
@@ -38462,10 +37945,9 @@ contains
   !  The rotated vector is the parallel component plus the rotated component.
   !
     v2(1:3) = vp(1:3) + vr(1:3)
-  end subroutine vector_rotate_3d
+  end
 
-  subroutine vector_rotate_base_2d ( p1, pb, angle, p2 ) &
-        bind(C, name="vector_rotate_base_2d")
+  subroutine vector_rotate_base_2d ( p1, pb, angle, p2 )
 
   !*****************************************************************************80
   !
@@ -38490,33 +37972,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), the endpoint of the original vector.
+  !    Input, real(real64) P1(2), the endpoint of the original vector.
   !
-  !    Input, real(dp) PB(2), the location of the base point.
+  !    Input, real(real64) PB(2), the location of the base point.
   !
-  !    Input, real(dp) ANGLE, the angle, in radians, of the rotation
+  !    Input, real(real64) ANGLE, the angle, in radians, of the rotation
   !    to be carried out.  A positive angle rotates the vector in the
   !    counter clockwise direction.
   !
-  !    Output, real(dp) P2(2), the endpoint of the rotated vector.
+  !    Output, real(real64) P2(2), the endpoint of the rotated vector.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp), intent(in), value :: angle
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(out) :: p2(2)
-    real(dp), intent(in) :: pb(2)
+    real(real64) angle
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) pb(2)
 
     p2(1) = pb(1) + cos ( angle ) * ( p1(1) - pb(1) ) &
                   - sin ( angle ) * ( p1(2) - pb(2) )
 
     p2(2) = pb(2) + sin ( angle ) * ( p1(1) - pb(1) ) &
                   + cos ( angle ) * ( p1(2) - pb(2) )
-  end subroutine vector_rotate_base_2d
+  end
 
-  subroutine vector_separation_nd ( dim_num, v1, v2, theta ) &
-        bind(C, name="vector_separation_nd")
+  subroutine vector_separation_nd ( dim_num, v1, v2, theta )
 
   !*****************************************************************************80
   !
@@ -38540,22 +38021,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, real(dp) V1(DIM_NUM), V2(DIM_NUM), the two vectors.
+  !    Input, real(real64) V1(DIM_NUM), V2(DIM_NUM), the two vectors.
   !
-  !    Output, real(dp) THETA, the angle between the two vectors.
+  !    Output, real(real64) THETA, the angle between the two vectors.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: cos_theta
-    real(dp) :: r8_acos
-    real(dp), intent(out) :: theta
-    real(dp), intent(in) :: v1(dim_num)
-    real(dp) :: v1_norm
-    real(dp), intent(in) :: v2(dim_num)
-    real(dp) :: v2_norm
+    real(real64) cos_theta
+    real(real64) r8_acos
+    real(real64) theta
+    real(real64) v1(dim_num)
+    real(real64) v1_norm
+    real(real64) v2(dim_num)
+    real(real64) v2_norm
 
     v1_norm = sqrt ( sum ( v1(1:dim_num)**2 ) )
 
@@ -38565,10 +38046,9 @@ contains
       / ( v1_norm * v2_norm )
 
     theta = r8_acos ( cos_theta )
-  end subroutine vector_separation_nd
+  end
 
-  subroutine vector_unit_nd ( dim_num, v ) &
-        bind(C, name="vector_unit_nd")
+  subroutine vector_unit_nd ( dim_num, v )
 
   !*****************************************************************************80
   !
@@ -38588,27 +38068,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input/output, real(dp) V(DIM_NUM), the vector to be normalized.
+  !    Input/output, real(real64) V(DIM_NUM), the vector to be normalized.
   !    On output, V should have unit Euclidean norm.  However, if the input vector
   !    has zero Euclidean norm, it is not altered.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    real(dp) :: norm
-    real(dp), intent(inout) :: v(dim_num)
+    real(real64) norm
+    real(real64) v(dim_num)
 
     norm = sqrt ( sum ( v(1:dim_num)**2 ) )
 
-    if ( norm /= 0.0_dp ) then
+    if ( norm /= 0.0e+00_real64 ) then
       v(1:dim_num) = v(1:dim_num) / norm
     end if
-  end subroutine vector_unit_nd
+  end
 
-  function voxels_dist_l1_nd ( dim_num, v1, v2 ) &
-        bind(C, name="voxels_dist_l1_nd")
+  function voxels_dist_l1_nd ( dim_num, v1, v2 )
 
   !*****************************************************************************80
   !
@@ -38642,27 +38121,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) V1(DIM_NUM), the voxel that begins the line.
+  !    Input, integer(int32) V1(DIM_NUM), the voxel that begins the line.
   !
-  !    Input, integer(ip) V2(DIM_NUM), the voxel that ends the line.
+  !    Input, integer(int32) V2(DIM_NUM), the voxel that ends the line.
   !
-  !    Output, integer(ip) VOXELS_DIST_L1_ND, the L1 distance 
+  !    Output, integer(int32) VOXELS_DIST_L1_ND, the L1 distance 
   !    between the voxels.
   !
 
-    integer(ip), intent(in), value :: dim_num
+    integer(int32) dim_num
 
-    integer(ip), intent(in) :: v1(dim_num)
-    integer(ip), intent(in) :: v2(dim_num)
-    integer(ip) :: voxels_dist_l1_nd
+    integer(int32) v1(dim_num)
+    integer(int32) v2(dim_num)
+    integer(int32) voxels_dist_l1_nd
 
     voxels_dist_l1_nd = sum ( abs ( v1(1:dim_num) - v2(1:dim_num) ) )
-  end function voxels_dist_l1_nd
+  end
 
-  subroutine voxels_line_3d ( v1, v2, n, v ) &
-        bind(C, name="voxels_line_3d")
+  subroutine voxels_line_3d ( v1, v2, n, v )
 
   !*****************************************************************************80
   !
@@ -38701,28 +38179,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) V1(3), the voxel that begins the line.
+  !    Input, integer(int32) V1(3), the voxel that begins the line.
   !
-  !    Input, integer(ip) V2(3), the voxel that ends the line.
+  !    Input, integer(int32) V2(3), the voxel that ends the line.
   !
-  !    Input, integer(ip) N, the number of voxels to compute.
+  !    Input, integer(int32) N, the number of voxels to compute.
   !
-  !    Output, integer(ip) V(3,N), a sequence of voxels, whose
+  !    Output, integer(int32) V(3,N), a sequence of voxels, whose
   !    first value is V1 and which proceeds towards V2.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 3
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 3
 
-    integer(ip) :: a(3)
-    integer(ip) :: exy
-    integer(ip) :: exz
-    integer(ip) :: ezy
-    integer(ip) :: i
-    integer(ip) :: s(3)
-    integer(ip), intent(out) :: v(3,n)
-    integer(ip), intent(in) :: v1(3)
-    integer(ip), intent(in) :: v2(3)
+    integer(int32) a(3)
+    integer(int32) exy
+    integer(int32) exz
+    integer(int32) ezy
+    integer(int32) i
+    integer(int32) s(3)
+    integer(int32) v(3,n)
+    integer(int32) v1(3)
+    integer(int32) v2(3)
 
     if ( n <= 0 ) then
     end if
@@ -38771,11 +38249,10 @@ contains
       end if
 
     end do
-  end subroutine voxels_line_3d
+  end
 
   subroutine voxels_region_3d ( list_max, nx, ny, nz, ishow, list_num, list, &
-    region_num ) &
-        bind(C, name="voxels_region_3d")
+    region_num )
 
   !*****************************************************************************80
   !
@@ -38836,59 +38313,59 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LIST_MAX, the maximum length of the array 
+  !    Input, integer(int32) LIST_MAX, the maximum length of the array 
   !    used to list the elements of the regions.
   !
-  !    Input, integer(ip) NX, NY, NZ, the number of voxels in the X, Y 
+  !    Input, integer(int32) NX, NY, NZ, the number of voxels in the X, Y 
   !    and Z directions.
   !
-  !    Input/output, integer(ip) ISHOW(NX,NY,NZ).  On input, the only 
+  !    Input/output, integer(int32) ISHOW(NX,NY,NZ).  On input, the only 
   !    significance to the entries is whether they are zero or nonzero.  On 
   !    output, the nonzero entries have now been revalued so that contiguous 
   !    entries have the same value, indicating a grouping into a region.
   !
-  !    Output, integer(ip) LIST_NUM, the number of entries of LIST that 
+  !    Output, integer(int32) LIST_NUM, the number of entries of LIST that 
   !    were used.  However, if LIST_MAX < LIST_NUM, then there was not enough 
   !    space in LIST to store the data properly, and LIST should not be used,
   !    although the data in ISHOW should be correct.
   !
-  !    Output, integer(ip) LIST(LIST_MAX), contains, in stack form, a 
+  !    Output, integer(int32) LIST(LIST_MAX), contains, in stack form, a 
   !    list of the indices of the elements in each region.
   !
-  !    Output, integer(ip) REGION_NUM, the number of regions discovered.
+  !    Output, integer(int32) REGION_NUM, the number of regions discovered.
   !
 
-    integer(ip), parameter :: maxstack = 100
+    integer(int32), parameter :: maxstack = 100
 
-    integer(ip), intent(in), value :: list_max
-    integer(ip), intent(in), value :: nx
-    integer(ip), intent(in), value :: ny
-    integer(ip), intent(in), value :: nz
+    integer(int32) list_max
+    integer(int32) nx
+    integer(int32) ny
+    integer(int32) nz
 
-    integer(ip) :: i
-    integer(ip) :: i2
-    integer(ip) :: ibase
-    integer(ip) :: ihi
-    integer(ip) :: ilo
-    integer(ip), intent(inout) :: ishow(nx,ny,nz)
-    integer(ip) :: j
-    integer(ip) :: j2
-    integer(ip) :: jbase
-    integer(ip) :: jhi
-    integer(ip) :: jlo
-    integer(ip) :: k
-    integer(ip) :: k2
-    integer(ip) :: kbase
-    integer(ip) :: khi
-    integer(ip) :: klo
-    integer(ip), intent(out) :: list(list_max)
-    integer(ip), intent(out) :: list_num
-    integer(ip) :: nabes
-    integer(ip) :: ncan
-    integer(ip) :: nelements
-    integer(ip) :: nstack
-    integer(ip), intent(out) :: region_num
-    integer(ip) :: stack(maxstack)
+    integer(int32) i
+    integer(int32) i2
+    integer(int32) ibase
+    integer(int32) ihi
+    integer(int32) ilo
+    integer(int32) ishow(nx,ny,nz)
+    integer(int32) j
+    integer(int32) j2
+    integer(int32) jbase
+    integer(int32) jhi
+    integer(int32) jlo
+    integer(int32) k
+    integer(int32) k2
+    integer(int32) kbase
+    integer(int32) khi
+    integer(int32) klo
+    integer(int32) list(list_max)
+    integer(int32) list_num
+    integer(int32) nabes
+    integer(int32) ncan
+    integer(int32) nelements
+    integer(int32) nstack
+    integer(int32) region_num
+    integer(int32) stack(maxstack)
   !
   !  Reset all nonzero entries of ISHOW to -1.
   !
@@ -39098,10 +38575,9 @@ contains
       write ( *, '(a)' ) '  Do not try to use the LIST array!'
       write ( *, '(a)' ) '  The ISHOW data is OK, however.'
     end if
-  end subroutine voxels_region_3d
+  end
 
-  subroutine voxels_step_3d ( v1, v2, inc, jnc, knc, v3 ) &
-        bind(C, name="voxels_step_3d")
+  subroutine voxels_step_3d ( v1, v2, inc, jnc, knc, v3 )
 
   !*****************************************************************************80
   !
@@ -39121,34 +38597,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) V1(3), the coordinates of the base voxel from
+  !    Input, integer(int32) V1(3), the coordinates of the base voxel from
   !    which the line begins.
   !
-  !    Input, integer(ip) V2(3), the coordinates of the current voxel
+  !    Input, integer(int32) V2(3), the coordinates of the current voxel
   !    on the line.  For the first call, these might be equal to V1.
   !
-  !    Input, integer(ip) INC, JNC, KNC, the increments to the voxels.
+  !    Input, integer(int32) INC, JNC, KNC, the increments to the voxels.
   !    These values define the direction along which the line proceeds.
   !    However, the voxels on the line will typically be incremented
   !    by a fractional value of the vector (INC,JNC,KNC), and the
   !    result is essentially rounded.
   !
-  !    Output, integer(ip) V3(3), the coordinates of the next voxel along
+  !    Output, integer(int32) V3(3), the coordinates of the next voxel along
   !    the line.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp) :: alpha
-    real(dp) :: alphai
-    real(dp) :: alphaj
-    real(dp) :: alphak
-    integer(ip), intent(in), value :: inc
-    integer(ip), intent(in), value :: jnc
-    integer(ip), intent(in), value :: knc
-    integer(ip), intent(in) :: v1(3)
-    integer(ip), intent(in) :: v2(3)
-    integer(ip), intent(out) :: v3(3)
+    real(real64) alpha
+    real(real64) alphai
+    real(real64) alphaj
+    real(real64) alphak
+    integer(int32) inc
+    integer(int32) jnc
+    integer(int32) knc
+    integer(int32) v1(3)
+    integer(int32) v2(3)
+    integer(int32) v3(3)
 
     v3(1:dim_num) = v2(1:dim_num)
   !
@@ -39162,36 +38638,36 @@ contains
     if ( inc == 0 .and. jnc == 0 .and. knc == 0 ) then
     end if
 
-    alpha = 0.0_dp
+    alpha = 0.0e+00_real64
   !
   !  Compute the smallest ALPHA that will change one of V2(1:3) by +-0.5.
   !
     if ( 0 < inc ) then
-      alphai = ( real ( v2(1) - v1(1), dp) + 0.5_dp ) &
-               / real ( inc, dp)
+      alphai = ( real ( v2(1) - v1(1), real64) + 0.5e+00_real64 ) &
+               / real ( inc, real64)
     else if ( inc < 0 ) then
-      alphai = ( real ( v2(1) - v1(1), dp) - 0.5_dp ) &
-               / real ( inc, dp)
+      alphai = ( real ( v2(1) - v1(1), real64) - 0.5e+00_real64 ) &
+               / real ( inc, real64)
     else
       alphai = huge ( alphai )
     end if
 
     if ( 0 < jnc ) then
-      alphaj = ( real ( v2(2) - v1(2), dp) + 0.5_dp ) &
-               / real ( jnc, dp)
+      alphaj = ( real ( v2(2) - v1(2), real64) + 0.5e+00_real64 ) &
+               / real ( jnc, real64)
     else if ( jnc < 0 ) then
-      alphaj = ( real ( v2(2) - v1(2), dp) - 0.5_dp ) &
-               / real ( jnc, dp)
+      alphaj = ( real ( v2(2) - v1(2), real64) - 0.5e+00_real64 ) &
+               / real ( jnc, real64)
     else
       alphaj = huge ( alphaj )
     end if
 
     if ( 0 < knc ) then
-      alphak = ( real ( v2(3) - v1(3), dp) + 0.5_dp ) &
-               / real ( knc, dp)
+      alphak = ( real ( v2(3) - v1(3), real64) + 0.5e+00_real64 ) &
+               / real ( knc, real64)
     else if ( knc < 0 ) then
-      alphak = ( real ( v2(3) - v1(3), dp) - 0.5_dp ) &
-               / real ( knc, dp)
+      alphak = ( real ( v2(3) - v1(3), real64) - 0.5e+00_real64 ) &
+               / real ( knc, real64)
     else
       alphaj = huge ( alphaj )
     end if
@@ -39200,15 +38676,15 @@ contains
   !
     alpha = huge ( alpha )
 
-    if ( 0.0_dp < alphai ) then
+    if ( 0.0e+00_real64 < alphai ) then
       alpha = min ( alpha, alphai )
     end if
 
-    if ( 0.0_dp < alphaj ) then
+    if ( 0.0e+00_real64 < alphaj ) then
       alpha = min ( alpha, alphaj )
     end if
 
-    if ( 0.0_dp < alphak ) then
+    if ( 0.0e+00_real64 < alphak ) then
       alpha = min ( alpha, alphak )
     end if
   !
@@ -39217,21 +38693,20 @@ contains
   !
     if ( alpha == alphai ) then
       v3(1) = v2(1) + sign ( 1, inc )
-      v3(2) = v1(2) + nint ( alpha * real ( jnc, dp) )
-      v3(3) = v1(3) + nint ( alpha * real ( knc, dp) )
+      v3(2) = v1(2) + nint ( alpha * real ( jnc, real64) )
+      v3(3) = v1(3) + nint ( alpha * real ( knc, real64) )
     else if ( alpha == alphaj ) then
-      v3(1) = v1(1) + nint ( alpha * real ( inc, dp) )
+      v3(1) = v1(1) + nint ( alpha * real ( inc, real64) )
       v3(2) = v2(2) + sign ( 1, jnc )
-      v3(3) = v1(3) + nint ( alpha * real ( knc, dp) )
+      v3(3) = v1(3) + nint ( alpha * real ( knc, real64) )
     else if ( alpha == alphak ) then
-      v3(1) = v1(1) + nint ( alpha * real ( inc, dp) )
-      v3(2) = v1(2) + nint ( alpha * real ( jnc, dp) )
+      v3(1) = v1(1) + nint ( alpha * real ( inc, real64) )
+      v3(2) = v1(2) + nint ( alpha * real ( jnc, real64) )
       v3(3) = v2(3) + sign ( 1, knc )
     end if
-  end subroutine voxels_step_3d
+  end
 
-  function wedge01_volume ( ) &
-        bind(C, name="wedge01_volume")
+  function wedge01_volume ( )
 
   !*****************************************************************************80
   !
@@ -39260,16 +38735,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) WEDGE01_VOLUME, the volume.
+  !    Output, real(real64) WEDGE01_VOLUME, the volume.
   !
 
-    real(dp) :: wedge01_volume
+    real(real64) wedge01_volume
 
-    wedge01_volume = 1.0_dp
-  end function wedge01_volume
+    wedge01_volume = 1.0e+00_real64
+  end
 
-  subroutine xy_to_polar ( xy, r, t ) &
-        bind(C, name="xy_to_polar")
+  subroutine xy_to_polar ( xy, r, t )
 
   !*****************************************************************************80
   !
@@ -39289,27 +38763,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XY(2), the Cartesian coordinates.
+  !    Input, real(real64) XY(2), the Cartesian coordinates.
   !
-  !    Output, real(dp) R, T, the radius and angle (in radians).
+  !    Output, real(real64) R, T, the radius and angle (in radians).
   !
 
-    real(dp), intent(out) :: r
-    real(dp) :: r8_atan
-    real(dp), intent(out) :: t
-    real(dp), intent(in) :: xy(2)
+    real(real64) r
+    real(real64) r8_atan
+    real(real64) t
+    real(real64) xy(2)
 
     r = sqrt ( xy(1) * xy(1) + xy(2) * xy(2) )
 
-    if ( r == 0.0_dp ) then
-      t = 0.0_dp
+    if ( r == 0.0e+00_real64 ) then
+      t = 0.0e+00_real64
     else
       t = r8_atan ( xy(2), xy(1) )
     end if
-  end subroutine xy_to_polar
+  end
 
-  subroutine xyz_to_radec ( p, ra, dec ) &
-        bind(C, name="xyz_to_radec")
+  subroutine xyz_to_radec ( p, ra, dec )
 
   !*****************************************************************************80
   !
@@ -39342,45 +38815,44 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P(3), the coordinates of a point in 3D.
+  !    Input, real(real64) P(3), the coordinates of a point in 3D.
   !
-  !    Output, real(dp) RA, DEC, the corresponding right ascension
+  !    Output, real(real64) RA, DEC, the corresponding right ascension
   !    and declination.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    real(dp), intent(out) :: dec
-    real(dp), intent(in) :: p(dim_num)
-    real(dp) :: p_norm
-    real(dp) :: phi
-    real(dp) :: r8_asin
-    real(dp) :: r8_atan
-    real(dp), intent(out) :: ra
-    real(dp) :: radians_to_degrees
-    real(dp) :: theta
+    real(real64) dec
+    real(real64) p(dim_num)
+    real(real64) p_norm
+    real(real64) phi
+    real(real64) r8_asin
+    real(real64) r8_atan
+    real(real64) ra
+    real(real64) radians_to_degrees
+    real(real64) theta
 
     p_norm = sqrt ( sum ( p(1:dim_num)**2 )  )
 
-    if ( p_norm == 0.0_dp ) then
-      dec = 0.0_dp
-      ra = 0.0_dp
+    if ( p_norm == 0.0e+00_real64 ) then
+      dec = 0.0e+00_real64
+      ra = 0.0e+00_real64
     end if
 
     phi = r8_asin ( p(3) / p_norm )
 
-    if ( cos ( phi ) == 0.0_dp ) then
-      theta = 0.0_dp
+    if ( cos ( phi ) == 0.0e+00_real64 ) then
+      theta = 0.0e+00_real64
     else
       theta = r8_atan ( p(2), p(1) )
     end if
 
     dec = radians_to_degrees ( phi )
-    ra = radians_to_degrees ( theta ) / 15.0_dp
-  end subroutine xyz_to_radec
+    ra = radians_to_degrees ( theta ) / 15.0e+00_real64
+  end
 
-  subroutine xyz_to_rtp ( xyz, r, theta, phi ) &
-        bind(C, name="xyz_to_rtp")
+  subroutine xyz_to_rtp ( xyz, r, theta, phi )
 
   !*****************************************************************************80
   !
@@ -39410,33 +38882,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XYZ(3), the coordinates of a point in 3D.
+  !    Input, real(real64) XYZ(3), the coordinates of a point in 3D.
   !
-  !    Output, real(dp) R, THETA, PHI, the radius, longitude and
+  !    Output, real(real64) R, THETA, PHI, the radius, longitude and
   !    declination of the point.
   !
 
-    real(dp), intent(out) :: r
-    real(dp) :: r8_acos
-    real(dp) :: r8_atan
-    real(dp), intent(out) :: phi
-    real(dp), intent(out) :: theta
-    real(dp), intent(in) :: xyz(3)
+    real(real64) r
+    real(real64) r8_acos
+    real(real64) r8_atan
+    real(real64) phi
+    real(real64) theta
+    real(real64) xyz(3)
 
     r = sqrt ( sum ( xyz(1:3)**2 )  )
 
-    if ( r == 0.0_dp ) then
-      theta = 0.0_dp
-      phi = 0.0_dp
+    if ( r == 0.0e+00_real64 ) then
+      theta = 0.0e+00_real64
+      phi = 0.0e+00_real64
     end if
 
     phi = r8_acos ( xyz(3) / r )
 
     theta = r8_atan ( xyz(2), xyz(1) )
-  end subroutine xyz_to_rtp
+  end
 
-  subroutine xyz_to_tp ( xyz, theta, phi ) &
-        bind(C, name="xyz_to_tp")
+  subroutine xyz_to_tp ( xyz, theta, phi )
 
   !*****************************************************************************80
   !
@@ -39469,29 +38940,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XYZ(3), the coordinates of a point in 3D.
+  !    Input, real(real64) XYZ(3), the coordinates of a point in 3D.
   !
-  !    Output, real(dp) THETA, PHI, the longitude and declination 
+  !    Output, real(real64) THETA, PHI, the longitude and declination 
   !    of the point.
   !
 
-    real(dp) :: r
-    real(dp) :: r8_acos
-    real(dp) :: r8_atan
-    real(dp), intent(out) :: phi
-    real(dp), intent(out) :: theta
-    real(dp), intent(in) :: xyz(3)
+    real(real64) r
+    real(real64) r8_acos
+    real(real64) r8_atan
+    real(real64) phi
+    real(real64) theta
+    real(real64) xyz(3)
 
     r = sqrt ( sum ( xyz(1:3)**2 )  )
 
-    if ( r == 0.0_dp ) then
-      theta = 0.0_dp
-      phi = 0.0_dp
+    if ( r == 0.0e+00_real64 ) then
+      theta = 0.0e+00_real64
+      phi = 0.0e+00_real64
     end if
 
     phi = r8_acos ( xyz(3) / r )
 
     theta = r8_atan ( xyz(2), xyz(1) )
-  end subroutine xyz_to_tp
+  end
 
 end module geometry_mod

@@ -1,23 +1,17 @@
-!> ellipse_grid -- Modern Fortran 2018
+!> ellipse_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module ellipse_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: ellipse_grid, ellipse_grid_count, i4_ceiling, r82vec_print_part
 
 contains
 
-  subroutine ellipse_grid ( n, r, c, ng, xy ) &
-        bind(C, name="ellipse_grid")
+  subroutine ellipse_grid ( n, r, c, ng, xy )
 
   !*****************************************************************************80
   !
@@ -46,39 +40,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, real(dp) R(2), the half axis lengths.
+  !    Input, real(real64) R(2), the half axis lengths.
   !
-  !    Input, real(dp) C(2), the center of the ellipse.
+  !    Input, real(real64) C(2), the center of the ellipse.
   !
-  !    Input, integer(int64) NG, the number of grid points
+  !    Input, integer(int64) NG, the number of grid points 
   !    inside the ellipse.
   !
-  !    Output, real(dp) XY(2,NG), the grid points.
+  !    Output, real(real64) XY(2,NG), the grid points.
   !
 
-    integer(ip), intent(in), value :: ng
-    real(dp), intent(in) :: c(2)
-    real(dp) :: h
-    integer(ip) :: i
-    integer(ip) :: i4_ceiling
-    integer(ip) :: j
-    integer(ip), intent(in), value :: n
-    integer(ip) :: ni
-    integer(ip) :: nj
-    integer(ip) :: p
-    real(dp), intent(in) :: r(2)
-    real(dp) :: x
-    real(dp), intent(out) :: xy(2,ng)
-    real(dp) :: y
+    integer(int32) ng
+
+    real(real64) c(2)
+    real(real64) h
+    integer(int32) i
+    integer(int32) i4_ceiling
+    integer(int32) j
+    integer(int32) n
+    integer(int32) ni
+    integer(int32) nj
+    integer(int32) p
+    real(real64) r(2)
+    real(real64) x
+    real(real64) xy(2,ng)
+    real(real64) y
 
     if ( r(1) < r(2) ) then
-      h = 2.0_dp * r(1) / real ( 2 * n + 1, dp)
+      h = 2.0e+00_real64 * r(1) / real ( 2 * n + 1, real64)
       ni = n
       nj = i4_ceiling ( r(2) / r(1) ) * n
     else
-      h = 2.0_dp * r(2) / real ( 2 * n + 1, dp)
+      h = 2.0e+00_real64 * r(2) / real ( 2 * n + 1, real64)
       nj = n
       ni = i4_ceiling ( r(1) / r(2) ) * n
     end if
@@ -89,23 +84,23 @@ contains
 
       i = 0
       x = c(1)
-      y = c(2) + real ( j, dp) * h
+      y = c(2) + real ( j, real64) * h
       p = p + 1
       xy(1,p) = x
       xy(2,p) = y
 
-      if ( j > 0 ) then
+      if ( 0 < j ) then
         p = p + 1
         xy(1,p) = x
-        xy(2,p) = 2.0_dp * c(2) - y
+        xy(2,p) = 2.0e+00_real64 * c(2) - y
       end if
 
       do
 
         i = i + 1
-        x = c(1) + real ( i, dp) * h
+        x = c(1) + real ( i, real64) * h
 
-        if ( 1.0_dp < ( ( x - c(1) ) / r(1) ) ** 2 &
+        if ( 1.0e+00_real64 < ( ( x - c(1) ) / r(1) ) ** 2 &
                      + ( ( y - c(2) ) / r(2) ) ** 2 ) then
           exit
         end if
@@ -114,25 +109,24 @@ contains
         xy(1,p) = x
         xy(2,p) = y
         p = p + 1
-        xy(1,p) = 2.0_dp * c(1) - x
+        xy(1,p) = 2.0e+00_real64 * c(1) - x
         xy(2,p) = y
 
-        if ( j > 0 ) then
+        if ( 0 < j ) then
           p = p + 1
           xy(1,p) = x
-          xy(2,p) = 2.0_dp * c(2) - y
+          xy(2,p) = 2.0e+00_real64 * c(2) - y
           p = p + 1
-          xy(1,p) = 2.0_dp * c(1) - x
-          xy(2,p) = 2.0_dp * c(2) - y
+          xy(1,p) = 2.0e+00_real64 * c(1) - x
+          xy(2,p) = 2.0e+00_real64 * c(2) - y
         end if
 
       end do
 
     end do
-  end subroutine ellipse_grid
+  end
 
-  subroutine ellipse_grid_count ( n, r, c, ng ) &
-        bind(C, name="ellipse_grid_count")
+  subroutine ellipse_grid_count ( n, r, c, ng )
 
   !*****************************************************************************80
   !
@@ -161,36 +155,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, real(dp) R(2), the half axis lengths.
+  !    Input, real(real64) R(2), the half axis lengths.
   !
-  !    Input, real(dp) C(2), the center of the ellipse.
+  !    Input, real(real64) C(2), the center of the ellipse.
   !
-  !    Output, integer(ip) NG, the number of grid points inside
+  !    Output, integer(int32) NG, the number of grid points inside 
   !    the ellipse.
   !
 
-    real(dp), intent(in) :: c(2)
-    real(dp) :: h
-    integer(ip) :: i
-    integer(ip) :: i4_ceiling
-    integer(ip) :: j
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ng
-    integer(ip) :: ni
-    integer(ip) :: nj
-    integer(ip) :: p
-    real(dp), intent(in) :: r(2)
-    real(dp) :: x
-    real(dp) :: y
+    real(real64) c(2)
+    real(real64) h
+    integer(int32) i
+    integer(int32) i4_ceiling
+    integer(int32) j
+    integer(int32) n
+    integer(int32) ng
+    integer(int32) ni
+    integer(int32) nj
+    integer(int32) p
+    real(real64) r(2)
+    real(real64) x
+    real(real64) y
 
     if ( r(1) < r(2) ) then
-      h = 2.0_dp * r(1) / real ( 2 * n + 1, dp)
+      h = 2.0e+00_real64 * r(1) / real ( 2 * n + 1, real64)
       ni = n
       nj = i4_ceiling ( r(2) / r(1) ) * n
     else
-      h = 2.0_dp * r(2) / real ( 2 * n + 1, dp)
+      h = 2.0e+00_real64 * r(2) / real ( 2 * n + 1, real64)
       nj = n
       ni = i4_ceiling ( r(1) / r(2) ) * n
     end if
@@ -201,19 +195,19 @@ contains
 
       i = 0
       x = c(1)
-      y = c(2) + real ( j, dp) * h
+      y = c(2) + real ( j, real64) * h
       p = p + 1
 
-      if ( j > 0 ) then
+      if ( 0 < j ) then
         p = p + 1
       end if
 
       do
 
         i = i + 1
-        x = c(1) + real ( i, dp) * h
+        x = c(1) + real ( i, real64) * h
 
-        if ( 1.0_dp < ( ( x - c(1) ) / r(1) ) ** 2 &
+        if ( 1.0e+00_real64 < ( ( x - c(1) ) / r(1) ) ** 2 &
                      + ( ( y - c(2) ) / r(2) ) ** 2 ) then
           exit
         end if
@@ -221,7 +215,7 @@ contains
         p = p + 1
         p = p + 1
 
-        if ( j > 0 ) then
+        if ( 0 < j ) then
           p = p + 1
           p = p + 1
         end if
@@ -231,10 +225,9 @@ contains
     end do
 
     ng = p
-  end subroutine ellipse_grid_count
+  end
 
-  pure function i4_ceiling ( r ) &
-        bind(C, name="i4_ceiling")
+  function i4_ceiling ( r )
 
   !*****************************************************************************80
   !
@@ -267,25 +260,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the value to be rounded up.
+  !    Input, real(real64) R, the value to be rounded up.
   !
-  !    Output, integer(ip) I4_CEILING, the rounded value.
+  !    Output, integer(int32) I4_CEILING, the rounded value.
   !
 
-    integer(ip) :: i4_ceiling
-    real(dp), intent(in), value :: r
-    integer(ip) :: value
+    integer(int32) i4_ceiling
+    real(real64) r
+    integer(int32) value
 
     value = int ( r )
-    if ( real ( value, dp) < r ) then
+    if ( real ( value, real64) < r ) then
       value = value + 1
     end if
 
     i4_ceiling = value
-  end function i4_ceiling
+  end
 
-  subroutine r82vec_print_part ( n, a, max_print, title ) &
-        bind(C, name="r82vec_print_part")
+  subroutine r82vec_print_part ( n, a, max_print, title )
 
   !*****************************************************************************80
   !
@@ -316,21 +308,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries of the vector.
+  !    Input, integer(int32) N, the number of entries of the vector.
   !
-  !    Input, real(dp) A(2,N), the vector to be printed.
+  !    Input, real(real64) A(2,N), the vector to be printed.
   !
-  !    Input, integer(ip) MAX_PRINT, the maximum number of lines
+  !    Input, integer(int32) MAX_PRINT, the maximum number of lines
   !    to print.
   !
   !    Input, character ( len = * ) TITLE, a title.
   !
 
-    integer(ip), intent(in), value :: n
-    real(dp), intent(in) :: a(2,n)
-    integer(ip) :: i
-    integer(ip), intent(in), value :: max_print
-    character ( len = * ), intent(in) :: title
+    integer(int32) n
+
+    real(real64) a(2,n)
+    integer(int32) i
+    integer(int32) max_print
+    character ( len = * )  title
 
     if ( max_print <= 0 ) then
     end if
@@ -367,6 +360,6 @@ contains
         '...more entries...'
 
     end if
-  end subroutine r82vec_print_part
+  end
 
 end module ellipse_grid_mod

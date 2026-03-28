@@ -1,23 +1,17 @@
-!> sphere_llq_grid -- Modern Fortran 2018
+!> sphere_llq_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module sphere_llq_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: sphere_llq_grid_display, sphere_llq_grid_lines, sphere_llq_grid_line_count, sphere_llq_grid_points, sphere_llq_grid_point_count
 
 contains
 
-  subroutine sphere_llq_grid_display ( ng, xg, line_num, line_data, prefix ) &
-        bind(C, name="sphere_llq_grid_display")
+  subroutine sphere_llq_grid_display ( ng, xg, line_num, line_data, prefix )
 
   !*****************************************************************************80
   !
@@ -42,35 +36,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NG, the number of points.
+  !    Input, integer(int32) NG, the number of points.
   !
-  !    Input, real(dp) XG(3,NG), the points.
+  !    Input, real(real64) XG(3,NG), the points.
   !
-  !    Input, integer(ip) LINE_NUM, the number of grid lines.
+  !    Input, integer(int64) LINE_NUM, the number of grid lines.
   !
-  !    Input, integer(ip) LINE_DATA(2,LINE_NUM), contains pairs of
+  !    Input, integer(int64) LINE_DATA(2,LINE_NUM), contains pairs of 
   !    point indices for line segments that make up the grid.
   !
   !    Input, character ( len = * ) PREFIX, a prefix for the filenames.
   !
 
-    integer(ip), intent(in), value :: line_num
-    integer(ip), intent(in), value :: ng
-    real(dp), intent(in) :: xg(3,ng)
-    integer(ip), intent(in) :: line_data(2,line_num)
-    character ( len = * ), intent(in) :: prefix
+    integer(int32) line_num
+    integer(int32) ng
 
-    character ( len = 255 ) :: command_filename
-    integer(ip) :: command_unit
-    integer(ip) :: j
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip) :: l
-    character ( len = 255 ) :: line_filename
-    integer(ip) :: line_unit
-    character ( len = 255 ) :: node_filename
-    integer(ip) :: node_unit
-    character ( len = 255 ) :: plot_filename
+    character ( len = 255 ) command_filename
+    integer(int32) command_unit
+    integer(int32) j
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) l
+    integer(int32) line_data(2,line_num)
+    character ( len = 255 ) line_filename
+    integer(int32) line_unit
+    character ( len = 255 ) node_filename
+    integer(int32) node_unit
+    character ( len = 255 ) plot_filename
+    character ( len = * ) prefix
+    real(real64) xg(3,ng)
   !
   !  Create graphics data files.
   !
@@ -132,10 +126,9 @@ contains
 
     write ( *, '(a)' ) &
       '  Created command file "' // trim ( command_filename ) // '".'
-  end subroutine sphere_llq_grid_display
+  end
 
-  subroutine sphere_llq_grid_lines ( lat_num, long_num, line_num, line ) &
-        bind(C, name="sphere_llq_grid_lines")
+  subroutine sphere_llq_grid_lines ( lat_num, long_num, line_num, line )
 
   !*****************************************************************************80
   !
@@ -151,7 +144,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -163,28 +156,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude and
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude and
   !    longitude lines to draw.  The latitudes do not include the North and South
   !    poles, which will be included automatically, so LAT_NUM = 5, for instance,
   !    will result in points along 7 lines of latitude.
   !
-  !    Input, integer(ip) LINE_NUM, the number of grid lines.
+  !    Input, integer(int32) LINE_NUM, the number of grid lines.
   !
-  !    Output, integer(ip) LINE(2,LINE_NUM), contains pairs of point
+  !    Output, integer(int32) LINE(2,LINE_NUM), contains pairs of point 
   !    indices for line segments that make up the grid.
   !
 
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(in), value :: long_num
-    integer(ip), intent(in), value :: line_num
-    integer(ip), intent(out) :: line(2,line_num)
+    integer(int32) line_num
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: l
-    integer(ip) :: new
-    integer(ip) :: newcol
-    integer(ip) :: old
+    integer(int32) i
+    integer(int32) j
+    integer(int32) lat_num
+    integer(int32) l
+    integer(int32) line(2,line_num)
+    integer(int32) long_num
+    integer(int32) new
+    integer(int32) newcol
+    integer(int32) old
 
     l = 0
   !
@@ -234,10 +227,9 @@ contains
       line(1:2,l) = (/ old, new /)
 
     end do
-  end subroutine sphere_llq_grid_lines
+  end
 
-  pure subroutine sphere_llq_grid_line_count ( lat_num, long_num, line_num ) &
-        bind(C, name="sphere_llq_grid_line_count")
+  subroutine sphere_llq_grid_line_count ( lat_num, long_num, line_num )
 
   !*****************************************************************************80
   !
@@ -249,7 +241,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -261,24 +253,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude and
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude and
   !    longitude lines to draw.  The latitudes do not include the North and South
   !    poles, which will be included automatically, so LAT_NUM = 5, for instance,
   !    will result in points along 7 lines of latitude.
   !
-  !    Output, integer(ip) LINE_NUM, the number of grid lines.
+  !    Output, integer(int32) LINE_NUM, the number of grid lines.
   !
 
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(in), value :: long_num
-    integer(ip), intent(out) :: line_num
+    integer(int32) lat_num
+    integer(int32) line_num
+    integer(int32) long_num
 
     line_num = long_num * ( lat_num + 1 ) &
              + lat_num * long_num
-  end subroutine sphere_llq_grid_line_count
+  end
 
-  subroutine sphere_llq_grid_points ( r, pc, lat_num, long_num, point_num, p ) &
-        bind(C, name="sphere_llq_grid_points")
+  subroutine sphere_llq_grid_points ( r, pc, lat_num, long_num, point_num, p )
 
   !*****************************************************************************80
   !
@@ -291,7 +282,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -303,40 +294,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the sphere.
+  !    Input, real(real64) R, the radius of the sphere.
   !
-  !    Input, real(dp) PC(3), the center of the sphere.
+  !    Input, real(real64) PC(3), the center of the sphere.
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude
-  !    and longitude lines to draw.  The latitudes do not include the North and
-  !    South poles, which will be included automatically, so LAT_NUM = 5, for
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude 
+  !    and longitude lines to draw.  The latitudes do not include the North and 
+  !    South poles, which will be included automatically, so LAT_NUM = 5, for 
   !    instance, will result in points along 7 lines of latitude.
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, real(dp) P(3,POINT_NUM), the grid points.
+  !    Output, real(real64) P(3,POINT_NUM), the grid points.
   !
 
-    real(dp), intent(in), value :: r
-    real(dp), intent(in) :: pc(3)
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(in), value :: long_num
-    integer(ip), intent(in), value :: point_num
-    real(dp), intent(out) :: p(3,point_num)
+    integer(int32) lat_num
+    integer(int32) long_num
+    integer(int32) point_num
 
-    integer(ip) :: lat
-    integer(ip) :: long
-    integer(ip) :: n
-    real(dp) :: phi
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: theta
+    integer(int32) lat
+    integer(int32) long
+    integer(int32) n
+    real(real64) p(3,point_num)
+    real(real64) pc(3)
+    real(real64) phi
+    real(real64) r
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) theta
 
     n = 0
   !
   !  The north pole.
   !
-    theta = 0.0_dp
-    phi = 0.0_dp
+    theta = 0.0e+00_real64
+    phi = 0.0e+00_real64
     n = n + 1
     p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
     p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
@@ -346,15 +337,15 @@ contains
   !
     do lat = 1, lat_num
 
-      phi = real ( lat, dp) * r8_pi &
-          / real ( lat_num + 1, dp)
+      phi = real ( lat, real64) * r8_pi &
+          / real ( lat_num + 1, real64)
   !
   !  Along that ring of latitude, compute points at various longitudes.
   !
       do long = 0, long_num - 1
 
-        theta = real ( long, dp) * 2.0_dp * r8_pi &
-              / real ( long_num, dp)
+        theta = real ( long, real64) * 2.0e+00_real64 * r8_pi &
+              / real ( long_num, real64)
 
         n = n + 1
         p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
@@ -366,16 +357,15 @@ contains
   !
   !  The south pole.
   !
-    theta = 0.0_dp
+    theta = 0.0e+00_real64
     phi = r8_pi
     n = n + 1
     p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
     p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
     p(3,n) = pc(3) + r * cos ( phi )
-  end subroutine sphere_llq_grid_points
+  end
 
-  pure subroutine sphere_llq_grid_point_count ( lat_num, long_num, point_num ) &
-        bind(C, name="sphere_llq_grid_point_count")
+  subroutine sphere_llq_grid_point_count ( lat_num, long_num, point_num )
 
   !*****************************************************************************80
   !
@@ -383,7 +373,7 @@ contains
   !
   !  Licensing:
   !
-  !    This code is distributed under the GNU LGPL license.
+  !    This code is distributed under the GNU LGPL license. 
   !
   !  Modified:
   !
@@ -395,19 +385,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LAT_NUM, LONG_NUM, the number of latitude
-  !    and longitude lines to draw.  The latitudes do not include the North and
-  !    South poles, which will be included automatically, so LAT_NUM = 5, for
+  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude 
+  !    and longitude lines to draw.  The latitudes do not include the North and 
+  !    South poles, which will be included automatically, so LAT_NUM = 5, for 
   !    instance, will result in points along 7 lines of latitude.
   !
-  !    Output, integer(ip) POINT_NUM, the number of grid points.
+  !    Output, integer(int32) POINT_NUM, the number of grid points.
   !
 
-    integer(ip), intent(in), value :: lat_num
-    integer(ip), intent(in), value :: long_num
-    integer(ip), intent(out) :: point_num
+    integer(int32) lat_num
+    integer(int32) long_num
+    integer(int32) point_num
 
     point_num = 2 + lat_num * long_num
-  end subroutine sphere_llq_grid_point_count
+  end
 
 end module sphere_llq_grid_mod

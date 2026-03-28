@@ -1,23 +1,17 @@
-!> sphere_fibonacci_grid -- Modern Fortran 2018
+!> sphere_fibonacci_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module sphere_fibonacci_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: sphere_fibonacci_grid_display, sphere_fibonacci_grid_points
 
 contains
 
-  subroutine sphere_fibonacci_grid_display ( ng, xg, prefix ) &
-        bind(C, name="sphere_fibonacci_grid_display")
+  subroutine sphere_fibonacci_grid_display ( ng, xg, prefix )
 
   !*****************************************************************************80
   !
@@ -37,23 +31,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NG, the number of points.
+  !    Input, integer(int32) NG, the number of points.
   !
-  !    Input, real(dp) XG(3,NG), the Fibonacci spiral points.
+  !    Input, real(real64) XG(3,NG), the Fibonacci spiral points.
   !
   !    Input, character ( len = * ) PREFIX, a prefix for the filenames.
   !
 
-    integer(ip), intent(in), value :: ng
-    real(dp), intent(in) :: xg(3,ng)
-    character ( len = * ), intent(in) :: prefix
+    integer(int32) ng
 
-    character ( len = 255 ) :: command_filename
-    integer(ip) :: command_unit
-    character ( len = 255 ) :: data_filename
-    integer(ip) :: data_unit
-    integer(ip) :: j
-    character ( len = 255 ) :: plot_filename
+    character ( len = 255 ) command_filename
+    integer(int32) command_unit
+    character ( len = 255 ) data_filename
+    integer(int32) data_unit
+    integer(int32) j
+    character ( len = 255 ) plot_filename
+    character ( len = * ) prefix
+    real(real64) xg(3,ng)
   !
   !  Create graphics data files.
   !
@@ -95,10 +89,9 @@ contains
 
     write ( *, '(a)' ) &
       '  Created command file "' // trim ( command_filename ) // '".'
-  end subroutine sphere_fibonacci_grid_display
+  end
 
-  subroutine sphere_fibonacci_grid_points ( ng, xyz ) &
-        bind(C, name="sphere_fibonacci_grid_points")
+  subroutine sphere_fibonacci_grid_points ( ng, xyz )
 
   !*****************************************************************************80
   !
@@ -125,35 +118,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NG, the number of points.
+  !    Input, integer(int32) NG, the number of points.
   !
-  !    Output, real(dp) XYZ(3,NG), the Fibonacci spiral points.
+  !    Output, real(real64) XYZ(3,NG), the Fibonacci spiral points.
   !
 
-    integer(ip), intent(in), value :: ng
-    real(dp), intent(out) :: xyz(3,ng)
+    integer(int32) ng
 
-    real(dp) :: cphi
-    integer(ip) :: j
-    real(dp) :: i_r8
-    real(dp) :: ng_r8
-    real(dp) :: r8_phi
-    real(dp), parameter :: r8_pi = 3.141592653589793_dp
-    real(dp) :: sphi
-    real(dp) :: theta
+    real(real64) cphi
+    integer(int32) i
+    real(real64) i_r8
+    integer(int32) j
+    real(real64) ng_r8
+    real(real64) r8_phi
+    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
+    real(real64) sphi
+    real(real64) theta
+    real(real64) xyz(3,ng)
 
-    r8_phi = ( 1.0_dp + sqrt ( 5.0_dp ) ) / 2.0_dp
-    ng_r8 = real ( ng, dp)
+    r8_phi = ( 1.0e+00_real64 + sqrt ( 5.0e+00_real64 ) ) / 2.0e+00_real64
+    ng_r8 = real ( ng, real64)
 
     do j = 1, ng
-      i_r8 = real ( - ng - 1 + 2 * j, dp)
-      theta = 2.0_dp * r8_pi * i_r8 / r8_phi
+      i_r8 = real ( - ng - 1 + 2 * j, real64)
+      theta = 2.0e+00_real64 * r8_pi * i_r8 / r8_phi
       sphi = i_r8 / ng_r8
       cphi = sqrt ( ( ng_r8 + i_r8 ) * ( ng_r8 - i_r8 ) ) / ng_r8
       xyz(1,j) = cphi * sin ( theta )
       xyz(2,j) = cphi * cos ( theta )
       xyz(3,j) = sphi
     end do
-  end subroutine sphere_fibonacci_grid_points
+  end
 
 end module sphere_fibonacci_grid_mod

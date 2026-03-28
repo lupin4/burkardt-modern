@@ -1,16 +1,11 @@
-!> sphere_quad — Modern Fortran 2018
+!> sphere_quad â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module sphere_quad_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: arc_cosine, arc_sine, atan4, icos_shape, icos_size, r8_gamma
   public :: r8_uniform_01, r8vec_norm, r8vec_polarize, s_cat, sphere01_distance_xyz, sphere01_monomial_integral
@@ -21,8 +16,7 @@ module sphere_quad_mod
 
 contains
 
-  pure function arc_cosine ( c ) &
-        bind(C, name="arc_cosine")
+  function arc_cosine ( c )
 
   !*****************************************************************************80
   !
@@ -50,24 +44,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) C, the argument.
+  !    Input, real(real64) C, the argument.
   !
-  !    Output, real(dp) ARC_COSINE, an angle whose cosine is C.
+  !    Output, real(real64) ARC_COSINE, an angle whose cosine is C.
   !
 
-    real(dp) :: arc_cosine
-    real(dp), intent(in), value :: c
-    real(dp) :: c2
+    real(real64) arc_cosine
+    real(real64) c
+    real(real64) c2
 
     c2 = c
-    c2 = max ( c2, - 1.0_dp )
-    c2 = min ( c2, + 1.0_dp )
+    c2 = max ( c2, - 1.0e+00_real64 )
+    c2 = min ( c2, + 1.0e+00_real64 )
 
     arc_cosine = acos ( c2 )
-  end function arc_cosine
+  end
 
-  pure function arc_sine ( s ) &
-        bind(C, name="arc_sine")
+  function arc_sine ( s )
 
   !*****************************************************************************80
   !
@@ -95,24 +88,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) S, the argument.
+  !    Input, real(real64) S, the argument.
   !
-  !    Output, real(dp) ARC_SINE, an angle whose sine is S.
+  !    Output, real(real64) ARC_SINE, an angle whose sine is S.
   !
 
-    real(dp) :: arc_sine
-    real(dp), intent(in), value :: s
-    real(dp) :: s2
+    real(real64) arc_sine
+    real(real64) s
+    real(real64) s2
 
     s2 = s
-    s2 = max ( s2, - 1.0_dp )
-    s2 = min ( s2, + 1.0_dp )
+    s2 = max ( s2, - 1.0e+00_real64 )
+    s2 = min ( s2, + 1.0e+00_real64 )
 
     arc_sine = asin ( s2 )
-  end function arc_sine
+  end
 
-  function atan4 ( y, x ) &
-        bind(C, name="atan4")
+  function atan4 ( y, x )
 
   !*****************************************************************************80
   !
@@ -147,40 +139,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) Y, X, two quantities which represent the 
+  !    Input, real(real64) Y, X, two quantities which represent the 
   !    tangent of an angle.  If Y is not zero, then the tangent is (Y/X).
   !
-  !    Output, real(dp) ATAN4, an angle between 0 and 2 * PI, 
+  !    Output, real(real64) ATAN4, an angle between 0 and 2 * PI, 
   !    whose tangent is (Y/X), and which lies in the appropriate quadrant so 
   !    that the signs of its cosine and sine match those of X and Y.
   !
 
-    real(dp) :: abs_x
-    real(dp) :: abs_y
-    real(dp) :: atan4
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: theta
-    real(dp) :: theta_0
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: y
+    real(real64) abs_x
+    real(real64) abs_y
+    real(real64) atan4
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) theta
+    real(real64) theta_0
+    real(real64) x
+    real(real64) y
   !
   !  Special cases:
   !
-    if ( x == 0.0_dp ) then
+    if ( x == 0.0e+00_real64 ) then
 
-      if ( 0.0_dp < y ) then
-        theta = pi / 2.0_dp
-      else if ( y < 0.0_dp ) then
-        theta = 3.0_dp * pi / 2.0_dp
-      else if ( y == 0.0_dp ) then
-        theta = 0.0_dp
+      if ( 0.0e+00_real64 < y ) then
+        theta = pi / 2.0e+00_real64
+      else if ( y < 0.0e+00_real64 ) then
+        theta = 3.0e+00_real64 * pi / 2.0e+00_real64
+      else if ( y == 0.0e+00_real64 ) then
+        theta = 0.0e+00_real64
       end if
 
-    else if ( y == 0.0_dp ) then
+    else if ( y == 0.0e+00_real64 ) then
 
-      if ( 0.0_dp < x ) then
-        theta = 0.0_dp
-      else if ( x < 0.0_dp ) then
+      if ( 0.0e+00_real64 < x ) then
+        theta = 0.0e+00_real64
+      else if ( x < 0.0e+00_real64 ) then
         theta = PI
       end if
   !
@@ -193,24 +185,23 @@ contains
 
       theta_0 = atan2 ( abs_y, abs_x )
 
-      if ( 0.0_dp < x .and. 0.0_dp < y ) then
+      if ( 0.0e+00_real64 < x .and. 0.0e+00_real64 < y ) then
         theta = theta_0
-      else if ( x < 0.0_dp .and. 0.0_dp < y ) then
+      else if ( x < 0.0e+00_real64 .and. 0.0e+00_real64 < y ) then
         theta = pi - theta_0
-      else if ( x < 0.0_dp .and. y < 0.0_dp ) then
+      else if ( x < 0.0e+00_real64 .and. y < 0.0e+00_real64 ) then
         theta = pi + theta_0
-      else if ( 0.0_dp < x .and. y < 0.0_dp ) then
-        theta = 2.0_dp * pi - theta_0
+      else if ( 0.0e+00_real64 < x .and. y < 0.0e+00_real64 ) then
+        theta = 2.0e+00_real64 * pi - theta_0
       end if
 
     end if
 
     atan4 = theta
-  end function atan4
+  end
 
   subroutine icos_shape ( point_num, edge_num, face_num, face_order_max, &
-    point_coord, edge_point, face_order, face_point ) &
-        bind(C, name="icos_shape")
+    point_coord, edge_point, face_order, face_point )
 
   !*****************************************************************************80
   !
@@ -242,24 +233,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points (12).
+  !    Input, integer(int32) POINT_NUM, the number of points (12).
   !
-  !    Input, integer(ip) EDGE_NUM, the number of edges (30).
+  !    Input, integer(int32) EDGE_NUM, the number of edges (30).
   !
-  !    Input, integer(ip) FACE_NUM, the number of faces (20).
+  !    Input, integer(int32) FACE_NUM, the number of faces (20).
   !
-  !    Input, integer(ip) FACE_ORDER_MAX, the maximum number of 
+  !    Input, integer(int32) FACE_ORDER_MAX, the maximum number of 
   !    vertices per face (3).
   !
-  !    Output, real(dp) POINT_COORD(3,POINT_NUM), the points.
+  !    Output, real(real64) POINT_COORD(3,POINT_NUM), the points.
   !
-  !    Output, integer(ip) EDGE_POINT(2,EDGE_NUM), the points that 
+  !    Output, integer(int32) EDGE_POINT(2,EDGE_NUM), the points that 
   !    make up each edge, listed in ascending order of their indexes.
   !
-  !    Output, integer(ip) FACE_ORDER(FACE_NUM), the number of vertices
+  !    Output, integer(int32) FACE_ORDER(FACE_NUM), the number of vertices
   !    per face.
   !
-  !    Output, integer(ip) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
+  !    Output, integer(int32) FACE_POINT(FACE_ORDER_MAX,FACE_NUM); 
   !    FACE_POINT(I,J) is the index of the I-th point in the J-th face.  The
   !    points are listed in the counter clockwise direction defined
   !    by the outward normal at the face.  The nodes of each face are ordered 
@@ -267,28 +258,28 @@ contains
   !    nodes.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), parameter :: edge_order = 2
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(in), value :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32), parameter :: edge_order = 2
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
-    real(dp) :: a
-    real(dp) :: b
-    integer(ip), intent(out) :: edge_point(edge_order,edge_num)
-    integer(ip), intent(out) :: face_order(face_num)
-    integer(ip), intent(out) :: face_point(face_order_max,face_num)
-    real(dp) :: phi
-    real(dp) :: point_coord(3,point_num)
-    real(dp) :: z
+    real(real64) a
+    real(real64) b
+    integer(int32) edge_point(edge_order,edge_num)
+    integer(int32) face_order(face_num)
+    integer(int32) face_point(face_order_max,face_num)
+    real(real64) phi
+    real(real64) point_coord(3,point_num)
+    real(real64) z
   !
   !  Set the point coordinates.
   !
-    phi = 0.5_dp * ( sqrt ( 5.0_dp ) + 1.0_dp )
+    phi = 0.5e+00_real64 * ( sqrt ( 5.0e+00_real64 ) + 1.0e+00_real64 )
 
-    a = phi / sqrt ( 1.0_dp + phi * phi )
-    b = 1.0_dp / sqrt ( 1.0_dp + phi * phi )
-    z = 0.0_dp
+    a = phi / sqrt ( 1.0e+00_real64 + phi * phi )
+    b = 1.0e+00_real64 / sqrt ( 1.0e+00_real64 + phi * phi )
+    z = 0.0e+00_real64
   !
   !  A*A + B*B + Z*Z = 1.
   !
@@ -369,10 +360,9 @@ contains
        8, 12, 10, &
        9, 11, 12, &
       10, 12, 11 /), (/ face_order_max, face_num /) )
-  end subroutine icos_shape
+  end
 
-  pure subroutine icos_size ( point_num, edge_num, face_num, face_order_max ) &
-        bind(C, name="icos_size")
+  subroutine icos_size ( point_num, edge_num, face_num, face_order_max )
 
   !*****************************************************************************80
   !
@@ -392,28 +382,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) POINT_NUM, the number of points.
+  !    Output, integer(int32) POINT_NUM, the number of points.
   !
-  !    Output, integer(ip) EDGE_NUM, the number of edges.
+  !    Output, integer(int32) EDGE_NUM, the number of edges.
   !
-  !    Output, integer(ip) FACE_NUM, the number of faces.
+  !    Output, integer(int32) FACE_NUM, the number of faces.
   !
-  !    Output, integer(ip) FACE_ORDER_MAX, the maximum order of any face.
+  !    Output, integer(int32) FACE_ORDER_MAX, the maximum order of any face.
   !
 
-    integer(ip), intent(out) :: edge_num
-    integer(ip), intent(out) :: face_num
-    integer(ip), intent(out) :: face_order_max
-    integer(ip), intent(out) :: point_num
+    integer(int32) edge_num
+    integer(int32) face_num
+    integer(int32) face_order_max
+    integer(int32) point_num
 
     point_num = 12
     edge_num = 30
     face_num = 20
     face_order_max = 3
-  end subroutine icos_size
+  end
 
-  function r8_gamma ( x ) &
-        bind(C, name="r8_gamma")
+  function r8_gamma ( x )
 
   !*****************************************************************************80
   !
@@ -456,79 +445,79 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X, the argument of the function.
+  !    Input, real(real64) X, the argument of the function.
   !
-  !    Output, real(dp) R8_GAMMA, the value of the function.
+  !    Output, real(real64) R8_GAMMA, the value of the function.
   !
 
-    real(dp), dimension ( 7 ) :: c = (/ &
-     -1.910444077728e-03_dp, &
-      8.4171387781295e-04_dp, &
-     -5.952379913043012e-04_dp, &
-      7.93650793500350248e-04_dp, &
-     -2.777777777777681622553e-03_dp, &
-      8.333333333333333331554247e-02_dp, &
-      5.7083835261e-03_dp /)
-    real(dp), parameter :: eps = 2.22e-16_dp
-    real(dp) :: fact
-    integer(ip) :: i
-    integer(ip) :: n
-    real(dp), dimension ( 8 ) :: p = (/ &
-      -1.71618513886549492533811_dp, &
-       2.47656508055759199108314e+01_dp, &
-      -3.79804256470945635097577e+02_dp, &
-       6.29331155312818442661052e+02_dp, &
-       8.66966202790413211295064e+02_dp, &
-      -3.14512729688483675254357e+04_dp, &
-      -3.61444134186911729807069e+04_dp, &
-       6.64561438202405440627855e+04_dp /)
-    logical :: parity
-    real(dp), parameter :: pi = 3.1415926535897932384626434_dp
-    real(dp), dimension ( 8 ) :: q = (/ &
-      -3.08402300119738975254353e+01_dp, &
-       3.15350626979604161529144e+02_dp, &
-      -1.01515636749021914166146e+03_dp, &
-      -3.10777167157231109440444e+03_dp, &
-       2.25381184209801510330112e+04_dp, &
-       4.75584627752788110767815e+03_dp, &
-      -1.34659959864969306392456e+05_dp, &
-      -1.15132259675553483497211e+05_dp /)
-    real(dp) :: r8_gamma
-    real(dp) :: res
-    real(dp), parameter :: sqrtpi = 0.9189385332046727417803297_dp
-    real(dp) :: sum
-    real(dp), intent(in), value :: x
-    real(dp), parameter :: xbig = 171.624_dp
-    real(dp) :: xden
-    real(dp), parameter :: xinf = 1.0e+30_dp
-    real(dp), parameter :: xminin = 2.23e-308_dp
-    real(dp) :: xnum
-    real(dp) :: y
-    real(dp) :: y1
-    real(dp) :: ysq
-    real(dp) :: z
+    real(real64), dimension ( 7 ) :: c = (/ &
+     -1.910444077728e-03_real64, &
+      8.4171387781295e-04_real64, &
+     -5.952379913043012e-04_real64, &
+      7.93650793500350248e-04_real64, &
+     -2.777777777777681622553e-03_real64, &
+      8.333333333333333331554247e-02_real64, &
+      5.7083835261e-03_real64 /)
+    real(real64), parameter :: eps = 2.22e-16_real64
+    real(real64) fact
+    integer(int32) i
+    integer(int32) n
+    real(real64), dimension ( 8 ) :: p = (/ &
+      -1.71618513886549492533811e+00_real64, &
+       2.47656508055759199108314e+01_real64, &
+      -3.79804256470945635097577e+02_real64, &
+       6.29331155312818442661052e+02_real64, &
+       8.66966202790413211295064e+02_real64, &
+      -3.14512729688483675254357e+04_real64, &
+      -3.61444134186911729807069e+04_real64, &
+       6.64561438202405440627855e+04_real64 /)
+    logical parity
+    real(real64), parameter :: pi = 3.1415926535897932384626434e+00_real64
+    real(real64), dimension ( 8 ) :: q = (/ &
+      -3.08402300119738975254353e+01_real64, &
+       3.15350626979604161529144e+02_real64, &
+      -1.01515636749021914166146e+03_real64, &
+      -3.10777167157231109440444e+03_real64, &
+       2.25381184209801510330112e+04_real64, &
+       4.75584627752788110767815e+03_real64, &
+      -1.34659959864969306392456e+05_real64, &
+      -1.15132259675553483497211e+05_real64 /)
+    real(real64) r8_gamma
+    real(real64) res
+    real(real64), parameter :: sqrtpi = 0.9189385332046727417803297e+00_real64
+    real(real64) sum
+    real(real64) x
+    real(real64), parameter :: xbig = 171.624e+00_real64
+    real(real64) xden
+    real(real64), parameter :: xinf = 1.0e+30_real64
+    real(real64), parameter :: xminin = 2.23e-308_real64
+    real(real64) xnum
+    real(real64) y
+    real(real64) y1
+    real(real64) ysq
+    real(real64) z
 
     parity = .false.
-    fact = 1.0_dp
+    fact = 1.0e+00_real64
     n = 0
     y = x
   !
   !  Argument is negative.
   !
-    if ( y <= 0.0_dp ) then
+    if ( y <= 0.0e+00_real64 ) then
 
       y = - x
       y1 = aint ( y )
       res = y - y1
 
-      if ( res /= 0.0_dp ) then
+      if ( res /= 0.0e+00_real64 ) then
 
-        if ( y1 /= aint ( y1 * 0.5_dp ) * 2.0_dp ) then
+        if ( y1 /= aint ( y1 * 0.5e+00_real64 ) * 2.0e+00_real64 ) then
           parity = .true.
         end if
 
         fact = - pi / sin ( pi * res )
-        y = y + 1.0_dp
+        y = y + 1.0e+00_real64
 
       else
 
@@ -545,22 +534,22 @@ contains
   !  Argument < EPS.
   !
       if ( xminin <= y ) then
-        res = 1.0_dp / y
+        res = 1.0e+00_real64 / y
       else
         res = xinf
         r8_gamma = res
       end if
 
-    else if ( y < 12.0_dp ) then
+    else if ( y < 12.0e+00_real64 ) then
 
       y1 = y
   !
   !  0.0 < argument < 1.0.
   !
-      if ( y < 1.0_dp ) then
+      if ( y < 1.0e+00_real64 ) then
 
         z = y
-        y = y + 1.0_dp
+        y = y + 1.0e+00_real64
   !
   !  1.0 < argument < 12.0.
   !  Reduce argument if necessary.
@@ -568,21 +557,21 @@ contains
       else
 
         n = int ( y ) - 1
-        y = y - real ( n, dp)
-        z = y - 1.0_dp
+        y = y - real ( n, real64)
+        z = y - 1.0e+00_real64
 
       end if
   !
   !  Evaluate approximation for 1.0 < argument < 2.0.
   !
-      xnum = 0.0_dp
-      xden = 1.0_dp
+      xnum = 0.0e+00_real64
+      xden = 1.0e+00_real64
       do i = 1, 8
         xnum = ( xnum + p(i) ) * z
         xden = xden * z + q(i)
       end do
 
-      res = xnum / xden + 1.0_dp
+      res = xnum / xden + 1.0e+00_real64
   !
   !  Adjust result for case  0.0 < argument < 1.0.
   !
@@ -596,7 +585,7 @@ contains
 
         do i = 1, n
           res = res * y
-          y = y + 1.0_dp
+          y = y + 1.0e+00_real64
         end do
 
       end if
@@ -613,7 +602,7 @@ contains
           sum = sum / ysq + c(i)
         end do
         sum = sum / y - y + sqrtpi
-        sum = sum + ( y - 0.5_dp ) * log ( y )
+        sum = sum + ( y - 0.5e+00_real64 ) * log ( y )
         res = exp ( sum )
 
       else
@@ -630,15 +619,14 @@ contains
       res = - res
     end if
 
-    if ( fact /= 1.0_dp ) then
+    if ( fact /= 1.0e+00_real64 ) then
       res = fact / res
     end if
 
     r8_gamma = res
-  end function r8_gamma
+  end
 
-  function r8_uniform_01 ( seed ) &
-        bind(C, name="r8_uniform_01")
+  function r8_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -646,7 +634,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
   !    For now, the input quantity SEED is an integer variable.
   !
@@ -705,17 +693,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which should
+  !    Input/output, integer(int32) SEED, the "seed" value, which should
   !    NOT be 0. On output, SEED has been updated.
   !
-  !    Output, real(dp) R8_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real64) R8_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: k
-    real(dp) :: r8_uniform_01
-    integer(ip), intent(inout) :: seed
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) k
+    real(real64) r8_uniform_01
+    integer(int32) seed
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -735,11 +723,10 @@ contains
   !  Although SEED can be represented exactly as a 32 bit integer,
   !  it generally cannot be represented exactly as a 32 bit real number!
   !
-    r8_uniform_01 = real ( seed, dp) * 4.656612875e-10_dp
-  end function r8_uniform_01
+    r8_uniform_01 = real ( seed, real64) * 4.656612875e-10_real64
+  end
 
-  pure function r8vec_norm ( n, a ) &
-        bind(C, name="r8vec_norm")
+  function r8vec_norm ( n, a )
 
   !*****************************************************************************80
   !
@@ -767,23 +754,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in A.
+  !    Input, integer(int32) N, the number of entries in A.
   !
-  !    Input, real(dp) A(N), the vector whose L2 norm is desired.
+  !    Input, real(real64) A(N), the vector whose L2 norm is desired.
   !
-  !    Output, real(dp) R8VEC_NORM, the L2 norm of A.
+  !    Output, real(real64) R8VEC_NORM, the L2 norm of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp) :: r8vec_norm
+    real(real64) a(n)
+    real(real64) r8vec_norm
 
     r8vec_norm = sqrt ( sum ( a(1:n)**2 ) )
-  end function r8vec_norm
+  end
 
-  subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel ) &
-        bind(C, name="r8vec_polarize")
+  subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel )
 
   !*****************************************************************************80
   !
@@ -816,30 +802,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input, real(dp) A(N), the vector to be polarized.
+  !    Input, real(real64) A(N), the vector to be polarized.
   !
-  !    Input, real(dp) P(N), the polarizing direction.
+  !    Input, real(real64) P(N), the polarizing direction.
   !
-  !    Output, real(dp) A_NORMAL(N), A_PARALLEL(N), the normal
+  !    Output, real(real64) A_NORMAL(N), A_PARALLEL(N), the normal
   !    and parallel components of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a(n)
-    real(dp) :: a_dot_p
-    real(dp), intent(out) :: a_normal(n)
-    real(dp), intent(out) :: a_parallel(n)
-    real(dp), intent(in) :: p(n)
-    real(dp) :: p_norm
+    real(real64) a(n)
+    real(real64) a_dot_p
+    real(real64) a_normal(n)
+    real(real64) a_parallel(n)
+    real(real64) p(n)
+    real(real64) p_norm
 
     p_norm = sqrt ( sum ( p(1:n)**2 ) )
 
-    if ( p_norm == 0.0_dp ) then
+    if ( p_norm == 0.0e+00_real64 ) then
       a_normal(1:n) = a(1:n)
-      a_parallel(1:n) = 0.0_dp
+      a_parallel(1:n) = 0.0e+00_real64
     end if
 
     a_dot_p = dot_product ( a(1:n), p(1:n) ) / p_norm
@@ -847,10 +833,9 @@ contains
     a_parallel(1:n) = a_dot_p * p(1:n) / p_norm
 
     a_normal(1:n) = a(1:n) - a_parallel(1:n)
-  end subroutine r8vec_polarize
+  end
 
-  pure subroutine s_cat ( s1, s2, s3 ) &
-        bind(C, name="s_cat")
+  subroutine s_cat ( s1, s2, s3 )
 
   !*****************************************************************************80
   !
@@ -878,9 +863,9 @@ contains
   !    concatenating S1 and S2, ignoring any trailing blanks.
   !
 
-    character ( len = * ), intent(in), value :: s1
-    character ( len = * ), intent(in), value :: s2
-    character ( len = * ), intent(out) :: s3
+    character ( len = * ) s1
+    character ( len = * ) s2
+    character ( len = * ) s3
 
     if ( s1 == ' ' .and. s2 == ' ' ) then
       s3 = ' '
@@ -891,10 +876,9 @@ contains
     else
       s3 = trim ( s1 ) // trim ( s2 )
     end if
-  end subroutine s_cat
+  end
 
-  subroutine sphere01_distance_xyz ( xyz1, xyz2, dist ) &
-        bind(C, name="sphere01_distance_xyz")
+  subroutine sphere01_distance_xyz ( xyz1, xyz2, dist )
 
   !*****************************************************************************80
   !
@@ -929,25 +913,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) XYZ1(3), the coordinates of the first point.
+  !    Input, real(real64) XYZ1(3), the coordinates of the first point.
   !
-  !    Input, real(dp) XYZ2(3), the coordinates of the second point.
+  !    Input, real(real64) XYZ2(3), the coordinates of the second point.
   !
-  !    Output, real(dp) DIST, the great circle distance between
+  !    Output, real(real64) DIST, the great circle distance between
   !    the points.
   !
 
-    real(dp) :: arc_sine
-    real(dp) :: atan4
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp) :: lat1
-    real(dp) :: lat2
-    real(dp) :: lon1
-    real(dp) :: lon2
-    real(dp) :: top
-    real(dp), intent(in) :: xyz1(3)
-    real(dp), intent(in) :: xyz2(3)
+    real(real64) arc_sine
+    real(real64) atan4
+    real(real64) bot
+    real(real64) dist
+    real(real64) lat1
+    real(real64) lat2
+    real(real64) lon1
+    real(real64) lon2
+    real(real64) top
+    real(real64) xyz1(3)
+    real(real64) xyz2(3)
 
     lat1 = arc_sine ( xyz1(3) )
     lon1 = atan4 ( xyz1(2), xyz1(1) )
@@ -965,10 +949,9 @@ contains
         + cos ( lat1 ) * cos ( lat2 ) * cos ( lon1 - lon2 )
 
     dist = atan2 ( top, bot )
-  end subroutine sphere01_distance_xyz
+  end
 
-  subroutine sphere01_monomial_integral ( e, integral ) &
-        bind(C, name="sphere01_monomial_integral")
+  subroutine sphere01_monomial_integral ( e, integral )
 
   !*****************************************************************************80
   !
@@ -1003,17 +986,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) E(3), the exponents of X, Y and Z in the 
+  !    Input, integer(int32) E(3), the exponents of X, Y and Z in the 
   !    monomial.  Each exponent must be nonnegative.
   !
-  !    Output, real(dp) INTEGRAL, the integral.
+  !    Output, real(real64) INTEGRAL, the integral.
   !
 
-    integer(ip), intent(in) :: e(3)
-    integer(ip) :: i
-    real(dp), intent(out) :: integral
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: r8_gamma
+    integer(int32) e(3)
+    integer(int32) i
+    real(real64) integral
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) r8_gamma
 
     if ( any ( e(1:3) < 0 ) ) then
       integral = - huge ( integral )
@@ -1028,28 +1011,27 @@ contains
 
     if ( all ( e(1:3) == 0 ) ) then
 
-      integral = 2.0_dp * sqrt ( pi**3 ) / r8_gamma ( 1.5_dp )
+      integral = 2.0e+00_real64 * sqrt ( pi**3 ) / r8_gamma ( 1.5e+00_real64 )
 
     else if ( any ( mod ( e(1:3), 2 ) == 1 ) ) then
 
-      integral = 0.0_dp
+      integral = 0.0e+00_real64
 
     else
 
-      integral = 2.0_dp
+      integral = 2.0e+00_real64
 
       do i = 1, 3
-        integral = integral * r8_gamma ( 0.5_dp * real ( e(i) + 1, dp) )
+        integral = integral * r8_gamma ( 0.5e+00_real64 * real ( e(i) + 1, real64) )
       end do
 
       integral = integral &
-        / r8_gamma ( 0.5_dp * ( real ( sum ( e(1:3) + 1 ), dp) ) )
+        / r8_gamma ( 0.5e+00_real64 * ( real ( sum ( e(1:3) + 1 ), real64) ) )
 
     end if
-  end subroutine sphere01_monomial_integral
+  end
 
-  subroutine sphere01_quad_icos1c ( factor, fun, node_num, result ) &
-        bind(C, name="sphere01_quad_icos1c")
+  subroutine sphere01_quad_icos1c ( factor, fun, node_num, result )
 
   !*****************************************************************************80
   !
@@ -1084,51 +1066,51 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
   !    Input, external :: FUN, evaluates the integrand, of the form:
   !      subroutine fun ( n, x, v )
-  !      integer(ip) n
-  !      real(dp) v(n)
-  !      real(dp) x(3,n)
+  !      integer(int32) n
+  !      real(real64) v(n)
+  !      real(real64) x(3,n)
   !
-  !    Output, integer(ip) NODE_NUM, the number of evaluation points.
+  !    Output, integer(int32) NODE_NUM, the number of evaluation points.
   !
-  !    Output, real(dp) RESULT, the estimated integral.
+  !    Output, real(real64) RESULT, the estimated integral.
   !
 
-    integer(ip), intent(out) :: node_num
+    integer(int32) node_num
 
-    integer(ip) :: a
-    real(dp) :: a_xyz(3)
-    real(dp) :: a2_xyz(3)
-    real(dp) :: area
-    real(dp) :: area_total
-    integer(ip) :: b
-    real(dp) :: b_xyz(3)
-    real(dp) :: b2_xyz(3)
-    integer(ip) :: c
-    real(dp) :: c_xyz(3)
-    real(dp) :: c2_xyz(3)
-    integer(ip) :: edge_num
-    integer(ip), allocatable, dimension ( :, : ) :: edge_point
-    integer(ip) :: f1
-    integer(ip) :: f2
-    integer(ip) :: f3
-    integer(ip) :: face
-    integer(ip) :: face_num
-    integer(ip), allocatable, dimension ( : ) :: face_order
-    integer(ip), allocatable, dimension ( :, : ) :: face_point
-    integer(ip) :: face_order_max
-    integer(ip), intent(in), value :: factor
+    integer(int32) a
+    real(real64) a_xyz(3)
+    real(real64) a2_xyz(3)
+    real(real64) area
+    real(real64) area_total
+    integer(int32) b
+    real(real64) b_xyz(3)
+    real(real64) b2_xyz(3)
+    integer(int32) c
+    real(real64) c_xyz(3)
+    real(real64) c2_xyz(3)
+    integer(int32) edge_num
+    integer(int32), allocatable, dimension ( :, : ) :: edge_point
+    integer(int32) f1
+    integer(int32) f2
+    integer(int32) f3
+    integer(int32) face
+    integer(int32) face_num
+    integer(int32), allocatable, dimension ( : ) :: face_order
+    integer(int32), allocatable, dimension ( :, : ) :: face_point
+    integer(int32) face_order_max
+    integer(int32) factor
     external             fun
-    real(dp) :: node_xyz(3)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), allocatable, dimension ( :, : ) :: point_coord
-    integer(ip) :: point_num
-    real(dp), intent(out) :: result
-    real(dp) :: v
+    real(real64) node_xyz(3)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64), allocatable, dimension ( :, : ) :: point_coord
+    integer(int32) point_num
+    real(real64) result
+    real(real64) v
   !
   !  Size the icosahedron.
   !
@@ -1146,8 +1128,8 @@ contains
   !
   !  Initialize the integral data.
   !
-    result = 0.0_dp
-    area_total = 0.0_dp
+    result = 0.0e+00_real64
+    area_total = 0.0e+00_real64
     node_num = 0
   !
   !  Pick a face of the icosahedron, and identify its vertices as A, B, C.
@@ -1232,10 +1214,9 @@ contains
     deallocate ( face_order )
     deallocate ( face_point )
     deallocate ( point_coord )
-  end subroutine sphere01_quad_icos1c
+  end
 
-  subroutine sphere01_quad_icos1m ( factor, fun, node_num, result ) &
-        bind(C, name="sphere01_quad_icos1m")
+  subroutine sphere01_quad_icos1m ( factor, fun, node_num, result )
 
   !*****************************************************************************80
   !
@@ -1270,61 +1251,61 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
   !    Input, external :: FUN, evaluates the integrand, of the form:
   !      subroutine fun ( n, x, v )
-  !      integer(ip) n
-  !      real(dp) v(n)
-  !      real(dp) x(3,n)
+  !      integer(int32) n
+  !      real(real64) v(n)
+  !      real(real64) x(3,n)
   !
-  !    Output, integer(ip) NODE_NUM, the number of evaluation points.
+  !    Output, integer(int32) NODE_NUM, the number of evaluation points.
   !
-  !    Output, real(dp) RESULT, the estimated integral.
+  !    Output, real(real64) RESULT, the estimated integral.
   !
 
-    integer(ip), intent(out) :: node_num
+    integer(int32) node_num
 
-    integer(ip) :: a
-    real(dp) :: a_xyz(3)
-    real(dp) :: a2_xyz(3)
-    real(dp) :: a3_xyz(3)
-    real(dp) :: area
-    real(dp) :: area_total
-    integer(ip) :: b
-    real(dp) :: b_xyz(3)
-    real(dp) :: b2_xyz(3)
-    real(dp) :: b3_xyz(3)
-    integer(ip) :: c
-    real(dp) :: c_xyz(3)
-    real(dp) :: c2_xyz(3)
-    real(dp) :: c3_xyz(3)
-    integer(ip) :: edge
-    integer(ip) :: edge_num
-    integer(ip), allocatable, dimension ( :, : ) :: edge_point
-    integer(ip) :: f
-    integer(ip) :: f1
-    integer(ip) :: f2
-    integer(ip) :: f3
-    integer(ip) :: face
-    integer(ip) :: face_num
-    integer(ip), allocatable, dimension ( : ) :: face_order
-    integer(ip), allocatable, dimension ( :, : ) :: face_point
-    integer(ip) :: face_order_max
-    integer(ip), intent(in), value :: factor
+    integer(int32) a
+    real(real64) a_xyz(3)
+    real(real64) a2_xyz(3)
+    real(real64) a3_xyz(3)
+    real(real64) area
+    real(real64) area_total
+    integer(int32) b
+    real(real64) b_xyz(3)
+    real(real64) b2_xyz(3)
+    real(real64) b3_xyz(3)
+    integer(int32) c
+    real(real64) c_xyz(3)
+    real(real64) c2_xyz(3)
+    real(real64) c3_xyz(3)
+    integer(int32) edge
+    integer(int32) edge_num
+    integer(int32), allocatable, dimension ( :, : ) :: edge_point
+    integer(int32) f
+    integer(int32) f1
+    integer(int32) f2
+    integer(int32) f3
+    integer(int32) face
+    integer(int32) face_num
+    integer(int32), allocatable, dimension ( : ) :: face_order
+    integer(int32), allocatable, dimension ( :, : ) :: face_point
+    integer(int32) face_order_max
+    integer(int32) factor
     external fun
-    integer(ip) :: j
-    integer(ip) :: node
-    real(dp) :: node_norm
-    real(dp) :: node_xyz(3)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), allocatable, dimension ( :, : ) :: point_coord
-    integer(ip) :: point_num
-    real(dp), intent(out) :: result
-    real(dp) :: va
-    real(dp) :: vb
-    real(dp) :: vc
+    integer(int32) j
+    integer(int32) node
+    real(real64) node_norm
+    real(real64) node_xyz(3)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64), allocatable, dimension ( :, : ) :: point_coord
+    integer(int32) point_num
+    real(real64) result
+    real(real64) va
+    real(real64) vb
+    real(real64) vc
   !
   !  Size the icosahedron.
   !
@@ -1342,9 +1323,9 @@ contains
   !
   !  Initialize the integral data.
   !
-    result = 0.0_dp
+    result = 0.0e+00_real64
     node_num = 0
-    area_total = 0.0_dp
+    area_total = 0.0e+00_real64
   !
   !  Consider each face.
   !
@@ -1384,7 +1365,7 @@ contains
           call fun ( 1, a3_xyz, va )
           call fun ( 1, b3_xyz, vb )   
           call fun ( 1, c3_xyz, vc )   
-          result = result + area * ( va + vb + vc ) / 3.0_dp
+          result = result + area * ( va + vb + vc ) / 3.0e+00_real64
           area_total = area_total + area
 
         end do
@@ -1416,7 +1397,7 @@ contains
           call fun ( 1, a3_xyz, va )
           call fun ( 1, b3_xyz, vb )   
           call fun ( 1, c3_xyz, vc )   
-          result = result + area * ( va + vb + vc ) / 3.0_dp
+          result = result + area * ( va + vb + vc ) / 3.0e+00_real64
           area_total = area_total + area
 
         end do
@@ -1429,10 +1410,9 @@ contains
     deallocate ( face_order )
     deallocate ( face_point )
     deallocate ( point_coord )
-  end subroutine sphere01_quad_icos1m
+  end
 
-  subroutine sphere01_quad_icos1v ( factor, fun, node_num, result ) &
-        bind(C, name="sphere01_quad_icos1v")
+  subroutine sphere01_quad_icos1v ( factor, fun, node_num, result )
 
   !*****************************************************************************80
   !
@@ -1466,58 +1446,58 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
   !    Input, external :: FUN, evaluates the integrand, of the form:
   !      subroutine fun ( n, x, v )
-  !      integer(ip) n
-  !      real(dp) v(n)
-  !      real(dp) x(3,n)
+  !      integer(int32) n
+  !      real(real64) v(n)
+  !      real(real64) x(3,n)
   !
-  !    Output, integer(ip) NODE_NUM, the number of evaluation points.
+  !    Output, integer(int32) NODE_NUM, the number of evaluation points.
   !
-  !    Output, real(dp) RESULT, the estimated integral.
+  !    Output, real(real64) RESULT, the estimated integral.
   !
 
-    integer(ip), intent(out) :: node_num
+    integer(int32) node_num
 
-    integer(ip) :: a
-    real(dp) :: a_xyz(3)
-    real(dp) :: a2_xyz(3)
-    real(dp) :: area
-    real(dp) :: area_total
-    integer(ip) :: b
-    real(dp) :: b_xyz(3)
-    real(dp) :: b2_xyz(3)
-    integer(ip) :: c
-    real(dp) :: c_xyz(3)
-    real(dp) :: c2_xyz(3)
-    integer(ip) :: edge
-    integer(ip) :: edge_num
-    integer(ip), allocatable, dimension ( :, : ) :: edge_point
-    integer(ip) :: f
-    integer(ip) :: f1
-    integer(ip) :: f2
-    integer(ip) :: f3
-    integer(ip) :: face
-    integer(ip) :: face_num
-    integer(ip), allocatable, dimension ( : ) :: face_order
-    integer(ip), allocatable, dimension ( :, : ) :: face_point
-    integer(ip) :: face_order_max
-    integer(ip), intent(in), value :: factor
+    integer(int32) a
+    real(real64) a_xyz(3)
+    real(real64) a2_xyz(3)
+    real(real64) area
+    real(real64) area_total
+    integer(int32) b
+    real(real64) b_xyz(3)
+    real(real64) b2_xyz(3)
+    integer(int32) c
+    real(real64) c_xyz(3)
+    real(real64) c2_xyz(3)
+    integer(int32) edge
+    integer(int32) edge_num
+    integer(int32), allocatable, dimension ( :, : ) :: edge_point
+    integer(int32) f
+    integer(int32) f1
+    integer(int32) f2
+    integer(int32) f3
+    integer(int32) face
+    integer(int32) face_num
+    integer(int32), allocatable, dimension ( : ) :: face_order
+    integer(int32), allocatable, dimension ( :, : ) :: face_point
+    integer(int32) face_order_max
+    integer(int32) factor
     external fun
-    integer(ip) :: j
-    integer(ip) :: node
-    real(dp) :: node_norm
-    real(dp) :: node_xyz(3)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), allocatable, dimension ( :, : ) :: point_coord
-    integer(ip) :: point_num
-    real(dp), intent(out) :: result
-    real(dp) :: va
-    real(dp) :: vb
-    real(dp) :: vc
+    integer(int32) j
+    integer(int32) node
+    real(real64) node_norm
+    real(real64) node_xyz(3)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64), allocatable, dimension ( :, : ) :: point_coord
+    integer(int32) point_num
+    real(real64) result
+    real(real64) va
+    real(real64) vb
+    real(real64) vc
   !
   !  Size the icosahedron.
   !
@@ -1535,9 +1515,9 @@ contains
   !
   !  Initialize the integral data.
   !
-    result = 0.0_dp
+    result = 0.0e+00_real64
     node_num = 0
-    area_total = 0.0_dp
+    area_total = 0.0e+00_real64
   !
   !  Consider each face.
   !
@@ -1570,7 +1550,7 @@ contains
           call fun ( 1, a2_xyz, va )
           call fun ( 1, b2_xyz, vb )   
           call fun ( 1, c2_xyz, vc )   
-          result = result + area * ( va + vb + vc ) / 3.0_dp
+          result = result + area * ( va + vb + vc ) / 3.0e+00_real64
           area_total = area_total + area
 
         end do
@@ -1595,7 +1575,7 @@ contains
           call fun ( 1, a2_xyz, va )
           call fun ( 1, b2_xyz, vb )   
           call fun ( 1, c2_xyz, vc )   
-          result = result + area * ( va + vb + vc ) / 3.0_dp
+          result = result + area * ( va + vb + vc ) / 3.0e+00_real64
           area_total = area_total + area
 
         end do
@@ -1608,10 +1588,9 @@ contains
     deallocate ( face_order )
     deallocate ( face_point )
     deallocate ( point_coord )
-  end subroutine sphere01_quad_icos1v
+  end
 
-  subroutine sphere01_quad_icos2v ( factor, fun, node_num, result ) &
-        bind(C, name="sphere01_quad_icos2v")
+  subroutine sphere01_quad_icos2v ( factor, fun, node_num, result )
 
   !*****************************************************************************80
   !
@@ -1650,58 +1629,58 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR, the subdivision factor, which must
+  !    Input, integer(int32) FACTOR, the subdivision factor, which must
   !    be at least 1.
   !
   !    Input, external :: FUN, evaluates the integrand, of the form:
   !      subroutine fun ( n, x, v )
-  !      integer(ip) n
-  !      real(dp) v(n)
-  !      real(dp) x(3,n)
+  !      integer(int32) n
+  !      real(real64) v(n)
+  !      real(real64) x(3,n)
   !
-  !    Output, integer(ip) NODE_NUM, the number of evaluation points.
+  !    Output, integer(int32) NODE_NUM, the number of evaluation points.
   !
-  !    Output, real(dp) RESULT, the estimated integral.
+  !    Output, real(real64) RESULT, the estimated integral.
   !
 
-    integer(ip), intent(out) :: node_num
+    integer(int32) node_num
 
-    integer(ip) :: a
-    real(dp) :: a_xyz(3)
-    real(dp) :: a2_xyz(3)
-    real(dp) :: area
-    real(dp) :: area_total
-    integer(ip) :: b
-    real(dp) :: b_xyz(3)
-    real(dp) :: b2_xyz(3)
-    integer(ip) :: c
-    real(dp) :: c_xyz(3)
-    real(dp) :: c2_xyz(3)
-    integer(ip) :: edge
-    integer(ip) :: edge_num
-    integer(ip), allocatable, dimension ( :, : ) :: edge_point
-    integer(ip) :: f
-    integer(ip) :: f1
-    integer(ip) :: f2
-    integer(ip) :: f3
-    integer(ip) :: face
-    integer(ip) :: face_num
-    integer(ip), allocatable, dimension ( : ) :: face_order
-    integer(ip), allocatable, dimension ( :, : ) :: face_point
-    integer(ip) :: face_order_max
-    integer(ip), intent(in), value :: factor
+    integer(int32) a
+    real(real64) a_xyz(3)
+    real(real64) a2_xyz(3)
+    real(real64) area
+    real(real64) area_total
+    integer(int32) b
+    real(real64) b_xyz(3)
+    real(real64) b2_xyz(3)
+    integer(int32) c
+    real(real64) c_xyz(3)
+    real(real64) c2_xyz(3)
+    integer(int32) edge
+    integer(int32) edge_num
+    integer(int32), allocatable, dimension ( :, : ) :: edge_point
+    integer(int32) f
+    integer(int32) f1
+    integer(int32) f2
+    integer(int32) f3
+    integer(int32) face
+    integer(int32) face_num
+    integer(int32), allocatable, dimension ( : ) :: face_order
+    integer(int32), allocatable, dimension ( :, : ) :: face_point
+    integer(int32) face_order_max
+    integer(int32) factor
     external fun
-    integer(ip) :: j
-    integer(ip) :: node
-    real(dp) :: node_norm
-    real(dp) :: node_xyz(3)
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), allocatable, dimension ( :, : ) :: point_coord
-    integer(ip) :: point_num
-    real(dp), intent(out) :: result
-    real(dp) :: va
-    real(dp) :: vb
-    real(dp) :: vc
+    integer(int32) j
+    integer(int32) node
+    real(real64) node_norm
+    real(real64) node_xyz(3)
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64), allocatable, dimension ( :, : ) :: point_coord
+    integer(int32) point_num
+    real(real64) result
+    real(real64) va
+    real(real64) vb
+    real(real64) vc
   !
   !  Size the icosahedron.
   !
@@ -1719,9 +1698,9 @@ contains
   !
   !  Initialize the integral data.
   !
-    result = 0.0_dp
+    result = 0.0e+00_real64
     node_num = 0
-    area_total = 0.0_dp
+    area_total = 0.0e+00_real64
   !
   !  Consider each face.
   !
@@ -1754,7 +1733,7 @@ contains
           call fun ( 1, a2_xyz, va )
           call fun ( 1, b2_xyz, vb )   
           call fun ( 1, c2_xyz, vc )   
-          result = result + area * ( va + vb + vc ) / 3.0_dp
+          result = result + area * ( va + vb + vc ) / 3.0e+00_real64
           area_total = area_total + area
 
         end do
@@ -1779,7 +1758,7 @@ contains
           call fun ( 1, a2_xyz, va )
           call fun ( 1, b2_xyz, vb )   
           call fun ( 1, c2_xyz, vc )   
-          result = result + area * ( va + vb + vc ) / 3.0_dp
+          result = result + area * ( va + vb + vc ) / 3.0e+00_real64
           area_total = area_total + area
 
         end do
@@ -1792,10 +1771,9 @@ contains
     deallocate ( face_order )
     deallocate ( face_point )
     deallocate ( point_coord )
-  end subroutine sphere01_quad_icos2v
+  end
 
-  subroutine sphere01_quad_llc ( f, h, n, result ) &
-        bind(C, name="sphere01_quad_llc")
+  subroutine sphere01_quad_llc ( f, h, n, result )
 
   !*****************************************************************************80
   !
@@ -1823,70 +1801,70 @@ contains
   !
   !    Input, external :: F, evaluates the integrand, of the form:
   !      subroutine f ( n, x, v )
-  !      integer(ip) n
-  !      real(dp) v(n)
-  !      real(dp) x(3,n)
+  !      integer(int32) n
+  !      real(real64) v(n)
+  !      real(real64) x(3,n)
   !
-  !    Input, real(dp) H, the maximum length of a side of the spherical
+  !    Input, real(real64) H, the maximum length of a side of the spherical
   !    quadrilaterals.
   !
-  !    Output, integer(ip) N, the number of points used.
+  !    Output, integer(int32) N, the number of points used.
   !
-  !    Output, real(dp) RESULT, the approximate integral.
+  !    Output, real(real64) RESULT, the approximate integral.
   !
 
-    real(dp) :: area
+    real(real64) area
     external f
-    real(dp), intent(in), value :: h
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(out) :: n
-    real(dp) :: phi
-    integer(ip) :: phi_num
-    real(dp) :: phi1
-    real(dp) :: phi2
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(out) :: result
-    real(dp) :: sector_area
-    real(dp) :: sphere_area
-    real(dp) :: theta
-    integer(ip) :: theta_num
-    real(dp) :: theta1
-    real(dp) :: theta2
-    real(dp) :: v(1)
-    real(dp) :: x(3)
-    real(dp) :: x1(3)
-    real(dp) :: x11(3)
-    real(dp) :: x12(3)
-    real(dp) :: x2(3)
-    real(dp) :: x21(3)
-    real(dp) :: x22(3)
+    real(real64) h
+    integer(int32) i
+    integer(int32) j
+    integer(int32) n
+    real(real64) phi
+    integer(int32) phi_num
+    real(real64) phi1
+    real(real64) phi2
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) result
+    real(real64) sector_area
+    real(real64) sphere_area
+    real(real64) theta
+    integer(int32) theta_num
+    real(real64) theta1
+    real(real64) theta2
+    real(real64) v(1)
+    real(real64) x(3)
+    real(real64) x1(3)
+    real(real64) x11(3)
+    real(real64) x12(3)
+    real(real64) x2(3)
+    real(real64) x21(3)
+    real(real64) x22(3)
   !
   !  Choose PHI and THETA counts that make short sides.
   !
     phi_num = int ( pi / h )
 
-    if ( h * real ( phi_num, dp) < pi ) then
+    if ( h * real ( phi_num, real64) < pi ) then
       phi_num = phi_num + 1
     end if
 
-    theta_num = int ( 2.0_dp * pi / h )
+    theta_num = int ( 2.0e+00_real64 * pi / h )
 
-    if ( h * real ( theta_num, dp) < pi ) then
+    if ( h * real ( theta_num, real64) < pi ) then
       theta_num = theta_num + 1
     end if
 
     n = 0
-    result = 0.0_dp
+    result = 0.0e+00_real64
   !
   !  Only one THETA (and hence, only one PHI.)
   !
     if ( theta_num == 1 ) then
 
-      sphere_area = 4.0_dp * pi
+      sphere_area = 4.0e+00_real64 * pi
 
-      theta = 0.0_dp
-      phi = pi / 2.0_dp
+      theta = 0.0e+00_real64
+      phi = pi / 2.0e+00_real64
       call tp_to_xyz ( theta, phi, x )
 
       call f ( 1, x, v )
@@ -1897,16 +1875,16 @@ contains
   !
     else if ( phi_num == 1 ) then
 
-      sphere_area = 4.0_dp * pi
-      sector_area = sphere_area / real ( theta_num, dp)
+      sphere_area = 4.0e+00_real64 * pi
+      sector_area = sphere_area / real ( theta_num, real64)
 
-      result = 0.0_dp
+      result = 0.0e+00_real64
 
       do j = 1, theta_num
 
-        theta = real ( ( j - 1 ) * 2, dp) * pi &
-              / real ( theta_num, dp)
-        phi = pi / 2.0_dp
+        theta = real ( ( j - 1 ) * 2, real64) * pi &
+              / real ( theta_num, real64)
+        phi = pi / 2.0e+00_real64
         call tp_to_xyz ( theta, phi, x )
         call f ( 1, x, v )
         n = n + 1
@@ -1918,7 +1896,7 @@ contains
   !
     else
 
-      result = 0.0_dp
+      result = 0.0e+00_real64
   !
   !  Picture in top row, with V1 = north pole:
   !
@@ -1927,15 +1905,15 @@ contains
   !      /    \
   !    V12----V22
   !
-      phi1 = 0.0_dp
-      phi2 = pi / real ( phi_num, dp)
+      phi1 = 0.0e+00_real64
+      phi2 = pi / real ( phi_num, real64)
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
-        theta2 = real ( j    , dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
+        theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
+        theta2 = real ( j    , real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
 
         call tp_to_xyz ( theta1, phi1, x1 )
         call tp_to_xyz ( theta1, phi2, x12 )
@@ -1958,15 +1936,15 @@ contains
   !
       do i = 2, phi_num-1
 
-        phi1 = real ( i - 1, dp) * pi / real ( phi_num, dp)
-        phi2 = real ( i, dp) * pi / real ( phi_num, dp)
+        phi1 = real ( i - 1, real64) * pi / real ( phi_num, real64)
+        phi2 = real ( i, real64) * pi / real ( phi_num, real64)
 
         do j = 1, theta_num
 
-          theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-                 / real ( theta_num, dp)
-          theta2 = real ( j, dp) * 2.0_dp * pi &
-                 / real ( theta_num, dp)
+          theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+                 / real ( theta_num, real64)
+          theta2 = real ( j, real64) * 2.0e+00_real64 * pi &
+                 / real ( theta_num, real64)
 
           call tp_to_xyz ( theta1, phi1, x11 )
           call tp_to_xyz ( theta2, phi1, x21 )
@@ -1996,16 +1974,16 @@ contains
   !       \  /
   !        V2
   !
-      phi1 = real ( phi_num - 1, dp) * pi &
-           / real ( phi_num, dp)
+      phi1 = real ( phi_num - 1, real64) * pi &
+           / real ( phi_num, real64)
       phi2 =                                  pi
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
-        theta2 = real ( j, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
+        theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
+        theta2 = real ( j, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
 
         call tp_to_xyz ( theta1, phi1, x11 )
         call tp_to_xyz ( theta2, phi1, x21 )
@@ -2020,10 +1998,9 @@ contains
       end do
 
     end if
-  end subroutine sphere01_quad_llc
+  end
 
-  subroutine sphere01_quad_llm ( f, h, n, result ) &
-        bind(C, name="sphere01_quad_llm")
+  subroutine sphere01_quad_llm ( f, h, n, result )
 
   !*****************************************************************************80
   !
@@ -2051,73 +2028,73 @@ contains
   !
   !    Input, external :: F, evaluates the integrand, of the form:
   !      subroutine f ( n, x, v )
-  !      integer(ip) n
-  !      real(dp) v(n)
-  !      real(dp) x(3,n)
+  !      integer(int32) n
+  !      real(real64) v(n)
+  !      real(real64) x(3,n)
   !
-  !    Input, real(dp) H, the maximum length of a side of the spherical
+  !    Input, real(real64) H, the maximum length of a side of the spherical
   !    quadrilaterals.
   !
-  !    Output, integer(ip) N, the number of points used.
+  !    Output, integer(int32) N, the number of points used.
   !
-  !    Output, real(dp) RESULT, the approximate integral.
+  !    Output, real(real64) RESULT, the approximate integral.
   !
 
-    real(dp) :: area
+    real(real64) area
     external f
-    real(dp), intent(in), value :: h
-    integer(ip) :: i
-    integer(ip) :: j
-    real(dp) :: m1(3)
-    real(dp) :: m2(3)
-    real(dp) :: m3(3)
-    integer(ip), intent(out) :: n
-    real(dp) :: phi
-    integer(ip) :: phi_num
-    real(dp) :: phi1
-    real(dp) :: phi2
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(out) :: result
-    real(dp) :: sector_area
-    real(dp) :: sphere_area
-    real(dp) :: theta
-    integer(ip) :: theta_num
-    real(dp) :: theta1
-    real(dp) :: theta2
-    real(dp) :: v(1)
-    real(dp) :: x(3)
-    real(dp) :: x1(3)
-    real(dp) :: x11(3)
-    real(dp) :: x12(3)
-    real(dp) :: x2(3)
-    real(dp) :: x21(3)
-    real(dp) :: x22(3)
+    real(real64) h
+    integer(int32) i
+    integer(int32) j
+    real(real64) m1(3)
+    real(real64) m2(3)
+    real(real64) m3(3)
+    integer(int32) n
+    real(real64) phi
+    integer(int32) phi_num
+    real(real64) phi1
+    real(real64) phi2
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) result
+    real(real64) sector_area
+    real(real64) sphere_area
+    real(real64) theta
+    integer(int32) theta_num
+    real(real64) theta1
+    real(real64) theta2
+    real(real64) v(1)
+    real(real64) x(3)
+    real(real64) x1(3)
+    real(real64) x11(3)
+    real(real64) x12(3)
+    real(real64) x2(3)
+    real(real64) x21(3)
+    real(real64) x22(3)
   !
   !  Choose PHI and THETA counts that make short sides.
   !
     phi_num = int ( pi / h )
 
-    if ( h * real ( phi_num, dp) < pi ) then
+    if ( h * real ( phi_num, real64) < pi ) then
       phi_num = phi_num + 1
     end if
 
-    theta_num = int ( 2.0_dp * pi / h )
+    theta_num = int ( 2.0e+00_real64 * pi / h )
 
-    if ( h * real ( theta_num, dp) < pi ) then
+    if ( h * real ( theta_num, real64) < pi ) then
       theta_num = theta_num + 1
     end if
 
     n = 0
-    result = 0.0_dp
+    result = 0.0e+00_real64
   !
   !  Only one THETA (and hence, only one PHI.)
   !
     if ( theta_num == 1 ) then
 
-      sphere_area = 4.0_dp * pi
+      sphere_area = 4.0e+00_real64 * pi
 
-      theta = 0.0_dp
-      phi = pi / 2.0_dp
+      theta = 0.0e+00_real64
+      phi = pi / 2.0e+00_real64
       call tp_to_xyz ( theta, phi, x )
       call f ( 1, x, v )
       n = n + 1
@@ -2127,16 +2104,16 @@ contains
   !
     else if ( phi_num == 1 ) then
 
-      sphere_area = 4.0_dp * pi
-      sector_area = sphere_area / real ( theta_num, dp)
+      sphere_area = 4.0e+00_real64 * pi
+      sector_area = sphere_area / real ( theta_num, real64)
 
-      result = 0.0_dp
+      result = 0.0e+00_real64
 
       do j = 1, theta_num
 
-        theta = real ( ( j - 1 ) * 2, dp) * pi &
-              / real ( theta_num, dp)
-        phi = pi / 2.0_dp
+        theta = real ( ( j - 1 ) * 2, real64) * pi &
+              / real ( theta_num, real64)
+        phi = pi / 2.0e+00_real64
         call tp_to_xyz ( theta, phi, x )
         call f ( 1, x, v )
         n = n + 1
@@ -2148,7 +2125,7 @@ contains
   !
     else
 
-      result = 0.0_dp
+      result = 0.0e+00_real64
   !
   !  Picture:
   !
@@ -2157,15 +2134,15 @@ contains
   !      /    \
   !    V12----V22
   !
-      phi1 = 0.0_dp
-      phi2 = pi / real ( phi_num, dp)
+      phi1 = 0.0e+00_real64
+      phi2 = pi / real ( phi_num, real64)
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
-        theta2 = real ( j, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
+        theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
+        theta2 = real ( j, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
 
         call tp_to_xyz ( theta1, phi1, x1 )
         call tp_to_xyz ( theta1, phi2, x12 )
@@ -2178,13 +2155,13 @@ contains
 
         call f ( 1, m1, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
         call f ( 1, m2, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
         call f ( 1, m3, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
 
       end do
   !
@@ -2197,17 +2174,17 @@ contains
   !
       do i = 2, phi_num-1
 
-        phi1 = real ( i - 1, dp) * pi &
-             / real ( phi_num, dp)
-        phi2 = real ( i, dp) * pi &
-             / real ( phi_num, dp)
+        phi1 = real ( i - 1, real64) * pi &
+             / real ( phi_num, real64)
+        phi2 = real ( i, real64) * pi &
+             / real ( phi_num, real64)
 
         do j = 1, theta_num
 
-          theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-                 / real ( theta_num, dp)
-          theta2 = real ( j, dp) * 2.0_dp * pi &
-                 / real ( theta_num, dp)
+          theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+                 / real ( theta_num, real64)
+          theta2 = real ( j, real64) * 2.0e+00_real64 * pi &
+                 / real ( theta_num, real64)
 
           call tp_to_xyz ( theta1, phi1, x11 )
           call tp_to_xyz ( theta2, phi1, x21 )
@@ -2221,13 +2198,13 @@ contains
 
           call f ( 1, m1, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
           call f ( 1, m2, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
           call f ( 1, m3, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
 
           call sphere01_triangle_vertices_to_area ( x22, x21, x11, area )
 
@@ -2236,13 +2213,13 @@ contains
 
           call f ( 1, m1, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
           call f ( 1, m2, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
           call f ( 1, m3, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
 
         end do
 
@@ -2255,16 +2232,16 @@ contains
   !       \  /
   !        V2
   !
-      phi1 = real ( phi_num - 1, dp) * pi &
-           / real ( phi_num, dp)
+      phi1 = real ( phi_num - 1, real64) * pi &
+           / real ( phi_num, real64)
       phi2 =                                  pi
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
-        theta2 = real ( j, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
+        theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
+        theta2 = real ( j, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
 
         call tp_to_xyz ( theta1, phi1, x11 )
         call tp_to_xyz ( theta2, phi1, x21 )
@@ -2277,21 +2254,20 @@ contains
 
         call f ( 1, m1, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
         call f ( 1, m2, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
         call f ( 1, m3, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
 
       end do
 
     end if
-  end subroutine sphere01_quad_llm
+  end
 
-  subroutine sphere01_quad_llv ( f, h, n, result ) &
-        bind(C, name="sphere01_quad_llv")
+  subroutine sphere01_quad_llv ( f, h, n, result )
 
   !*****************************************************************************80
   !
@@ -2319,70 +2295,70 @@ contains
   !
   !    Input, external :: F, evaluates the integrand, of the form:
   !      subroutine f ( n, x, v )
-  !      integer(ip) n
-  !      real(dp) v(n)
-  !      real(dp) x(3,n)
+  !      integer(int32) n
+  !      real(real64) v(n)
+  !      real(real64) x(3,n)
   !
-  !    Input, real(dp) H, the maximum length of a side of the spherical
+  !    Input, real(real64) H, the maximum length of a side of the spherical
   !    quadrilaterals.
   !
-  !    Output, integer(ip) N, the number of points used.
+  !    Output, integer(int32) N, the number of points used.
   !
-  !    Output, real(dp) RESULT, the approximate integral.
+  !    Output, real(real64) RESULT, the approximate integral.
   !
 
-    real(dp) :: area
+    real(real64) area
     external f
-    real(dp), intent(in), value :: h
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip), intent(out) :: n
-    real(dp) :: phi
-    integer(ip) :: phi_num
-    real(dp) :: phi1
-    real(dp) :: phi2
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(out) :: result
-    real(dp) :: sector_area
-    real(dp) :: sphere_area
-    real(dp) :: theta
-    integer(ip) :: theta_num
-    real(dp) :: theta1
-    real(dp) :: theta2
-    real(dp) :: v(1)
-    real(dp) :: x(3)
-    real(dp) :: x1(3)
-    real(dp) :: x11(3)
-    real(dp) :: x12(3)
-    real(dp) :: x2(3)
-    real(dp) :: x21(3)
-    real(dp) :: x22(3)
+    real(real64) h
+    integer(int32) i
+    integer(int32) j
+    integer(int32) n
+    real(real64) phi
+    integer(int32) phi_num
+    real(real64) phi1
+    real(real64) phi2
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) result
+    real(real64) sector_area
+    real(real64) sphere_area
+    real(real64) theta
+    integer(int32) theta_num
+    real(real64) theta1
+    real(real64) theta2
+    real(real64) v(1)
+    real(real64) x(3)
+    real(real64) x1(3)
+    real(real64) x11(3)
+    real(real64) x12(3)
+    real(real64) x2(3)
+    real(real64) x21(3)
+    real(real64) x22(3)
   !
   !  Choose PHI and THETA counts that make short sides.
   !
     phi_num = int ( pi / h )
 
-    if ( h * real ( phi_num, dp) < pi ) then
+    if ( h * real ( phi_num, real64) < pi ) then
       phi_num = phi_num + 1
     end if
 
-    theta_num = int ( 2.0_dp * pi / h )
+    theta_num = int ( 2.0e+00_real64 * pi / h )
 
-    if ( h * real ( theta_num, dp) < pi ) then
+    if ( h * real ( theta_num, real64) < pi ) then
       theta_num = theta_num + 1
     end if
 
     n = 0
-    result = 0.0_dp
+    result = 0.0e+00_real64
   !
   !  Only one THETA (and hence, only one PHI.)
   !
     if ( theta_num == 1 ) then
 
-      sphere_area = 4.0_dp * pi
+      sphere_area = 4.0e+00_real64 * pi
 
-      theta = 0.0_dp
-      phi = pi / 2.0_dp
+      theta = 0.0e+00_real64
+      phi = pi / 2.0e+00_real64
       call tp_to_xyz ( theta, phi, x )
       call f ( 1, x, v )
       result = sphere_area * v(1)
@@ -2391,16 +2367,16 @@ contains
   !
     else if ( phi_num == 1 ) then
 
-      sphere_area = 4.0_dp * pi
-      sector_area = sphere_area / real ( theta_num, dp)
+      sphere_area = 4.0e+00_real64 * pi
+      sector_area = sphere_area / real ( theta_num, real64)
 
-      result = 0.0_dp
+      result = 0.0e+00_real64
 
       do j = 1, theta_num
 
-        theta = real ( ( j - 1 ) * 2, dp) * pi &
-          / real ( theta_num, dp)
-        phi = pi / 2.0_dp
+        theta = real ( ( j - 1 ) * 2, real64) * pi &
+          / real ( theta_num, real64)
+        phi = pi / 2.0e+00_real64
         call tp_to_xyz ( theta, phi, x )
         call f ( 1, x, v )
         n = n + 1
@@ -2412,7 +2388,7 @@ contains
   !
     else
 
-      result = 0.0_dp
+      result = 0.0e+00_real64
   !
   !  Picture:
   !
@@ -2421,15 +2397,15 @@ contains
   !      /    \
   !    V12----V22
   !
-      phi1 = 0.0_dp
-      phi2 = pi / real ( phi_num, dp)
+      phi1 = 0.0e+00_real64
+      phi2 = pi / real ( phi_num, real64)
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
-        theta2 = real ( j, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
+        theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
+        theta2 = real ( j, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
 
         call tp_to_xyz ( theta1, phi1, x1 )
         call tp_to_xyz ( theta1, phi2, x12 )
@@ -2439,13 +2415,13 @@ contains
 
         call f ( 1, x1, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
         call f ( 1, x12, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
         call f ( 1, x22, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
 
       end do
   !
@@ -2458,17 +2434,17 @@ contains
   !
       do i = 2, phi_num-1
 
-        phi1 = real ( i - 1, dp) * pi &
-             / real ( phi_num, dp)
-        phi2 = real ( i, dp) * pi &
-             / real ( phi_num, dp)
+        phi1 = real ( i - 1, real64) * pi &
+             / real ( phi_num, real64)
+        phi2 = real ( i, real64) * pi &
+             / real ( phi_num, real64)
 
         do j = 1, theta_num
 
-          theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-                 / real ( theta_num, dp)
-          theta2 = real ( j, dp) * 2.0_dp * pi &
-                 / real ( theta_num, dp)
+          theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+                 / real ( theta_num, real64)
+          theta2 = real ( j, real64) * 2.0e+00_real64 * pi &
+                 / real ( theta_num, real64)
 
           call tp_to_xyz ( theta1, phi1, x11 )
           call tp_to_xyz ( theta2, phi1, x21 )
@@ -2479,25 +2455,25 @@ contains
 
           call f ( 1, x11, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
           call f ( 1, x12, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
           call f ( 1, x22, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
 
           call sphere01_triangle_vertices_to_area ( x22, x21, x11, area )
 
           call f ( 1, x22, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
           call f ( 1, x21, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
           call f ( 1, x11, v )
           n = n + 1
-          result = result + area * v(1) / 3.0_dp
+          result = result + area * v(1) / 3.0e+00_real64
 
         end do
 
@@ -2510,16 +2486,16 @@ contains
   !       \  /
   !        V2
   !
-      phi1 = real ( phi_num - 1, dp) * pi &
-           / real ( phi_num, dp)
+      phi1 = real ( phi_num - 1, real64) * pi &
+           / real ( phi_num, real64)
       phi2 =                                  pi
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
-        theta2 = real ( j, dp) * 2.0_dp * pi &
-               / real ( theta_num, dp)
+        theta1 = real ( j - 1, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
+        theta2 = real ( j, real64) * 2.0e+00_real64 * pi &
+               / real ( theta_num, real64)
 
         call tp_to_xyz ( theta1, phi1, x11 )
         call tp_to_xyz ( theta2, phi1, x21 )
@@ -2529,21 +2505,20 @@ contains
 
         call f ( 1, x11, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
         call f ( 1, x2, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
         call f ( 1, x21, v )
         n = n + 1
-        result = result + area * v(1) / 3.0_dp
+        result = result + area * v(1) / 3.0e+00_real64
 
       end do
 
     end if
-  end subroutine sphere01_quad_llv
+  end
 
-  subroutine sphere01_quad_mc ( f, h, seed, n, result ) &
-        bind(C, name="sphere01_quad_mc")
+  subroutine sphere01_quad_mc ( f, h, seed, n, result )
 
   !*****************************************************************************80
   !
@@ -2571,43 +2546,42 @@ contains
   !
   !    Input, external :: F, evaluates the integrand, of the form:
   !      subroutine f ( n, x, v )
-  !      integer(ip) n
-  !      real(dp) v(n)
-  !      real(dp) x(3,n)
+  !      integer(int32) n
+  !      real(real64) v(n)
+  !      real(real64) x(3,n)
   !
-  !    Input, real(dp) H, the maximum length of a side of the spherical
+  !    Input, real(real64) H, the maximum length of a side of the spherical
   !    quadrilaterals.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Input, integer(ip) N, the number of points used.
+  !    Input, integer(int32) N, the number of points used.
   !
-  !    Output, real(dp) RESULT, the approximate integral.
+  !    Output, real(real64) RESULT, the approximate integral.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
     external f
-    real(dp), intent(in), value :: h
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp), intent(out) :: result
-    integer(ip), intent(inout) :: seed
-    real(dp) :: sphere_area
-    real(dp) :: v(n)
-    real(dp) :: x(3,n)
+    real(real64) h
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) result
+    integer(int32) seed
+    real(real64) sphere_area
+    real(real64) v(n)
+    real(real64) x(3,n)
 
-    sphere_area = 4.0_dp * pi
+    sphere_area = 4.0e+00_real64 * pi
 
     call sphere01_sample_3d ( n, seed, x )
 
     call f ( n, x, v )
 
-    result = sphere_area * sum ( v(1:n) ) / real ( n, dp)
-  end subroutine sphere01_quad_mc
+    result = sphere_area * sum ( v(1:n) ) / real ( n, real64)
+  end
 
-  pure subroutine sphere01_quad_mc_size ( h, n ) &
-        bind(C, name="sphere01_quad_mc_size")
+  subroutine sphere01_quad_mc_size ( h, n )
 
   !*****************************************************************************80
   !
@@ -2633,28 +2607,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) H, the maximum length of a side of the spherical
+  !    Input, real(real64) H, the maximum length of a side of the spherical
   !    quadrilaterals.
   !
-  !    Output, integer(ip) N, the number of points to use.
+  !    Output, integer(int32) N, the number of points to use.
   !
 
-    real(dp), intent(in), value :: h
-    integer(ip), intent(out) :: n
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: sphere_area
+    real(real64) h
+    integer(int32) n
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) sphere_area
   !
   !  The sphere's area is 4 * PI.
   !  Choose N so that we divide this area into N subareas of PI * H * H.
   !
-    sphere_area = 4.0_dp * pi
+    sphere_area = 4.0e+00_real64 * pi
 
     n = int ( sphere_area / h**2 )
     n = max ( n, 1 )
-  end subroutine sphere01_quad_mc_size
+  end
 
-  subroutine sphere01_sample_3d ( n, seed, x ) &
-        bind(C, name="sphere01_sample_3d")
+  subroutine sphere01_sample_3d ( n, seed, x )
 
   !*****************************************************************************80
   !
@@ -2674,23 +2647,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of samples.
+  !    Input, integer(int32) N, the number of samples.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) X(3,N), the sample points.
+  !    Output, real(real64) X(3,N), the sample points.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    integer(ip) :: j
-    real(dp) :: phi
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    integer(ip), intent(inout) :: seed
-    real(dp) :: theta
-    real(dp) :: vdot
-    real(dp), intent(out) :: x(3,n)
+    integer(int32) j
+    real(real64) phi
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    integer(int32) seed
+    real(real64) theta
+    real(real64) vdot
+    real(real64) x(3,n)
 
     do j = 1, n
   !
@@ -2702,7 +2675,7 @@ contains
   !  a patch of area uniformly.
   !
       call random_number ( harvest = vdot )
-      vdot = 2.0_dp * vdot - 1.0_dp
+      vdot = 2.0e+00_real64 * vdot - 1.0e+00_real64
 
       phi = acos ( vdot )
   !
@@ -2710,17 +2683,16 @@ contains
   !  axis of the Z vector.
   !
       call random_number ( harvest = theta )
-      theta = 2.0_dp * pi * theta
+      theta = 2.0e+00_real64 * pi * theta
 
       x(1,j) = cos ( theta ) * sin ( phi )
       x(2,j) = sin ( theta ) * sin ( phi )
       x(3,j) =                 cos ( phi )
 
     end do
-  end subroutine sphere01_sample_3d
+  end
 
-  pure subroutine sphere01_triangle_angles_to_area ( a, b, c, area ) &
-        bind(C, name="sphere01_triangle_angles_to_area")
+  subroutine sphere01_triangle_angles_to_area ( a, b, c, area )
 
   !*****************************************************************************80
   !
@@ -2757,25 +2729,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A, B, C, the angles of the triangle.
+  !    Input, real(real64) A, B, C, the angles of the triangle.
   !
-  !    Output, real(dp) AREA, the area of the sphere.
+  !    Output, real(real64) AREA, the area of the sphere.
   !
 
-    real(dp), intent(out) :: area
-    real(dp), intent(in), value :: a
-    real(dp), intent(in), value :: b
-    real(dp), intent(in), value :: c
-    real(dp), parameter :: pi = 3.141592653589793_dp
+    real(real64) area
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
   !
   !  Apply Girard's formula.
   !
     area = a + b + c - pi
-  end subroutine sphere01_triangle_angles_to_area
+  end
 
-  pure subroutine sphere01_triangle_project ( a_xyz, b_xyz, c_xyz, f1, f2, f3, &
-    node_xyz ) &
-        bind(C, name="sphere01_triangle_project")
+  subroutine sphere01_triangle_project ( a_xyz, b_xyz, c_xyz, f1, f2, f3, &
+    node_xyz )
 
   !*****************************************************************************80
   !
@@ -2809,44 +2780,43 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A_XYZ(3), B_XYZ(3), C_XYZ(3), the coordinates
+  !    Input, real(real64) A_XYZ(3), B_XYZ(3), C_XYZ(3), the coordinates
   !    of the points A, B, and C.
   !
-  !    Input, integer(ip) F1, F2, F3, the barycentric coordinates
+  !    Input, integer(int32) F1, F2, F3, the barycentric coordinates
   !    of a point in the triangle ABC.  Normally, these coordinates would
   !    be real numbers, and would sum to 1.  For convenience, we allow these
   !    to be integers which must be divided by F1+F2+F3.
   !
-  !    Output, real(dp) NODE_XYZ(3), the coordinates of the 
+  !    Output, real(real64) NODE_XYZ(3), the coordinates of the 
   !    point on the unit sphere which is the projection of the point on the plane
   !    whose barycentric coordinates with respect to A, B, and C is
   !    (F1,F2,F3)/(F1+F2+F3).
   !
 
-    real(dp), intent(in) :: a_xyz(3)
-    real(dp), intent(in) :: b_xyz(3)
-    real(dp), intent(in) :: c_xyz(3)
-    integer(ip), intent(in), value :: f1
-    integer(ip), intent(in), value :: f2
-    integer(ip), intent(in), value :: f3
-    real(dp) :: node_norm
-    real(dp) :: node_xyz(3)
-    real(dp) :: r8vec_norm
+    real(real64) a_xyz(3)
+    real(real64) b_xyz(3)
+    real(real64) c_xyz(3)
+    integer(int32) f1
+    integer(int32) f2
+    integer(int32) f3
+    real(real64) node_norm
+    real(real64) node_xyz(3)
+    real(real64) r8vec_norm
 
     node_xyz(1:3) = &
-      ( real ( f1, dp) * a_xyz(1:3)   &
-      + real (      f2, dp) * b_xyz(1:3)   &
-      + real (           f3, dp) * c_xyz(1:3) ) &
-      / real ( f1 + f2 + f3, dp)
+      ( real ( f1, real64) * a_xyz(1:3)   &
+      + real (      f2, real64) * b_xyz(1:3)   &
+      + real (           f3, real64) * c_xyz(1:3) ) &
+      / real ( f1 + f2 + f3, real64)
 
     node_norm = r8vec_norm ( 3, node_xyz(1:3) )
 
     node_xyz(1:3) = node_xyz(1:3) / node_norm
-  end subroutine sphere01_triangle_project
+  end
 
   subroutine sphere01_triangle_project2 ( a_xyz, b_xyz, c_xyz, f1, f2, f3, &
-    node_xyz ) &
-        bind(C, name="sphere01_triangle_project2")
+    node_xyz )
 
   !*****************************************************************************80
   !
@@ -2880,40 +2850,40 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A_XYZ(3), B_XYZ(3), C_XYZ(3), the coordinates
+  !    Input, real(real64) A_XYZ(3), B_XYZ(3), C_XYZ(3), the coordinates
   !    of the points A, B, and C.
   !
-  !    Input, integer(ip) F1, F2, F3, the barycentric coordinates
+  !    Input, integer(int32) F1, F2, F3, the barycentric coordinates
   !    of a point in the triangle ABC.  Normally, these coordinates would
   !    be real numbers, and would sum to 1.  For convenience, we allow these
   !    to be integers which must be divided by F1+F2+F3.
   !
-  !    Output, real(dp) NODE_XYZ(3), the coordinates of the 
+  !    Output, real(real64) NODE_XYZ(3), the coordinates of the 
   !    point on the unit sphere which is the projection of the point on the 
   !    plane whose barycentric coordinates with respect to A, B, and C is
   !    (F1,F2,F3)/(F1+F2+F3).
   !
 
-    real(dp), intent(in) :: a_xyz(3)
-    real(dp) :: ab(3)
-    real(dp) :: ac(3)
-    real(dp) :: acn(3)
-    real(dp) :: acp(3)
-    real(dp) :: angle
-    real(dp), intent(in) :: b_xyz(3)
-    real(dp) :: bn(3)
-    real(dp) :: bp(3)
-    real(dp), intent(in) :: c_xyz(3)
-    real(dp) :: cn(3)
-    real(dp) :: cp(3)
-    integer(ip), intent(in), value :: f1
-    integer(ip), intent(in), value :: f2
-    integer(ip), intent(in), value :: f3
-    real(dp) :: node_xyz(3)
-    real(dp) :: r8vec_norm
-    real(dp) :: theta_ab
-    real(dp) :: theta_ac
-    real(dp) :: theta_bc
+    real(real64) a_xyz(3)
+    real(real64) ab(3)
+    real(real64) ac(3)
+    real(real64) acn(3)
+    real(real64) acp(3)
+    real(real64) angle
+    real(real64) b_xyz(3)
+    real(real64) bn(3)
+    real(real64) bp(3)
+    real(real64) c_xyz(3)
+    real(real64) cn(3)
+    real(real64) cp(3)
+    integer(int32) f1
+    integer(int32) f2
+    integer(int32) f3
+    real(real64) node_xyz(3)
+    real(real64) r8vec_norm
+    real(real64) theta_ab
+    real(real64) theta_ac
+    real(real64) theta_bc
   !
   !  This check avoids 0/0 calculations later.
   !
@@ -2946,12 +2916,12 @@ contains
   !  Determine AB and AC that use cos ( ( F2 + F3 ) / ( F1 + F2 + F3 ) ) of A
   !  and cos ( F1 / ( F1 + F2 + F3 ) ) of B or C.
   !
-    angle = ( real ( f2 + f3, dp) * theta_ab ) &
-      / real ( f1 + f2 + f3, dp)
+    angle = ( real ( f2 + f3, real64) * theta_ab ) &
+      / real ( f1 + f2 + f3, real64)
     ab(1:3) = cos ( angle ) * a_xyz(1:3) + sin ( angle ) * bn(1:3)
 
-    angle = ( real ( f2 + f3, dp) * theta_ac ) &
-      / real ( f1 + f2 + f3, dp)
+    angle = ( real ( f2 + f3, real64) * theta_ac ) &
+      / real ( f1 + f2 + f3, real64)
     ac(1:3) = cos ( angle ) * a_xyz(1:3) + sin ( angle ) * cn(1:3)
   !
   !  Determine the angular distance between AB and AC.
@@ -2965,13 +2935,12 @@ contains
   !
   !  The interval between AB and AC is marked by F2+F3+1 vertices 0 through F2+F3.
   !
-    angle = ( real ( f3, dp) * theta_bc ) / real ( f2 + f3, dp)
+    angle = ( real ( f3, real64) * theta_bc ) / real ( f2 + f3, real64)
 
     node_xyz(1:3) = cos ( angle ) * ab(1:3) + sin ( angle ) * acn(1:3)
-  end subroutine sphere01_triangle_project2
+  end
 
-  subroutine sphere01_triangle_sample ( n, v1, v2, v3, seed, x ) &
-        bind(C, name="sphere01_triangle_sample")
+  subroutine sphere01_triangle_sample ( n, v1, v2, v3, seed, x )
 
   !*****************************************************************************80
   !
@@ -3005,48 +2974,48 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points.
+  !    Input, integer(int32) N, the number of points.
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the XYZ coordinates of
+  !    Input, real(real64) V1(3), V2(3), V3(3), the XYZ coordinates of
   !    the vertices of the spherical triangle.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random 
+  !    Input/output, integer(int32) SEED, a seed for the random 
   !    number generator.
   !
-  !    Output, real(dp) X(3,N), the XYZ coordinates of the 
+  !    Output, real(real64) X(3,N), the XYZ coordinates of the 
   !    sample points.
   !
 
-    integer(ip), intent(out) :: n
+    integer(int32) n
 
-    real(dp) :: a
-    real(dp) :: alpha
-    real(dp) :: area
-    real(dp) :: area_hat
-    real(dp) :: b
-    real(dp) :: beta
-    real(dp) :: c
-    real(dp) :: gamma
-    integer(ip) :: j
-    real(dp) :: q
-    real(dp) :: r8_uniform_01
-    real(dp) :: r8vec_norm
-    real(dp) :: s
-    integer(ip), intent(inout) :: seed
-    real(dp) :: t
-    real(dp) :: u
-    real(dp) :: v
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
-    real(dp) :: v31(3)
-    real(dp) :: v4(3)
-    real(dp) :: v42(3)
-    real(dp) :: w
-    real(dp), intent(out) :: x(3,n)
-    real(dp) :: xsi1
-    real(dp) :: xsi2
-    real(dp) :: z
+    real(real64) a
+    real(real64) alpha
+    real(real64) area
+    real(real64) area_hat
+    real(real64) b
+    real(real64) beta
+    real(real64) c
+    real(real64) gamma
+    integer(int32) j
+    real(real64) q
+    real(real64) r8_uniform_01
+    real(real64) r8vec_norm
+    real(real64) s
+    integer(int32) seed
+    real(real64) t
+    real(real64) u
+    real(real64) v
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) v31(3)
+    real(real64) v4(3)
+    real(real64) v42(3)
+    real(real64) w
+    real(real64) x(3,n)
+    real(real64) xsi1
+    real(real64) xsi2
+    real(real64) z
 
     call sphere01_triangle_vertices_to_sides ( v1, v2, v3, a, b, c )
 
@@ -3078,8 +3047,8 @@ contains
   !
   !  We very occasionally get a Q value out of bounds.
   !
-      q = max ( q, - 1.0_dp )
-      q = min ( q, + 1.0_dp )
+      q = max ( q, - 1.0e+00_real64 )
+      q = min ( q, + 1.0e+00_real64 )
   !
   !  V31 = normalized ( V3 - ( V3 dot V1 ) * V1 )
   !
@@ -3089,12 +3058,12 @@ contains
   !
   !  V4 is the third vertex of the subtriangle V1, V2, V4.
   !
-      v4(1:3) = q * v1(1:3) + sqrt ( 1.0_dp - q * q ) * v31(1:3)
+      v4(1:3) = q * v1(1:3) + sqrt ( 1.0e+00_real64 - q * q ) * v31(1:3)
   !
   !  Select cos theta, which will sample along the edge from V2 to V4.
   !
       xsi2 = r8_uniform_01 ( seed )
-      z = 1.0_dp - xsi2 * ( 1.0_dp - dot_product ( v4, v2 ) )
+      z = 1.0e+00_real64 - xsi2 * ( 1.0e+00_real64 - dot_product ( v4, v2 ) )
   !
   !  V42 = normalized ( V4 - ( V4 dot V2 ) * V2 )
   !
@@ -3104,13 +3073,12 @@ contains
   !
   !  Construct the point.
   !
-      x(1:3,j) = z * v2(1:3) + sqrt ( 1.0_dp - z * z ) * v42(1:3)
+      x(1:3,j) = z * v2(1:3) + sqrt ( 1.0e+00_real64 - z * z ) * v42(1:3)
 
     end do
-  end subroutine sphere01_triangle_sample
+  end
 
-  pure subroutine sphere01_triangle_sides_to_angles ( as, bs, cs, a, b, c ) &
-        bind(C, name="sphere01_triangle_sides_to_angles")
+  subroutine sphere01_triangle_sides_to_angles ( as, bs, cs, a, b, c )
 
   !*****************************************************************************80
   !
@@ -3130,50 +3098,49 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) AS, BS, CS, the (geodesic) length of the 
+  !    Input, real(real64) AS, BS, CS, the (geodesic) length of the 
   !    sides of the triangle.
   !
-  !    Output, real(dp) A, B, C, the spherical angles of the triangle.
+  !    Output, real(real64) A, B, C, the spherical angles of the triangle.
   !    Angle A is opposite the side of length AS, and so on.
   !
 
-    real(dp), intent(out) :: a
-    real(dp), intent(in), value :: as
-    real(dp) :: asu
-    real(dp), intent(out) :: b
-    real(dp), intent(in), value :: bs
-    real(dp) :: bsu
-    real(dp), intent(out) :: c
-    real(dp), intent(in), value :: cs
-    real(dp) :: csu
-    real(dp) :: ssu
-    real(dp) :: tan_a2
-    real(dp) :: tan_b2
-    real(dp) :: tan_c2
+    real(real64) a
+    real(real64) as
+    real(real64) asu
+    real(real64) b
+    real(real64) bs
+    real(real64) bsu
+    real(real64) c
+    real(real64) cs
+    real(real64) csu
+    real(real64) ssu
+    real(real64) tan_a2
+    real(real64) tan_b2
+    real(real64) tan_c2
 
     asu = as
     bsu = bs
     csu = cs
-    ssu = ( asu + bsu + csu ) / 2.0_dp
+    ssu = ( asu + bsu + csu ) / 2.0e+00_real64
 
     tan_a2 = sqrt ( ( sin ( ssu - bsu ) * sin ( ssu - csu ) ) / &
                     ( sin ( ssu ) * sin ( ssu - asu )     ) )
 
-    a = 2.0_dp * atan ( tan_a2 )
+    a = 2.0e+00_real64 * atan ( tan_a2 )
 
     tan_b2 = sqrt ( ( sin ( ssu - asu ) * sin ( ssu - csu ) ) / &
                     ( sin ( ssu ) * sin ( ssu - bsu )     ) )
 
-    b = 2.0_dp * atan ( tan_b2 )
+    b = 2.0e+00_real64 * atan ( tan_b2 )
 
     tan_c2 = sqrt ( ( sin ( ssu - asu ) * sin ( ssu - bsu ) ) / &
                     ( sin ( ssu ) * sin ( ssu - csu )     ) )
 
-    c = 2.0_dp * atan ( tan_c2 )
-  end subroutine sphere01_triangle_sides_to_angles
+    c = 2.0e+00_real64 * atan ( tan_c2 )
+  end
 
-  subroutine sphere01_triangle_vertices_to_area ( v1, v2, v3, area ) &
-        bind(C, name="sphere01_triangle_vertices_to_area")
+  subroutine sphere01_triangle_vertices_to_area ( v1, v2, v3, area )
 
   !*****************************************************************************80
   !
@@ -3210,21 +3177,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) AREA, the area of the sphere.
+  !    Output, real(real64) AREA, the area of the sphere.
   !
 
-    real(dp), intent(out) :: area
-    real(dp) :: a
-    real(dp) :: as
-    real(dp) :: b
-    real(dp) :: bs
-    real(dp) :: c
-    real(dp) :: cs
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) area
+    real(real64) a
+    real(real64) as
+    real(real64) b
+    real(real64) bs
+    real(real64) c
+    real(real64) cs
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
   !
   !  Compute the lengths of the sides of the spherical triangle.
   !
@@ -3237,10 +3204,9 @@ contains
   !  Get the area.
   !
     call sphere01_triangle_angles_to_area ( a, b, c, area )
-  end subroutine sphere01_triangle_vertices_to_area
+  end
 
-  pure subroutine sphere01_triangle_vertices_to_centroid ( v1, v2, v3, vs ) &
-        bind(C, name="sphere01_triangle_vertices_to_centroid")
+  subroutine sphere01_triangle_vertices_to_centroid ( v1, v2, v3, vs )
 
   !*****************************************************************************80
   !
@@ -3288,27 +3254,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) VS(3), the coordinates of the "spherical
+  !    Output, real(real64) VS(3), the coordinates of the "spherical
   !    centroid" of the spherical triangle.
   !
 
-    real(dp) :: norm
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
-    real(dp), intent(out) :: vs(3)
+    real(real64) norm
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) vs(3)
 
-    vs(1:3) = ( v1(1:3) + v2(1:3) + v3(1:3) ) / 3.0_dp
+    vs(1:3) = ( v1(1:3) + v2(1:3) + v3(1:3) ) / 3.0e+00_real64
 
     norm = sqrt ( sum ( vs(1:3)**2 ) )
 
     vs(1:3) = vs(1:3) / norm
-  end subroutine sphere01_triangle_vertices_to_centroid
+  end
 
-  pure subroutine sphere01_triangle_vertices_to_midpoints ( v1, v2, v3, m1, m2, m3 ) &
-        bind(C, name="sphere01_triangle_vertices_to_midpoints")
+  subroutine sphere01_triangle_vertices_to_midpoints ( v1, v2, v3, m1, m2, m3 )
 
   !*****************************************************************************80
   !
@@ -3332,35 +3297,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the triangle.
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the triangle.
   !
-  !    Output, real(dp) M1(3), M2(3), M3(3), the coordinates of 
+  !    Output, real(real64) M1(3), M2(3), M3(3), the coordinates of 
   !    the midpoints of the sides of the spherical triangle.
   !
 
-    real(dp), intent(out) :: m1(3)
-    real(dp), intent(out) :: m2(3)
-    real(dp), intent(out) :: m3(3)
-    real(dp) :: norm
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) m1(3)
+    real(real64) m2(3)
+    real(real64) m3(3)
+    real(real64) norm
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
-    m1(1:3) = ( v1(1:3) + v2(1:3) ) / 2.0_dp
+    m1(1:3) = ( v1(1:3) + v2(1:3) ) / 2.0e+00_real64
     norm = sqrt ( sum ( m1(1:3)**2 ) )
     m1(1:3) = m1(1:3) / norm
 
-    m2(1:3) = ( v2(1:3) + v3(1:3) ) / 2.0_dp
+    m2(1:3) = ( v2(1:3) + v3(1:3) ) / 2.0e+00_real64
     norm = sqrt ( sum ( m2(1:3)**2 ) )
     m2(1:3) = m2(1:3) / norm
 
-    m3(1:3) = ( v3(1:3) + v1(1:3) ) / 2.0_dp
+    m3(1:3) = ( v3(1:3) + v1(1:3) ) / 2.0e+00_real64
     norm = sqrt ( sum ( m3(1:3)**2 ) )
     m3(1:3) = m3(1:3) / norm
-  end subroutine sphere01_triangle_vertices_to_midpoints
+  end
 
-  pure subroutine sphere01_triangle_vertices_to_sides ( v1, v2, v3, as, bs, cs ) &
-        bind(C, name="sphere01_triangle_vertices_to_sides")
+  subroutine sphere01_triangle_vertices_to_sides ( v1, v2, v3, as, bs, cs )
 
   !*****************************************************************************80
   !
@@ -3380,27 +3344,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) V1(3), V2(3), V3(3), the vertices of the spherical
+  !    Input, real(real64) V1(3), V2(3), V3(3), the vertices of the spherical
   !    triangle.
   !
-  !    Output, real(dp) AS, BS, CS, the (geodesic) length of the 
+  !    Output, real(real64) AS, BS, CS, the (geodesic) length of the 
   !    sides of the triangle.
   !
 
-    real(dp), intent(out) :: as
-    real(dp), intent(out) :: bs
-    real(dp), intent(out) :: cs
-    real(dp), intent(in) :: v1(3)
-    real(dp), intent(in) :: v2(3)
-    real(dp), intent(in) :: v3(3)
+    real(real64) as
+    real(real64) bs
+    real(real64) cs
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
 
     as = acos ( dot_product ( v2(1:3), v3(1:3) ) )
     bs = acos ( dot_product ( v3(1:3), v1(1:3) ) )
     cs = acos ( dot_product ( v1(1:3), v2(1:3) ) )
-  end subroutine sphere01_triangle_vertices_to_sides
+  end
 
-  pure subroutine tp_to_xyz ( theta, phi, v ) &
-        bind(C, name="tp_to_xyz")
+  subroutine tp_to_xyz ( theta, phi, v )
 
   !*****************************************************************************80
   !
@@ -3424,19 +3387,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) THETA, PHI, the spherical coordinates 
+  !    Input, real(real64) THETA, PHI, the spherical coordinates 
   !    of a point.
   !
-  !    Output, real(dp) V(3), the XYZ coordinates.
+  !    Output, real(real64) V(3), the XYZ coordinates.
   !
 
-    real(dp), intent(in), value :: phi
-    real(dp), intent(in), value :: theta
-    real(dp), intent(out) :: v(3)
+    real(real64) phi
+    real(real64) theta
+    real(real64) v(3)
 
     v(1) = cos ( theta ) * sin ( phi )
     v(2) = sin ( theta ) * sin ( phi )
     v(3) =                 cos ( phi )
-  end subroutine tp_to_xyz
+  end
 
 end module sphere_quad_mod

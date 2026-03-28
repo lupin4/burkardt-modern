@@ -1,23 +1,17 @@
-!> wedge_grid -- Modern Fortran 2018
+!> wedge_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module wedge_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: wedge_grid, wedge_grid_size, wedge_grid_plot, wedge_vertices
 
 contains
 
-  pure subroutine wedge_grid ( n, ng, g ) &
-        bind(C, name="wedge_grid")
+  subroutine wedge_grid ( n, ng, g )  
 
   !*****************************************************************************80
   !
@@ -45,44 +39,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !    0 <= N.
   !
-  !    Input, integer(ip) NG, the number of grid points.
+  !    Input, integer(int32) NG, the number of grid points.
   !    This can be computed by WEDGE_GRID_SIZE, or else determined by
   !    NG =(N+1)*((N+1)*(N+2))/2.
   !
-  !    Output, real(dp) G(3,NG), the coordinates
+  !    Output, real(real64) G(3,NG), the coordinates
   !    of the grid points.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: ng
-    integer(ip) :: i
-    real(dp) :: ir
-    integer(ip) :: j
-    real(dp) :: jr
-    integer(ip) :: k
-    real(dp) :: kr
-    real(dp) :: nr
-    integer(ip) :: p
-    real(dp), intent(out) :: g(3,ng)
+    integer(int32) n
+    integer(int32) ng
+
+    integer(int32) i
+    real(real64) ir
+    integer(int32) j
+    real(real64) jr
+    integer(int32) k
+    real(real64) kr
+    real(real64) nr
+    integer(int32) p
+    real(real64) g(3,ng)
 
     if ( n == 0 ) then
-      g(1,1) = 0.5_dp
-      g(2,1) = 0.5_dp
-      g(3,1) = 0.0_dp
+      g(1,1) = 0.5e+00_real64
+      g(2,1) = 0.5e+00_real64
+      g(3,1) = 0.0e+00_real64
     end if
 
     p = 0
-    nr = real ( n, dp)
+    nr = real ( n, real64)
 
     do k = 0, n
-      kr = real ( 2 * k - n, dp) / nr
+      kr = real ( 2 * k - n, real64) / nr
       do j = 0, n
-        jr = real ( j, dp) / nr
+        jr = real ( j, real64) / nr
         do i = 0, n - j
-          ir = real ( i, dp) / nr
+          ir = real ( i, real64) / nr
           p = p + 1
           g(1,p) = ir
           g(2,p) = jr
@@ -90,10 +85,9 @@ contains
         end do
       end do
     end do
-  end subroutine wedge_grid
+  end
 
-  pure subroutine wedge_grid_size ( n, ng ) &
-        bind(C, name="wedge_grid_size")
+  subroutine wedge_grid_size ( n, ng )  
 
   !*****************************************************************************80
   !
@@ -121,20 +115,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !    0 <= N.
   !
-  !    Output, integer(ip) NG, the number of grid points.
+  !    Output, integer(int32) NG, the number of grid points.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ng
+    integer(int32) n
+    integer(int32) ng
 
     ng = ( n + 1 ) * ( ( n + 1 ) * ( n + 2 ) ) / 2
-  end subroutine wedge_grid_size
+  end
 
-  subroutine wedge_grid_plot ( n, ng, g, header ) &
-        bind(C, name="wedge_grid_plot")
+  subroutine wedge_grid_plot ( n, ng, g, header )
 
   !*****************************************************************************80
   !
@@ -154,33 +147,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, integer(ip) NG, the number of nodes.
+  !    Input, integer(int32) NG, the number of nodes.
   !
-  !    Input, real(dp) G(3,NG), the grid point coordinates.
+  !    Input, real(real64) G(3,NG), the grid point coordinates.
   !
   !    Input, character ( len = * ) HEADER, the header for the files.
   !
 
-    integer(ip), intent(in), value :: ng
-    character ( len = 255 ) :: command_filename
-    integer(ip) :: command_unit
-    real(dp), intent(in) :: g(3,ng)
-    character ( len = * ), intent(in) :: header
-    integer(ip) :: j
-    integer(ip), intent(in), value :: n
-    character ( len = 255 ) :: node_filename
-    integer(ip) :: node_unit
-    character ( len = 255 ) :: plot_filename
-    real(dp) :: v1(3)
-    real(dp) :: v2(3)
-    real(dp) :: v3(3)
-    real(dp) :: v4(3)
-    real(dp) :: v5(3)
-    real(dp) :: v6(3)
-    character ( len = 255 ) :: vertex_filename
-    integer(ip) :: vertex_unit
+    integer(int32) ng
+
+    character ( len = 255 ) command_filename
+    integer(int32) command_unit
+    real(real64) g(3,ng)
+    character ( len = * ) header
+    integer(int32) j
+    integer(int32) n
+    character ( len = 255 ) node_filename
+    integer(int32) node_unit
+    character ( len = 255 ) plot_filename
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) v4(3)
+    real(real64) v5(3)
+    real(real64) v6(3)
+    character ( len = 255 ) vertex_filename
+    integer(int32) vertex_unit
   !
   !  Create the vertex file.
   !
@@ -283,10 +277,9 @@ contains
 
     write ( *, '(a)' ) &
       '  Created command file "' // trim ( command_filename ) // '".'
-  end subroutine wedge_grid_plot
+  end
 
-  pure subroutine wedge_vertices ( v1, v2, v3, v4, v5, v6 ) &
-        bind(C, name="wedge_vertices")
+  subroutine wedge_vertices ( v1, v2, v3, v4, v5, v6 )
 
   !*****************************************************************************80
   !
@@ -306,23 +299,23 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) V1(3), V2(3), V3(3), V4(3), V5(3), V6(3),
+  !    Output, real(real64) V1(3), V2(3), V3(3), V4(3), V5(3), V6(3),
   !    the vertices.
   !
 
-    real(dp), intent(out) :: v1(3)
-    real(dp), intent(out) :: v2(3)
-    real(dp), intent(out) :: v3(3)
-    real(dp), intent(out) :: v4(3)
-    real(dp), intent(out) :: v5(3)
-    real(dp), intent(out) :: v6(3)
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) v4(3)
+    real(real64) v5(3)
+    real(real64) v6(3)
 
-    v1(1:3) = (/  0.0_dp,  0.0_dp, -1.0_dp /)
-    v2(1:3) = (/  1.0_dp,  0.0_dp, -1.0_dp /)
-    v3(1:3) = (/  0.0_dp,  1.0_dp, -1.0_dp /)
-    v4(1:3) = (/  0.0_dp,  0.0_dp, +1.0_dp /)
-    v5(1:3) = (/  1.0_dp,  0.0_dp, +1.0_dp /)
-    v6(1:3) = (/  0.0_dp,  1.0_dp, +1.0_dp /)
-  end subroutine wedge_vertices
+    v1(1:3) = (/  0.0e+00_real64,  0.0e+00_real64, -1.0e+00_real64 /)
+    v2(1:3) = (/  1.0e+00_real64,  0.0e+00_real64, -1.0e+00_real64 /)
+    v3(1:3) = (/  0.0e+00_real64,  1.0e+00_real64, -1.0e+00_real64 /)
+    v4(1:3) = (/  0.0e+00_real64,  0.0e+00_real64, +1.0e+00_real64 /)
+    v5(1:3) = (/  1.0e+00_real64,  0.0e+00_real64, +1.0e+00_real64 /)
+    v6(1:3) = (/  0.0e+00_real64,  1.0e+00_real64, +1.0e+00_real64 /)
+  end
 
 end module wedge_grid_mod

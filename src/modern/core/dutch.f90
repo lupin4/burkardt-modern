@@ -1,16 +1,11 @@
-!> dutch � Modern Fortran 2018
+!> dutch — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module dutch_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: angle_deg_2d, angle_rad_2d, circle_dia2imp_2d, circle_exp2imp_2d, circle_imp_contains_point_2d, cross0_2d
   public :: i4_modp, i4_swap, i4_uniform, i4_wrap, i4vec_frac, i4vec_heap_a
@@ -27,8 +22,7 @@ module dutch_mod
 
 contains
 
-  function angle_deg_2d ( p1, p2, p3 ) &
-        bind(C, name="angle_deg_2d")
+  function angle_deg_2d ( p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -61,24 +55,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), define the rays
+  !    Input, real(real64) P1(2), P2(2), P3(2), define the rays
   !    P1 - P2 and P3 - P2 which define the angle.
   !
-  !    Output, real(dp) ANGLE_DEG_2D, the angle swept out by the
+  !    Output, real(real64) ANGLE_DEG_2D, the angle swept out by the
   !    rays, measured in degrees.  0 <= ANGLE_DEG_2D < 360.  If either ray
   !    has zero length, then ANGLE_DEG_2D is set to 0.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle_deg_2d
-    real(dp) :: angle_rad_2d
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: radians_to_degrees
-    real(dp) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
+    real(real64) angle_deg_2d
+    real(real64) angle_rad_2d
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) radians_to_degrees
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
 
     p(1) = ( p3(1) - p2(1) ) * ( p1(1) - p2(1) ) &
          + ( p3(2) - p2(2) ) * ( p1(2) - p2(2) )
@@ -86,21 +80,20 @@ contains
     p(2) = ( p3(1) - p2(1) ) * ( p1(2) - p2(2) ) &
          - ( p3(2) - p2(2) ) * ( p1(1) - p2(1) )
 
-    if ( p(1) == 0.0_dp .and. p(2) == 0.0_dp ) then
-      angle_deg_2d = 0.0_dp
+    if ( p(1) == 0.0e+00_real64 .and. p(2) == 0.0e+00_real64 ) then
+      angle_deg_2d = 0.0e+00_real64
     end if
 
     angle_rad_2d = atan2 ( p(2), p(1) )
 
-    if ( angle_rad_2d < 0.0_dp ) then
-      angle_rad_2d = angle_rad_2d + 2.0_dp * pi
+    if ( angle_rad_2d < 0.0e+00_real64 ) then
+      angle_rad_2d = angle_rad_2d + 2.0e+00_real64 * pi
     end if
 
     angle_deg_2d = radians_to_degrees ( angle_rad_2d )
-  end function angle_deg_2d
+  end
 
-  function angle_rad_2d ( p1, p2, p3 ) &
-        bind(C, name="angle_rad_2d")
+  function angle_rad_2d ( p1, p2, p3 )
 
   !*****************************************************************************80
   !
@@ -133,22 +126,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P1(2), P2(2), P3(2), define the rays
+  !    Input, real(real64) P1(2), P2(2), P3(2), define the rays
   !    P1 - P2 and P3 - P2 which define the angle.
   !
-  !    Output, real(dp) ANGLE_RAD_2D, the angle swept out by the rays,
+  !    Output, real(real64) ANGLE_RAD_2D, the angle swept out by the rays,
   !    in radians.  0 <= ANGLE_RAD_2D < 2 * PI.  If either ray has zero
   !    length, then ANGLE_RAD_2D is set to 0.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: angle_rad_2d
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: p(dim_num)
-    real(dp), intent(in) :: p1(dim_num)
-    real(dp), intent(in) :: p2(dim_num)
-    real(dp), intent(in) :: p3(dim_num)
+    real(real64) angle_rad_2d
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) p(dim_num)
+    real(real64) p1(dim_num)
+    real(real64) p2(dim_num)
+    real(real64) p3(dim_num)
 
     p(1) = ( p3(1) - p2(1) ) * ( p1(1) - p2(1) ) &
          + ( p3(2) - p2(2) ) * ( p1(2) - p2(2) )
@@ -156,19 +149,18 @@ contains
     p(2) = ( p3(1) - p2(1) ) * ( p1(2) - p2(2) ) &
          - ( p3(2) - p2(2) ) * ( p1(1) - p2(1) )
 
-    if ( p(1) == 0.0_dp .and. p(2) == 0.0_dp ) then
-      angle_rad_2d = 0.0_dp
+    if ( p(1) == 0.0e+00_real64 .and. p(2) == 0.0e+00_real64 ) then
+      angle_rad_2d = 0.0e+00_real64
     end if
 
     angle_rad_2d = atan2 ( p(2), p(1) )
 
-    if ( angle_rad_2d < 0.0_dp ) then
-      angle_rad_2d = angle_rad_2d + 2.0_dp * pi
+    if ( angle_rad_2d < 0.0e+00_real64 ) then
+      angle_rad_2d = angle_rad_2d + 2.0e+00_real64 * pi
     end if
-  end function angle_rad_2d
+  end
 
-  subroutine circle_dia2imp_2d ( x1, y1, x2, y2, r, cx, cy ) &
-        bind(C, name="circle_dia2imp_2d")
+  subroutine circle_dia2imp_2d ( x1, y1, x2, y2, r, cx, cy )
 
   !*****************************************************************************80
   !
@@ -198,30 +190,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, are the X and Y coordinates
+  !    Input, real(real64) X1, Y1, X2, Y2, are the X and Y coordinates
   !    of two points which form a diameter of the circle.
   !
-  !    Output, real(dp) R, the computed radius of the circle.
+  !    Output, real(real64) R, the computed radius of the circle.
   !
-  !    Output, real(dp) CX, CY, the computed center of the circle.
+  !    Output, real(real64) CX, CY, the computed center of the circle.
   !
 
-    real(dp), intent(out) :: r
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(out) :: cx
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(out) :: cy
+    real(real64) r
+    real(real64) x1
+    real(real64) x2
+    real(real64) cx
+    real(real64) y1
+    real(real64) y2
+    real(real64) cy
 
-    r = 0.5_dp * sqrt ( ( x1 - x2 )**2 + ( y1 - y2 )**2 )
+    r = 0.5e+00_real64 * sqrt ( ( x1 - x2 )**2 + ( y1 - y2 )**2 )
 
-    cx = 0.5_dp * ( x1 + x2 )
-    cy = 0.5_dp * ( y1 + y2 )
-  end subroutine circle_dia2imp_2d
+    cx = 0.5e+00_real64 * ( x1 + x2 )
+    cy = 0.5e+00_real64 * ( y1 + y2 )
+  end
 
-  subroutine circle_exp2imp_2d ( x1, y1, x2, y2, x3, y3, r, cx, cy ) &
-        bind(C, name="circle_exp2imp_2d")
+  subroutine circle_exp2imp_2d ( x1, y1, x2, y2, x3, y3, r, cx, cy )
 
   !*****************************************************************************80
   !
@@ -275,33 +266,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, X3, Y3, are the X and Y
+  !    Input, real(real64) X1, Y1, X2, Y2, X3, Y3, are the X and Y
   !    coordinates of three points that lie on the circle.  These points should be
   !    distinct, and not collinear.
   !
-  !    Output, real(dp) R, the radius of the circle.  Normally, R will
+  !    Output, real(real64) R, the radius of the circle.  Normally, R will
   !    be positive.  R is returned as -1 in the unlikely event that the points are
   !    numerically collinear.
   !
-  !    Output, real(dp) CX, CY, the center of the circle.
+  !    Output, real(real64) CX, CY, the center of the circle.
   !
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp) :: d
-    real(dp) :: e
-    real(dp) :: f
-    real(dp) :: g
-    real(dp), intent(out) :: r
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(out) :: cx
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
-    real(dp), intent(out) :: cy
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) d
+    real(real64) e
+    real(real64) f
+    real(real64) g
+    real(real64) r
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) cx
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) cy
 
     a = x2 - x1
     b = y2 - y1
@@ -322,24 +313,23 @@ contains
   !  We check for collinearity.  A more useful check would compare the
   !  absolute value of G to a small quantity.
   !
-    if ( g == 0.0_dp ) then
-      cx = 0.0_dp
-      cy = 0.0_dp
-      r = -1.0_dp
+    if ( g == 0.0e+00_real64 ) then
+      cx = 0.0e+00_real64
+      cy = 0.0e+00_real64
+      r = -1.0e+00_real64
     end if
   !
   !  The center is halfway along the diameter vector from (X1,Y1).
   !
-    cx = 0.5_dp * ( d * e - b * f ) / g
-    cy = 0.5_dp * ( a * f - c * e ) / g
+    cx = 0.5e+00_real64 * ( d * e - b * f ) / g
+    cy = 0.5e+00_real64 * ( a * f - c * e ) / g
   !
   !  Knowing the center, the radius is now easy to compute.
   !
     r = sqrt ( ( x1 - cx )**2 + ( y1 - cy )**2 )
-  end subroutine circle_exp2imp_2d
+  end
 
-  subroutine circle_imp_contains_point_2d ( r, cx, cy, x, y, inside ) &
-        bind(C, name="circle_imp_contains_point_2d")
+  subroutine circle_imp_contains_point_2d ( r, cx, cy, x, y, inside )
 
   !*****************************************************************************80
   !
@@ -365,33 +355,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the radius of the circle.
+  !    Input, real(real64) R, the radius of the circle.
   !
-  !    Input, real(dp) CX, CY, the coordinates of the center
+  !    Input, real(real64) CX, CY, the coordinates of the center
   !    of the circle.
   !
-  !    Input, real(dp) X, Y, the point to be checked.
+  !    Input, real(real64) X, Y, the point to be checked.
   !
   !    Output, logical INSIDE, is TRUE if the point is inside or on the circle,
   !    FALSE otherwise.
   !
 
-    logical, intent(out) :: inside
-    real(dp), intent(in), value :: r
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: cx
-    real(dp), intent(in), value :: y
-    real(dp), intent(in), value :: cy
+    logical inside
+    real(real64) r
+    real(real64) x
+    real(real64) cx
+    real(real64) y
+    real(real64) cy
 
     if ( ( x - cx )**2 + ( y - cy )**2 <= r * r ) then
       inside = .true.
     else
       inside = .false.
     end if
-  end subroutine circle_imp_contains_point_2d
+  end
 
-  function cross0_2d ( p0, p1, p2 ) &
-        bind(C, name="cross0_2d")
+  function cross0_2d ( p0, p1, p2 )
 
   !*****************************************************************************80
   !
@@ -419,24 +408,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) P0(2), P1(2), P2(2), the coordinates of
+  !    Input, real(real64) P0(2), P1(2), P2(2), the coordinates of
   !    the three points.
   !
-  !    Output, real(dp) CROSS0_2D, the Z component of the cross product
+  !    Output, real(real64) CROSS0_2D, the Z component of the cross product
   !    (P1-P0) x (P2-P0).
   !
 
-    real(dp) :: cross0_2d
-    real(dp), intent(in) :: p0(2)
-    real(dp), intent(in) :: p1(2)
-    real(dp), intent(in) :: p2(2)
+    real(real64) cross0_2d
+    real(real64) p0(2)
+    real(real64) p1(2)
+    real(real64) p2(2)
 
     cross0_2d = ( p1(1) - p0(1) ) * ( p2(2) - p0(2) ) &
               - ( p1(2) - p0(2) ) * ( p2(1) - p0(1) )
-  end function cross0_2d
+  end
 
-  function i4_modp ( i, j ) &
-        bind(C, name="i4_modp")
+  function i4_modp ( i, j )
 
   !*****************************************************************************80
   !
@@ -482,17 +470,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the number to be divided.
+  !    Input, integer(int32) I, the number to be divided.
   !
-  !    Input, integer(ip) J, the number that divides I.
+  !    Input, integer(int32) J, the number that divides I.
   !
-  !    Output, integer(ip) I4_MODP, the nonnegative remainder when I is
+  !    Output, integer(int32) I4_MODP, the nonnegative remainder when I is
   !    divided by J.
   !
 
-    integer(ip), intent(in), value :: i
-    integer(ip) :: i4_modp
-    integer(ip), intent(in), value :: j
+    integer(int32) i
+    integer(int32) i4_modp
+    integer(int32) j
 
     if ( j == 0 ) then
       write ( *, '(a)' ) ' '
@@ -506,10 +494,9 @@ contains
     if ( i4_modp < 0 ) then
       i4_modp = i4_modp + abs ( j )
     end if
-  end function i4_modp
+  end
 
-  subroutine i4_swap ( i, j ) &
-        bind(C, name="i4_swap")
+  subroutine i4_swap ( i, j )
 
   !*****************************************************************************80
   !
@@ -529,21 +516,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) I, J.  On output, the values of I and
+  !    Input/output, integer(int32) I, J.  On output, the values of I and
   !    J have been interchanged.
   !
 
-    integer(ip), intent(inout) :: i
-    integer(ip), intent(inout) :: j
-    integer(ip) :: k
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
 
     k = i
     i = j
     j = k
-  end subroutine i4_swap
+  end
 
-  function i4_uniform ( a, b, seed ) &
-        bind(C, name="i4_uniform")
+  function i4_uniform ( a, b, seed )
 
   !*****************************************************************************80
   !
@@ -551,7 +537,7 @@ contains
   !
   !  Discussion:
   !
-  !    An I4 is an integer(ip) value.
+  !    An I4 is an integer(int32) value.
   !
   !    The pseudorandom number will be scaled to be uniformly distributed
   !    between A and B.
@@ -599,22 +585,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) A, B, the limits of the interval.
+  !    Input, integer(int32) A, B, the limits of the interval.
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, integer(ip) I4_UNIFORM, a number between A and B.
+  !    Output, integer(int32) I4_UNIFORM, a number between A and B.
   !
 
-    integer(ip), intent(in), value :: a
-    integer(ip), intent(out) :: b
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: i4_uniform
-    integer(ip) :: k
-    real(sp) :: r
-    integer(ip), intent(inout) :: seed
-    integer(ip) :: value
+    integer(int32) a
+    integer(int32) b
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) i4_uniform
+    integer(int32) k
+    real(real32) r
+    integer(int32) seed
+    integer(int32) value
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -631,25 +617,24 @@ contains
       seed = seed + i4_huge
     end if
 
-    r = real ( seed, sp) * 4.656612875E-10
+    r = real ( seed, real32) * 4.656612875E-10
   !
   !  Scale R to lie between A-0.5 and B+0.5.
   !
-    r = ( 1.0 - r ) * ( real ( min ( a, b ), sp) - 0.5 ) &
-      +             r   * ( real ( max ( a, b ), sp) + 0.5 )
+    r = ( 1.0E+00 - r ) * ( real ( min ( a, b ), real32) - 0.5E+00 ) &
+      +             r   * ( real ( max ( a, b ), real32) + 0.5E+00 )
   !
   !  Use rounding to convert R to an integer between A and B.
   !
-    value = nint ( r, sp)
+    value = nint ( r, real32)
 
     value = max ( value, min ( a, b ) )
     value = min ( value, max ( a, b ) )
 
     i4_uniform = value
-  end function i4_uniform
+  end
 
-  function i4_wrap ( ival, ilo, ihi ) &
-        bind(C, name="i4_wrap")
+  function i4_wrap ( ival, ilo, ihi )
 
   !*****************************************************************************80
   !
@@ -693,19 +678,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) IVAL, an integer value.
+  !    Input, integer(int32) IVAL, an integer value.
   !
-  !    Input, integer(ip) ILO, IHI, the desired bounds for the value.
+  !    Input, integer(int32) ILO, IHI, the desired bounds for the value.
   !
-  !    Output, integer(ip) I4_WRAP, a "wrapped" version of IVAL.
+  !    Output, integer(int32) I4_WRAP, a "wrapped" version of IVAL.
   !
 
-    integer(ip) :: i4_modp
-    integer(ip) :: i4_wrap
-    integer(ip), intent(in), value :: ihi
-    integer(ip), intent(in), value :: ilo
-    integer(ip), intent(out) :: ival
-    integer(ip) :: wide
+    integer(int32) i4_modp
+    integer(int32) i4_wrap
+    integer(int32) ihi
+    integer(int32) ilo
+    integer(int32) ival
+    integer(int32) wide
 
     wide = ihi + 1 - ilo
 
@@ -714,10 +699,9 @@ contains
     else
       i4_wrap = ilo + i4_modp ( ival-ilo, wide )
     end if
-  end function i4_wrap
+  end
 
-  subroutine i4vec_frac ( n, a, k, iafrac ) &
-        bind(C, name="i4vec_frac")
+  subroutine i4vec_frac ( n, a, k, iafrac )
 
   !*****************************************************************************80
   !
@@ -741,29 +725,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Input/output, integer(ip) A(N), array to search.  On output,
+  !    Input/output, integer(int32) A(N), array to search.  On output,
   !    the elements of A have been somewhat rearranged.
   !
-  !    Input, integer(ip) K, the fractile to be sought.  If K = 1, the
+  !    Input, integer(int32) K, the fractile to be sought.  If K = 1, the
   !    minimum entry is sought.  If K = N, the maximum is sought.
   !    Other values of K search for the entry which is K-th in size.
   !    K must be at least 1, and no greater than N.
   !
-  !    Output, integer(ip) IAFRAC, the value of the K-th fractile of A.
+  !    Output, integer(int32) IAFRAC, the value of the K-th fractile of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: a(n)
-    integer(ip), intent(out) :: iafrac
-    integer(ip) :: iryt
-    integer(ip) :: ix
-    integer(ip) :: j
-    integer(ip), intent(in), value :: k
-    integer(ip) :: left
+    integer(int32) i
+    integer(int32) a(n)
+    integer(int32) iafrac
+    integer(int32) iryt
+    integer(int32) ix
+    integer(int32) j
+    integer(int32) k
+    integer(int32) left
 
     if ( n <= 0 ) then
       write ( *, '(a)' ) ' '
@@ -837,10 +821,9 @@ contains
       end do
 
     end do
-  end subroutine i4vec_frac
+  end
 
-  subroutine i4vec_heap_a ( n, a ) &
-        bind(C, name="i4vec_heap_a")
+  subroutine i4vec_heap_a ( n, a )
 
   !*****************************************************************************80
   !
@@ -883,20 +866,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the size of the input array.
+  !    Input, integer(int32) N, the size of the input array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, an unsorted array.
   !    On output, the array has been reordered into a heap.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: i
-    integer(ip) :: ifree
-    integer(ip) :: key
-    integer(ip) :: m
+    integer(int32) a(n)
+    integer(int32) i
+    integer(int32) ifree
+    integer(int32) key
+    integer(int32) m
   !
   !  Only nodes N/2 down to 1 can be "parent" nodes.
   !
@@ -952,10 +935,9 @@ contains
       a(ifree) = key
 
     end do
-  end subroutine i4vec_heap_a
+  end
 
-  subroutine i4vec_heap_d ( n, a ) &
-        bind(C, name="i4vec_heap_d")
+  subroutine i4vec_heap_d ( n, a )
 
   !*****************************************************************************80
   !
@@ -998,20 +980,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the size of the input array.
+  !    Input, integer(int32) N, the size of the input array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, an unsorted array.
   !    On output, the array has been reordered into a heap.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: i
-    integer(ip) :: ifree
-    integer(ip) :: key
-    integer(ip) :: m
+    integer(int32) a(n)
+    integer(int32) i
+    integer(int32) ifree
+    integer(int32) key
+    integer(int32) m
   !
   !  Only nodes N/2 down to 1 can be "parent" nodes.
   !
@@ -1067,10 +1049,9 @@ contains
       a(ifree) = key
 
     end do
-  end subroutine i4vec_heap_d
+  end
 
-  subroutine i4vec_heap_d_extract ( n, a, val ) &
-        bind(C, name="i4vec_heap_d_extract")
+  subroutine i4vec_heap_d_extract ( n, a, val )
 
   !*****************************************************************************80
   !
@@ -1104,17 +1085,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) N, the number of items in the heap.
+  !    Input/output, integer(int32) N, the number of items in the heap.
   !
-  !    Input/output, integer(ip) A(N), the heap.
+  !    Input/output, integer(int32) A(N), the heap.
   !
-  !    Output, integer(ip) VAL, the item of maximum value, which has
+  !    Output, integer(int32) VAL, the item of maximum value, which has
   !    been removed from the heap.
   !
 
-    integer(ip) :: a(*)
-    integer(ip), intent(inout) :: n
-    integer(ip), intent(out) :: val
+    integer(int32) a(*)
+    integer(int32) n
+    integer(int32) val
 
     if ( n < 1 ) then
       write ( *, '(a)' ) ' '
@@ -1139,10 +1120,9 @@ contains
   !
     n = n - 1
     call i4vec_sort_heap_d ( n, a )
-  end subroutine i4vec_heap_d_extract
+  end
 
-  subroutine i4vec_heap_d_insert ( n, a, val ) &
-        bind(C, name="i4vec_heap_d_insert")
+  subroutine i4vec_heap_d_insert ( n, a, val )
 
   !*****************************************************************************80
   !
@@ -1172,18 +1152,18 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) N, the number of items in the heap.
+  !    Input/output, integer(int32) N, the number of items in the heap.
   !
-  !    Input/output, integer(ip) A(N), the heap.
+  !    Input/output, integer(int32) A(N), the heap.
   !
-  !    Input, integer(ip) VAL, the value to be inserted.
+  !    Input, integer(int32) VAL, the value to be inserted.
   !
 
-    integer(ip) :: a(*)
-    integer(ip) :: i
-    integer(ip), intent(inout) :: n
-    integer(ip) :: parent
-    integer(ip), intent(in), value :: val
+    integer(int32) a(*)
+    integer(int32) i
+    integer(int32) n
+    integer(int32) parent
+    integer(int32) val
 
     n = n + 1
     i = n
@@ -1202,10 +1182,9 @@ contains
     end do
 
     a(i) = val
-  end subroutine i4vec_heap_d_insert
+  end
 
-  subroutine i4vec_heap_d_max ( n, a, val_max ) &
-        bind(C, name="i4vec_heap_d_max")
+  subroutine i4vec_heap_d_max ( n, a, val_max )
 
   !*****************************************************************************80
   !
@@ -1235,23 +1214,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items in the heap.
+  !    Input, integer(int32) N, the number of items in the heap.
   !
-  !    Input, integer(ip) A(N), the heap.
+  !    Input, integer(int32) A(N), the heap.
   !
-  !    Output, integer(ip) VAL_MAX, the maximum value in the heap.
+  !    Output, integer(int32) VAL_MAX, the maximum value in the heap.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip), intent(out) :: val_max
+    integer(int32) a(n)
+    integer(int32) val_max
 
     val_max = a(1)
-  end subroutine i4vec_heap_d_max
+  end
 
-  subroutine i4vec_indicator ( n, a ) &
-        bind(C, name="i4vec_indicator")
+  subroutine i4vec_indicator ( n, a )
 
   !*****************************************************************************80
   !
@@ -1271,23 +1249,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Output, integer(ip) A(N), the array to be initialized.
+  !    Output, integer(int32) A(N), the array to be initialized.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: i
+    integer(int32) a(n)
+    integer(int32) i
 
     do i = 1, n
       a(i) = i
     end do
-  end subroutine i4vec_indicator
+  end
 
-  subroutine i4vec_median ( n, a, median ) &
-        bind(C, name="i4vec_median")
+  subroutine i4vec_median ( n, a, median )
 
   !*****************************************************************************80
   !
@@ -1312,28 +1289,27 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Input/output, integer(ip) A(N), the array to search.  On output,
+  !    Input/output, integer(int32) A(N), the array to search.  On output,
   !    the order of the elements of A has been somewhat changed.
   !
-  !    Output, integer(ip) MEDIAN, the value of the median of A.
+  !    Output, integer(int32) MEDIAN, the value of the median of A.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: k
-    integer(ip), intent(out) :: median
+    integer(int32) a(n)
+    integer(int32) k
+    integer(int32) median
 
     k = ( n + 1 ) / 2
 
     call i4vec_frac ( n, a, k, median )
-  end subroutine i4vec_median
+  end
 
   subroutine i4vec_pop ( n, x, stack1_max, stack1_num, stack1, stack2_max, &
-    stack2_num, stack2 ) &
-        bind(C, name="i4vec_pop")
+    stack2_num, stack2 )
 
   !*****************************************************************************80
   !
@@ -1357,34 +1333,34 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) N, the dimension of the vector.
+  !    Output, integer(int32) N, the dimension of the vector.
   !
-  !    Output, integer(ip) X(*), the value of the vector.
+  !    Output, integer(int32) X(*), the value of the vector.
   !
-  !    Input, integer(ip) STACK1_MAX, the maximum size of STACK1.
+  !    Input, integer(int32) STACK1_MAX, the maximum size of STACK1.
   !
-  !    Input/output, integer(ip) STACK1_NUM, the current size of STACK1.
+  !    Input/output, integer(int32) STACK1_NUM, the current size of STACK1.
   !
-  !    Input/output, integer(ip) STACK1(STACK1_MAX), the vector
+  !    Input/output, integer(int32) STACK1(STACK1_MAX), the vector
   !    dimension stack.
   !
-  !    Input, integer(ip) STACK2_MAX, the maximum size of STACK2.
+  !    Input, integer(int32) STACK2_MAX, the maximum size of STACK2.
   !
-  !    Input/output, integer(ip) STACK2_NUM, the current size of STACK2.
+  !    Input/output, integer(int32) STACK2_NUM, the current size of STACK2.
   !
-  !    Input/output, integer(ip) STACK2(STACK2_MAX), the vector value
+  !    Input/output, integer(int32) STACK2(STACK2_MAX), the vector value
   !    stack.
   !
 
-    integer(ip), intent(out) :: n
-    integer(ip), intent(in), value :: stack1_max
-    integer(ip), intent(in), value :: stack2_max
+    integer(int32) n
+    integer(int32) stack1_max
+    integer(int32) stack2_max
 
-    integer(ip), intent(inout) :: stack1(stack1_max)
-    integer(ip), intent(inout) :: stack1_num
-    integer(ip), intent(inout) :: stack2(stack2_max)
-    integer(ip), intent(inout) :: stack2_num
-    integer(ip), intent(out) :: x(*)
+    integer(int32) stack1(stack1_max)
+    integer(int32) stack1_num
+    integer(int32) stack2(stack2_max)
+    integer(int32) stack2_num
+    integer(int32) x(*)
 
     if ( stack1_num < 1 ) then
       n = -1
@@ -1395,11 +1371,10 @@ contains
 
     stack2_num = stack2_num - n
     x(1:n) = stack2(stack2_num+1:stack2_num+n)
-  end subroutine i4vec_pop
+  end
 
   subroutine i4vec_push ( n, x, stack1_max, stack1_num, stack1, stack2_max, &
-    stack2_num, stack2 ) &
-        bind(C, name="i4vec_push")
+    stack2_num, stack2 )
 
   !*****************************************************************************80
   !
@@ -1431,34 +1406,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the dimension of the vector.  N may be zero.
+  !    Input, integer(int32) N, the dimension of the vector.  N may be zero.
   !
-  !    Input, integer(ip) X(N), the value of the vector.
+  !    Input, integer(int32) X(N), the value of the vector.
   !
-  !    Input, integer(ip) STACK1_MAX, the maximum size of STACK1.
+  !    Input, integer(int32) STACK1_MAX, the maximum size of STACK1.
   !
-  !    Input/output, integer(ip) STACK1_NUM, the current size of STACK1.
+  !    Input/output, integer(int32) STACK1_NUM, the current size of STACK1.
   !
-  !    Input/output, integer(ip) STACK1(STACK1_MAX), the vector
+  !    Input/output, integer(int32) STACK1(STACK1_MAX), the vector
   !    dimension stack.
   !
-  !    Input, integer(ip) STACK2_MAX, the maximum size of STACK2.
+  !    Input, integer(int32) STACK2_MAX, the maximum size of STACK2.
   !
-  !    Input/output, integer(ip) STACK2_NUM, the current size of STACK2.
+  !    Input/output, integer(int32) STACK2_NUM, the current size of STACK2.
   !
-  !    Input/output, integer(ip) STACK2(STACK2_MAX), the vector value 
+  !    Input/output, integer(int32) STACK2(STACK2_MAX), the vector value 
   !    stack.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(in), value :: stack1_max
-    integer(ip), intent(in), value :: stack2_max
+    integer(int32) n
+    integer(int32) stack1_max
+    integer(int32) stack2_max
 
-    integer(ip), intent(inout) :: stack1(stack1_max)
-    integer(ip), intent(inout) :: stack1_num
-    integer(ip), intent(inout) :: stack2(stack2_max)
-    integer(ip), intent(inout) :: stack2_num
-    integer(ip), intent(in) :: x(n)
+    integer(int32) stack1(stack1_max)
+    integer(int32) stack1_num
+    integer(int32) stack2(stack2_max)
+    integer(int32) stack2_num
+    integer(int32) x(n)
 
     if ( n < 0 ) then
       write ( *, '(a)' ) ' '
@@ -1486,10 +1461,9 @@ contains
 
     stack2(stack2_num+1:stack2_num+n) = x(1:n)
     stack2_num = stack2_num + n
-  end subroutine i4vec_push
+  end
 
-  subroutine i4vec_sort_heap_d ( n, a ) &
-        bind(C, name="i4vec_sort_heap_d")
+  subroutine i4vec_sort_heap_d ( n, a )
 
   !*****************************************************************************80
   !
@@ -1516,17 +1490,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input/output, integer(ip) A(N).
+  !    Input/output, integer(int32) A(N).
   !    On input, the array to be sorted;
   !    On output, the array has been sorted.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: n1
+    integer(int32) a(n)
+    integer(int32) n1
 
     if ( n <= 1 ) then
     end if
@@ -1555,10 +1529,9 @@ contains
       call i4_swap ( a(1), a(n1) )
 
     end do
-  end subroutine i4vec_sort_heap_d
+  end
 
-  subroutine i4vec_split_unsort ( n, a, split, isplit ) &
-        bind(C, name="i4vec_split_unsort")
+  subroutine i4vec_split_unsort ( n, a, split, isplit )
 
   !*****************************************************************************80
   !
@@ -1587,31 +1560,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of elements of A.
+  !    Input, integer(int32) N, the number of elements of A.
   !
-  !    Input/output, integer(ip) A(N), the array to split.  On output,
+  !    Input/output, integer(int32) A(N), the array to split.  On output,
   !    all the entries of A that are less than or equal to SPLIT
   !    are in A(1:ISPLIT).
   !
-  !    Input, integer(ip) SPLIT, the value used to split the vector.
+  !    Input, integer(int32) SPLIT, the value used to split the vector.
   !    It is not necessary that any value of A actually equal SPLIT.
   !
-  !    Output, integer(ip) ISPLIT, indicates the position of the last
+  !    Output, integer(int32) ISPLIT, indicates the position of the last
   !    entry of the split vector that is less than or equal to SPLIT.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: a(n)
-    integer(ip) :: i
-    integer(ip) :: i1
-    integer(ip) :: i2
-    integer(ip) :: i3
-    integer(ip), intent(out) :: isplit
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip) :: j3
-    integer(ip), intent(in), value :: split
+    integer(int32) a(n)
+    integer(int32) i
+    integer(int32) i1
+    integer(int32) i2
+    integer(int32) i3
+    integer(int32) isplit
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) j3
+    integer(int32) split
   !
   !  Partition the vector into A1, A2, A3, where
   !    A1 = A(I1:J1) holds values <= SPLIT,
@@ -1644,10 +1617,9 @@ contains
     end do
 
     isplit = j1
-  end subroutine i4vec_split_unsort
+  end
 
-  subroutine ij_next ( i, j, n ) &
-        bind(C, name="ij_next")
+  subroutine ij_next ( i, j, n )
 
   !*****************************************************************************80
   !
@@ -1676,16 +1648,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) I, J.  On input, the current pair of
+  !    Input/output, integer(int32) I, J.  On input, the current pair of
   !    indices.  On output, the next pair of indices.  If either index is illegal
   !    on input, the output value of (I,J) will be (1,1).
   !
-  !    Input, integer(ip) N, the maximum value for I and J.
+  !    Input, integer(int32) N, the maximum value for I and J.
   !
 
-    integer(ip), intent(inout) :: i
-    integer(ip), intent(in), value :: j
-    integer(ip), intent(in), value :: n
+    integer(int32) i
+    integer(int32) j
+    integer(int32) n
 
     if ( n < 1 ) then
       i = 0
@@ -1706,10 +1678,9 @@ contains
       i = 0
       j = 0
     end if
-  end subroutine ij_next
+  end
 
-  subroutine ij_next_gt ( i, j, n ) &
-        bind(C, name="ij_next_gt")
+  subroutine ij_next_gt ( i, j, n )
 
   !*****************************************************************************80
   !
@@ -1735,17 +1706,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) I, J.  On input, the current pair of
+  !    Input/output, integer(int32) I, J.  On input, the current pair of
   !    indices.  On output, the next pair of indices.  If either index is illegal
   !    on input, the output value of (I,J) will be (1,2).
   !
-  !    Input, integer(ip) N, the maximum value for I and J.
+  !    Input, integer(int32) N, the maximum value for I and J.
   !    A value of N less than 2 is nonsense.
   !
 
-    integer(ip), intent(inout) :: i
-    integer(ip), intent(in), value :: j
-    integer(ip), intent(in), value :: n
+    integer(int32) i
+    integer(int32) j
+    integer(int32) n
 
     if ( n < 2 ) then
       i = 0
@@ -1766,10 +1737,9 @@ contains
       i = 0
       j = 0
     end if
-  end subroutine ij_next_gt
+  end
 
-  subroutine line_exp2imp_2d ( x1, y1, x2, y2, a, b, c ) &
-        bind(C, name="line_exp2imp_2d")
+  subroutine line_exp2imp_2d ( x1, y1, x2, y2, a, b, c )
 
   !*****************************************************************************80
   !
@@ -1799,21 +1769,21 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2.  (X1,Y1) and (X2,Y2) are
+  !    Input, real(real64) X1, Y1, X2, Y2.  (X1,Y1) and (X2,Y2) are
   !    two points on the line. (X1,Y1) must be different
   !    from (X2,Y2).
   !
-  !    Output, real(dp) A, B, C, three coefficients which describe
+  !    Output, real(real64) A, B, C, three coefficients which describe
   !    the line that passes through (X1,Y1) and (X2,Y2).
   !
 
-    real(dp), intent(out) :: a
-    real(dp), intent(out) :: b
-    real(dp), intent(out) :: c
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) x1
+    real(real64) x2
+    real(real64) y1
+    real(real64) y2
   !
   !  Take care of degenerate cases.
   !
@@ -1829,10 +1799,9 @@ contains
     a = y2 - y1
     b = x1 - x2
     c = x2 * y1 - x1 * y2
-  end subroutine line_exp2imp_2d
+  end
 
-  subroutine line_exp_point_dist_2d ( x1, y1, x2, y2, x, y, dist ) &
-        bind(C, name="line_exp_point_dist_2d")
+  subroutine line_exp_point_dist_2d ( x1, y1, x2, y2, x, y, dist )
 
   !*****************************************************************************80
   !
@@ -1858,31 +1827,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2.  (X1,Y1) and (X2,Y2) are two
+  !    Input, real(real64) X1, Y1, X2, Y2.  (X1,Y1) and (X2,Y2) are two
   !    points on the line.
   !
-  !    Input, real(dp) X, Y, the point whose distance from the line is
+  !    Input, real(real64) X, Y, the point whose distance from the line is
   !    to be measured.
   !
-  !    Output, real(dp) DIST, the distance from the point to the line.
+  !    Output, real(real64) DIST, the distance from the point to the line.
   !
 
-    real(dp) :: bot
-    real(dp), intent(out) :: dist
-    real(dp) :: dot
-    real(dp) :: t
-    real(dp), intent(in), value :: x
-    real(dp) :: xn
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: y
-    real(dp) :: yn
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
+    real(real64) bot
+    real(real64) dist
+    real(real64) dot
+    real(real64) t
+    real(real64) x
+    real(real64) xn
+    real(real64) x1
+    real(real64) x2
+    real(real64) y
+    real(real64) yn
+    real(real64) y1
+    real(real64) y2
 
     bot = ( x1 - x2 )**2 + ( y1 - y2 )**2
 
-    if ( bot == 0.0_dp ) then
+    if ( bot == 0.0e+00_real64 ) then
 
       xn = x1
       yn = y1
@@ -1904,10 +1873,9 @@ contains
     end if
 
     dist = sqrt ( ( xn - x )**2 + ( yn - y )**2 )
-  end subroutine line_exp_point_dist_2d
+  end
 
-  subroutine line_exp_point_dist_signed_2d ( x1, y1, x2, y2, x, y, dist_signed ) &
-        bind(C, name="line_exp_point_dist_signed_2d")
+  subroutine line_exp_point_dist_signed_2d ( x1, y1, x2, y2, x, y, dist_signed )
 
   !*****************************************************************************80
   !
@@ -1945,26 +1913,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, define the two points
+  !    Input, real(real64) X1, Y1, X2, Y2, define the two points
   !    (X1,Y1) and (X2,Y2) that determine the line.
   !
-  !    Input, real(dp) X, Y, the point (X,Y) whose signed distance
+  !    Input, real(real64) X, Y, the point (X,Y) whose signed distance
   !    is desired.
   !
-  !    Output, real(dp) DIST_SIGNED, the signed distance from the
+  !    Output, real(real64) DIST_SIGNED, the signed distance from the
   !    point to the line.
   !
 
-    real(dp) :: a
-    real(dp) :: b
-    real(dp) :: c
-    real(dp), intent(out) :: dist_signed
-    real(dp), intent(in), value :: x
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: y
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
+    real(real64) a
+    real(real64) b
+    real(real64) c
+    real(real64) dist_signed
+    real(real64) x
+    real(real64) x1
+    real(real64) x2
+    real(real64) y
+    real(real64) y1
+    real(real64) y2
   !
   !  Convert the line to implicit form.
   !
@@ -1973,10 +1941,9 @@ contains
   !  Compute the signed distance from the point to the line.
   !
     dist_signed = ( a * x + b * y + c ) / sqrt ( a * a + b * b )
-  end subroutine line_exp_point_dist_signed_2d
+  end
 
-  subroutine line_seg_contains_point_2d ( x1, y1, x2, y2, x3, y3, u, v ) &
-        bind(C, name="line_seg_contains_point_2d")
+  subroutine line_seg_contains_point_2d ( x1, y1, x2, y2, x3, y3, u, v )
 
   !*****************************************************************************80
   !
@@ -2001,52 +1968,51 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, the endpoints P1 and P2 of
+  !    Input, real(real64) X1, Y1, X2, Y2, the endpoints P1 and P2 of
   !    a line segment.
   !
-  !    Input, real(dp) X3, Y3, a point P3 to be tested.
+  !    Input, real(real64) X3, Y3, a point P3 to be tested.
   !
-  !    Output, real(dp) U, the coordinate of (X3,Y3) along the axis from
+  !    Output, real(real64) U, the coordinate of (X3,Y3) along the axis from
   !    with origin at P1 and unit at P2.
   !
-  !    Output, real(dp) V, the magnitude of the off-axis portion of the
+  !    Output, real(real64) V, the magnitude of the off-axis portion of the
   !    vector P3-P1, measured in units of (P2-P1).
   !
 
-    real(dp), intent(out) :: u
-    real(dp) :: unit
-    real(dp), intent(out) :: v
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(out) :: x3
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
+    real(real64) u
+    real(real64) unit
+    real(real64) v
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
 
     unit = sqrt ( ( x2 - x1 )**2 + ( y2 - y1 )**2 )
 
-    if ( unit == 0.0_dp ) then
+    if ( unit == 0.0e+00_real64 ) then
 
       if ( x3 == x1 .and. y3 == y1 ) then
-        u = 0.5_dp
-        v = 0.0_dp
+        u = 0.5e+00_real64
+        v = 0.0e+00_real64
       else
-        u = 0.5_dp
-        v = huge ( 1.0_dp )
+        u = 0.5e+00_real64
+        v = huge ( 1.0e+00_real64 )
       end if
 
     else
 
       u = ( ( x3 - x1 ) * ( x2 - x1 ) + ( y3 - y1 ) * ( y2 - y1 ) ) / unit**2
 
-      v = sqrt ( ( ( u - 1.0_dp ) * x1 - u * x2 + x3 )**2 &
-               + ( ( u - 1.0_dp ) * y1 - u * y2 + y3 )**2 ) / unit
+      v = sqrt ( ( ( u - 1.0e+00_real64 ) * x1 - u * x2 + x3 )**2 &
+               + ( ( u - 1.0e+00_real64 ) * y1 - u * y2 + y3 )**2 ) / unit
 
     end if
-  end subroutine line_seg_contains_point_2d
+  end
 
-  subroutine line_seg_vec_int_2d ( n, x1, y1, x2, y2, i, j, flag, xint, yint ) &
-        bind(C, name="line_seg_vec_int_2d")
+  subroutine line_seg_vec_int_2d ( n, x1, y1, x2, y2, i, j, flag, xint, yint )
 
   !*****************************************************************************80
   !
@@ -2075,36 +2041,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of line segments.
+  !    Input, integer(int32) N, the number of line segments.
   !
-  !    Input, real(dp) X1(N), Y1(N), X2(N), Y2(N), the coordinates of the
+  !    Input, real(real64) X1(N), Y1(N), X2(N), Y2(N), the coordinates of the
   !    endpoints of the line segments.
   !
-  !    Input/output, integer(ip) I, J, used to keep track of the
+  !    Input/output, integer(int32) I, J, used to keep track of the
   !    computation.  On first call with a given set of line segments,
   !    set I = J = 0.  On return with FLAG = 1, I and J record the indices of the
   !    line segments whose intersection has just been found.  To find the
   !    next intersection, simply call again, but do not alter I and J.
   !
-  !    Output, integer(ip) FLAG:
+  !    Output, integer(int32) FLAG:
   !    0, no more intersections, the computation is done.
   !    1, an intersection was detected between segments I and J.
   !
-  !    Output, real(dp) XINT, YINT, the location of an intersection
+  !    Output, real(real64) XINT, YINT, the location of an intersection
   !    of line segments I and J, if FLAG is 1.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: flag
-    integer(ip), intent(inout) :: i
-    integer(ip), intent(inout) :: j
-    real(dp), intent(in) :: x1(n)
-    real(dp), intent(in) :: x2(n)
-    real(dp), intent(out) :: xint
-    real(dp), intent(in) :: y1(n)
-    real(dp), intent(in) :: y2(n)
-    real(dp), intent(out) :: yint
+    integer(int32) flag
+    integer(int32) i
+    integer(int32) j
+    real(real64) x1(n)
+    real(real64) x2(n)
+    real(real64) xint
+    real(real64) y1(n)
+    real(real64) y2(n)
+    real(real64) yint
 
     do
 
@@ -2122,10 +2088,9 @@ contains
       end if
 
     end do
-  end subroutine line_seg_vec_int_2d
+  end
 
-  subroutine lines_exp_int_2d ( ival, x, y, x1, y1, x2, y2, x3, y3, x4, y4 ) &
-        bind(C, name="lines_exp_int_2d")
+  subroutine lines_exp_int_2d ( ival, x, y, x1, y1, x2, y2, x3, y3, x4, y4 )
 
   !*****************************************************************************80
   !
@@ -2151,43 +2116,43 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) IVAL, reports on the intersection.
+  !    Output, integer(int32) IVAL, reports on the intersection.
   !
   !     0, no intersection, the lines may be parallel or degenerate.
   !     1, one intersection point, returned in X, Y.
   !     2, infinitely many intersections, the lines are identical.
   !
-  !    Output, real(dp) X, Y, if IVAl = 1, then X, Y contains
+  !    Output, real(real64) X, Y, if IVAl = 1, then X, Y contains
   !    the intersection point.  Otherwise, X = 0, Y = 0.
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, define the first line.
+  !    Input, real(real64) X1, Y1, X2, Y2, define the first line.
   !
-  !    Input, real(dp) X3, Y3, X4, Y4, define the second line.
+  !    Input, real(real64) X3, Y3, X4, Y4, define the second line.
   !
 
-    real(dp) :: a1
-    real(dp) :: a2
-    real(dp) :: b1
-    real(dp) :: b2
-    real(dp) :: c1
-    real(dp) :: c2
-    integer(ip), intent(out) :: ival
-    logical :: point_1
-    logical :: point_2
-    real(dp), intent(out) :: x
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: x4
-    real(dp), intent(out) :: y
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
-    real(dp), intent(in), value :: y4
+    real(real64) a1
+    real(real64) a2
+    real(real64) b1
+    real(real64) b2
+    real(real64) c1
+    real(real64) c2
+    integer(int32) ival
+    logical point_1
+    logical point_2
+    real(real64) x
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) x4
+    real(real64) y
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) y4
 
     ival = 0
-    x = 0.0_dp
-    y = 0.0_dp
+    x = 0.0e+00_real64
+    y = 0.0e+00_real64
   !
   !  Check whether either line is a point.
   !
@@ -2236,10 +2201,9 @@ contains
     else
       call lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, x, y )
     end if
-  end subroutine lines_exp_int_2d
+  end
 
-  subroutine lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, x, y ) &
-        bind(C, name="lines_imp_int_2d")
+  subroutine lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, x, y )
 
   !*****************************************************************************80
   !
@@ -2265,13 +2229,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A1, B1, C1, define the first line.
+  !    Input, real(real64) A1, B1, C1, define the first line.
   !    At least one of A1 and B1 must be nonzero.
   !
-  !    Input, real(dp) A2, B2, C2, define the second line.
+  !    Input, real(real64) A2, B2, C2, define the second line.
   !    At least one of A2 and B2 must be nonzero.
   !
-  !    Output, integer(ip) IVAL, reports on the intersection.
+  !    Output, integer(int32) IVAL, reports on the intersection.
   !
   !    -1, both A1 and B1 were zero.
   !    -2, both A2 and B2 were zero.
@@ -2279,32 +2243,32 @@ contains
   !     1, one intersection point, returned in X, Y.
   !     2, infinitely many intersections, the lines are identical.
   !
-  !    Output, real(dp) X, Y, if IVAL = 1, then X, Y contains
+  !    Output, real(real64) X, Y, if IVAL = 1, then X, Y contains
   !    the intersection point.  Otherwise, X = 0, Y = 0.
   !
 
-    real(dp) :: a(2,2)
-    real(dp), intent(in), value :: a1
-    real(dp), intent(in), value :: a2
-    real(dp) :: b(2,2)
-    real(dp), intent(in), value :: b1
-    real(dp), intent(in), value :: b2
-    real(dp), intent(in), value :: c1
-    real(dp), intent(in), value :: c2
-    real(dp) :: det
-    integer(ip), intent(out) :: ival
-    real(dp), intent(out) :: x
-    real(dp), intent(out) :: y
+    real(real64) a(2,2)
+    real(real64) a1
+    real(real64) a2
+    real(real64) b(2,2)
+    real(real64) b1
+    real(real64) b2
+    real(real64) c1
+    real(real64) c2
+    real(real64) det
+    integer(int32) ival
+    real(real64) x
+    real(real64) y
 
-    x = 0.0_dp
-    y = 0.0_dp
+    x = 0.0e+00_real64
+    y = 0.0e+00_real64
   !
   !  Refuse to handle degenerate lines.
   !
-    if ( a1 == 0.0_dp .and. b1 == 0.0_dp ) then
+    if ( a1 == 0.0e+00_real64 .and. b1 == 0.0e+00_real64 ) then
       ival = -1
       return
-    else if ( a2 == 0.0_dp .and. b2 == 0.0_dp ) then
+    else if ( a2 == 0.0e+00_real64 .and. b2 == 0.0e+00_real64 ) then
       ival = -2
     end if
   !
@@ -2320,7 +2284,7 @@ contains
   !  If the inverse exists, then the lines intersect.
   !  Multiply the inverse times -C to get the intersection point.
   !
-    if ( det /= 0.0_dp ) then
+    if ( det /= 0.0e+00_real64 ) then
 
       ival = 1
       x = - b(1,1) * c1 - b(1,2) * c2
@@ -2334,7 +2298,7 @@ contains
 
       ival = 0
 
-      if ( a1 == 0.0_dp ) then
+      if ( a1 == 0.0e+00_real64 ) then
         if ( b2 * c1 == c2 * b1 ) then
           ival = 2
         end if
@@ -2345,10 +2309,9 @@ contains
       end if
 
     end if
-  end subroutine lines_imp_int_2d
+  end
 
-  subroutine lines_seg_dist_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 ) &
-        bind(C, name="lines_seg_dist_2d")
+  subroutine lines_seg_dist_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 )
 
   !*****************************************************************************80
   !
@@ -2368,38 +2331,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, the endpoints of the first
+  !    Input, real(real64) X1, Y1, X2, Y2, the endpoints of the first
   !    segment.
   !
-  !    Input, real(dp) X3, Y3, X4, Y4, the endpoints of the second
+  !    Input, real(real64) X3, Y3, X4, Y4, the endpoints of the second
   !    segment.
   !
-  !    Output, integer(ip) FLAG, records the results.
+  !    Output, integer(int32) FLAG, records the results.
   !    0, the line segments do not intersect.
   !    1, the line segments intersect.
   !
-  !    Output, real(dp) X5, Y5.
+  !    Output, real(real64) X5, Y5.
   !    If FLAG = 0, X5 = Y5 = 0.
   !    If FLAG = 1, then (X5,Y5) is a point of intersection.
   !
 
-    integer(ip), intent(out) :: flag
-    integer(ip) :: ival
-    real(dp) :: u
-    real(dp) :: v
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: x4
-    real(dp), intent(out) :: x5
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
-    real(dp), intent(in), value :: y4
-    real(dp), intent(out) :: y5
+    integer(int32) flag
+    integer(int32) ival
+    real(real64) u
+    real(real64) v
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) x4
+    real(real64) x5
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) y4
+    real(real64) y5
 
-    x5 = 0.0_dp
-    y5 = 0.0_dp
+    x5 = 0.0e+00_real64
+    y5 = 0.0e+00_real64
   !
   !  Find the intersection of the two lines.
   !
@@ -2413,7 +2376,7 @@ contains
   !
     call line_seg_contains_point_2d ( x1, y1, x2, y2, x5, y5, u, v )
 
-    if ( u < 0 .or. 1.0_dp < u .or. 0.001_dp < v ) then
+    if ( u < 0 .or. 1.0e+00_real64 < u .or. 0.001e+00_real64 < v ) then
       flag = 0
     end if
   !
@@ -2421,15 +2384,14 @@ contains
   !
     call line_seg_contains_point_2d ( x3, y3, x4, y4, x5, y5, u, v )
 
-    if ( u < 0 .or. 1.0_dp < u .or. 0.001_dp < v ) then
+    if ( u < 0 .or. 1.0e+00_real64 < u .or. 0.001e+00_real64 < v ) then
       flag = 0
     end if
 
     flag = 1
-  end subroutine lines_seg_dist_2d
+  end
 
-  subroutine lines_seg_int_1d ( x1, x2, x3, x4, flag, x5, x6 ) &
-        bind(C, name="lines_seg_int_1d")
+  subroutine lines_seg_int_1d ( x1, x2, x3, x4, flag, x5, x6 )
 
   !*****************************************************************************80
   !
@@ -2449,29 +2411,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, X2, the endpoints of the first segment.
+  !    Input, real(real64) X1, X2, the endpoints of the first segment.
   !
-  !    Input, real(dp) X3, X4, the endpoints of the second segment.
+  !    Input, real(real64) X3, X4, the endpoints of the second segment.
   !
-  !    Output, integer(ip) FLAG, records the results.
+  !    Output, integer(int32) FLAG, records the results.
   !    0, the line segments do not intersect.
   !    1, the line segments intersect.
   !
-  !    Output, real(dp) X5, X6, the endpoints of the intersection
+  !    Output, real(real64) X5, X6, the endpoints of the intersection
   !    segment.  If FLAG = 0, X5 = X6 = 0.
   !
 
-    integer(ip), intent(out) :: flag
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: x4
-    real(dp), intent(out) :: x5
-    real(dp), intent(out) :: x6
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp) :: y3
-    real(dp) :: y4
+    integer(int32) flag
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) x4
+    real(real64) x5
+    real(real64) x6
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) y4
 
     y1 = min ( x1, x2 )
     y2 = max ( x1, x2 )
@@ -2479,8 +2441,8 @@ contains
     y4 = max ( x3, x4 )
 
     flag = 0
-    x5 = 0.0_dp
-    x6 = 0.0_dp
+    x5 = 0.0e+00_real64
+    x6 = 0.0e+00_real64
 
     if ( y4 < y1 ) then
       return
@@ -2490,10 +2452,9 @@ contains
     flag = 1
     x5 = max ( y1, y3 )
     x6 = min ( y2, y4 )
-  end subroutine lines_seg_int_1d
+  end
 
-  subroutine lines_seg_int_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 ) &
-        bind(C, name="lines_seg_int_2d")
+  subroutine lines_seg_int_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 )
 
   !*****************************************************************************80
   !
@@ -2513,38 +2474,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, the endpoints of the first
+  !    Input, real(real64) X1, Y1, X2, Y2, the endpoints of the first
   !    segment.
   !
-  !    Input, real(dp) X3, Y3, X4, Y4, the endpoints of the second
+  !    Input, real(real64) X3, Y3, X4, Y4, the endpoints of the second
   !    segment.
   !
-  !    Output, integer(ip) FLAG, records the results.
+  !    Output, integer(int32) FLAG, records the results.
   !    0, the line segments do not intersect.
   !    1, the line segments intersect.
   !
-  !    Output, real(dp) X5, Y5.
+  !    Output, real(real64) X5, Y5.
   !    If FLAG = 0, X5 = Y5 = 0.
   !    If FLAG = 1, then (X5,Y5) is a point of intersection.
   !
 
-    integer(ip), intent(out) :: flag
-    integer(ip) :: ival
-    real(dp) :: u
-    real(dp) :: v
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: x4
-    real(dp), intent(out) :: x5
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
-    real(dp), intent(in), value :: y4
-    real(dp), intent(out) :: y5
+    integer(int32) flag
+    integer(int32) ival
+    real(real64) u
+    real(real64) v
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) x4
+    real(real64) x5
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) y4
+    real(real64) y5
 
-    x5 = 0.0_dp
-    y5 = 0.0_dp
+    x5 = 0.0e+00_real64
+    y5 = 0.0e+00_real64
   !
   !  Find the intersection of the two lines.
   !
@@ -2558,7 +2519,7 @@ contains
   !
     call line_seg_contains_point_2d ( x1, y1, x2, y2, x5, y5, u, v )
 
-    if ( u < 0 .or. 1.0_dp < u .or. 0.001_dp < v ) then
+    if ( u < 0 .or. 1.0e+00_real64 < u .or. 0.001e+00_real64 < v ) then
       flag = 0
     end if
   !
@@ -2566,15 +2527,14 @@ contains
   !
     call line_seg_contains_point_2d ( x3, y3, x4, y4, x5, y5, u, v )
 
-    if ( u < 0 .or. 1.0_dp < u .or. 0.001_dp < v ) then
+    if ( u < 0 .or. 1.0e+00_real64 < u .or. 0.001e+00_real64 < v ) then
       flag = 0
     end if
 
     flag = 1
-  end subroutine lines_seg_int_2d
+  end
 
-  subroutine perm_print ( n, p, title ) &
-        bind(C, name="perm_print")
+  subroutine perm_print ( n, p, title )
 
   !*****************************************************************************80
   !
@@ -2607,22 +2567,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of objects permuted.
+  !    Input, integer(int32) N, the number of objects permuted.
   !
-  !    Input, integer(ip) P(N), the permutation, in standard index form.
+  !    Input, integer(int32) P(N), the permutation, in standard index form.
   !
   !    Input, character ( len = * ) TITLE, an optional title.
   !    If no title is supplied, then only the permutation is printed.
   !
 
-    integer(ip), parameter :: inc = 20
-    integer(ip), intent(in), value :: n
+    integer(int32), parameter :: inc = 20
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: ihi
-    integer(ip) :: ilo
-    integer(ip), intent(in) :: p(n)
-    character ( len = * ), intent(in), value :: title
+    integer(int32) i
+    integer(int32) ihi
+    integer(int32) ilo
+    integer(int32) p(n)
+    character ( len = * ) title
 
     if ( len_trim ( title ) /= 0 ) then
 
@@ -2644,10 +2604,9 @@ contains
       end do
 
     end if
-  end subroutine perm_print
+  end
 
-  subroutine perm_random ( n, seed, p ) &
-        bind(C, name="perm_random")
+  subroutine perm_random ( n, seed, p )
 
   !*****************************************************************************80
   !
@@ -2674,22 +2633,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items to permute.
+  !    Input, integer(int32) N, the number of items to permute.
   !
-  !    Input/output, integer(ip) SEED, a seed for the random
+  !    Input/output, integer(int32) SEED, a seed for the random
   !    number generator.
   !
-  !    Output, integer(ip) P(N), a permutation of the numbers
+  !    Output, integer(int32) P(N), a permutation of the numbers
   !    from 1 to N.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    integer(ip) :: i
-    integer(ip) :: i4_uniform
-    integer(ip) :: j
-    integer(ip), intent(out) :: p(n)
-    integer(ip), intent(inout) :: seed
+    integer(int32) i
+    integer(int32) i4_uniform
+    integer(int32) j
+    integer(int32) p(n)
+    integer(int32) seed
 
     call i4vec_indicator ( n, p )
 
@@ -2697,10 +2656,9 @@ contains
       j = i4_uniform ( 1, i, seed )
       call i4_swap ( p(i), p(j) )
     end do
-  end subroutine perm_random
+  end
 
-  subroutine points_convex_hull_cubic_2d ( node_num, node_xy, hull_num, hull ) &
-        bind(C, name="points_convex_hull_cubic_2d")
+  subroutine points_convex_hull_cubic_2d ( node_num, node_xy, hull_num, hull )
 
   !*****************************************************************************80
   !
@@ -2732,32 +2690,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of points.
+  !    Input, integer(int32) NODE_NUM, the number of points.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of
   !    the points.
   !
-  !    Output, integer(ip) HULL_NUM, the number of vertices in the
+  !    Output, integer(int32) HULL_NUM, the number of vertices in the
   !    convex hull.
   !
-  !    Output, integer(ip) HULL(NODE_NUM), the HULL_NUM vertices that
+  !    Output, integer(int32) HULL(NODE_NUM), the HULL_NUM vertices that
   !    form the convex hull, in counter clockwise order.
   !
 
-    integer(ip), intent(in), value :: node_num
+    integer(int32) node_num
 
-    integer(ip) :: b(node_num)
-    real(dp) :: cross
-    real(dp) :: cross0_2d
-    integer(ip) :: e(node_num)
-    integer(ip), intent(out) :: hull(node_num)
-    integer(ip), intent(out) :: hull_num
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: match
-    real(dp), intent(in) :: node_xy(2,node_num)
-    logical :: valid
+    integer(int32) b(node_num)
+    real(real64) cross
+    real(real64) cross0_2d
+    integer(int32) e(node_num)
+    integer(int32) hull(node_num)
+    integer(int32) hull_num
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) match
+    real(real64) node_xy(2,node_num)
+    logical valid
 
     hull_num = 0
 
@@ -2776,7 +2734,7 @@ contains
   !
               cross = cross0_2d ( node_xy(1:2,i), node_xy(1:2,j), node_xy(1:2,k) )
 
-              if ( 0.0_dp < cross ) then
+              if ( 0.0e+00_real64 < cross ) then
                 valid = .false.
                 exit
               end if
@@ -2844,10 +2802,9 @@ contains
   !  Reverse the order.
   !
     hull(1:hull_num) = hull(hull_num:1:-1)
-  end subroutine points_convex_hull_cubic_2d
+  end
 
-  subroutine points_convex_hull_nlogh_2d ( node_num, node_xy, hull_num, hull ) &
-        bind(C, name="points_convex_hull_nlogh_2d")
+  subroutine points_convex_hull_nlogh_2d ( node_num, node_xy, hull_num, hull )
 
   !*****************************************************************************80
   !
@@ -2872,34 +2829,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes.
+  !    Input, integer(int32) NODE_NUM, the number of nodes.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of the nodes.
   !
-  !    Output, integer(ip) HULL_NUM, the number of nodes that lie
+  !    Output, integer(int32) HULL_NUM, the number of nodes that lie
   !    on the convex hull.
   !
-  !    Output, integer(ip) HULL(NODE_NUM).  Entries 1 through HULL_NUM
+  !    Output, integer(int32) HULL(NODE_NUM).  Entries 1 through HULL_NUM
   !    contain the indices of the nodes that form the convex hull, in order.
   !
 
-    integer(ip), intent(in), value :: node_num
+    integer(int32) node_num
 
-    real(dp) :: angle
-    real(dp) :: angle_max
-    real(dp) :: angle_rad_2d
-    real(dp) :: di
-    real(dp) :: dr
-    integer(ip) :: first
-    integer(ip), intent(out) :: hull(node_num)
-    integer(ip), intent(out) :: hull_num
-    integer(ip) :: i
-    real(dp), intent(in) :: node_xy(2,node_num)
-    real(dp) :: p_xy(2)
-    integer(ip) :: q
-    real(dp) :: q_xy(2)
-    integer(ip) :: r
-    real(dp) :: r_xy(2)
+    real(real64) angle
+    real(real64) angle_max
+    real(real64) angle_rad_2d
+    real(real64) di
+    real(real64) dr
+    integer(int32) first
+    integer(int32) hull(node_num)
+    integer(int32) hull_num
+    integer(int32) i
+    real(real64) node_xy(2,node_num)
+    real(real64) p_xy(2)
+    integer(int32) q
+    real(real64) q_xy(2)
+    integer(int32) r
+    real(real64) r_xy(2)
 
     if ( node_num < 1 ) then
       hull_num = 0
@@ -2951,7 +2908,7 @@ contains
   !  and call it "P".
   !
     p_xy(1) = q_xy(1)
-    p_xy(2) = q_xy(2) - 1.0_dp
+    p_xy(2) = q_xy(2) - 1.0e+00_real64
   !
   !  Now, having old point P, and current point Q, find the new point R
   !  so the angle PQR is maximal.
@@ -2961,7 +2918,7 @@ contains
     do
 
       r = 0
-      angle_max = 0.0_dp
+      angle_max = 0.0e+00_real64
 
       do i = 1, node_num
 
@@ -3026,10 +2983,9 @@ contains
   !  Reverse the order of the points.
   !
     hull(1:hull_num) = hull(hull_num:1:-1)
-  end subroutine points_convex_hull_nlogh_2d
+  end
 
-  subroutine points_convex_hull_nlogn_2d ( node_num, node_xy, hull_num, hull ) &
-        bind(C, name="points_convex_hull_nlogn_2d")
+  subroutine points_convex_hull_nlogn_2d ( node_num, node_xy, hull_num, hull )
 
   !*****************************************************************************80
   !
@@ -3061,33 +3017,33 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of points.
+  !    Input, integer(int32) NODE_NUM, the number of points.
   !
-  !    Input, real(dp) NODE_XY(2,NODE_NUM), the coordinates of
+  !    Input, real(real64) NODE_XY(2,NODE_NUM), the coordinates of
   !    the points.
   !
-  !    Output, integer(ip) HULL_NUM, the number of vertices in the
+  !    Output, integer(int32) HULL_NUM, the number of vertices in the
   !    convex hull.
   !
-  !    Output, integer(ip) HULL(NODE_NUM), the HULL_NUM vertices that
+  !    Output, integer(int32) HULL(NODE_NUM), the HULL_NUM vertices that
   !    form the convex hull, in counter clockwise order.
   !
 
-    integer(ip), intent(in), value :: node_num
+    integer(int32) node_num
 
-    real(dp) :: angle_rad_2d
-    integer(ip), intent(out) :: hull(node_num)
-    integer(ip), intent(out) :: hull_num
-    integer(ip) :: i
-    integer(ip) :: l(node_num+100)
-    integer(ip) :: n1
-    integer(ip) :: n2
-    integer(ip) :: n3
-    real(dp), intent(in) :: node_xy(2,node_num)
-    real(dp) :: p1(2)
-    real(dp) :: p2(2)
-    real(dp) :: p3(2)
-    real(dp), parameter :: pi = 3.14159265_dp
+    real(real64) angle_rad_2d
+    integer(int32) hull(node_num)
+    integer(int32) hull_num
+    integer(int32) i
+    integer(int32) l(node_num+100)
+    integer(int32) n1
+    integer(int32) n2
+    integer(int32) n3
+    real(real64) node_xy(2,node_num)
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) p3(2)
+    real(real64), parameter :: pi = 3.14159265e+00_real64
   !
   !  Sort the (X,Y) points lexicographically.
   !
@@ -3182,10 +3138,9 @@ contains
   !  Reverse the order.
   !
     hull(1:hull_num) = l(hull_num:1:-1)
-  end subroutine points_convex_hull_nlogn_2d
+  end
 
-  subroutine points_minidisc1_2d ( n, px, py, qx, qy, r, cx, cy ) &
-        bind(C, name="points_minidisc1_2d")
+  subroutine points_minidisc1_2d ( n, px, py, qx, qy, r, cx, cy )
 
   !*****************************************************************************80
   !
@@ -3218,28 +3173,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points in the set P.
+  !    Input, integer(int32) N, the number of points in the set P.
   !
-  !    Input, real(dp) PX(N), PY(N), the X and Y coordinates of a set of
+  !    Input, real(real64) PX(N), PY(N), the X and Y coordinates of a set of
   !    points in the plane.
   !
-  !    Input, real(dp) QX, QY, a point in the plane.
+  !    Input, real(real64) QX, QY, a point in the plane.
   !
-  !    Output, real(dp) R, CX, CY, the radius and center of the smallest
+  !    Output, real(real64) R, CX, CY, the radius and center of the smallest
   !    disk that encloses P and has Q on its boundary.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: cx
-    real(dp), intent(out) :: cy
-    logical :: inside
-    integer(ip) :: j
-    real(dp), intent(in) :: px(n)
-    real(dp), intent(in) :: py(n)
-    real(dp), intent(in), value :: qx
-    real(dp), intent(in), value :: qy
-    real(dp), intent(out) :: r
+    real(real64) cx
+    real(real64) cy
+    logical inside
+    integer(int32) j
+    real(real64) px(n)
+    real(real64) py(n)
+    real(real64) qx
+    real(real64) qy
+    real(real64) r
   !
   !  Determine the smallest disk with Q and P(1) on its boundary,
   !  which is simply the circle whose diameter is the segment
@@ -3259,10 +3214,9 @@ contains
       end if
 
     end do
-  end subroutine points_minidisc1_2d
+  end
 
-  subroutine points_minidisc2_2d ( n, px, py, q1x, q1y, q2x, q2y, r, cx, cy ) &
-        bind(C, name="points_minidisc2_2d")
+  subroutine points_minidisc2_2d ( n, px, py, q1x, q1y, q2x, q2y, r, cx, cy )
 
   !*****************************************************************************80
   !
@@ -3295,30 +3249,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points in the set P.
+  !    Input, integer(int32) N, the number of points in the set P.
   !
-  !    Input, real(dp) PX(N), PY(N), the X and Y coordinates of a set of
+  !    Input, real(real64) PX(N), PY(N), the X and Y coordinates of a set of
   !    points in the plane.
   !
-  !    Input, real(dp) Q1X, Q1Y, Q2X, Q2Y, two points in the plane.
+  !    Input, real(real64) Q1X, Q1Y, Q2X, Q2Y, two points in the plane.
   !
-  !    Output, real(dp) R, CX, CY, the radius and center of the smallest
+  !    Output, real(real64) R, CX, CY, the radius and center of the smallest
   !    disk that encloses P and has Q1 and Q2 on its boundary.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: cx
-    real(dp), intent(out) :: cy
-    logical :: inside
-    integer(ip) :: k
-    real(dp), intent(in) :: px(n)
-    real(dp), intent(in) :: py(n)
-    real(dp), intent(in), value :: q1x
-    real(dp), intent(in), value :: q1y
-    real(dp), intent(in), value :: q2x
-    real(dp), intent(in), value :: q2y
-    real(dp), intent(out) :: r
+    real(real64) cx
+    real(real64) cy
+    logical inside
+    integer(int32) k
+    real(real64) px(n)
+    real(real64) py(n)
+    real(real64) q1x
+    real(real64) q1y
+    real(real64) q2x
+    real(real64) q2y
+    real(real64) r
   !
   !  Determine the smallest disk with Q1, Q2 on its boundary,
   !  which is simply the circle whose diameter is the segment
@@ -3338,10 +3292,9 @@ contains
       end if
 
     end do
-  end subroutine points_minidisc2_2d
+  end
 
-  subroutine points_minidisc_2d ( n, px, py, r, cx, cy ) &
-        bind(C, name="points_minidisc_2d")
+  subroutine points_minidisc_2d ( n, px, py, r, cx, cy )
 
   !*****************************************************************************80
   !
@@ -3368,29 +3321,29 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of points in the set P.
+  !    Input, integer(int32) N, the number of points in the set P.
   !
-  !    Input, real(dp) PX(N), PY(N), the X and Y coordinates of a set of
+  !    Input, real(real64) PX(N), PY(N), the X and Y coordinates of a set of
   !    points in the plane.
   !
-  !    Output, real(dp) R, CX, CY, the radius and center of the smallest
+  !    Output, real(real64) R, CX, CY, the radius and center of the smallest
   !    disk that encloses P.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(out) :: cx
-    real(dp), intent(out) :: cy
-    integer(ip) :: i
-    logical :: inside
-    real(dp), intent(in) :: px(n)
-    real(dp), intent(in) :: py(n)
-    real(dp), intent(out) :: r
+    real(real64) cx
+    real(real64) cy
+    integer(int32) i
+    logical inside
+    real(real64) px(n)
+    real(real64) py(n)
+    real(real64) r
   !
   !  N = 1
   !
     if ( n == 1 ) then
-      r = 0.0_dp
+      r = 0.0e+00_real64
       cx = px(1)
       cy = py(1)
     end if
@@ -3398,9 +3351,9 @@ contains
   !  N = 2
   !
     if ( n == 2 ) then
-      r = 0.5_dp * sqrt ( ( px(1) - px(2) )**2 + ( py(1) - py(2) )**2 )
-      cx = 0.5_dp * ( px(1) + px(2) )
-      cy = 0.5_dp * ( py(1) + py(2) )
+      r = 0.5e+00_real64 * sqrt ( ( px(1) - px(2) )**2 + ( py(1) - py(2) )**2 )
+      cx = 0.5e+00_real64 * ( px(1) + px(2) )
+      cy = 0.5e+00_real64 * ( py(1) + py(2) )
     end if
   !
   !  Determine the smallest disk with P(1), P(2) on its boundary,
@@ -3419,10 +3372,9 @@ contains
       end if
 
     end do
-  end subroutine points_minidisc_2d
+  end
 
-  subroutine poly_triangulate_2d ( n, x, y, triang ) &
-        bind(C, name="poly_triangulate_2d")
+  subroutine poly_triangulate_2d ( n, x, y, triang )
 
   !*****************************************************************************80
   !
@@ -3461,47 +3413,47 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of nodes in the polygon.
+  !    Input, integer(int32) N, the number of nodes in the polygon.
   !
-  !    Input, real(dp) X(N), Y(N), the coordinates of the nodes,
+  !    Input, real(real64) X(N), Y(N), the coordinates of the nodes,
   !    listed in counter-clockwise order.
   !
-  !    Output, integer(ip) TRIANG(3,N-2), the triangulation of
+  !    Output, integer(int32) TRIANG(3,N-2), the triangulation of
   !    the polygon.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: stack2_max = 100
+    integer(int32) n
+    integer(int32), parameter :: stack2_max = 100
 
-    integer(ip) :: best
-    integer(ip) :: degree
-    integer(ip) :: degree2
-    real(dp) :: dist
-    real(dp) :: dist_max
-    logical :: inside
-    integer(ip) :: j
-    integer(ip) :: number
-    integer(ip) :: poly(n)
-    integer(ip) :: stack1(n-2)
-    integer(ip) :: stack1_num
-    integer(ip) :: stack2(stack2_max)
-    integer(ip) :: stack2_num
-    integer(ip) :: t
-    integer(ip), intent(out) :: triang(3,n-2)
-    integer(ip) :: triang_num
-    integer(ip) :: u
-    integer(ip) :: v
-    integer(ip) :: w
-    real(dp), intent(in) :: x(n)
-    real(dp) :: x1
-    real(dp) :: x2
-    real(dp) :: x3
-    real(dp) :: x4
-    real(dp), intent(in) :: y(n)
-    real(dp) :: y1
-    real(dp) :: y2
-    real(dp) :: y3
-    real(dp) :: y4
+    integer(int32) best
+    integer(int32) degree
+    integer(int32) degree2
+    real(real64) dist
+    real(real64) dist_max
+    logical inside
+    integer(int32) j
+    integer(int32) number
+    integer(int32) poly(n)
+    integer(int32) stack1(n-2)
+    integer(int32) stack1_num
+    integer(int32) stack2(stack2_max)
+    integer(int32) stack2_num
+    integer(int32) t
+    integer(int32) triang(3,n-2)
+    integer(int32) triang_num
+    integer(int32) u
+    integer(int32) v
+    integer(int32) w
+    real(real64) x(n)
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) x4
+    real(real64) y(n)
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) y4
 
     if ( n <= 2 ) then
     end if
@@ -3546,7 +3498,7 @@ contains
       x3 = x(w)
       y3 = y(w)
 
-      dist_max = 0.0_dp
+      dist_max = 0.0e+00_real64
       best = 0
       number = 0
 
@@ -3610,10 +3562,9 @@ contains
       end if
 
     end do
-  end subroutine poly_triangulate_2d
+  end
 
-  subroutine poly_reorder_nodes ( nxy, x, y, npoly, poly ) &
-        bind(C, name="poly_reorder_nodes")
+  subroutine poly_reorder_nodes ( nxy, x, y, npoly, poly )
 
   !*****************************************************************************80
   !
@@ -3633,26 +3584,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NXY, the number of nodes.
+  !    Input, integer(int32) NXY, the number of nodes.
   !
-  !    Input, real(dp) X(NXY), Y(NXY), the coordinates of the nodes.
+  !    Input, real(real64) X(NXY), Y(NXY), the coordinates of the nodes.
   !
-  !    Input, integer(ip) NPOLY, the number of nodes of the polygon.
+  !    Input, integer(int32) NPOLY, the number of nodes of the polygon.
   !
   !    Input/output, POLY(NPOLY), the indices of the nodes.
   !
 
-    integer(ip), intent(in), value :: npoly
-    integer(ip), intent(in), value :: nxy
+    integer(int32) npoly
+    integer(int32) nxy
 
-    integer(ip) :: i
-    integer(ip) :: imin
-    integer(ip) :: p
-    integer(ip) :: pmin
-    integer(ip), intent(inout) :: poly(npoly)
-    integer(ip) :: poly2(npoly)
-    real(dp), intent(in) :: x(nxy)
-    real(dp), intent(in) :: y(nxy)
+    integer(int32) i
+    integer(int32) imin
+    integer(int32) p
+    integer(int32) pmin
+    integer(int32) poly(npoly)
+    integer(int32) poly2(npoly)
+    real(real64) x(nxy)
+    real(real64) y(nxy)
 
     imin = 1
     pmin = poly(imin)
@@ -3675,10 +3626,9 @@ contains
       poly(1:npoly) = poly2(1:npoly)
 
     end if
-  end subroutine poly_reorder_nodes
+  end
 
-  subroutine polycon_minkowski_sum_linear ( nu, ux, uy, nv, vx, vy, nw, wx, wy ) &
-        bind(C, name="polycon_minkowski_sum_linear")
+  subroutine polycon_minkowski_sum_linear ( nu, ux, uy, nv, vx, vy, nw, wx, wy )
 
   !*****************************************************************************80
   !
@@ -3721,53 +3671,53 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NU, the number of vertices of the 
+  !    Input, integer(int32) NU, the number of vertices of the 
   !    first polygon.
   !
-  !    Input, real(dp) UX(NU), UY(NU), the coordinates of the vertices
+  !    Input, real(real64) UX(NU), UY(NU), the coordinates of the vertices
   !    of the first polygon.
   !
-  !    Input, integer(ip) NV, the number of vertices of the 
+  !    Input, integer(int32) NV, the number of vertices of the 
   !    second polygon.
   !
-  !    Input, real(dp) VX(NV), VY(NY), the coordinates of the vertices
+  !    Input, real(real64) VX(NV), VY(NY), the coordinates of the vertices
   !    of the second polygon.
   !
-  !    Output, integer(ip) NW, the number of vertices of the sum polygon.
+  !    Output, integer(int32) NW, the number of vertices of the sum polygon.
   !    NW will be at most NV+NU.
   !
-  !    Output, real(dp) WX(*), WY(*), the coordinates of the vertices
+  !    Output, real(real64) WX(*), WY(*), the coordinates of the vertices
   !    of the sum polygon.
   !
 
-    integer(ip), intent(in), value :: nu
-    integer(ip), intent(in), value :: nv
+    integer(int32) nu
+    integer(int32) nv
 
-    real(dp) :: angle_rad_2d
-    integer(ip) :: i
-    integer(ip) :: i4_wrap
-    integer(ip) :: iw
-    integer(ip) :: ip1w
-    integer(ip) :: j
-    integer(ip) :: jp1w
-    integer(ip) :: jw
-    integer(ip), intent(out) :: nw
-    real(dp) :: p1(2)
-    real(dp) :: p2(2)
-    real(dp) :: p3(2)
-    real(dp) :: q1(2)
-    real(dp) :: q2(2)
-    real(dp) :: q3(2)
-    real(dp), intent(in) :: ux(nu)
-    real(dp), intent(in) :: uy(nu)
-    real(dp) :: u_angle
-    logical :: u_done
-    real(dp), intent(in) :: vx(nv)
-    real(dp), intent(in) :: vy(nv)
-    real(dp) :: v_angle
-    logical :: v_done
-    real(dp), intent(out) :: wx(nu+nv+2)
-    real(dp), intent(out) :: wy(nu+nv+2)
+    real(real64) angle_rad_2d
+    integer(int32) i
+    integer(int32) i4_wrap
+    integer(int32) iw
+    integer(int32) ip1w
+    integer(int32) j
+    integer(int32) jp1w
+    integer(int32) jw
+    integer(int32) nw
+    real(real64) p1(2)
+    real(real64) p2(2)
+    real(real64) p3(2)
+    real(real64) q1(2)
+    real(real64) q2(2)
+    real(real64) q3(2)
+    real(real64) ux(nu)
+    real(real64) uy(nu)
+    real(real64) u_angle
+    logical u_done
+    real(real64) vx(nv)
+    real(real64) vy(nv)
+    real(real64) v_angle
+    logical v_done
+    real(real64) wx(nu+nv+2)
+    real(real64) wy(nu+nv+2)
 
     i = 1
     iw = 1
@@ -3786,7 +3736,7 @@ contains
 
       ip1w = i4_wrap ( i+1, 1, nu )
 
-      p1(1) = ux(iw) + 1.0_dp
+      p1(1) = ux(iw) + 1.0e+00_real64
       p1(2) = uy(iw)
       p2(1) = ux(iw)
       p2(2) = uy(iw)
@@ -3794,12 +3744,12 @@ contains
       p3(2) = uy(ip1w)
 
       u_angle = angle_rad_2d ( p1, p2, p3 )
-      u_angle = u_angle + real ( i - nu, dp) / real ( nu, dp) &
-        * 2.0_dp * 3.141592653589793_dp
+      u_angle = u_angle + real ( i - nu, real64) / real ( nu, real64) &
+        * 2.0e+00_real64 * 3.141592653589793e+00_real64
 
       jp1w = i4_wrap ( j+1, 1, nv )
 
-      q1(1) = vx(jw) + 1.0_dp
+      q1(1) = vx(jw) + 1.0e+00_real64
       q1(2) = vy(jw)
       q2(1) = vx(jw)
       q2(2) = vy(jw)
@@ -3807,8 +3757,8 @@ contains
       q3(2) = vy(jp1w)
 
       v_angle = angle_rad_2d ( q1, q2, q3 )
-      v_angle = v_angle + real ( j - nv, dp) / real ( nv, dp) &
-        * 2.0_dp * 3.141592653589793_dp
+      v_angle = v_angle + real ( j - nv, real64) / real ( nv, real64) &
+        * 2.0e+00_real64 * 3.141592653589793e+00_real64
 
       if ( u_angle < v_angle ) then
         i = i + 1
@@ -3835,10 +3785,9 @@ contains
       jw = i4_wrap ( j, 1, nv )
 
     end do
-  end subroutine polycon_minkowski_sum_linear
+  end
 
-  subroutine polycon_minkowski_sum_n2logn2 ( nu, ux, uy, nv, vx, vy, nw, w_xy ) &
-        bind(C, name="polycon_minkowski_sum_n2logn2")
+  subroutine polycon_minkowski_sum_n2logn2 ( nu, ux, uy, nv, vx, vy, nw, w_xy )
 
   !*****************************************************************************80
   !
@@ -3881,39 +3830,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NU, the number of vertices of the
+  !    Input, integer(int32) NU, the number of vertices of the
   !    first polygon.
   !
-  !    Input, real(dp) UX(NU), UY(NU), the coordinates of the vertices
+  !    Input, real(real64) UX(NU), UY(NU), the coordinates of the vertices
   !    of the first polygon.
   !
-  !    Input, integer(ip) NV, the number of vertices of the
+  !    Input, integer(int32) NV, the number of vertices of the
   !    second polygon.
   !
-  !    Input, real(dp) VX(NV), VY(NY), the coordinates of the vertices
+  !    Input, real(real64) VX(NV), VY(NY), the coordinates of the vertices
   !    of the second polygon.
   !
-  !    Output, integer(ip) NW, the number of vertices of the sum polygon.
+  !    Output, integer(int32) NW, the number of vertices of the sum polygon.
   !    NW will be at most NU+NV.
   !
-  !    Output, real(dp) W_XY(2,*), the coordinates of the vertices
+  !    Output, real(real64) W_XY(2,*), the coordinates of the vertices
   !    of the sum polygon.
   !
 
-    integer(ip), intent(in), value :: nu
-    integer(ip), intent(in), value :: nv
+    integer(int32) nu
+    integer(int32) nv
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: nuv
-    integer(ip), intent(out) :: nw
-    real(dp) :: uv_xy(2,nu*nv)
-    real(dp), intent(in) :: ux(nu)
-    real(dp), intent(in) :: uy(nu)
-    real(dp), intent(in) :: vx(nv)
-    real(dp), intent(in) :: vy(nv)
-    integer(ip) :: w(nu+nv)
-    real(dp), intent(out) :: w_xy(2,nu+nv)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) nuv
+    integer(int32) nw
+    real(real64) uv_xy(2,nu*nv)
+    real(real64) ux(nu)
+    real(real64) uy(nu)
+    real(real64) vx(nv)
+    real(real64) vy(nv)
+    integer(int32) w(nu+nv)
+    real(real64) w_xy(2,nu+nv)
   !
   !  Generate points from all pairs.
   !
@@ -3934,10 +3883,9 @@ contains
   !  Collect the points.
   !
     w_xy(1:2,1:nw) = uv_xy(1:2,w(1:nw))
-  end subroutine polycon_minkowski_sum_n2logn2
+  end
 
-  function r4_uniform_01 ( seed ) &
-        bind(C, name="r4_uniform_01")
+  function r4_uniform_01 ( seed )
 
   !*****************************************************************************80
   !
@@ -3945,7 +3893,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R4 is a real(sp) value.
+  !    An R4 is a real(real32) value.
   !
   !    This routine implements the recursion
   !
@@ -4007,17 +3955,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, integer(ip) SEED, the "seed" value, which
+  !    Input/output, integer(int32) SEED, the "seed" value, which
   !    should NOT be 0.  On output, SEED has been updated.
   !
-  !    Output, real(sp) R4_UNIFORM_01, a new pseudorandom variate,
+  !    Output, real(real32) R4_UNIFORM_01, a new pseudorandom variate,
   !    strictly between 0 and 1.
   !
 
-    integer(ip), parameter :: i4_huge = 2147483647
-    integer(ip) :: k
-    integer(ip), intent(inout) :: seed
-    real(sp) :: r4_uniform_01
+    integer(int32), parameter :: i4_huge = 2147483647
+    integer(int32) k
+    integer(int32) seed
+    real(real32) r4_uniform_01
 
     if ( seed == 0 ) then
       write ( *, '(a)' ) ' '
@@ -4034,11 +3982,10 @@ contains
       seed = seed + i4_huge
     end if
 
-    r4_uniform_01 = real ( seed, sp) * 4.656612875E-10
-  end function r4_uniform_01
+    r4_uniform_01 = real ( seed, real32) * 4.656612875E-10
+  end
 
-  subroutine r8_swap ( x, y ) &
-        bind(C, name="r8_swap")
+  subroutine r8_swap ( x, y )
 
   !*****************************************************************************80
   !
@@ -4058,21 +4005,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, real(dp) X, Y.  On output, the values of X and
+  !    Input/output, real(real64) X, Y.  On output, the values of X and
   !    Y have been interchanged.
   !
 
-    real(dp), intent(inout) :: x
-    real(dp), intent(inout) :: y
-    real(dp) :: z
+    real(real64) x
+    real(real64) y
+    real(real64) z
 
     z = x
     x = y
     y = z
-  end subroutine r8_swap
+  end
 
-  subroutine r82vec_part_quick_a ( n, a, l, r ) &
-        bind(C, name="r82vec_part_quick_a")
+  subroutine r82vec_part_quick_a ( n, a, l, r )
 
   !*****************************************************************************80
   !
@@ -4081,7 +4027,7 @@ contains
   !  Discussion:
   !
   !    A R82VEC is a vector of D2's.
-  !    Each D2 is of type real(dp), with two entries.
+  !    Each D2 is of type real(real64), with two entries.
   !    A R82VEC may be stored as 2 by N array.
   !
   !    The routine reorders the entries of A.  Using A(1:2,1) as a
@@ -4118,12 +4064,12 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries of A.
+  !    Input, integer(int32) N, the number of entries of A.
   !
-  !    Input/output, real(dp) A(2,N).  On input, the array to be checked.
+  !    Input/output, real(real64) A(2,N).  On input, the array to be checked.
   !    On output, A has been reordered as described above.
   !
-  !    Output, integer(ip) L, R, the indices of A that define the three
+  !    Output, integer(int32) L, R, the indices of A that define the three
   !    segments.
   !    Let KEY = the input value of A(1:2,1).  Then
   !    I <= L                 A(1:2,I) < KEY;
@@ -4131,18 +4077,18 @@ contains
   !                 R <= I    KEY < A(1:2,I).
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a(dim_num,n)
-    logical :: r8vec_eq
-    logical :: r8vec_gt
-    logical :: r8vec_lt
-    integer(ip) :: i
-    real(dp) :: key(dim_num)
-    integer(ip), intent(out) :: l
-    integer(ip) :: m
-    integer(ip), intent(out) :: r
+    real(real64) a(dim_num,n)
+    logical r8vec_eq
+    logical r8vec_gt
+    logical r8vec_lt
+    integer(int32) i
+    real(real64) key(dim_num)
+    integer(int32) l
+    integer(int32) m
+    integer(int32) r
 
     if ( n < 1 ) then
       write ( *, '(a)' ) ' '
@@ -4189,10 +4135,9 @@ contains
     do i = 1, dim_num
       a(i,l+1:l+m) = key(i)
     end do
-  end subroutine r82vec_part_quick_a
+  end
 
-  subroutine r82vec_sort_quick_a ( n, a ) &
-        bind(C, name="r82vec_sort_quick_a")
+  subroutine r82vec_sort_quick_a ( n, a )
 
   !*****************************************************************************80
   !
@@ -4201,7 +4146,7 @@ contains
   !  Discussion:
   !
   !    A R82VEC is a vector of R82's.
-  !    Each R82 is of type real(dp), with two entries.
+  !    Each R82 is of type real(real64), with two entries.
   !    A R82VEC may be stored as 2 by N array.
   !
   !  Licensing:
@@ -4218,24 +4163,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the array.
+  !    Input, integer(int32) N, the number of entries in the array.
   !
-  !    Input/output, real(dp) A(2,N).
+  !    Input/output, real(real64) A(2,N).
   !    On input, the array to be sorted.
   !    On output, the array has been sorted.
   !
 
-    integer(ip), parameter :: level_max = 25
-    integer(ip), intent(in), value :: n
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: level_max = 25
+    integer(int32) n
+    integer(int32), parameter :: dim_num = 2
 
-    real(dp) :: a(dim_num,n)
-    integer(ip) :: base
-    integer(ip) :: l_segment
-    integer(ip) :: level
-    integer(ip) :: n_segment
-    integer(ip) :: rsave(level_max)
-    integer(ip) :: r_segment
+    real(real64) a(dim_num,n)
+    integer(int32) base
+    integer(int32) l_segment
+    integer(int32) level
+    integer(int32) n_segment
+    integer(int32) rsave(level_max)
+    integer(int32) r_segment
 
     if ( n < 1 ) then
       write ( *, '(a)' ) ' '
@@ -4302,10 +4247,9 @@ contains
       end if
 
     end do
-  end subroutine r82vec_sort_quick_a
+  end
 
-  subroutine r8mat_solve ( a, n, nrhs, info ) &
-        bind(C, name="r8mat_solve")
+  subroutine r8mat_solve ( a, n, nrhs, info )
 
   !*****************************************************************************80
   !
@@ -4325,31 +4269,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input/output, real(dp) A(N,N+NRHS), contains in rows and columns 1
+  !    Input/output, real(real64) A(N,N+NRHS), contains in rows and columns 1
   !    to N the coefficient matrix, and in columns N+1 through
   !    N+NRHS, the right hand sides.  On output, the coefficient matrix
   !    area has been destroyed, while the right hand sides have
   !    been overwritten with the corresponding solutions.
   !
-  !    Input, integer(ip) NRHS, the number of right hand sides.  NRHS
+  !    Input, integer(int32) NRHS, the number of right hand sides.  NRHS
   !    must be at least 0.
   !
-  !    Output, integer(ip) INFO, singularity flag.
+  !    Output, integer(int32) INFO, singularity flag.
   !    0, the matrix was not singular, the solutions were computed;
   !    J, factorization failed on step J, and the solutions could not
   !    be computed.
   !
 
-    integer(ip) :: n
-    integer(ip), intent(in), value :: nrhs
+    integer(int32) n
+    integer(int32) nrhs
 
-    real(dp) :: a(n,n+nrhs)
-    real(dp) :: apivot
-    real(dp) :: factor
-    integer(ip) :: i
-    integer(ip), intent(out) :: info
-    integer(ip) :: ipivot
-    integer(ip) :: j
+    real(real64) a(n,n+nrhs)
+    real(real64) apivot
+    real(real64) factor
+    integer(int32) i
+    integer(int32) info
+    integer(int32) ipivot
+    integer(int32) j
 
     info = 0
 
@@ -4367,7 +4311,7 @@ contains
         end if
       end do
 
-      if ( apivot == 0.0_dp ) then
+      if ( apivot == 0.0e+00_real64 ) then
         info = j
       end if
   !
@@ -4379,7 +4323,7 @@ contains
   !
   !  A(J,J) becomes 1.
   !
-      a(j,j) = 1.0_dp
+      a(j,j) = 1.0e+00_real64
       a(j,j+1:n+nrhs) = a(j,j+1:n+nrhs) / apivot
   !
   !  A(I,J) becomes 0.
@@ -4389,7 +4333,7 @@ contains
         if ( i /= j ) then
 
           factor = a(i,j)
-          a(i,j) = 0.0_dp
+          a(i,j) = 0.0e+00_real64
           a(i,j+1:n+nrhs) = a(i,j+1:n+nrhs) - factor * a(j,j+1:n+nrhs)
 
         end if
@@ -4397,10 +4341,9 @@ contains
       end do
 
     end do
-  end subroutine r8mat_solve
+  end
 
-  subroutine r8mat2_inverse ( a, b, det ) &
-        bind(C, name="r8mat2_inverse")
+  subroutine r8mat2_inverse ( a, b, det )
 
   !*****************************************************************************80
   !
@@ -4420,11 +4363,11 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(2,2), the matrix to be inverted.
+  !    Input, real(real64) A(2,2), the matrix to be inverted.
   !
-  !    Output, real(dp) B(2,2), the inverse of the matrix A.
+  !    Output, real(real64) B(2,2), the inverse of the matrix A.
   !
-  !    Output, real(dp) DET, the determinant of the matrix A.
+  !    Output, real(real64) DET, the determinant of the matrix A.
   !
   !    If DET is zero, then A is singular, and does not have an
   !    inverse.  In that case, B is simply set to zero, and a
@@ -4434,9 +4377,9 @@ contains
   !    of how nonsingular the matrix A is.
   !
 
-    real(dp) :: a(2,2)
-    real(dp), intent(out) :: b(2,2)
-    real(dp), intent(out) :: det
+    real(real64) a(2,2)
+    real(real64) b(2,2)
+    real(real64) det
   !
   !  Compute the determinant.
   !
@@ -4444,9 +4387,9 @@ contains
   !
   !  If the determinant is zero, bail out.
   !
-    if ( det == 0.0_dp ) then
+    if ( det == 0.0e+00_real64 ) then
 
-      b(1:2,1:2) = 0.0_dp
+      b(1:2,1:2) = 0.0e+00_real64
     end if
   !
   !  Compute the entries of the inverse matrix using an explicit formula.
@@ -4455,10 +4398,9 @@ contains
     b(1,2) = - a(1,2) / det
     b(2,1) = - a(2,1) / det
     b(2,2) = + a(1,1) / det
-  end subroutine r8mat2_inverse
+  end
 
-  function r8vec_eq ( n, a1, a2 ) &
-        bind(C, name="r8vec_eq")
+  function r8vec_eq ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -4466,7 +4408,7 @@ contains
   !
   !  Discussion:
   !
-  !    A R8VEC is an array of real(dp) real values.
+  !    A R8VEC is an array of real(real64) real values.
   !
   !  Licensing:
   !
@@ -4482,25 +4424,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the vectors.
+  !    Input, integer(int32) N, the number of entries in the vectors.
   !
-  !    Input, real(dp) A1(N), A2(N), two vectors to compare.
+  !    Input, real(real64) A1(N), A2(N), two vectors to compare.
   !
   !    Output, logical R8VEC_EQ, is TRUE if every pair of elements A1(I)
   !    and A2(I) are equal, and FALSE otherwise.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(n)
-    real(dp), intent(in) :: a2(n)
-    logical :: r8vec_eq
+    real(real64) a1(n)
+    real(real64) a2(n)
+    logical r8vec_eq
 
     r8vec_eq = ( all ( a1(1:n) == a2(1:n) ) )
-  end function r8vec_eq
+  end
 
-  function r8vec_gt ( n, a1, a2 ) &
-        bind(C, name="r8vec_gt")
+  function r8vec_gt ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -4508,7 +4449,7 @@ contains
   !
   !  Discussion:
   !
-  !    A R8VEC is an array of real(dp) real values.
+  !    A R8VEC is an array of real(real64) real values.
   !
   !    The comparison is lexicographic.
   !
@@ -4531,19 +4472,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the dimension of the vectors.
+  !    Input, integer(int32) N, the dimension of the vectors.
   !
-  !    Input, real(dp) A1(N), A2(N), the vectors to be compared.
+  !    Input, real(real64) A1(N), A2(N), the vectors to be compared.
   !
   !    Output, logical R8VEC_GT, is TRUE if and only if A1 > A2.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(n)
-    real(dp), intent(out) :: a2(n)
-    logical :: r8vec_gt
-    integer(ip) :: i
+    real(real64) a1(n)
+    real(real64) a2(n)
+    logical r8vec_gt
+    integer(int32) i
 
     r8vec_gt = .false.
 
@@ -4558,10 +4499,9 @@ contains
       end if
 
     end do
-  end function r8vec_gt
+  end
 
-  function r8vec_lt ( n, a1, a2 ) &
-        bind(C, name="r8vec_lt")
+  function r8vec_lt ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -4569,7 +4509,7 @@ contains
   !
   !  Discussion:
   !
-  !    A R8VEC is an array of real(dp) real values.
+  !    A R8VEC is an array of real(real64) real values.
   !
   !    The comparison is lexicographic.
   !
@@ -4592,19 +4532,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the dimension of the vectors.
+  !    Input, integer(int32) N, the dimension of the vectors.
   !
-  !    Input, real(dp) A1(N), A2(N), the vectors to be compared.
+  !    Input, real(real64) A1(N), A2(N), the vectors to be compared.
   !
   !    Output, logical R8VEC_LT, is TRUE if and only if A1 < A2.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(n)
-    real(dp), intent(out) :: a2(n)
-    logical :: r8vec_lt
-    integer(ip) :: i
+    real(real64) a1(n)
+    real(real64) a2(n)
+    logical r8vec_lt
+    integer(int32) i
 
     r8vec_lt = .false.
 
@@ -4619,10 +4559,9 @@ contains
       end if
 
     end do
-  end function r8vec_lt
+  end
 
-  subroutine r8vec_swap ( n, a1, a2 ) &
-        bind(C, name="r8vec_swap")
+  subroutine r8vec_swap ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -4630,7 +4569,7 @@ contains
   !
   !  Discussion:
   !
-  !    A R8VEC is an array of real(dp) real values.
+  !    A R8VEC is an array of real(real64) real values.
   !
   !  Licensing:
   !
@@ -4646,24 +4585,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of entries in the arrays.
+  !    Input, integer(int32) N, the number of entries in the arrays.
   !
-  !    Input/output, real(dp) A1(N), A2(N), the vectors to swap.
+  !    Input/output, real(real64) A1(N), A2(N), the vectors to swap.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(inout) :: a1(n)
-    real(dp), intent(inout) :: a2(n)
-    real(dp) :: a3(n)
+    real(real64) a1(n)
+    real(real64) a2(n)
+    real(real64) a3(n)
 
     a3(1:n) = a1(1:n)
     a1(1:n) = a2(1:n)
     a2(1:n) = a3(1:n)
-  end subroutine r8vec_swap
+  end
 
-  subroutine r8vec2_compare ( n, a1, a2, i, j, isgn ) &
-        bind(C, name="r8vec2_compare")
+  subroutine r8vec2_compare ( n, a1, a2, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -4687,26 +4625,26 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of data items.
+  !    Input, integer(int32) N, the number of data items.
   !
-  !    Input, real(dp) A1(N), A2(N), contain the two components
+  !    Input, real(real64) A1(N), A2(N), contain the two components
   !    of each item.
   !
-  !    Input, integer(ip) I, J, the items to be compared.
+  !    Input, integer(int32) I, J, the items to be compared.
   !
-  !    Output, integer(ip) ISGN, the results of the comparison:
+  !    Output, integer(int32) ISGN, the results of the comparison:
   !    -1, item I < item J,
   !     0, item I = item J,
   !    +1, item I > item J.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(n)
-    real(dp), intent(in) :: a2(n)
-    integer(ip), intent(in), value :: i
-    integer(ip), intent(out) :: isgn
-    integer(ip), intent(in), value :: j
+    real(real64) a1(n)
+    real(real64) a2(n)
+    integer(int32) i
+    integer(int32) isgn
+    integer(int32) j
 
     isgn = 0
 
@@ -4729,10 +4667,9 @@ contains
       isgn = +1
 
     end if
-  end subroutine r8vec2_compare
+  end
 
-  subroutine r8vec2_print ( n, a1, a2, title ) &
-        bind(C, name="r8vec2_print")
+  subroutine r8vec2_print ( n, a1, a2, title )
 
   !*****************************************************************************80
   !
@@ -4752,20 +4689,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of components of the vector.
+  !    Input, integer(int32) N, the number of components of the vector.
   !
-  !    Input, real(dp) A1(N), A2(N), the vectors to be printed.
+  !    Input, real(real64) A1(N), A2(N), the vectors to be printed.
   !
   !    Input, character ( len = * ) TITLE, a title to be printed first.
   !    TITLE may be blank.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(in) :: a1(n)
-    real(dp), intent(in) :: a2(n)
-    integer(ip) :: i
-    character ( len = * ), intent(in), value :: title
+    real(real64) a1(n)
+    real(real64) a2(n)
+    integer(int32) i
+    character ( len = * ) title
 
     if ( title /= ' ' ) then
       write ( *, '(a)' ) ' '
@@ -4776,10 +4713,9 @@ contains
     do i = 1, n
       write ( *, '(i6,2g14.6)' ) i, a1(i), a2(i)
     end do
-  end subroutine r8vec2_print
+  end
 
-  subroutine r8vec2_sort_a ( n, a1, a2 ) &
-        bind(C, name="r8vec2_sort_a")
+  subroutine r8vec2_sort_a ( n, a1, a2 )
 
   !*****************************************************************************80
   !
@@ -4804,19 +4740,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items of data.
+  !    Input, integer(int32) N, the number of items of data.
   !
-  !    Input/output, real(dp) A1(N), A2(N), the data to be sorted.
+  !    Input/output, real(real64) A1(N), A2(N), the data to be sorted.
   !
 
-    integer(ip), intent(in), value :: n
+    integer(int32) n
 
-    real(dp), intent(inout) :: a1(n)
-    real(dp), intent(inout) :: a2(n)
-    integer(ip) :: i
-    integer(ip) :: indx
-    integer(ip) :: isgn
-    integer(ip) :: j
+    real(real64) a1(n)
+    real(real64) a2(n)
+    integer(int32) i
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
   !
   !  Initialize.
   !
@@ -4851,10 +4787,9 @@ contains
       end if
 
     end do
-  end subroutine r8vec2_sort_a
+  end
 
-  function radians_to_degrees ( angle ) &
-        bind(C, name="radians_to_degrees")
+  function radians_to_degrees ( angle )
 
   !*****************************************************************************80
   !
@@ -4874,21 +4809,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) ANGLE, an angle in radians.
+  !    Input, real(real64) ANGLE, an angle in radians.
   !
-  !    Output, real(dp) RADIANS_TO_DEGREES, the equivalent angle
+  !    Output, real(real64) RADIANS_TO_DEGREES, the equivalent angle
   !    in degrees.
   !
 
-    real(dp), intent(in), value :: angle
-    real(dp), parameter :: pi = 3.141592653589793_dp
-    real(dp) :: radians_to_degrees
+    real(real64) angle
+    real(real64), parameter :: pi = 3.141592653589793e+00_real64
+    real(real64) radians_to_degrees
 
-    radians_to_degrees = ( angle / pi ) * 180.0_dp
-  end function radians_to_degrees
+    radians_to_degrees = ( angle / pi ) * 180.0e+00_real64
+  end
 
-  subroutine rect_int_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5, x6, y6 ) &
-        bind(C, name="rect_int_2d")
+  subroutine rect_int_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5, x6, y6 )
 
   !*****************************************************************************80
   !
@@ -4908,38 +4842,38 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, the corners of the first segment.
+  !    Input, real(real64) X1, Y1, X2, Y2, the corners of the first segment.
   !
-  !    Input, real(dp) X3, Y3, X4, Y4, the corners of the second segment.
+  !    Input, real(real64) X3, Y3, X4, Y4, the corners of the second segment.
   !
-  !    Output, integer(ip) FLAG, records the results.
+  !    Output, integer(int32) FLAG, records the results.
   !    0, the rectangles do not intersect.
   !    1, the intersection is a point.
   !    2, the intersection is a line.
   !    3, the intersection is a rectangle.
   !
-  !    Output, real(dp) X5, Y5, X6, Y6, the corners of the intersection.
+  !    Output, real(real64) X5, Y5, X6, Y6, the corners of the intersection.
   !    If FLAG = 0, X5 = Y5 = X6 = Y6 = 0.
   !
 
-    integer(ip), intent(out) :: flag
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: x4
-    real(dp), intent(out) :: x5
-    real(dp), intent(out) :: x6
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
-    real(dp), intent(in), value :: y4
-    real(dp), intent(out) :: y5
-    real(dp), intent(out) :: y6
+    integer(int32) flag
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) x4
+    real(real64) x5
+    real(real64) x6
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
+    real(real64) y4
+    real(real64) y5
+    real(real64) y6
 
-    x5 = 0.0_dp
-    y5 = 0.0_dp
-    x6 = 0.0_dp
-    y6 = 0.0_dp
+    x5 = 0.0e+00_real64
+    y5 = 0.0e+00_real64
+    x6 = 0.0e+00_real64
+    y6 = 0.0e+00_real64
 
     call lines_seg_int_1d ( x1, x2, x3, x4, flag, x5, x6 )
 
@@ -4947,10 +4881,9 @@ contains
     end if
 
     call lines_seg_int_1d ( y1, y2, y3, y4, flag, y5, y6 )
-  end subroutine rect_int_2d
+  end
 
-  subroutine sort_heap_external ( n, indx, i, j, isgn ) &
-        bind(C, name="sort_heap_external")
+  subroutine sort_heap_external ( n, indx, i, j, isgn )
 
   !*****************************************************************************80
   !
@@ -4959,7 +4892,7 @@ contains
   !  Discussion:
   !
   !    The actual list of data is not passed to the routine.  Hence this
-  !    routine may be used to sort integers, real(dp)s, numbers, names,
+  !    routine may be used to sort integers, real(real64)s, numbers, names,
   !    dates, shoe sizes, and so on.  After each call, the routine asks
   !    the user to compare or interchange two items, until a special
   !    return value signals that the sorting is completed.
@@ -4986,9 +4919,9 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of items to be sorted.
+  !    Input, integer(int32) N, the number of items to be sorted.
   !
-  !    Input/output, integer(ip) INDX, the main communication signal.
+  !    Input/output, integer(int32) INDX, the main communication signal.
   !
   !    The user must set INDX to 0 before the first call.
   !    Thereafter, the user should not change the value of INDX until
@@ -5007,27 +4940,27 @@ contains
   !
   !      equal to 0, the sorting is done.
   !
-  !    Output, integer(ip) I, J, the indices of two items.
+  !    Output, integer(int32) I, J, the indices of two items.
   !    On return with INDX positive, elements I and J should be interchanged.
   !    On return with INDX negative, elements I and J should be compared, and
   !    the result reported in ISGN on the next call.
   !
-  !    Input, integer(ip) ISGN, results of comparison of elements
+  !    Input, integer(int32) ISGN, results of comparison of elements
   !    I and J.  (Used only when the previous call returned INDX less than 0).
   !    ISGN <= 0 means I is less than or equal to J;
   !    0 <= ISGN means I is greater than or equal to J.
   !
 
-    integer(ip), intent(out) :: i
-    integer(ip), save :: i_save = 0
-    integer(ip), intent(inout) :: indx
-    integer(ip), intent(in), value :: isgn
-    integer(ip), intent(out) :: j
-    integer(ip), save :: j_save = 0
-    integer(ip), save :: k = 0
-    integer(ip), save :: k1 = 0
-    integer(ip), intent(in), value :: n
-    integer(ip), save :: n1 = 0
+    integer(int32) i
+    integer(int32), save :: i_save = 0
+    integer(int32) indx
+    integer(int32) isgn
+    integer(int32) j
+    integer(int32), save :: j_save = 0
+    integer(int32), save :: k = 0
+    integer(int32), save :: k1 = 0
+    integer(int32) n
+    integer(int32), save :: n1 = 0
   !
   !  INDX = 0: This is the first call.
   !
@@ -5131,10 +5064,9 @@ contains
       i = i_save
       j = j_save
     end if
-  end subroutine sort_heap_external
+  end
 
-  subroutine triangle_contains_point_2d ( x1, y1, x2, y2, x3, y3, x, y, inside ) &
-        bind(C, name="triangle_contains_point_2d")
+  subroutine triangle_contains_point_2d ( x1, y1, x2, y2, x3, y3, x, y, inside )
 
   !*****************************************************************************80
   !
@@ -5154,31 +5086,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) X1, Y1, X2, Y2, X3, Y3, the coordinates of
+  !    Input, real(real64) X1, Y1, X2, Y2, X3, Y3, the coordinates of
   !    the corners of the triangle.
   !
-  !    Input, real(dp) X, Y, the point to be checked.
+  !    Input, real(real64) X, Y, the point to be checked.
   !
   !    Output, logical INSIDE, is .TRUE. if (X,Y) is inside
   !    the triangle or on its boundary, and .FALSE. otherwise.
   !
 
-    integer(ip), parameter :: N = 2
-    integer(ip), parameter :: NRHS = 1
+    integer(int32), parameter :: N = 2
+    integer(int32), parameter :: NRHS = 1
 
-    real(dp) :: a(N,N+NRHS)
-    real(dp) :: c1
-    real(dp) :: c2
-    integer(ip) :: info
-    logical, intent(out) :: inside
-    real(dp), intent(out) :: x
-    real(dp), intent(in), value :: x1
-    real(dp), intent(in), value :: x2
-    real(dp), intent(in), value :: x3
-    real(dp), intent(in), value :: y
-    real(dp), intent(in), value :: y1
-    real(dp), intent(in), value :: y2
-    real(dp), intent(in), value :: y3
+    real(real64) a(N,N+NRHS)
+    real(real64) c1
+    real(real64) c2
+    integer(int32) info
+    logical inside
+    real(real64) x
+    real(real64) x1
+    real(real64) x2
+    real(real64) x3
+    real(real64) y
+    real(real64) y1
+    real(real64) y2
+    real(real64) y3
   !
   !  Set up the linear system
   !
@@ -5213,17 +5145,16 @@ contains
   !  If the point is in the triangle, its barycentric coordinates
   !  must both be nonnegative, and sum to no more than 1.
   !
-    if ( c1 < 0.0_dp .or. c2 < 0.0_dp ) then
+    if ( c1 < 0.0e+00_real64 .or. c2 < 0.0e+00_real64 ) then
       inside = .false.
-    else if ( 1.0_dp < c1 + c2 ) then
+    else if ( 1.0e+00_real64 < c1 + c2 ) then
       inside = .false.
     else
       inside = .true.
     end if
-  end subroutine triangle_contains_point_2d
+  end
 
-  subroutine triangulate_tricolor ( node_num, triang, color ) &
-        bind(C, name="triangulate_tricolor")
+  subroutine triangulate_tricolor ( node_num, triang, color )
 
   !*****************************************************************************80
   !
@@ -5268,31 +5199,31 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) NODE_NUM, the number of nodes in the polygon.
+  !    Input, integer(int32) NODE_NUM, the number of nodes in the polygon.
   !
-  !    Input, integer(ip) TRIANG(3,NODE_NUM-2), the triangulation of
+  !    Input, integer(int32) TRIANG(3,NODE_NUM-2), the triangulation of
   !    the polygon.
   !
-  !    Output, integer(ip) COLOR(NODE_NUM), an assignment of the
+  !    Output, integer(int32) COLOR(NODE_NUM), an assignment of the
   !    "colors" 1, 2 and 3 to the triangles in such a way that every triangle
   !    in the triangulation has one node of each color.
   !
 
-    integer(ip), intent(in), value :: node_num
+    integer(int32) node_num
 
-    integer(ip), intent(out) :: color(node_num)
-    integer(ip) :: color1
-    integer(ip) :: color2
-    integer(ip) :: color3
-    integer(ip) :: node1
-    integer(ip) :: node2
-    integer(ip) :: node3
-    integer(ip) :: stack(6*(node_num-3))
-    integer(ip) :: stack_max
-    integer(ip) :: stack_num
-    integer(ip) :: t1
-    integer(ip) :: t2
-    integer(ip), intent(in) :: triang(3,node_num-2)
+    integer(int32) color(node_num)
+    integer(int32) color1
+    integer(int32) color2
+    integer(int32) color3
+    integer(int32) node1
+    integer(int32) node2
+    integer(int32) node3
+    integer(int32) stack(6*(node_num-3))
+    integer(int32) stack_max
+    integer(int32) stack_num
+    integer(int32) t1
+    integer(int32) t2
+    integer(int32) triang(3,node_num-2)
 
     stack_max = 6 * ( node_num - 3 )
     t1 = 1
@@ -5341,11 +5272,10 @@ contains
       end if
 
     end do
-  end subroutine triangulate_tricolor
+  end
 
   subroutine triangulate_color_push ( t, node1, color1, node2, color2, color3, &
-    stack_max, stack_num, stack ) &
-        bind(C, name="triangulate_color_push")
+    stack_max, stack_num, stack )
 
   !*****************************************************************************80
   !
@@ -5369,34 +5299,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) T, the triangle that the side belongs to.
+  !    Input, integer(int32) T, the triangle that the side belongs to.
   !
-  !    Input, integer(ip) NODE1, COLOR1, the starting node of the
+  !    Input, integer(int32) NODE1, COLOR1, the starting node of the
   !    edge, and its color.
   !
-  !    Input, integer(ip) NODE2, COLOR2, the end node of the edge,
+  !    Input, integer(int32) NODE2, COLOR2, the end node of the edge,
   !    and its color.
   !
-  !    Input, integer(ip) COLOR3, the remaining color.
+  !    Input, integer(int32) COLOR3, the remaining color.
   !
-  !    Input, integer(ip) STACK_MAX, the maximum size of the stack.
+  !    Input, integer(int32) STACK_MAX, the maximum size of the stack.
   !
-  !    Input/output, integer(ip) STACK_NUM, the current size of 
+  !    Input/output, integer(int32) STACK_NUM, the current size of 
   !    the stack.
   !
-  !    Input/output, integer(ip) STACK(STACK_MAX), the stack.
+  !    Input/output, integer(int32) STACK(STACK_MAX), the stack.
   !
 
-    integer(ip), intent(in), value :: stack_max
+    integer(int32) stack_max
 
-    integer(ip), intent(in), value :: color1
-    integer(ip), intent(in), value :: color2
-    integer(ip), intent(in), value :: color3
-    integer(ip), intent(in), value :: node1
-    integer(ip), intent(in), value :: node2
-    integer(ip), intent(inout) :: stack(stack_max)
-    integer(ip), intent(inout) :: stack_num
-    integer(ip), intent(in), value :: t
+    integer(int32) color1
+    integer(int32) color2
+    integer(int32) color3
+    integer(int32) node1
+    integer(int32) node2
+    integer(int32) stack(stack_max)
+    integer(int32) stack_num
+    integer(int32) t
 
     stack_num = stack_num + 1
     stack(stack_num) = t
@@ -5410,11 +5340,10 @@ contains
     stack(stack_num) = color2
     stack_num = stack_num + 1
     stack(stack_num) = color3
-  end subroutine triangulate_color_push
+  end
 
   subroutine triangulate_color_pop ( t, node1, color1, node2, color2, color3, &
-    stack_max, stack_num, stack ) &
-        bind(C, name="triangulate_color_pop")
+    stack_max, stack_num, stack )
 
   !*****************************************************************************80
   !
@@ -5438,34 +5367,34 @@ contains
   !
   !  Parameters:
   !
-  !    Output, integer(ip) T, the triangle that the side belongs to.
+  !    Output, integer(int32) T, the triangle that the side belongs to.
   !
-  !    Output, integer(ip) NODE1, COLOR1, the starting node of the
+  !    Output, integer(int32) NODE1, COLOR1, the starting node of the
   !    edge, and its color.
   !
-  !    Output, integer(ip) NODE2, COLOR2, the end node of the edge,
+  !    Output, integer(int32) NODE2, COLOR2, the end node of the edge,
   !    and its color.
   !
-  !    Output, integer(ip) COLOR3, the remaining color.
+  !    Output, integer(int32) COLOR3, the remaining color.
   !
-  !    Input, integer(ip) STACK_MAX, the maximum size of the stack.
+  !    Input, integer(int32) STACK_MAX, the maximum size of the stack.
   !
-  !    Input/output, integer(ip) STACK_NUM, the current size of 
+  !    Input/output, integer(int32) STACK_NUM, the current size of 
   !    the stack.
   !
-  !    Input/output, integer(ip) STACK(STACK_MAX), the stack.
+  !    Input/output, integer(int32) STACK(STACK_MAX), the stack.
   !
 
-    integer(ip), intent(in), value :: stack_max
+    integer(int32) stack_max
 
-    integer(ip), intent(out) :: color1
-    integer(ip), intent(out) :: color2
-    integer(ip), intent(out) :: color3
-    integer(ip), intent(out) :: node1
-    integer(ip), intent(out) :: node2
-    integer(ip), intent(inout) :: stack(stack_max)
-    integer(ip), intent(inout) :: stack_num
-    integer(ip), intent(out) :: t
+    integer(int32) color1
+    integer(int32) color2
+    integer(int32) color3
+    integer(int32) node1
+    integer(int32) node2
+    integer(int32) stack(stack_max)
+    integer(int32) stack_num
+    integer(int32) t
 
     color3 = stack(stack_num)
     stack_num = stack_num - 1
@@ -5479,11 +5408,10 @@ contains
     stack_num = stack_num - 1
     t = stack(stack_num)
     stack_num = stack_num - 1
-  end subroutine triangulate_color_pop
+  end
 
   subroutine triangulate_common_edge ( triang_num, triang, node1, node2, t1, &
-    t2, node3 ) &
-        bind(C, name="triangulate_common_edge")
+    t2, node3 )
 
   !*****************************************************************************80
   !
@@ -5507,37 +5435,37 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) TRIANG_NUM, the number of triangles.
+  !    Input, integer(int32) TRIANG_NUM, the number of triangles.
   !
-  !    Input, integer(ip) TRIANG(3,TRIANG_NUM), the triangulation
+  !    Input, integer(int32) TRIANG(3,TRIANG_NUM), the triangulation
   !    of the polygon.
   !
-  !    Input, integer(ip) NODE1, NODE2, the starting and ending nodes
+  !    Input, integer(int32) NODE1, NODE2, the starting and ending nodes
   !    of an edge.
   !
-  !    Input, integer(ip) T1, the triangle to which the edge
+  !    Input, integer(int32) T1, the triangle to which the edge
   !    (NODE1,NODE2) belongs.
   !
-  !    Output, integer(ip) T2, is 0 if there is no triangle containing
+  !    Output, integer(int32) T2, is 0 if there is no triangle containing
   !    the matching edge (NODE2,NODE1), or it is the index of a triangle
   !    containing the edge (NODE2,NODE1).
   !
-  !    Output, integer(ip) NODE3, the other node in triangle T2.
+  !    Output, integer(int32) NODE3, the other node in triangle T2.
   !
 
-    integer(ip), intent(in), value :: triang_num
+    integer(int32) triang_num
 
-    integer(ip) :: i4_wrap
-    integer(ip) :: j1
-    integer(ip) :: j2
-    integer(ip) :: j3
-    integer(ip), intent(in), value :: node1
-    integer(ip), intent(in), value :: node2
-    integer(ip), intent(out) :: node3
-    integer(ip) :: t
-    integer(ip), intent(in), value :: t1
-    integer(ip), intent(out) :: t2
-    integer(ip), intent(in) :: triang(3,triang_num)
+    integer(int32) i4_wrap
+    integer(int32) j1
+    integer(int32) j2
+    integer(int32) j3
+    integer(int32) node1
+    integer(int32) node2
+    integer(int32) node3
+    integer(int32) t
+    integer(int32) t1
+    integer(int32) t2
+    integer(int32) triang(3,triang_num)
 
     t2 = 0
     node3 = 0
@@ -5552,10 +5480,9 @@ contains
         end if
       end do
     end do
-  end subroutine triangulate_common_edge
+  end
 
-  subroutine triangulation_boundary_count ( point_num, tri_num, bound_num ) &
-        bind(C, name="triangulation_boundary_count")
+  subroutine triangulation_boundary_count ( point_num, tri_num, bound_num )
 
   !*****************************************************************************80
   !
@@ -5614,19 +5541,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) TRI_NUM, the number of triangles.
+  !    Input, integer(int32) TRI_NUM, the number of triangles.
   !
-  !    Output, integer(ip) BOUND_NUM, the number of edges that lie
+  !    Output, integer(int32) BOUND_NUM, the number of edges that lie
   !    on the convex hull of the triangulation.
   !
 
-    integer(ip), intent(out) :: bound_num
-    integer(ip), intent(in), value :: point_num
-    integer(ip), intent(in), value :: tri_num
+    integer(int32) bound_num
+    integer(int32) point_num
+    integer(int32) tri_num
 
     bound_num = 2 * point_num - tri_num - 2
-  end subroutine triangulation_boundary_count
+  end
 
 end module dutch_mod

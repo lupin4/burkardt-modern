@@ -1,23 +1,17 @@
-!> triangle_grid -- Modern Fortran 2018
+!> triangle_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module triangle_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: triangle_grid
 
 contains
 
-  pure subroutine triangle_grid ( n, t, tg ) &
-        bind(C, name="triangle_grid")
+  subroutine triangle_grid ( n, t, tg )  
 
   !*****************************************************************************80
   !
@@ -58,40 +52,41 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, real(dp) T(2,3), the coordinates of the points
+  !    Input, real(real64) T(2,3), the coordinates of the points
   !    defining the triangle.
   !
-  !    Output, real(dp) TG(2,((N+1)*(N+2))/2), the coordinates
+  !    Output, real(real64) TG(2,((N+1)*(N+2))/2), the coordinates
   !    of the points in the triangle.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip) :: i
-    real(dp) :: ir
-    integer(ip) :: j
-    real(dp) :: jr
-    integer(ip) :: k
-    real(dp) :: kr
-    real(dp) :: nr
-    integer(ip) :: p
-    real(dp), intent(in) :: t(2,3)
-    real(dp), intent(out) :: tg(2,((n+1)*(n+2))/2)
+    integer(int32) n
+
+    integer(int32) i
+    real(real64) ir
+    integer(int32) j
+    real(real64) jr
+    integer(int32) k
+    real(real64) kr
+    real(real64) nr
+    integer(int32) p
+    real(real64) t(2,3)
+    real(real64) tg(2,((n+1)*(n+2))/2)
 
     p = 0
-    nr = real ( n, dp)
+    nr = real ( n, real64)
 
     do i = 0, n
-      ir = real ( i, dp)
+      ir = real ( i, real64)
       do j = 0, n - i
-        jr = real ( j, dp)
+        jr = real ( j, real64)
         k = n - i - j
-        kr = real ( k, dp)
+        kr = real ( k, real64)
         p = p + 1
         tg(1:2,p) = ( ir * t(1:2,1) + jr * t(1:2,2) + kr * t(1:2,3) ) / nr
       end do
     end do
-  end subroutine triangle_grid
+  end
 
 end module triangle_grid_mod

@@ -1,23 +1,17 @@
-!> tetrahedron_grid — Modern Fortran 2018
+!> tetrahedron_grid â€” Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module tetrahedron_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: tetrahedron_grid, tetrahedron_grid_count
 
 contains
 
-  pure subroutine tetrahedron_grid ( n, t, ng, tg ) &
-        bind(C, name="tetrahedron_grid")
+  subroutine tetrahedron_grid ( n, t, ng, tg )
 
   !*****************************************************************************80
   !
@@ -46,25 +40,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, real(dp) T(3,4), the vertices of the tetrahedron.
+  !    Input, real(real64) T(3,4), the vertices of the tetrahedron.
   !
-  !    Input, integer(ip) NG, the number of grid points.
+  !    Input, integer(int32) NG, the number of grid points.
   !
-  !    Output, real(dp) TG(3,NG), the tetrahedron grid points.
+  !    Output, real(real64) TG(3,NG), the tetrahedron grid points.
   !
 
-    integer(ip), intent(in), value :: ng
+    integer(int32) ng
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: l
-    integer(ip), intent(in), value :: n
-    integer(ip) :: p
-    real(dp), intent(in) :: t(3,4)
-    real(dp), intent(out) :: tg(3,ng)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) l
+    integer(int32) n
+    integer(int32) p
+    real(real64) t(3,4)
+    real(real64) tg(3,ng)
 
     p = 0
 
@@ -73,17 +67,16 @@ contains
         do k = 0, n - i - j
           l = n - i - j - k
           p = p + 1
-          tg(1:3,p) = ( real ( i, dp) * t(1:3,1) &
-                      + real ( j, dp) * t(1:3,2) &
-                      + real ( k, dp) * t(1:3,3) &
-                      + real ( l, dp) * t(1:3,4) ) / real ( n, dp)
+          tg(1:3,p) = ( real ( i, real64) * t(1:3,1) &
+                      + real ( j, real64) * t(1:3,2) &
+                      + real ( k, real64) * t(1:3,3) &
+                      + real ( l, real64) * t(1:3,4) ) / real ( n, real64)
         end do
       end do
     end do
-  end subroutine tetrahedron_grid
+  end
 
-  pure subroutine tetrahedron_grid_count ( n, ng ) &
-        bind(C, name="tetrahedron_grid_count")
+  subroutine tetrahedron_grid_count ( n, ng )
 
   !*****************************************************************************80
   !
@@ -103,15 +96,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Output, integer(ip) NG, the number of grid points.
+  !    Output, integer(int32) NG, the number of grid points.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ng
+    integer(int32) n
+    integer(int32) ng
 
     ng = ( ( n + 1 ) * ( n + 2 ) * ( n + 3 ) ) / 6
-  end subroutine tetrahedron_grid_count
+  end
 
 end module tetrahedron_grid_mod

@@ -1,23 +1,17 @@
-!> pyramid_grid -- Modern Fortran 2018
+!> pyramid_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module pyramid_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: pyramid_grid_size, pyramid_unit_grid, pyramid_unit_grid_plot, pyramid_unit_vertices, r8_print
 
 contains
 
-  pure function pyramid_grid_size ( n ) &
-        bind(C, name="pyramid_grid_size")
+  function pyramid_grid_size ( n )
 
   !*****************************************************************************80
   !
@@ -62,26 +56,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Output, integer(ip) PYRAMID_GRID_SIZE, the number of
+  !    Output, integer(int32) PYRAMID_GRID_SIZE, the number of
   !    nodes in the grid of size N.
   !
 
-    integer(ip), intent(in), value :: n
-    integer(ip) :: np1
-    integer(ip) :: pyramid_grid_size
-    integer(ip) :: value
+    integer(int32) n
+    integer(int32) np1
+    integer(int32) pyramid_grid_size
+    integer(int32) value
 
     np1 = n + 1
 
     value = ( np1 * ( np1 + 1 ) * ( 2 * np1 + 1 ) ) / 6
 
     pyramid_grid_size = value
-  end function pyramid_grid_size
+  end
 
-  pure subroutine pyramid_unit_grid ( n, ng, pg ) &
-        bind(C, name="pyramid_unit_grid")
+  subroutine pyramid_unit_grid ( n, ng, pg )
 
   !*****************************************************************************80
   !
@@ -106,23 +99,24 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, integer(ip) NG, the number of nodes to generate,
+  !    Input, integer(int32) NG, the number of nodes to generate,
   !    as determined by pyramid_grid_size().
   !
-  !    Output, real(dp) PG(3,NG), the grid point coordinates.
+  !    Output, real(real64) PG(3,NG), the grid point coordinates.
   !
 
-    integer(ip), intent(in), value :: ng
-    integer(ip) :: g
-    integer(ip) :: hi
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip) :: lo
-    integer(ip), intent(in), value :: n
-    real(dp), intent(out) :: pg(3,ng)
+    integer(int32) ng
+
+    integer(int32) g
+    integer(int32) hi
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) lo
+    integer(int32) n
+    real(real64) pg(3,ng)
 
     g = 0
 
@@ -132,16 +126,15 @@ contains
       do j = lo, hi, 2
         do i = lo, hi, 2
           g = g + 1
-          pg(1,g) = real ( i, dp) / real ( n, dp)
-          pg(2,g) = real ( j, dp) / real ( n, dp)
-          pg(3,g) = real ( k, dp) / real ( n, dp)
+          pg(1,g) = real ( i, real64) / real ( n, real64)
+          pg(2,g) = real ( j, real64) / real ( n, real64)
+          pg(3,g) = real ( k, real64) / real ( n, real64)
         end do
       end do
     end do
-  end subroutine pyramid_unit_grid
+  end
 
-  subroutine pyramid_unit_grid_plot ( n, ng, pg, header ) &
-        bind(C, name="pyramid_unit_grid_plot")
+  subroutine pyramid_unit_grid_plot ( n, ng, pg, header )
 
   !*****************************************************************************80
   !
@@ -161,35 +154,36 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, integer(ip) NG, the number of nodes to generate,
+  !    Input, integer(int32) NG, the number of nodes to generate,
   !    as determined by pyramid_grid_size().
   !
-  !    Input, real(dp) PG(3,NG), the grid point coordinates.
+  !    Input, real(real64) PG(3,NG), the grid point coordinates.
   !
   !    Input, character ( len = * ) HEADER, the header for the files.
   !
 
-    integer(ip), intent(in), value :: ng
-    character ( len = 255 ) :: command_filename
-    integer(ip) :: command_unit
-    character ( len = * ), intent(in) :: header
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: l
-    integer(ip), intent(in), value :: n
-    character ( len = 255 ) :: node_filename
-    integer(ip) :: node_unit
-    real(dp), intent(in) :: pg(3,ng)
-    character ( len = 255 ) :: plot_filename
-    real(dp) :: v1(3)
-    real(dp) :: v2(3)
-    real(dp) :: v3(3)
-    real(dp) :: v4(3)
-    real(dp) :: v5(3)
-    character ( len = 255 ) :: vertex_filename
-    integer(ip) :: vertex_unit
+    integer(int32) ng
+
+    character ( len = 255 ) command_filename
+    integer(int32) command_unit
+    character ( len = * ) header
+    integer(int32) i
+    integer(int32) j
+    integer(int32) l
+    integer(int32) n
+    character ( len = 255 ) node_filename
+    integer(int32) node_unit
+    real(real64) pg(3,ng)
+    character ( len = 255 ) plot_filename
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) v4(3)
+    real(real64) v5(3)
+    character ( len = 255 ) vertex_filename
+    integer(int32) vertex_unit
   !
   !  Create the vertex file.
   !
@@ -289,10 +283,9 @@ contains
 
     write ( *, '(a)' ) &
       '  Created command file "' // trim ( command_filename ) // '".'
-  end subroutine pyramid_unit_grid_plot
+  end
 
-  pure subroutine pyramid_unit_vertices ( v1, v2, v3, v4, v5 ) &
-        bind(C, name="pyramid_unit_vertices")
+  subroutine pyramid_unit_vertices ( v1, v2, v3, v4, v5 )
 
   !*****************************************************************************80
   !
@@ -312,24 +305,23 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) V1(3), V2(3), V3(3), V4(3), V5(3), the vertices.
+  !    Output, real(real64) V1(3), V2(3), V3(3), V4(3), V5(3), the vertices.
   !
 
-    real(dp), intent(out) :: v1(3)
-    real(dp), intent(out) :: v2(3)
-    real(dp), intent(out) :: v3(3)
-    real(dp), intent(out) :: v4(3)
-    real(dp), intent(out) :: v5(3)
+    real(real64) v1(3)
+    real(real64) v2(3)
+    real(real64) v3(3)
+    real(real64) v4(3)
+    real(real64) v5(3)
 
-    v1(1:3) = (/  0.0_dp,  0.0_dp, +1.0_dp /)
-    v2(1:3) = (/ -1.0_dp, -1.0_dp,  0.0_dp /)
-    v3(1:3) = (/ +1.0_dp, -1.0_dp,  0.0_dp /)
-    v4(1:3) = (/ +1.0_dp, +1.0_dp,  0.0_dp /)
-    v5(1:3) = (/ -1.0_dp, +1.0_dp,  0.0_dp /)
-  end subroutine pyramid_unit_vertices
+    v1(1:3) = (/  0.0e+00_real64,  0.0e+00_real64, +1.0e+00_real64 /)
+    v2(1:3) = (/ -1.0e+00_real64, -1.0e+00_real64,  0.0e+00_real64 /)
+    v3(1:3) = (/ +1.0e+00_real64, -1.0e+00_real64,  0.0e+00_real64 /)
+    v4(1:3) = (/ +1.0e+00_real64, +1.0e+00_real64,  0.0e+00_real64 /)
+    v5(1:3) = (/ -1.0e+00_real64, +1.0e+00_real64,  0.0e+00_real64 /)
+  end
 
-  subroutine r8_print ( r, title ) &
-        bind(C, name="r8_print")
+  subroutine r8_print ( r, title )
 
   !*****************************************************************************80
   !
@@ -349,15 +341,15 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) R, the value.
+  !    Input, real(real64) R, the value.
   !
   !    Input, character ( len = * ) TITLE, a title.
   !
 
-    real(dp), intent(in), value :: r
-    character ( len = * ), intent(in) :: title
+    real(real64) r
+    character ( len = * ) title
 
     write ( *, '(a,2x,g14.6)' ) trim ( title ), r
-  end subroutine r8_print
+  end
 
 end module pyramid_grid_mod

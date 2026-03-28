@@ -1,23 +1,17 @@
-!> ball_grid -- Modern Fortran 2018
+!> ball_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module ball_grid_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: ball_grid, ball_grid_count
 
 contains
 
-  subroutine ball_grid ( n, r, c, ng, bg ) &
-        bind(C, name="ball_grid")
+  subroutine ball_grid ( n, r, c, ng, bg )
 
   !*****************************************************************************80
   !
@@ -44,44 +38,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, real(dp) R, the radius of the ball.
+  !    Input, real(real64) R, the radius of the ball.
   !
-  !    Input, real(dp) C(3), the coordinates of the center of the ball.
+  !    Input, real(real64) C(3), the coordinates of the center of the ball.
   !
-  !    Input, integer(ip) NG, the number of grid points, as determined by
+  !    Input, integer(int32) NG, the number of grid points, as determined by
   !    BALL_GRID_COUNT.
   !
-  !    Output, real(dp) BG(3,NG), the grid points inside the ball.
+  !    Output, real(real64) BG(3,NG), the grid points inside the ball.
   !
 
-    integer(ip), intent(in), value :: ng
-    real(dp), intent(out) :: bg(3,ng)
-    real(dp), intent(in) :: c(3)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(in), value :: n
-    integer(ip) :: p
-    real(dp), intent(in), value :: r
-    real(dp) :: x
-    real(dp) :: y
-    real(dp) :: z
+    integer(int32) ng
+
+    real(real64) bg(3,ng)
+    real(real64) c(3)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) n
+    integer(int32) p
+    real(real64) r
+    real(real64) x
+    real(real64) y
+    real(real64) z
 
     p = 0
 
     do i = 0, n
 
-      x = c(1) + r * real ( 2 * i, dp) / real ( 2 * n + 1, dp)
+      x = c(1) + r * real ( 2 * i, real64) / real ( 2 * n + 1, real64)
 
       do j = 0, n
 
-        y = c(2) + r * real ( 2 * j, dp) / real ( 2 * n + 1, dp)
+        y = c(2) + r * real ( 2 * j, real64) / real ( 2 * n + 1, real64)
 
         do k = 0, n
 
-          z = c(3) + r * real ( 2 * k, dp) / real ( 2 * n + 1, dp)
+          z = c(3) + r * real ( 2 * k, real64) / real ( 2 * n + 1, real64)
 
           if ( r * r < ( x - c(1) )**2 &
                      + ( y - c(2) )**2 &
@@ -94,62 +89,61 @@ contains
           bg(2,p) = y
           bg(3,p) = z
 
-          if ( i > 0 ) then
+          if ( 0 < i ) then
             p = p + 1
-            bg(1,p) = 2.0_dp * c(1) - x
+            bg(1,p) = 2.0e+00_real64 * c(1) - x
             bg(2,p) = y
             bg(3,p) = z
           end if
 
-          if ( j > 0 ) then
+          if ( 0 < j ) then
             p = p + 1
             bg(1,p) = x
-            bg(2,p) = 2.0_dp * c(2) - y
+            bg(2,p) = 2.0e+00_real64 * c(2) - y
             bg(3,p) = z
           end if
 
-          if ( k > 0 ) then
+          if ( 0 < k ) then
             p = p + 1
             bg(1,p) = x
             bg(2,p) = y
-            bg(3,p) = 2.0_dp * c(3) - z
+            bg(3,p) = 2.0e+00_real64 * c(3) - z
           end if
 
-          if ( i > 0 .and. j > 0 ) then
+          if ( 0 < i .and. 0 < j ) then
             p = p + 1
-            bg(1,p) = 2.0_dp * c(1) - x
-            bg(2,p) = 2.0_dp * c(2) - y
+            bg(1,p) = 2.0e+00_real64 * c(1) - x
+            bg(2,p) = 2.0e+00_real64 * c(2) - y
             bg(3,p) = z
           end if
 
-          if ( i > 0 .and. k > 0 ) then
+          if ( 0 < i .and. 0 < k ) then
             p = p + 1
-            bg(1,p) = 2.0_dp * c(1) - x
+            bg(1,p) = 2.0e+00_real64 * c(1) - x
             bg(2,p) = y
-            bg(3,p) = 2.0_dp * c(3) - z
+            bg(3,p) = 2.0e+00_real64 * c(3) - z
           end if
 
-          if ( j > 0 .and. k > 0 ) then
+          if ( 0 < j .and. 0 < k ) then
             p = p + 1
             bg(1,p) = x
-            bg(2,p) = 2.0_dp * c(2) - y
-            bg(3,p) = 2.0_dp * c(3) - z
+            bg(2,p) = 2.0e+00_real64 * c(2) - y
+            bg(3,p) = 2.0e+00_real64 * c(3) - z
           end if
 
-          if ( i > 0 .and. j > 0 .and. k > 0 ) then
+          if ( 0 < i .and. 0 < j .and. 0 < k ) then
             p = p + 1
-            bg(1,p) = 2.0_dp * c(1) - x
-            bg(2,p) = 2.0_dp * c(2) - y
-            bg(3,p) = 2.0_dp * c(3) - z
+            bg(1,p) = 2.0e+00_real64 * c(1) - x
+            bg(2,p) = 2.0e+00_real64 * c(2) - y
+            bg(3,p) = 2.0e+00_real64 * c(3) - z
           end if
 
         end do
       end do
     end do
-  end subroutine ball_grid
+  end
 
-  subroutine ball_grid_count ( n, r, c, ng ) &
-        bind(C, name="ball_grid_count")
+  subroutine ball_grid_count ( n, r, c, ng )
 
   !*****************************************************************************80
   !
@@ -176,39 +170,39 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the number of subintervals.
+  !    Input, integer(int32) N, the number of subintervals.
   !
-  !    Input, real(dp) R, the radius of the ball.
+  !    Input, real(real64) R, the radius of the ball.
   !
-  !    Input, real(dp) C(3), the coordinates of the center of the ball.
+  !    Input, real(real64) C(3), the coordinates of the center of the ball.
   !
-  !    Output, integer(ip) NG, the number of grid points inside the ball.
+  !    Output, integer(int32) NG, the number of grid points inside the ball.
   !
 
-    real(dp), intent(in) :: c(3)
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(out) :: ng
-    real(dp), intent(in), value :: r
-    real(dp) :: x
-    real(dp) :: y
-    real(dp) :: z
+    real(real64) c(3)
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    integer(int32) n
+    integer(int32) ng
+    real(real64) r
+    real(real64) x
+    real(real64) y
+    real(real64) z
 
     ng = 0
 
     do i = 0, n
 
-      x = c(1) + r * real ( 2 * i, dp) / real ( 2 * n + 1, dp)
+      x = c(1) + r * real ( 2 * i, real64) / real ( 2 * n + 1, real64)
 
       do j = 0, n
 
-        y = c(2) + r * real ( 2 * j, dp) / real ( 2 * n + 1, dp)
+        y = c(2) + r * real ( 2 * j, real64) / real ( 2 * n + 1, real64)
 
         do k = 0, n
 
-          z = c(3) + r * real ( 2 * k, dp) / real ( 2 * n + 1, dp)
+          z = c(3) + r * real ( 2 * k, real64) / real ( 2 * n + 1, real64)
 
           if ( r * r < ( x - c(1) )**2 &
                      + ( y - c(2) )**2 &
@@ -218,37 +212,37 @@ contains
 
           ng = ng + 1
 
-          if ( i > 0 ) then
+          if ( 0 < i ) then
             ng = ng + 1
           end if
 
-          if ( j > 0 ) then
+          if ( 0 < j ) then
             ng = ng + 1
           end if
 
-          if ( k > 0 ) then
+          if ( 0 < k ) then
             ng = ng + 1
           end if
 
-          if ( i > 0 .and. j > 0 ) then
+          if ( 0 < i .and. 0 < j ) then
             ng = ng + 1
           end if
 
-          if ( i > 0 .and. k > 0 ) then
+          if ( 0 < i .and. 0 < k ) then
             ng = ng + 1
           end if
 
-          if ( j > 0 .and. k > 0 ) then
+          if ( 0 < j .and. 0 < k ) then
             ng = ng + 1
           end if
 
-          if ( i > 0 .and. j > 0 .and. k > 0 ) then
+          if ( 0 < i .and. 0 < j .and. 0 < k ) then
             ng = ng + 1
           end if
 
         end do
       end do
     end do
-  end subroutine ball_grid_count
+  end
 
 end module ball_grid_mod

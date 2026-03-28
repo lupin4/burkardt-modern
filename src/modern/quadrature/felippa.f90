@@ -1,16 +1,11 @@
-!> felippa � Modern Fortran 2018
+!> felippa — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
 
 module felippa_mod
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
-  use, intrinsic :: iso_c_binding,   only: c_int, c_double, c_float, c_bool
   implicit none
   private
-
-  integer, parameter :: dp = real64
-  integer, parameter :: sp = real32
-  integer, parameter :: ip = int32
 
   public :: comp_next, hexa_unit_monomial, hexa_unit_monomial_test, hexa_unit_quad_test, hexa_unit_rule, hexa_unit_volume
   public :: line_unit_monomial, line_unit_monomial_test, line_unit_o01, line_unit_o02, line_unit_o03, line_unit_o04
@@ -27,8 +22,7 @@ module felippa_mod
 
 contains
 
-  pure subroutine comp_next ( n, k, a, more, h, t ) &
-        bind(C, name="comp_next")
+  subroutine comp_next ( n, k, a, more, h, t )
 
   !*****************************************************************************80
   !
@@ -119,28 +113,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the integer whose compositions are desired.
+  !    Input, integer(int32) N, the integer whose compositions are desired.
   !
-  !    Input, integer(ip) K, the number of parts in the composition.
+  !    Input, integer(int32) K, the number of parts in the composition.
   !
-  !    Input/output, integer(ip) A(K), the parts of the composition.
+  !    Input/output, integer(int32) A(K), the parts of the composition.
   !
   !    Input/output, logical MORE, set by the user to start the
   !    computation, and by the routine to terminate it.
   !
-  !    Input/output, integer(ip)  H, T, two internal parameters needed
+  !    Input/output, integer(int32)  H, T, two internal parameters needed
   !    for the computation.  The user should allocate space for these in the
   !    calling program, include them in the calling sequence, but never alter
   !    them!
   !
 
-    integer(ip), intent(in), value :: k
+    integer(int32) k
 
-    integer(ip), intent(inout) :: a(k)
-    integer(ip), intent(inout) :: h
-    logical, intent(inout) :: more
-    integer(ip), intent(in), value :: n
-    integer(ip), intent(inout) :: t
+    integer(int32) a(k)
+    integer(int32) h
+    logical more
+    integer(int32) n
+    integer(int32) t
   !
   !  The first computation.
   !
@@ -171,10 +165,9 @@ contains
   !  items are in the last slot.
   !
     more = ( a(k) /= n )
-  end subroutine comp_next
+  end
 
-  subroutine hexa_unit_monomial ( expon, value ) &
-        bind(C, name="hexa_unit_monomial")
+  subroutine hexa_unit_monomial ( expon, value )
 
   !*****************************************************************************80
   !
@@ -208,35 +201,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) EXPON(3), the exponents.
+  !    Input, integer(int32) EXPON(3), the exponents.
   !
-  !    Output, real(dp) VALUE, the integral of the monomial.
+  !    Output, real(real64) VALUE, the integral of the monomial.
   !
 
-    integer(ip), intent(in) :: expon(3)
-    integer(ip) :: i
-    real(dp), intent(out) :: value
+    integer(int32) expon(3)
+    integer(int32) i
+    real(real64) value
 
-    value = 1.0_dp
+    value = 1.0e+00_real64
 
     do i = 1, 3
 
       if ( mod ( expon(i), 2 ) == 1 ) then
-        value = 0.0_dp
+        value = 0.0e+00_real64
       else if ( expon(i) == -1 ) then
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'HEXA_UNIT_MONOMIAL - Fatal error!'
         write ( *, '(a)' ) '  Exponent of -1 encountered.'
         stop 1
       else
-        value = value * 2.0_dp / real ( expon(i) + 1, dp)
+        value = value * 2.0e+00_real64 / real ( expon(i) + 1, real64)
       end if
 
     end do
-  end subroutine hexa_unit_monomial
+  end
 
-  subroutine hexa_unit_monomial_test ( degree_max ) &
-        bind(C, name="hexa_unit_monomial_test")
+  subroutine hexa_unit_monomial_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -256,17 +248,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip) :: alpha
-    integer(ip) :: beta
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(3)
-    integer(ip) :: gamma
-    real(dp) :: hexa_unit_volume
-    real(dp) :: value
+    integer(int32) alpha
+    integer(int32) beta
+    integer(int32) degree_max
+    integer(int32) expon(3)
+    integer(int32) gamma
+    real(real64) hexa_unit_volume
+    real(real64) value
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'HEXA_UNIT_MONOMIAL_TEST'
@@ -290,10 +282,9 @@ contains
         end do
       end do
     end do
-  end subroutine hexa_unit_monomial_test
+  end
 
-  subroutine hexa_unit_quad_test ( degree_max ) &
-        bind(C, name="hexa_unit_quad_test")
+  subroutine hexa_unit_quad_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -313,25 +304,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(dim_num)
-    integer(ip) :: h
-    real(dp) :: hexa_unit_volume
-    integer(ip) :: k
-    logical :: more
-    integer(ip) :: order
-    integer(ip) :: order_1d(dim_num)
-    real(dp) :: quad
-    integer(ip) :: t
-    real(dp), allocatable :: v(:)
-    real(dp), allocatable :: w(:)
-    real(dp), allocatable :: xyz(:,:)
+    integer(int32) degree_max
+    integer(int32) expon(dim_num)
+    integer(int32) h
+    real(real64) hexa_unit_volume
+    integer(int32) k
+    logical more
+    integer(int32) order
+    integer(int32) order_1d(dim_num)
+    real(real64) quad
+    integer(int32) t
+    real(real64), allocatable :: v(:)
+    real(real64), allocatable :: w(:)
+    real(real64), allocatable :: xyz(:,:)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'HEXA_UNIT_QUAD_TEST'
@@ -402,10 +393,9 @@ contains
       end if
 
     end do
-  end subroutine hexa_unit_quad_test
+  end
 
-  subroutine hexa_unit_rule ( order_1d, w, xyz ) &
-        bind(C, name="hexa_unit_rule")
+  subroutine hexa_unit_rule ( order_1d, w, xyz )
 
   !*****************************************************************************80
   !
@@ -440,25 +430,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ORDER_1D(3), the order of the rule in each
+  !    Input, integer(int32) ORDER_1D(3), the order of the rule in each
   !    dimension.  1 <= ORDER_1D(I) <= 5.
   !
-  !    Output, real(dp) W(ORDER_1D(1)*ORDER_1D(2)*ORDER_1D(3)), 
+  !    Output, real(real64) W(ORDER_1D(1)*ORDER_1D(2)*ORDER_1D(3)), 
   !    the weights.
   !
-  !    Output, real(dp) XYZ(3,ORDER_1D(1)*ORDER_1D(2)*ORDER_1D(3)), 
+  !    Output, real(real64) XYZ(3,ORDER_1D(1)*ORDER_1D(2)*ORDER_1D(3)), 
   !    the abscissas.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    integer(ip) :: dim
-    integer(ip) :: order
-    integer(ip), intent(in) :: order_1d(dim_num)
-    real(dp), intent(out) :: w(order_1d(1)*order_1d(2)*order_1d(3))
-    real(dp), allocatable :: w_1d(:)
-    real(dp), allocatable :: x_1d(:)
-    real(dp), intent(out) :: xyz(3,order_1d(1)*order_1d(2)*order_1d(3))
+    integer(int32) dim
+    integer(int32) order
+    integer(int32) order_1d(dim_num)
+    real(real64) w(order_1d(1)*order_1d(2)*order_1d(3))
+    real(real64), allocatable :: w_1d(:)
+    real(real64), allocatable :: x_1d(:)
+    real(real64) xyz(3,order_1d(1)*order_1d(2)*order_1d(3))
 
     order = product ( order_1d(1:dim_num) )
 
@@ -494,10 +484,9 @@ contains
       deallocate ( x_1d )
 
     end do
-  end subroutine hexa_unit_rule
+  end
 
-  pure function hexa_unit_volume ( ) &
-        bind(C, name="hexa_unit_volume")
+  function hexa_unit_volume ( )
 
   !*****************************************************************************80
   !
@@ -525,16 +514,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) HEXA_UNIT_VOLUME, the volume.
+  !    Output, real(real64) HEXA_UNIT_VOLUME, the volume.
   !
 
-    real(dp) :: hexa_unit_volume
+    real(real64) hexa_unit_volume
 
-    hexa_unit_volume = 8.0_dp
-  end function hexa_unit_volume
+    hexa_unit_volume = 8.0e+00_real64
+  end
 
-  subroutine line_unit_monomial ( alpha, value ) &
-        bind(C, name="line_unit_monomial")
+  subroutine line_unit_monomial ( alpha, value )
 
   !*****************************************************************************80
   !
@@ -562,14 +550,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ALPHA, the exponent of X.
+  !    Input, integer(int32) ALPHA, the exponent of X.
   !    ALPHA must not be -1.
   !
-  !    Output, real(dp) value, the integral of the monomial.
+  !    Output, real(real64) value, the integral of the monomial.
   !
 
-    integer(ip), intent(in), value :: alpha
-    real(dp), intent(out) :: value
+    integer(int32) alpha
+    real(real64) value
 
     if ( alpha == - 1 ) then
       write ( *, '(a)' ) ' '
@@ -577,14 +565,13 @@ contains
       write ( *, '(a)' ) '  ALPHA = -1 is not a legal input.'
       stop 1
     else if ( mod ( alpha, 2 ) == 1 ) then
-      value = 0.0_dp
+      value = 0.0e+00_real64
     else
-      value = 2.0_dp / real ( alpha + 1, dp)
+      value = 2.0e+00_real64 / real ( alpha + 1, real64)
     end if
-  end subroutine line_unit_monomial
+  end
 
-  subroutine line_unit_monomial_test ( degree_max ) &
-        bind(C, name="line_unit_monomial_test")
+  subroutine line_unit_monomial_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -604,14 +591,14 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip) :: alpha
-    integer(ip), intent(in), value :: degree_max
-    real(dp) :: line_unit_volume
-    real(dp) :: value
+    integer(int32) alpha
+    integer(int32) degree_max
+    real(real64) line_unit_volume
+    real(real64) value
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'LINE_UNIT_MONOMIAL_TEST'
@@ -628,10 +615,9 @@ contains
       call line_unit_monomial ( alpha, value )
       write ( *, '(2x,i8,2x,g14.6)' ) alpha, value
     end do
-  end subroutine line_unit_monomial_test
+  end
 
-  pure subroutine line_unit_o01 ( w, x ) &
-        bind(C, name="line_unit_o01")
+  subroutine line_unit_o01 ( w, x )
 
   !*****************************************************************************80
   !
@@ -664,27 +650,26 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(1), the weights.
+  !    Output, real(real64) W(1), the weights.
   !
-  !    Output, real(dp) X(1), the abscissas.
+  !    Output, real(real64) X(1), the abscissas.
   !
 
-    integer(ip), parameter :: order = 1
+    integer(int32), parameter :: order = 1
 
-    real(dp) :: line_unit_volume
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(1) = (/ &
-      2.0_dp /)
-    real(dp), intent(out) :: x(order)
-    real(dp) :: x_save(1) = (/ &
-      0.0_dp /)
+    real(real64) line_unit_volume
+    real(real64) w(order)
+    real(real64) :: w_save(1) = (/ &
+      2.0e+00_real64 /)
+    real(real64) x(order)
+    real(real64) :: x_save(1) = (/ &
+      0.0e+00_real64 /)
 
     w(1:order) = w_save(1:order) / line_unit_volume ( )
     x(1:order) = x_save(1:order)
-  end subroutine line_unit_o01
+  end
 
-  pure subroutine line_unit_o02 ( w, x ) &
-        bind(C, name="line_unit_o02")
+  subroutine line_unit_o02 ( w, x )
 
   !*****************************************************************************80
   !
@@ -717,29 +702,28 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(2), the weights.
+  !    Output, real(real64) W(2), the weights.
   !
-  !    Output, real(dp) X(2), the abscissas.
+  !    Output, real(real64) X(2), the abscissas.
   !
 
-    integer(ip), parameter :: order = 2
+    integer(int32), parameter :: order = 2
 
-    real(dp) :: line_unit_volume
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(2) = (/ &
-      1.0000000000000000000_dp, &
-      1.0000000000000000000_dp /)
-    real(dp), intent(out) :: x(order)
-    real(dp) :: x_save(2) = (/ &
-      -0.57735026918962576451_dp, &
-       0.57735026918962576451_dp /)
+    real(real64) line_unit_volume
+    real(real64) w(order)
+    real(real64) :: w_save(2) = (/ &
+      1.0000000000000000000e+00_real64, &
+      1.0000000000000000000e+00_real64 /)
+    real(real64) x(order)
+    real(real64) :: x_save(2) = (/ &
+      -0.57735026918962576451e+00_real64, &
+       0.57735026918962576451e+00_real64 /)
 
     w(1:order) = w_save(1:order) / line_unit_volume ( )
     x(1:order) = x_save(1:order)
-  end subroutine line_unit_o02
+  end
 
-  pure subroutine line_unit_o03 ( w, x ) &
-        bind(C, name="line_unit_o03")
+  subroutine line_unit_o03 ( w, x )
 
   !*****************************************************************************80
   !
@@ -772,31 +756,30 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(3), the weights.
+  !    Output, real(real64) W(3), the weights.
   !
-  !    Output, real(dp) X(3), the abscissas.
+  !    Output, real(real64) X(3), the abscissas.
   !
 
-    integer(ip), parameter :: order = 3
+    integer(int32), parameter :: order = 3
 
-    real(dp) :: line_unit_volume
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(3) = (/ &
-      0.55555555555555555556_dp, &
-      0.88888888888888888889_dp, &
-      0.55555555555555555556_dp /)
-    real(dp), intent(out) :: x(order)
-    real(dp) :: x_save(3) = (/ &
-      -0.77459666924148337704_dp, &
-       0.00000000000000000000_dp, &
-       0.77459666924148337704_dp /)
+    real(real64) line_unit_volume
+    real(real64) w(order)
+    real(real64) :: w_save(3) = (/ &
+      0.55555555555555555556e+00_real64, &
+      0.88888888888888888889e+00_real64, &
+      0.55555555555555555556e+00_real64 /)
+    real(real64) x(order)
+    real(real64) :: x_save(3) = (/ &
+      -0.77459666924148337704e+00_real64, &
+       0.00000000000000000000e+00_real64, &
+       0.77459666924148337704e+00_real64 /)
 
     w(1:order) = w_save(1:order) / line_unit_volume ( )
     x(1:order) = x_save(1:order)
-  end subroutine line_unit_o03
+  end
 
-  pure subroutine line_unit_o04 ( w, x ) &
-        bind(C, name="line_unit_o04")
+  subroutine line_unit_o04 ( w, x )
 
   !*****************************************************************************80
   !
@@ -829,33 +812,32 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(4), the weights.
+  !    Output, real(real64) W(4), the weights.
   !
-  !    Output, real(dp) X(4), the abscissas.
+  !    Output, real(real64) X(4), the abscissas.
   !
 
-    integer(ip), parameter :: order = 4
+    integer(int32), parameter :: order = 4
 
-    real(dp) :: line_unit_volume
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(4) = (/ &
-      0.34785484513745385737_dp, &
-      0.65214515486254614263_dp, &
-      0.65214515486254614263_dp, &
-      0.34785484513745385737_dp /)
-    real(dp), intent(out) :: x(order)
-    real(dp) :: x_save(4) = (/ &
-      -0.86113631159405257522_dp, &
-      -0.33998104358485626480_dp, &
-       0.33998104358485626480_dp, &
-       0.86113631159405257522_dp /)
+    real(real64) line_unit_volume
+    real(real64) w(order)
+    real(real64) :: w_save(4) = (/ &
+      0.34785484513745385737e+00_real64, &
+      0.65214515486254614263e+00_real64, &
+      0.65214515486254614263e+00_real64, &
+      0.34785484513745385737e+00_real64 /)
+    real(real64) x(order)
+    real(real64) :: x_save(4) = (/ &
+      -0.86113631159405257522e+00_real64, &
+      -0.33998104358485626480e+00_real64, &
+       0.33998104358485626480e+00_real64, &
+       0.86113631159405257522e+00_real64 /)
 
     w(1:order) = w_save(1:order) / line_unit_volume ( )
     x(1:order) = x_save(1:order)
-  end subroutine line_unit_o04
+  end
 
-  pure subroutine line_unit_o05 ( w, x ) &
-        bind(C, name="line_unit_o05")
+  subroutine line_unit_o05 ( w, x )
 
   !*****************************************************************************80
   !
@@ -888,35 +870,34 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(5), the weights.
+  !    Output, real(real64) W(5), the weights.
   !
-  !    Output, real(dp) X(5), the abscissas.
+  !    Output, real(real64) X(5), the abscissas.
   !
 
-    integer(ip), parameter :: order = 5
+    integer(int32), parameter :: order = 5
 
-    real(dp) :: line_unit_volume
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(5) = (/ &
-      0.23692688505618908751_dp, &
-      0.47862867049936646804_dp, &
-      0.56888888888888888889_dp, &
-      0.47862867049936646804_dp, &
-      0.23692688505618908751_dp /)
-    real(dp), intent(out) :: x(order)
-    real(dp) :: x_save(5) = (/ &
-      -0.90617984593866399280_dp, &
-      -0.53846931010568309104_dp, &
-       0.00000000000000000000_dp, &
-       0.53846931010568309104_dp, &
-       0.90617984593866399280_dp /)
+    real(real64) line_unit_volume
+    real(real64) w(order)
+    real(real64) :: w_save(5) = (/ &
+      0.23692688505618908751e+00_real64, &
+      0.47862867049936646804e+00_real64, &
+      0.56888888888888888889e+00_real64, &
+      0.47862867049936646804e+00_real64, &
+      0.23692688505618908751e+00_real64 /)
+    real(real64) x(order)
+    real(real64) :: x_save(5) = (/ &
+      -0.90617984593866399280e+00_real64, &
+      -0.53846931010568309104e+00_real64, &
+       0.00000000000000000000e+00_real64, &
+       0.53846931010568309104e+00_real64, &
+       0.90617984593866399280e+00_real64 /)
 
     w(1:order) = w_save(1:order) / line_unit_volume ( )
     x(1:order) = x_save(1:order)
-  end subroutine line_unit_o05
+  end
 
-  subroutine line_unit_quad_test ( degree_max ) &
-        bind(C, name="line_unit_quad_test")
+  subroutine line_unit_quad_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -936,23 +917,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip), parameter :: dim_num = 1
+    integer(int32), parameter :: dim_num = 1
 
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(dim_num)
-    integer(ip) :: h
-    real(dp) :: line_unit_volume
-    logical :: more
-    integer(ip) :: order
-    real(dp) :: quad
-    integer(ip) :: t
-    real(dp), allocatable :: v(:)
-    real(dp), allocatable :: w(:)
-    real(dp), allocatable :: x(:,:)
+    integer(int32) degree_max
+    integer(int32) expon(dim_num)
+    integer(int32) h
+    real(real64) line_unit_volume
+    logical more
+    integer(int32) order
+    real(real64) quad
+    integer(int32) t
+    real(real64), allocatable :: v(:)
+    real(real64), allocatable :: w(:)
+    real(real64), allocatable :: x(:,:)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'LINE_UNIT_QUAD_TEST'
@@ -1043,7 +1024,7 @@ contains
       deallocate ( x )
 
       write ( *, '(a)' ) ' '
-      call line_unit_monomial ( expon, quad )
+      call line_unit_monomial ( expon(1), quad )
       write ( *, '(2x,a,2x,g14.6)' ) ' Exact', quad
 
       if ( .not. more ) then
@@ -1051,10 +1032,9 @@ contains
       end if
 
     end do
-  end subroutine line_unit_quad_test
+  end
 
-  pure function line_unit_volume ( ) &
-        bind(C, name="line_unit_volume")
+  function line_unit_volume ( )
 
   !*****************************************************************************80
   !
@@ -1080,16 +1060,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) LINE_UNIT_VOLUME, the volume.
+  !    Output, real(real64) LINE_UNIT_VOLUME, the volume.
   !
 
-    real(dp) :: line_unit_volume
+    real(real64) line_unit_volume
 
-    line_unit_volume = 2.0_dp
-  end function line_unit_volume
+    line_unit_volume = 2.0e+00_real64
+  end
 
-  pure subroutine monomial_value ( dim_num, point_num, expon, x, v ) &
-        bind(C, name="monomial_value")
+  subroutine monomial_value ( dim_num, point_num, expon, x, v )
 
   !*****************************************************************************80
   !
@@ -1115,36 +1094,35 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DIM_NUM, the spatial dimension.
+  !    Input, integer(int32) DIM_NUM, the spatial dimension.
   !
-  !    Input, integer(ip) POINT_NUM, the number of points.
+  !    Input, integer(int32) POINT_NUM, the number of points.
   !
-  !    Input, integer(ip) EXPON(DIM_NUM), the exponents.
+  !    Input, integer(int32) EXPON(DIM_NUM), the exponents.
   !
-  !    Input, real(dp) X(DIM_NUM,POINT_NUM), the evaluation points.
+  !    Input, real(real64) X(DIM_NUM,POINT_NUM), the evaluation points.
   !
-  !    Output, real(dp) V(POINT_NUM), the monomial values.
+  !    Output, real(real64) V(POINT_NUM), the monomial values.
   !
 
-    integer(ip), intent(in), value :: dim_num
-    integer(ip), intent(in), value :: point_num
+    integer(int32) dim_num
+    integer(int32) point_num
 
-    integer(ip) :: dim
-    integer(ip), intent(in) :: expon(dim_num)
-    real(dp), intent(out) :: v(point_num)
-    real(dp), intent(in) :: x(dim_num,point_num)
+    integer(int32) dim
+    integer(int32) expon(dim_num)
+    real(real64) v(point_num)
+    real(real64) x(dim_num,point_num)
 
-    v(1:point_num) = 1.0_dp
+    v(1:point_num) = 1.0e+00_real64
 
     do dim = 1, dim_num
-      if ( expon(dim) /= 0.0_dp ) then
+      if ( expon(dim) /= 0.0e+00_real64 ) then
         v(1:point_num) = v(1:point_num) * x(dim,1:point_num)**expon(dim)
       end if
     end do
-  end subroutine monomial_value
+  end
 
-  pure subroutine pyra_unit_monomial ( expon, value ) &
-        bind(C, name="pyra_unit_monomial")
+  subroutine pyra_unit_monomial ( expon, value )
 
   !*****************************************************************************80
   !
@@ -1186,19 +1164,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) EXPON(3), the exponents.
+  !    Input, integer(int32) EXPON(3), the exponents.
   !
-  !    Output, real(dp) VALUE, the integral of the monomial.
+  !    Output, real(real64) VALUE, the integral of the monomial.
   !
 
-    integer(ip), intent(in) :: expon(3)
-    integer(ip) :: i
-    integer(ip) :: i_hi
-    real(dp) :: r8_choose
-    real(dp) :: r8_mop
-    real(dp), intent(out) :: value
+    integer(int32) expon(3)
+    integer(int32) i
+    integer(int32) i_hi
+    real(real64) r8_choose
+    real(real64) r8_mop
+    real(real64) value
 
-    value = 0.0_dp
+    value = 0.0e+00_real64
 
     if ( mod ( expon(1), 2 ) == 0 .and. mod ( expon(2), 2 ) == 0 ) then
 
@@ -1206,18 +1184,17 @@ contains
 
       do i = 0, i_hi
         value = value + r8_mop ( i ) * r8_choose ( i_hi, i ) &
-        / real ( i + expon(3) + 1, dp)
+        / real ( i + expon(3) + 1, real64)
       end do
 
       value = value &
-            * 2.0_dp / real ( expon(1) + 1, dp) &
-            * 2.0_dp / real ( expon(2) + 1, dp)
+            * 2.0e+00_real64 / real ( expon(1) + 1, real64) &
+            * 2.0e+00_real64 / real ( expon(2) + 1, real64)
 
     end if
-  end subroutine pyra_unit_monomial
+  end
 
-  subroutine pyra_unit_monomial_test ( degree_max ) &
-        bind(C, name="pyra_unit_monomial_test")
+  subroutine pyra_unit_monomial_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -1237,17 +1214,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip) :: alpha
-    integer(ip) :: beta
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(3)
-    integer(ip) :: gamma
-    real(dp) :: pyra_unit_volume
-    real(dp) :: value
+    integer(int32) alpha
+    integer(int32) beta
+    integer(int32) degree_max
+    integer(int32) expon(3)
+    integer(int32) gamma
+    real(real64) pyra_unit_volume
+    real(real64) value
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'PYRA_UNIT_MONOMIAL_TEST'
@@ -1271,10 +1248,9 @@ contains
         end do
       end do
     end do
-  end subroutine pyra_unit_monomial_test
+  end
 
-  pure subroutine pyra_unit_o01 ( w, xyz ) &
-        bind(C, name="pyra_unit_o01")
+  subroutine pyra_unit_o01 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -1314,27 +1290,26 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(1), the weights.
+  !    Output, real(real64) W(1), the weights.
   !
-  !    Output, real(dp) XYZ(3,1), the abscissas.
+  !    Output, real(real64) XYZ(3,1), the abscissas.
   !
 
-    integer(ip), parameter :: order = 1
+    integer(int32), parameter :: order = 1
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(1) = (/ &
-      1.0_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,1) = reshape ( (/ &
-      0.0_dp, 0.0_dp, 0.25_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(1) = (/ &
+      1.0e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,1) = reshape ( (/ &
+      0.0e+00_real64, 0.0e+00_real64, 0.25e+00_real64 /), &
     (/ 3, 1 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o01
+  end
 
-  pure subroutine pyra_unit_o05 ( w, xyz ) &
-        bind(C, name="pyra_unit_o05")
+  subroutine pyra_unit_o05 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -1374,45 +1349,44 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(5), the weights.
+  !    Output, real(real64) W(5), the weights.
   !
-  !    Output, real(dp) XYZ(3,5), the abscissas.
+  !    Output, real(real64) XYZ(3,5), the abscissas.
   !
 
-    integer(ip), parameter :: order = 5
+    integer(int32), parameter :: order = 5
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(5) = (/ &
-     0.21093750000000000000_dp, &
-     0.21093750000000000000_dp, &
-     0.21093750000000000000_dp, &
-     0.21093750000000000000_dp, &
-     0.15625000000000000000_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,5) = reshape ( (/ &
-    -0.48686449556014765641_dp, &
-    -0.48686449556014765641_dp, &
-     0.16666666666666666667_dp, &
-     0.48686449556014765641_dp, &
-    -0.48686449556014765641_dp, &
-     0.16666666666666666667_dp, &
-     0.48686449556014765641_dp, &
-     0.48686449556014765641_dp, &
-     0.16666666666666666667_dp, &
-    -0.48686449556014765641_dp, &
-     0.48686449556014765641_dp, &
-     0.16666666666666666667_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-     0.70000000000000000000_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(5) = (/ &
+     0.21093750000000000000e+00_real64, &
+     0.21093750000000000000e+00_real64, &
+     0.21093750000000000000e+00_real64, &
+     0.21093750000000000000e+00_real64, &
+     0.15625000000000000000e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,5) = reshape ( (/ &
+    -0.48686449556014765641e+00_real64, &
+    -0.48686449556014765641e+00_real64, &
+     0.16666666666666666667e+00_real64, &
+     0.48686449556014765641e+00_real64, &
+    -0.48686449556014765641e+00_real64, &
+     0.16666666666666666667e+00_real64, &
+     0.48686449556014765641e+00_real64, &
+     0.48686449556014765641e+00_real64, &
+     0.16666666666666666667e+00_real64, &
+    -0.48686449556014765641e+00_real64, &
+     0.48686449556014765641e+00_real64, &
+     0.16666666666666666667e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.70000000000000000000e+00_real64 /), &
     (/ 3, 5 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o05
+  end
 
-  pure subroutine pyra_unit_o06 ( w, xyz ) &
-        bind(C, name="pyra_unit_o06")
+  subroutine pyra_unit_o06 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -1452,49 +1426,48 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(6), the weights.
+  !    Output, real(real64) W(6), the weights.
   !
-  !    Output, real(dp) XYZ(3,6), the abscissas.
+  !    Output, real(real64) XYZ(3,6), the abscissas.
   !
 
-    integer(ip), parameter :: order = 6
+    integer(int32), parameter :: order = 6
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(6) = (/ &
-     0.21000000000000000000_dp, &
-     0.21000000000000000000_dp, &
-     0.21000000000000000000_dp, &
-     0.21000000000000000000_dp, &
-     0.06000000000000000000_dp, &
-     0.10000000000000000000_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,6) = reshape ( (/ &
-    -0.48795003647426658968_dp, &
-    -0.48795003647426658968_dp, &
-     0.16666666666666666667_dp, &
-     0.48795003647426658968_dp, &
-    -0.48795003647426658968_dp, &
-     0.16666666666666666667_dp, &
-     0.48795003647426658968_dp, &
-     0.48795003647426658968_dp, &
-     0.16666666666666666667_dp, &
-    -0.48795003647426658968_dp, &
-     0.48795003647426658968_dp, &
-     0.16666666666666666667_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-     0.58333333333333333333_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-     0.75000000000000000000_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(6) = (/ &
+     0.21000000000000000000e+00_real64, &
+     0.21000000000000000000e+00_real64, &
+     0.21000000000000000000e+00_real64, &
+     0.21000000000000000000e+00_real64, &
+     0.06000000000000000000e+00_real64, &
+     0.10000000000000000000e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,6) = reshape ( (/ &
+    -0.48795003647426658968e+00_real64, &
+    -0.48795003647426658968e+00_real64, &
+     0.16666666666666666667e+00_real64, &
+     0.48795003647426658968e+00_real64, &
+    -0.48795003647426658968e+00_real64, &
+     0.16666666666666666667e+00_real64, &
+     0.48795003647426658968e+00_real64, &
+     0.48795003647426658968e+00_real64, &
+     0.16666666666666666667e+00_real64, &
+    -0.48795003647426658968e+00_real64, &
+     0.48795003647426658968e+00_real64, &
+     0.16666666666666666667e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.58333333333333333333e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.75000000000000000000e+00_real64 /), &
     (/ 3, 6 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o06
+  end
 
-  pure subroutine pyra_unit_o08 ( w, xyz ) &
-        bind(C, name="pyra_unit_o08")
+  subroutine pyra_unit_o08 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -1534,57 +1507,56 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(8), the weights.
+  !    Output, real(real64) W(8), the weights.
   !
-  !    Output, real(dp) XYZ(3,8), the abscissas.
+  !    Output, real(real64) XYZ(3,8), the abscissas.
   !
 
-    integer(ip), parameter :: order = 8
+    integer(int32), parameter :: order = 8
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(8) = (/ &
-     0.075589411559869072938_dp, &
-     0.075589411559869072938_dp, &
-     0.075589411559869072938_dp, &
-     0.075589411559869072938_dp, &
-     0.17441058844013092706_dp, &
-     0.17441058844013092706_dp, &
-     0.17441058844013092706_dp, &
-     0.17441058844013092706_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,8) = reshape ( (/ &
-    -0.26318405556971359557_dp, &
-    -0.26318405556971359557_dp, &
-     0.54415184401122528880_dp, &
-     0.26318405556971359557_dp, &
-    -0.26318405556971359557_dp, &
-     0.54415184401122528880_dp, &
-     0.26318405556971359557_dp, &
-     0.26318405556971359557_dp, &
-     0.54415184401122528880_dp, &
-    -0.26318405556971359557_dp, &
-     0.26318405556971359557_dp, &
-     0.54415184401122528880_dp, &
-    -0.50661630334978742377_dp, &
-    -0.50661630334978742377_dp, &
-     0.12251482265544137787_dp, &
-     0.50661630334978742377_dp, &
-    -0.50661630334978742377_dp, &
-     0.12251482265544137787_dp, &
-     0.50661630334978742377_dp, &
-     0.50661630334978742377_dp, &
-     0.12251482265544137787_dp, &
-    -0.50661630334978742377_dp, &
-     0.50661630334978742377_dp, &
-     0.12251482265544137787_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(8) = (/ &
+     0.075589411559869072938e+00_real64, &
+     0.075589411559869072938e+00_real64, &
+     0.075589411559869072938e+00_real64, &
+     0.075589411559869072938e+00_real64, &
+     0.17441058844013092706e+00_real64, &
+     0.17441058844013092706e+00_real64, &
+     0.17441058844013092706e+00_real64, &
+     0.17441058844013092706e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,8) = reshape ( (/ &
+    -0.26318405556971359557e+00_real64, &
+    -0.26318405556971359557e+00_real64, &
+     0.54415184401122528880e+00_real64, &
+     0.26318405556971359557e+00_real64, &
+    -0.26318405556971359557e+00_real64, &
+     0.54415184401122528880e+00_real64, &
+     0.26318405556971359557e+00_real64, &
+     0.26318405556971359557e+00_real64, &
+     0.54415184401122528880e+00_real64, &
+    -0.26318405556971359557e+00_real64, &
+     0.26318405556971359557e+00_real64, &
+     0.54415184401122528880e+00_real64, &
+    -0.50661630334978742377e+00_real64, &
+    -0.50661630334978742377e+00_real64, &
+     0.12251482265544137787e+00_real64, &
+     0.50661630334978742377e+00_real64, &
+    -0.50661630334978742377e+00_real64, &
+     0.12251482265544137787e+00_real64, &
+     0.50661630334978742377e+00_real64, &
+     0.50661630334978742377e+00_real64, &
+     0.12251482265544137787e+00_real64, &
+    -0.50661630334978742377e+00_real64, &
+     0.50661630334978742377e+00_real64, &
+     0.12251482265544137787e+00_real64 /), &
     (/ 3, 8 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o08
+  end
 
-  pure subroutine pyra_unit_o08b ( w, xyz ) &
-        bind(C, name="pyra_unit_o08b")
+  subroutine pyra_unit_o08b ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -1624,57 +1596,56 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(8), the weights.
+  !    Output, real(real64) W(8), the weights.
   !
-  !    Output, real(dp) XYZ(3,8), the abscissas.
+  !    Output, real(real64) XYZ(3,8), the abscissas.
   !
 
-    integer(ip), parameter :: order = 1
+    integer(int32), parameter :: order = 1
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(8) = (/ &
-     0.16438287736328777572_dp, &
-     0.16438287736328777572_dp, &
-     0.16438287736328777572_dp, &
-     0.16438287736328777572_dp, &
-     0.085617122636712224276_dp, &
-     0.085617122636712224276_dp, &
-     0.085617122636712224276_dp, &
-     0.085617122636712224276_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,8) = reshape ( (/ &
-    -0.51197009372656270107_dp, &
-    -0.51197009372656270107_dp, &
-     0.11024490204163285720_dp, &
-     0.51197009372656270107_dp, &
-    -0.51197009372656270107_dp, &
-     0.11024490204163285720_dp, &
-     0.51197009372656270107_dp, &
-     0.51197009372656270107_dp, &
-     0.11024490204163285720_dp, &
-    -0.51197009372656270107_dp, &
-     0.51197009372656270107_dp, &
-     0.11024490204163285720_dp, &
-    -0.28415447557052037456_dp, &
-    -0.28415447557052037456_dp, &
-     0.518326526529795714229_dp, &
-     0.28415447557052037456_dp, &
-    -0.28415447557052037456_dp, &
-     0.518326526529795714229_dp, &
-     0.28415447557052037456_dp, &
-     0.28415447557052037456_dp, &
-     0.518326526529795714229_dp, &
-    -0.28415447557052037456_dp, &
-     0.28415447557052037456_dp, &
-     0.518326526529795714229_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(8) = (/ &
+     0.16438287736328777572e+00_real64, &
+     0.16438287736328777572e+00_real64, &
+     0.16438287736328777572e+00_real64, &
+     0.16438287736328777572e+00_real64, &
+     0.085617122636712224276e+00_real64, &
+     0.085617122636712224276e+00_real64, &
+     0.085617122636712224276e+00_real64, &
+     0.085617122636712224276e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,8) = reshape ( (/ &
+    -0.51197009372656270107e+00_real64, &
+    -0.51197009372656270107e+00_real64, &
+     0.11024490204163285720e+00_real64, &
+     0.51197009372656270107e+00_real64, &
+    -0.51197009372656270107e+00_real64, &
+     0.11024490204163285720e+00_real64, &
+     0.51197009372656270107e+00_real64, &
+     0.51197009372656270107e+00_real64, &
+     0.11024490204163285720e+00_real64, &
+    -0.51197009372656270107e+00_real64, &
+     0.51197009372656270107e+00_real64, &
+     0.11024490204163285720e+00_real64, &
+    -0.28415447557052037456e+00_real64, &
+    -0.28415447557052037456e+00_real64, &
+     0.518326526529795714229e+00_real64, &
+     0.28415447557052037456e+00_real64, &
+    -0.28415447557052037456e+00_real64, &
+     0.518326526529795714229e+00_real64, &
+     0.28415447557052037456e+00_real64, &
+     0.28415447557052037456e+00_real64, &
+     0.518326526529795714229e+00_real64, &
+    -0.28415447557052037456e+00_real64, &
+     0.28415447557052037456e+00_real64, &
+     0.518326526529795714229e+00_real64 /), &
     (/ 3, 8 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o08b
+  end
 
-  pure subroutine pyra_unit_o09 ( w, xyz ) &
-        bind(C, name="pyra_unit_o09")
+  subroutine pyra_unit_o09 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -1714,61 +1685,60 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(9), the weights.
+  !    Output, real(real64) W(9), the weights.
   !
-  !    Output, real(dp) XYZ(3,9), the abscissas.
+  !    Output, real(real64) XYZ(3,9), the abscissas.
   !
 
-    integer(ip), parameter :: order = 9
+    integer(int32), parameter :: order = 9
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(9) = (/ &
-     0.13073389672275944791_dp, &
-     0.13073389672275944791_dp, &
-     0.13073389672275944791_dp, &
-     0.13073389672275944791_dp, &
-     0.10989110327724055209_dp, &
-     0.10989110327724055209_dp, &
-     0.10989110327724055209_dp, &
-     0.10989110327724055209_dp, &
-     0.03750000000000000000_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,9) = reshape ( (/ &
-    -0.52966422253852215131_dp, &
-    -0.52966422253852215131_dp, &
-     0.08176876558246862335_dp, &
-     0.52966422253852215131_dp, &
-    -0.52966422253852215131_dp, &
-     0.08176876558246862335_dp, &
-     0.52966422253852215131_dp, &
-     0.52966422253852215131_dp, &
-     0.08176876558246862335_dp, &
-    -0.52966422253852215131_dp, &
-     0.52966422253852215131_dp, &
-     0.08176876558246862335_dp, &
-    -0.34819753825720418039_dp, &
-    -0.34819753825720418039_dp, &
-     0.400374091560388519511_dp, &
-     0.34819753825720418039_dp, &
-    -0.34819753825720418039_dp, &
-     0.400374091560388519511_dp, &
-     0.34819753825720418039_dp, &
-     0.34819753825720418039_dp, &
-     0.400374091560388519511_dp, &
-    -0.34819753825720418039_dp, &
-     0.34819753825720418039_dp, &
-     0.400374091560388519511_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-     0.83333333333333333333_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(9) = (/ &
+     0.13073389672275944791e+00_real64, &
+     0.13073389672275944791e+00_real64, &
+     0.13073389672275944791e+00_real64, &
+     0.13073389672275944791e+00_real64, &
+     0.10989110327724055209e+00_real64, &
+     0.10989110327724055209e+00_real64, &
+     0.10989110327724055209e+00_real64, &
+     0.10989110327724055209e+00_real64, &
+     0.03750000000000000000e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,9) = reshape ( (/ &
+    -0.52966422253852215131e+00_real64, &
+    -0.52966422253852215131e+00_real64, &
+     0.08176876558246862335e+00_real64, &
+     0.52966422253852215131e+00_real64, &
+    -0.52966422253852215131e+00_real64, &
+     0.08176876558246862335e+00_real64, &
+     0.52966422253852215131e+00_real64, &
+     0.52966422253852215131e+00_real64, &
+     0.08176876558246862335e+00_real64, &
+    -0.52966422253852215131e+00_real64, &
+     0.52966422253852215131e+00_real64, &
+     0.08176876558246862335e+00_real64, &
+    -0.34819753825720418039e+00_real64, &
+    -0.34819753825720418039e+00_real64, &
+     0.400374091560388519511e+00_real64, &
+     0.34819753825720418039e+00_real64, &
+    -0.34819753825720418039e+00_real64, &
+     0.400374091560388519511e+00_real64, &
+     0.34819753825720418039e+00_real64, &
+     0.34819753825720418039e+00_real64, &
+     0.400374091560388519511e+00_real64, &
+    -0.34819753825720418039e+00_real64, &
+     0.34819753825720418039e+00_real64, &
+     0.400374091560388519511e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.83333333333333333333e+00_real64 /), &
     (/ 3, 9 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o09
+  end
 
-  pure subroutine pyra_unit_o13 ( w, xyz ) &
-        bind(C, name="pyra_unit_o13")
+  subroutine pyra_unit_o13 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -1808,77 +1778,76 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(13), the weights.
+  !    Output, real(real64) W(13), the weights.
   !
-  !    Output, real(dp) XYZ(3,13), the abscissas.
+  !    Output, real(real64) XYZ(3,13), the abscissas.
   !
 
-    integer(ip), parameter :: order = 13
+    integer(int32), parameter :: order = 13
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(13) = (/ &
-     0.063061594202898550725_dp, &
-     0.063061594202898550725_dp, &
-     0.063061594202898550725_dp, &
-     0.063061594202898550725_dp, &
-     0.042101946815575556199_dp, &
-     0.042101946815575556199_dp, &
-     0.042101946815575556199_dp, &
-     0.042101946815575556199_dp, &
-     0.13172030707666776585_dp, &
-     0.13172030707666776585_dp, &
-     0.13172030707666776585_dp, &
-     0.13172030707666776585_dp, &
-     0.05246460761943250889_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,13) = reshape ( (/ &
-    -0.38510399211870384331_dp, &
-    -0.38510399211870384331_dp, &
-    0.428571428571428571429_dp, &
-     0.38510399211870384331_dp, &
-    -0.38510399211870384331_dp, &
-    0.428571428571428571429_dp, &
-     0.38510399211870384331_dp, &
-     0.38510399211870384331_dp, &
-    0.428571428571428571429_dp, &
-    -0.38510399211870384331_dp, &
-     0.38510399211870384331_dp, &
-    0.428571428571428571429_dp, &
-    -0.40345831960728204766_dp, &
-     0.00000000000000000000_dp, &
-    0.33928571428571428571_dp,  &
-     0.40345831960728204766_dp, &
-     0.00000000000000000000_dp, &
-    0.33928571428571428571_dp,  &
-     0.00000000000000000000_dp, &
-    -0.40345831960728204766_dp, &
-    0.33928571428571428571_dp,  &
-     0.00000000000000000000_dp, &
-     0.40345831960728204766_dp, &
-    0.33928571428571428571_dp,  &
-    -0.53157877436961973359_dp, &
-    -0.53157877436961973359_dp, &
-    0.08496732026143790850_dp,  &
-     0.53157877436961973359_dp, &
-    -0.53157877436961973359_dp, &
-    0.08496732026143790850_dp,  &
-     0.53157877436961973359_dp, &
-     0.53157877436961973359_dp, &
-    0.08496732026143790850_dp,  &
-    -0.53157877436961973359_dp, &
-     0.53157877436961973359_dp, &
-    0.08496732026143790850_dp,  &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-    0.76219701803768503595_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(13) = (/ &
+     0.063061594202898550725e+00_real64, &
+     0.063061594202898550725e+00_real64, &
+     0.063061594202898550725e+00_real64, &
+     0.063061594202898550725e+00_real64, &
+     0.042101946815575556199e+00_real64, &
+     0.042101946815575556199e+00_real64, &
+     0.042101946815575556199e+00_real64, &
+     0.042101946815575556199e+00_real64, &
+     0.13172030707666776585e+00_real64, &
+     0.13172030707666776585e+00_real64, &
+     0.13172030707666776585e+00_real64, &
+     0.13172030707666776585e+00_real64, &
+     0.05246460761943250889e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,13) = reshape ( (/ &
+    -0.38510399211870384331e+00_real64, &
+    -0.38510399211870384331e+00_real64, &
+    0.428571428571428571429e+00_real64, &
+     0.38510399211870384331e+00_real64, &
+    -0.38510399211870384331e+00_real64, &
+    0.428571428571428571429e+00_real64, &
+     0.38510399211870384331e+00_real64, &
+     0.38510399211870384331e+00_real64, &
+    0.428571428571428571429e+00_real64, &
+    -0.38510399211870384331e+00_real64, &
+     0.38510399211870384331e+00_real64, &
+    0.428571428571428571429e+00_real64, &
+    -0.40345831960728204766e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.33928571428571428571e+00_real64,  &
+     0.40345831960728204766e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.33928571428571428571e+00_real64,  &
+     0.00000000000000000000e+00_real64, &
+    -0.40345831960728204766e+00_real64, &
+    0.33928571428571428571e+00_real64,  &
+     0.00000000000000000000e+00_real64, &
+     0.40345831960728204766e+00_real64, &
+    0.33928571428571428571e+00_real64,  &
+    -0.53157877436961973359e+00_real64, &
+    -0.53157877436961973359e+00_real64, &
+    0.08496732026143790850e+00_real64,  &
+     0.53157877436961973359e+00_real64, &
+    -0.53157877436961973359e+00_real64, &
+    0.08496732026143790850e+00_real64,  &
+     0.53157877436961973359e+00_real64, &
+     0.53157877436961973359e+00_real64, &
+    0.08496732026143790850e+00_real64,  &
+    -0.53157877436961973359e+00_real64, &
+     0.53157877436961973359e+00_real64, &
+    0.08496732026143790850e+00_real64,  &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.76219701803768503595e+00_real64 /), &
     (/ 3, 13 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o13
+  end
 
-  pure subroutine pyra_unit_o18 ( w, xyz ) &
-        bind(C, name="pyra_unit_o18")
+  subroutine pyra_unit_o18 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -1918,97 +1887,96 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(18), the weights.
+  !    Output, real(real64) W(18), the weights.
   !
-  !    Output, real(dp) XYZ(3,18), the abscissas.
+  !    Output, real(real64) XYZ(3,18), the abscissas.
   !
 
-    integer(ip), parameter :: order = 18
+    integer(int32), parameter :: order = 18
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(18) = (/ &
-     0.023330065296255886709_dp, &
-     0.037328104474009418735_dp, &
-     0.023330065296255886709_dp, &
-     0.037328104474009418735_dp, &
-     0.059724967158415069975_dp, &
-     0.037328104474009418735_dp, &
-     0.023330065296255886709_dp, &
-     0.037328104474009418735_dp, &
-     0.023330065296255886709_dp, &
-     0.05383042853090460712_dp, &
-     0.08612868564944737139_dp, &
-     0.05383042853090460712_dp, &
-     0.08612868564944737139_dp, &
-     0.13780589703911579422_dp, &
-     0.08612868564944737139_dp, &
-     0.05383042853090460712_dp, &
-     0.08612868564944737139_dp, &
-     0.05383042853090460712_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,18) = reshape ( (/ &
-    -0.35309846330877704481_dp, &
-    -0.35309846330877704481_dp, &
-    0.544151844011225288800_dp, &
-     0.00000000000000000000_dp, &
-    -0.35309846330877704481_dp, &
-    0.544151844011225288800_dp, &
-     0.35309846330877704481_dp, &
-    -0.35309846330877704481_dp, &
-    0.544151844011225288800_dp, &
-    -0.35309846330877704481_dp, &
-     0.00000000000000000000_dp, &
-    0.544151844011225288800_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-    0.544151844011225288800_dp, &
-     0.35309846330877704481_dp, &
-     0.00000000000000000000_dp, &
-    0.544151844011225288800_dp, &
-    -0.35309846330877704481_dp, &
-     0.35309846330877704481_dp, &
-    0.544151844011225288800_dp, &
-     0.00000000000000000000_dp, &
-     0.35309846330877704481_dp, &
-    0.544151844011225288800_dp, &
-     0.35309846330877704481_dp, &
-     0.35309846330877704481_dp, &
-    0.544151844011225288800_dp, &
-    -0.67969709567986745790_dp, &
-    -0.67969709567986745790_dp, &
-    0.12251482265544137787_dp, &
-     0.00000000000000000000_dp, &
-    -0.67969709567986745790_dp, &
-    0.12251482265544137787_dp, &
-     0.67969709567986745790_dp, &
-    -0.67969709567986745790_dp, &
-    0.12251482265544137787_dp, &
-    -0.67969709567986745790_dp, &
-     0.00000000000000000000_dp, &
-    0.12251482265544137787_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-    0.12251482265544137787_dp, &
-     0.67969709567986745790_dp, &
-     0.00000000000000000000_dp, &
-    0.12251482265544137787_dp, &
-    -0.67969709567986745790_dp, &
-     0.67969709567986745790_dp, &
-    0.12251482265544137787_dp, &
-     0.00000000000000000000_dp, &
-     0.67969709567986745790_dp, &
-    0.12251482265544137787_dp, &
-     0.67969709567986745790_dp, &
-     0.67969709567986745790_dp, &
-    0.12251482265544137787_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(18) = (/ &
+     0.023330065296255886709e+00_real64, &
+     0.037328104474009418735e+00_real64, &
+     0.023330065296255886709e+00_real64, &
+     0.037328104474009418735e+00_real64, &
+     0.059724967158415069975e+00_real64, &
+     0.037328104474009418735e+00_real64, &
+     0.023330065296255886709e+00_real64, &
+     0.037328104474009418735e+00_real64, &
+     0.023330065296255886709e+00_real64, &
+     0.05383042853090460712e+00_real64, &
+     0.08612868564944737139e+00_real64, &
+     0.05383042853090460712e+00_real64, &
+     0.08612868564944737139e+00_real64, &
+     0.13780589703911579422e+00_real64, &
+     0.08612868564944737139e+00_real64, &
+     0.05383042853090460712e+00_real64, &
+     0.08612868564944737139e+00_real64, &
+     0.05383042853090460712e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,18) = reshape ( (/ &
+    -0.35309846330877704481e+00_real64, &
+    -0.35309846330877704481e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    -0.35309846330877704481e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+     0.35309846330877704481e+00_real64, &
+    -0.35309846330877704481e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+    -0.35309846330877704481e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+     0.35309846330877704481e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+    -0.35309846330877704481e+00_real64, &
+     0.35309846330877704481e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.35309846330877704481e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+     0.35309846330877704481e+00_real64, &
+     0.35309846330877704481e+00_real64, &
+    0.544151844011225288800e+00_real64, &
+    -0.67969709567986745790e+00_real64, &
+    -0.67969709567986745790e+00_real64, &
+    0.12251482265544137787e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    -0.67969709567986745790e+00_real64, &
+    0.12251482265544137787e+00_real64, &
+     0.67969709567986745790e+00_real64, &
+    -0.67969709567986745790e+00_real64, &
+    0.12251482265544137787e+00_real64, &
+    -0.67969709567986745790e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.12251482265544137787e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.12251482265544137787e+00_real64, &
+     0.67969709567986745790e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.12251482265544137787e+00_real64, &
+    -0.67969709567986745790e+00_real64, &
+     0.67969709567986745790e+00_real64, &
+    0.12251482265544137787e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.67969709567986745790e+00_real64, &
+    0.12251482265544137787e+00_real64, &
+     0.67969709567986745790e+00_real64, &
+     0.67969709567986745790e+00_real64, &
+    0.12251482265544137787e+00_real64 /), &
     (/ 3, 18 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o18
+  end
 
-  pure subroutine pyra_unit_o27 ( w, xyz ) &
-        bind(C, name="pyra_unit_o27")
+  subroutine pyra_unit_o27 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -2048,133 +2016,132 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(27), the weights.
+  !    Output, real(real64) W(27), the weights.
   !
-  !    Output, real(dp) XYZ(3,27), the abscissas.
+  !    Output, real(real64) XYZ(3,27), the abscissas.
   !
 
-    integer(ip), parameter :: order = 27
+    integer(int32), parameter :: order = 27
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(27) = (/ &
-     0.036374157653908938268_dp, &
-     0.05819865224625430123_dp, &
-     0.036374157653908938268_dp, &
-     0.05819865224625430123_dp, &
-     0.09311784359400688197_dp, &
-     0.05819865224625430123_dp, &
-     0.036374157653908938268_dp, &
-     0.05819865224625430123_dp, &
-     0.036374157653908938268_dp, &
-     0.033853303069413431019_dp, &
-     0.054165284911061489631_dp, &
-     0.033853303069413431019_dp, &
-     0.054165284911061489631_dp, &
-     0.08666445585769838341_dp, &
-     0.054165284911061489631_dp, &
-     0.033853303069413431019_dp, &
-     0.054165284911061489631_dp, &
-     0.033853303069413431019_dp, &
-     0.006933033103838124540_dp, &
-     0.011092852966140999264_dp, &
-     0.006933033103838124540_dp, &
-     0.011092852966140999264_dp, &
-     0.017748564745825598822_dp, &
-     0.011092852966140999264_dp, &
-     0.006933033103838124540_dp, &
-     0.011092852966140999264_dp, &
-     0.006933033103838124540_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,27) = reshape ( (/ &
-    -0.7180557413198889387_dp, &
-     -0.7180557413198889387_dp, &
-     0.07299402407314973216_dp, &
-     0.00000000000000000000_dp, &
-    -0.7180557413198889387_dp, &
-     0.07299402407314973216_dp, &
-     0.7180557413198889387_dp, &
-     -0.7180557413198889387_dp, &
-     0.07299402407314973216_dp, &
-    -0.7180557413198889387_dp, &
-      0.00000000000000000000_dp, &
-    0.07299402407314973216_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-    0.07299402407314973216_dp, &
-     0.7180557413198889387_dp, &
-      0.00000000000000000000_dp, &
-    0.07299402407314973216_dp, &
-    -0.7180557413198889387_dp, &
-      0.7180557413198889387_dp, &
-     0.07299402407314973216_dp, &
-     0.00000000000000000000_dp, &
-     0.7180557413198889387_dp, &
-     0.07299402407314973216_dp, &
-     0.7180557413198889387_dp, &
-      0.7180557413198889387_dp, &
-     0.07299402407314973216_dp, &
-    -0.50580870785392503961_dp, &
-    -0.50580870785392503961_dp, &
-    0.34700376603835188472_dp, &
-     0.00000000000000000000_dp, &
-    -0.50580870785392503961_dp, &
-    0.34700376603835188472_dp, &
-     0.50580870785392503961_dp, &
-    -0.50580870785392503961_dp, &
-    0.34700376603835188472_dp, &
-    -0.50580870785392503961_dp, &
-     0.00000000000000000000_dp, &
-    0.34700376603835188472_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-    0.34700376603835188472_dp, &
-     0.50580870785392503961_dp, &
-     0.00000000000000000000_dp, &
-    0.34700376603835188472_dp, &
-    -0.50580870785392503961_dp, &
-     0.50580870785392503961_dp, &
-    0.34700376603835188472_dp, &
-     0.00000000000000000000_dp, &
-     0.50580870785392503961_dp, &
-    0.34700376603835188472_dp, &
-     0.50580870785392503961_dp, &
-     0.50580870785392503961_dp, &
-    0.34700376603835188472_dp, &
-    -0.22850430565396735360_dp, &
-    -0.22850430565396735360_dp, &
-    0.70500220988849838312_dp, &
-     0.00000000000000000000_dp, &
-    -0.22850430565396735360_dp, &
-    0.70500220988849838312_dp, &
-     0.22850430565396735360_dp, &
-    -0.22850430565396735360_dp, &
-    0.70500220988849838312_dp, &
-    -0.22850430565396735360_dp, &
-     0.00000000000000000000_dp, &
-    0.70500220988849838312_dp, &
-     0.00000000000000000000_dp, &
-     0.00000000000000000000_dp, &
-    0.70500220988849838312_dp, &
-     0.22850430565396735360_dp, &
-     0.00000000000000000000_dp, &
-    0.70500220988849838312_dp, &
-    -0.22850430565396735360_dp, &
-     0.22850430565396735360_dp, &
-    0.70500220988849838312_dp, &
-     0.00000000000000000000_dp, &
-     0.22850430565396735360_dp, &
-    0.70500220988849838312_dp, &
-     0.22850430565396735360_dp, &
-     0.22850430565396735360_dp, &
-    0.70500220988849838312_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(27) = (/ &
+     0.036374157653908938268e+00_real64, &
+     0.05819865224625430123e+00_real64, &
+     0.036374157653908938268e+00_real64, &
+     0.05819865224625430123e+00_real64, &
+     0.09311784359400688197e+00_real64, &
+     0.05819865224625430123e+00_real64, &
+     0.036374157653908938268e+00_real64, &
+     0.05819865224625430123e+00_real64, &
+     0.036374157653908938268e+00_real64, &
+     0.033853303069413431019e+00_real64, &
+     0.054165284911061489631e+00_real64, &
+     0.033853303069413431019e+00_real64, &
+     0.054165284911061489631e+00_real64, &
+     0.08666445585769838341e+00_real64, &
+     0.054165284911061489631e+00_real64, &
+     0.033853303069413431019e+00_real64, &
+     0.054165284911061489631e+00_real64, &
+     0.033853303069413431019e+00_real64, &
+     0.006933033103838124540e+00_real64, &
+     0.011092852966140999264e+00_real64, &
+     0.006933033103838124540e+00_real64, &
+     0.011092852966140999264e+00_real64, &
+     0.017748564745825598822e+00_real64, &
+     0.011092852966140999264e+00_real64, &
+     0.006933033103838124540e+00_real64, &
+     0.011092852966140999264e+00_real64, &
+     0.006933033103838124540e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,27) = reshape ( (/ &
+    -0.7180557413198889387e+00_real64, &
+     -0.7180557413198889387e+00_real64, &
+     0.07299402407314973216e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    -0.7180557413198889387e+00_real64, &
+     0.07299402407314973216e+00_real64, &
+     0.7180557413198889387e+00_real64, &
+     -0.7180557413198889387e+00_real64, &
+     0.07299402407314973216e+00_real64, &
+    -0.7180557413198889387e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+    0.07299402407314973216e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.07299402407314973216e+00_real64, &
+     0.7180557413198889387e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+    0.07299402407314973216e+00_real64, &
+    -0.7180557413198889387e+00_real64, &
+      0.7180557413198889387e+00_real64, &
+     0.07299402407314973216e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.7180557413198889387e+00_real64, &
+     0.07299402407314973216e+00_real64, &
+     0.7180557413198889387e+00_real64, &
+      0.7180557413198889387e+00_real64, &
+     0.07299402407314973216e+00_real64, &
+    -0.50580870785392503961e+00_real64, &
+    -0.50580870785392503961e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    -0.50580870785392503961e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+     0.50580870785392503961e+00_real64, &
+    -0.50580870785392503961e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+    -0.50580870785392503961e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+     0.50580870785392503961e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+    -0.50580870785392503961e+00_real64, &
+     0.50580870785392503961e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.50580870785392503961e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+     0.50580870785392503961e+00_real64, &
+     0.50580870785392503961e+00_real64, &
+    0.34700376603835188472e+00_real64, &
+    -0.22850430565396735360e+00_real64, &
+    -0.22850430565396735360e+00_real64, &
+    0.70500220988849838312e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    -0.22850430565396735360e+00_real64, &
+    0.70500220988849838312e+00_real64, &
+     0.22850430565396735360e+00_real64, &
+    -0.22850430565396735360e+00_real64, &
+    0.70500220988849838312e+00_real64, &
+    -0.22850430565396735360e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.70500220988849838312e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.70500220988849838312e+00_real64, &
+     0.22850430565396735360e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+    0.70500220988849838312e+00_real64, &
+    -0.22850430565396735360e+00_real64, &
+     0.22850430565396735360e+00_real64, &
+    0.70500220988849838312e+00_real64, &
+     0.00000000000000000000e+00_real64, &
+     0.22850430565396735360e+00_real64, &
+    0.70500220988849838312e+00_real64, &
+     0.22850430565396735360e+00_real64, &
+     0.22850430565396735360e+00_real64, &
+    0.70500220988849838312e+00_real64 /), &
     (/ 3, 27 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o27
+  end
 
-  pure subroutine pyra_unit_o48 ( w, xyz ) &
-        bind(C, name="pyra_unit_o48")
+  subroutine pyra_unit_o48 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -2220,217 +2187,216 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(48), the weights.
+  !    Output, real(real64) W(48), the weights.
   !
-  !    Output, real(dp) XYZ(3,48), the abscissas.
+  !    Output, real(real64) XYZ(3,48), the abscissas.
   !
 
-    integer(ip), parameter :: order = 48
+    integer(int32), parameter :: order = 48
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(48) = (/ &
-    2.01241939442682455e-002_dp, &
-    2.01241939442682455e-002_dp, &
-    2.01241939442682455e-002_dp, &
-    2.01241939442682455e-002_dp, &
-    2.60351137043010779e-002_dp, &
-    2.60351137043010779e-002_dp, &
-    2.60351137043010779e-002_dp, &
-    2.60351137043010779e-002_dp, &
-    1.24557795239745531e-002_dp, &
-    1.24557795239745531e-002_dp, &
-    1.24557795239745531e-002_dp, &
-    1.24557795239745531e-002_dp, &
-    1.87873998794808156e-003_dp, &
-    1.87873998794808156e-003_dp, &
-    1.87873998794808156e-003_dp, &
-    1.87873998794808156e-003_dp, &
-    4.32957927807745280e-002_dp, &
-    4.32957927807745280e-002_dp, &
-    4.32957927807745280e-002_dp, &
-    4.32957927807745280e-002_dp, &
-    1.97463249834127288e-002_dp, &
-    1.97463249834127288e-002_dp, &
-    1.97463249834127288e-002_dp, &
-    1.97463249834127288e-002_dp, &
-    5.60127223523590526e-002_dp, &
-    5.60127223523590526e-002_dp, &
-    5.60127223523590526e-002_dp, &
-    5.60127223523590526e-002_dp, &
-    2.55462562927473852e-002_dp, &
-    2.55462562927473852e-002_dp, &
-    2.55462562927473852e-002_dp, &
-    2.55462562927473852e-002_dp, &
-    2.67977366291788643e-002_dp, &
-    2.67977366291788643e-002_dp, &
-    2.67977366291788643e-002_dp, &
-    2.67977366291788643e-002_dp, &
-    1.22218992265373354e-002_dp, &
-    1.22218992265373354e-002_dp, &
-    1.22218992265373354e-002_dp, &
-    1.22218992265373354e-002_dp, &
-    4.04197740453215038e-003_dp, &
-    4.04197740453215038e-003_dp, &
-    4.04197740453215038e-003_dp, &
-    4.04197740453215038e-003_dp, &
-    1.84346316995826843e-003_dp, &
-    1.84346316995826843e-003_dp, &
-    1.84346316995826843e-003_dp, &
-    1.84346316995826843e-003_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,48) = reshape ( (/ &
-    0.88091731624450909_dp, &
-     0.0000000000000000_dp, &
-     4.85005494469969989e-02_dp, &
-   -0.88091731624450909_dp, &
-     0.0000000000000000_dp, &
-     4.85005494469969989e-02_dp, &
-     0.0000000000000000_dp, &
-     0.88091731624450909_dp, &
-    4.85005494469969989e-02_dp, &
-     0.0000000000000000_dp, &
-    -0.88091731624450909_dp, &
-    4.85005494469969989e-02_dp, &
-    0.70491874112648223_dp, &
-     0.0000000000000000_dp, &
-     0.23860073755186201_dp, &
-   -0.70491874112648223_dp, &
-     0.0000000000000000_dp, &
-     0.23860073755186201_dp, &
-     0.0000000000000000_dp, &
-     0.70491874112648223_dp, &
-    0.23860073755186201_dp, &
-     0.0000000000000000_dp, &
-    -0.70491874112648223_dp, &
-    0.23860073755186201_dp, &
-    0.44712732143189760_dp, &
-     0.0000000000000000_dp, &
-     0.51704729510436798_dp, &
-   -0.44712732143189760_dp, &
-     0.0000000000000000_dp, &
-     0.51704729510436798_dp, &
-     0.0000000000000000_dp, &
-     0.44712732143189760_dp, &
-    0.51704729510436798_dp, &
-     0.0000000000000000_dp, &
-    -0.44712732143189760_dp, &
-    0.51704729510436798_dp, &
-    0.18900486065123448_dp, &
-     0.0000000000000000_dp, &
-     0.79585141789677305_dp, &
-   -0.18900486065123448_dp, &
-     0.0000000000000000_dp, &
-     0.79585141789677305_dp, &
-     0.0000000000000000_dp, &
-     0.18900486065123448_dp, &
-    0.79585141789677305_dp, &
-     0.0000000000000000_dp, &
-    -0.18900486065123448_dp, &
-    0.79585141789677305_dp, &
-    0.36209733410322176_dp, &
-     0.36209733410322176_dp, &
-    4.85005494469969989e-02_dp, &
-   -0.36209733410322176_dp, &
-     0.36209733410322176_dp, &
-    4.85005494469969989e-02_dp, &
-   -0.36209733410322176_dp, &
-    -0.36209733410322176_dp, &
-    4.85005494469969989e-02_dp, &
-    0.36209733410322176_dp, &
-    -0.36209733410322176_dp, &
-    4.85005494469969989e-02_dp, &
-    0.76688932060387538_dp, &
-     0.76688932060387538_dp, &
-    4.85005494469969989e-02_dp, &
-   -0.76688932060387538_dp, &
-     0.76688932060387538_dp, &
-    4.85005494469969989e-02_dp, &
-   -0.76688932060387538_dp, &
-    -0.76688932060387538_dp, &
-    4.85005494469969989e-02_dp, &
-    0.76688932060387538_dp, &
-    -0.76688932060387538_dp, &
-    4.85005494469969989e-02_dp, &
-    0.28975386476618070_dp, &
-     0.28975386476618070_dp, &
-    0.23860073755186201_dp, &
-   -0.28975386476618070_dp, &
-     0.28975386476618070_dp, &
-    0.23860073755186201_dp, &
-   -0.28975386476618070_dp, &
-    -0.28975386476618070_dp, &
-    0.23860073755186201_dp, &
-    0.28975386476618070_dp, &
-    -0.28975386476618070_dp, &
-    0.23860073755186201_dp, &
-    0.61367241226233160_dp, &
-     0.61367241226233160_dp, &
-    0.23860073755186201_dp, &
-   -0.61367241226233160_dp, &
-     0.61367241226233160_dp, &
-    0.23860073755186201_dp, &
-   -0.61367241226233160_dp, &
-    -0.61367241226233160_dp, &
-    0.23860073755186201_dp, &
-    0.61367241226233160_dp, &
-    -0.61367241226233160_dp, &
-    0.23860073755186201_dp, &
-    0.18378979287798017_dp, &
-     0.18378979287798017_dp, &
-    0.51704729510436798_dp, &
-   -0.18378979287798017_dp, &
-     0.18378979287798017_dp, &
-    0.51704729510436798_dp, &
-   -0.18378979287798017_dp, &
-    -0.18378979287798017_dp, &
-    0.51704729510436798_dp, &
-    0.18378979287798017_dp, &
-    -0.18378979287798017_dp, &
-    0.51704729510436798_dp, &
-    0.38925011625173161_dp, &
-     0.38925011625173161_dp, &
-    0.51704729510436798_dp, &
-   -0.38925011625173161_dp, &
-     0.38925011625173161_dp, &
-    0.51704729510436798_dp, &
-   -0.38925011625173161_dp, &
-    -0.38925011625173161_dp, &
-    0.51704729510436798_dp, &
-    0.38925011625173161_dp, &
-    -0.38925011625173161_dp, &
-    0.51704729510436798_dp, &
-    7.76896479525748113e-02_dp, &
-     7.76896479525748113e-02_dp, &
-    0.79585141789677305_dp, &
-   -7.76896479525748113e-02_dp, &
-     7.76896479525748113e-02_dp, &
-    0.79585141789677305_dp, &
-   -7.76896479525748113e-02_dp, &
-    -7.76896479525748113e-02_dp, &
-    0.79585141789677305_dp, &
-    7.76896479525748113e-02_dp, &
-    -7.76896479525748113e-02_dp, &
-    0.79585141789677305_dp, &
-    0.16453962988669860_dp, &
-     0.16453962988669860_dp, &
-    0.79585141789677305_dp, &
-   -0.16453962988669860_dp, &
-     0.16453962988669860_dp, &
-    0.79585141789677305_dp, &
-   -0.16453962988669860_dp, &
-    -0.16453962988669860_dp, &
-    0.79585141789677305_dp, &
-    0.16453962988669860_dp, &
-    -0.16453962988669860_dp, &
-    0.79585141789677305_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(48) = (/ &
+    2.01241939442682455e-002_real64, &
+    2.01241939442682455e-002_real64, &
+    2.01241939442682455e-002_real64, &
+    2.01241939442682455e-002_real64, &
+    2.60351137043010779e-002_real64, &
+    2.60351137043010779e-002_real64, &
+    2.60351137043010779e-002_real64, &
+    2.60351137043010779e-002_real64, &
+    1.24557795239745531e-002_real64, &
+    1.24557795239745531e-002_real64, &
+    1.24557795239745531e-002_real64, &
+    1.24557795239745531e-002_real64, &
+    1.87873998794808156e-003_real64, &
+    1.87873998794808156e-003_real64, &
+    1.87873998794808156e-003_real64, &
+    1.87873998794808156e-003_real64, &
+    4.32957927807745280e-002_real64, &
+    4.32957927807745280e-002_real64, &
+    4.32957927807745280e-002_real64, &
+    4.32957927807745280e-002_real64, &
+    1.97463249834127288e-002_real64, &
+    1.97463249834127288e-002_real64, &
+    1.97463249834127288e-002_real64, &
+    1.97463249834127288e-002_real64, &
+    5.60127223523590526e-002_real64, &
+    5.60127223523590526e-002_real64, &
+    5.60127223523590526e-002_real64, &
+    5.60127223523590526e-002_real64, &
+    2.55462562927473852e-002_real64, &
+    2.55462562927473852e-002_real64, &
+    2.55462562927473852e-002_real64, &
+    2.55462562927473852e-002_real64, &
+    2.67977366291788643e-002_real64, &
+    2.67977366291788643e-002_real64, &
+    2.67977366291788643e-002_real64, &
+    2.67977366291788643e-002_real64, &
+    1.22218992265373354e-002_real64, &
+    1.22218992265373354e-002_real64, &
+    1.22218992265373354e-002_real64, &
+    1.22218992265373354e-002_real64, &
+    4.04197740453215038e-003_real64, &
+    4.04197740453215038e-003_real64, &
+    4.04197740453215038e-003_real64, &
+    4.04197740453215038e-003_real64, &
+    1.84346316995826843e-003_real64, &
+    1.84346316995826843e-003_real64, &
+    1.84346316995826843e-003_real64, &
+    1.84346316995826843e-003_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,48) = reshape ( (/ &
+    0.88091731624450909e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     4.85005494469969989e-02_real64, &
+   -0.88091731624450909e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     4.85005494469969989e-02_real64, &
+     0.0000000000000000e+00_real64, &
+     0.88091731624450909e+00_real64, &
+    4.85005494469969989e-02_real64, &
+     0.0000000000000000e+00_real64, &
+    -0.88091731624450909e+00_real64, &
+    4.85005494469969989e-02_real64, &
+    0.70491874112648223e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.23860073755186201e+00_real64, &
+   -0.70491874112648223e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.23860073755186201e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.70491874112648223e+00_real64, &
+    0.23860073755186201e+00_real64, &
+     0.0000000000000000e+00_real64, &
+    -0.70491874112648223e+00_real64, &
+    0.23860073755186201e+00_real64, &
+    0.44712732143189760e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.51704729510436798e+00_real64, &
+   -0.44712732143189760e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.51704729510436798e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.44712732143189760e+00_real64, &
+    0.51704729510436798e+00_real64, &
+     0.0000000000000000e+00_real64, &
+    -0.44712732143189760e+00_real64, &
+    0.51704729510436798e+00_real64, &
+    0.18900486065123448e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.79585141789677305e+00_real64, &
+   -0.18900486065123448e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.79585141789677305e+00_real64, &
+     0.0000000000000000e+00_real64, &
+     0.18900486065123448e+00_real64, &
+    0.79585141789677305e+00_real64, &
+     0.0000000000000000e+00_real64, &
+    -0.18900486065123448e+00_real64, &
+    0.79585141789677305e+00_real64, &
+    0.36209733410322176e+00_real64, &
+     0.36209733410322176e+00_real64, &
+    4.85005494469969989e-02_real64, &
+   -0.36209733410322176e+00_real64, &
+     0.36209733410322176e+00_real64, &
+    4.85005494469969989e-02_real64, &
+   -0.36209733410322176e+00_real64, &
+    -0.36209733410322176e+00_real64, &
+    4.85005494469969989e-02_real64, &
+    0.36209733410322176e+00_real64, &
+    -0.36209733410322176e+00_real64, &
+    4.85005494469969989e-02_real64, &
+    0.76688932060387538e+00_real64, &
+     0.76688932060387538e+00_real64, &
+    4.85005494469969989e-02_real64, &
+   -0.76688932060387538e+00_real64, &
+     0.76688932060387538e+00_real64, &
+    4.85005494469969989e-02_real64, &
+   -0.76688932060387538e+00_real64, &
+    -0.76688932060387538e+00_real64, &
+    4.85005494469969989e-02_real64, &
+    0.76688932060387538e+00_real64, &
+    -0.76688932060387538e+00_real64, &
+    4.85005494469969989e-02_real64, &
+    0.28975386476618070e+00_real64, &
+     0.28975386476618070e+00_real64, &
+    0.23860073755186201e+00_real64, &
+   -0.28975386476618070e+00_real64, &
+     0.28975386476618070e+00_real64, &
+    0.23860073755186201e+00_real64, &
+   -0.28975386476618070e+00_real64, &
+    -0.28975386476618070e+00_real64, &
+    0.23860073755186201e+00_real64, &
+    0.28975386476618070e+00_real64, &
+    -0.28975386476618070e+00_real64, &
+    0.23860073755186201e+00_real64, &
+    0.61367241226233160e+00_real64, &
+     0.61367241226233160e+00_real64, &
+    0.23860073755186201e+00_real64, &
+   -0.61367241226233160e+00_real64, &
+     0.61367241226233160e+00_real64, &
+    0.23860073755186201e+00_real64, &
+   -0.61367241226233160e+00_real64, &
+    -0.61367241226233160e+00_real64, &
+    0.23860073755186201e+00_real64, &
+    0.61367241226233160e+00_real64, &
+    -0.61367241226233160e+00_real64, &
+    0.23860073755186201e+00_real64, &
+    0.18378979287798017e+00_real64, &
+     0.18378979287798017e+00_real64, &
+    0.51704729510436798e+00_real64, &
+   -0.18378979287798017e+00_real64, &
+     0.18378979287798017e+00_real64, &
+    0.51704729510436798e+00_real64, &
+   -0.18378979287798017e+00_real64, &
+    -0.18378979287798017e+00_real64, &
+    0.51704729510436798e+00_real64, &
+    0.18378979287798017e+00_real64, &
+    -0.18378979287798017e+00_real64, &
+    0.51704729510436798e+00_real64, &
+    0.38925011625173161e+00_real64, &
+     0.38925011625173161e+00_real64, &
+    0.51704729510436798e+00_real64, &
+   -0.38925011625173161e+00_real64, &
+     0.38925011625173161e+00_real64, &
+    0.51704729510436798e+00_real64, &
+   -0.38925011625173161e+00_real64, &
+    -0.38925011625173161e+00_real64, &
+    0.51704729510436798e+00_real64, &
+    0.38925011625173161e+00_real64, &
+    -0.38925011625173161e+00_real64, &
+    0.51704729510436798e+00_real64, &
+    7.76896479525748113e-02_real64, &
+     7.76896479525748113e-02_real64, &
+    0.79585141789677305e+00_real64, &
+   -7.76896479525748113e-02_real64, &
+     7.76896479525748113e-02_real64, &
+    0.79585141789677305e+00_real64, &
+   -7.76896479525748113e-02_real64, &
+    -7.76896479525748113e-02_real64, &
+    0.79585141789677305e+00_real64, &
+    7.76896479525748113e-02_real64, &
+    -7.76896479525748113e-02_real64, &
+    0.79585141789677305e+00_real64, &
+    0.16453962988669860e+00_real64, &
+     0.16453962988669860e+00_real64, &
+    0.79585141789677305e+00_real64, &
+   -0.16453962988669860e+00_real64, &
+     0.16453962988669860e+00_real64, &
+    0.79585141789677305e+00_real64, &
+   -0.16453962988669860e+00_real64, &
+    -0.16453962988669860e+00_real64, &
+    0.79585141789677305e+00_real64, &
+    0.16453962988669860e+00_real64, &
+    -0.16453962988669860e+00_real64, &
+    0.79585141789677305e+00_real64 /), &
     (/ 3, 48 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine pyra_unit_o48
+  end
 
-  subroutine pyra_unit_quad_test ( degree_max ) &
-        bind(C, name="pyra_unit_quad_test")
+  subroutine pyra_unit_quad_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -2450,23 +2416,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(dim_num)
-    integer(ip) :: h
-    logical :: more
-    integer(ip) :: order
-    real(dp) :: quad
-    integer(ip) :: t
-    real(dp) :: pyra_unit_volume
-    real(dp), allocatable :: v(:)
-    real(dp), allocatable :: w(:)
-    real(dp), allocatable :: xyz(:,:)
+    integer(int32) degree_max
+    integer(int32) expon(dim_num)
+    integer(int32) h
+    logical more
+    integer(int32) order
+    real(real64) quad
+    integer(int32) t
+    real(real64) pyra_unit_volume
+    real(real64), allocatable :: v(:)
+    real(real64), allocatable :: w(:)
+    real(real64), allocatable :: xyz(:,:)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'PYRA_UNIT_QUAD_TEST'
@@ -2628,10 +2594,9 @@ contains
       end if
 
     end do
-  end subroutine pyra_unit_quad_test
+  end
 
-  pure function pyra_unit_volume ( ) &
-        bind(C, name="pyra_unit_volume")
+  function pyra_unit_volume ( )
 
   !*****************************************************************************80
   !
@@ -2661,16 +2626,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) PYRA_UNIT_VOLUME, the volume.
+  !    Output, real(real64) PYRA_UNIT_VOLUME, the volume.
   !
 
-    real(dp) :: pyra_unit_volume
+    real(real64) pyra_unit_volume
 
-    pyra_unit_volume = 4.0_dp / 3.0_dp
-  end function pyra_unit_volume
+    pyra_unit_volume = 4.0e+00_real64 / 3.0e+00_real64
+  end
 
-  subroutine quad_unit_monomial ( expon, value ) &
-        bind(C, name="quad_unit_monomial")
+  subroutine quad_unit_monomial ( expon, value )
 
   !*****************************************************************************80
   !
@@ -2705,35 +2669,34 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) EXPON(2), the exponents.
+  !    Input, integer(int32) EXPON(2), the exponents.
   !
-  !    Output, real(dp) VALUE, the integral of the monomial.
+  !    Output, real(real64) VALUE, the integral of the monomial.
   !
 
-    integer(ip), intent(in) :: expon(2)
-    integer(ip) :: i
-    real(dp), intent(out) :: value
+    integer(int32) expon(2)
+    integer(int32) i
+    real(real64) value
 
-    value = 1.0_dp
+    value = 1.0e+00_real64
 
     do i = 1, 2
 
       if ( mod ( expon(i), 2 ) == 1 ) then
-        value = 0.0_dp
+        value = 0.0e+00_real64
       else if ( expon(i) == -1 ) then
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'QUAD_UNIT_MONOMIAL - Fatal error!'
         write ( *, '(a)' ) '  Exponent of -1 encountered.'
         stop 1
       else
-        value = value * 2.0_dp / real ( expon(i) + 1, dp)
+        value = value * 2.0e+00_real64 / real ( expon(i) + 1, real64)
       end if
 
     end do
-  end subroutine quad_unit_monomial
+  end
 
-  subroutine quad_unit_monomial_test ( degree_max ) &
-        bind(C, name="quad_unit_monomial_test")
+  subroutine quad_unit_monomial_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -2753,16 +2716,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip) :: alpha
-    integer(ip) :: beta
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(2)
-    real(dp) :: quad_unit_volume
-    real(dp) :: value
+    integer(int32) alpha
+    integer(int32) beta
+    integer(int32) degree_max
+    integer(int32) expon(2)
+    real(real64) quad_unit_volume
+    real(real64) value
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'QUAD_UNIT_MONOMIAL_TEST'
@@ -2783,10 +2746,9 @@ contains
         write ( *, '(2x,i8,2x,i8,2x,g14.6)' ) expon(1:2), value
       end do
     end do
-  end subroutine quad_unit_monomial_test
+  end
 
-  subroutine quad_unit_quad_test ( degree_max ) &
-        bind(C, name="quad_unit_quad_test")
+  subroutine quad_unit_quad_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -2806,25 +2768,25 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(dim_num)
-    integer(ip) :: h
-    integer(ip) :: k
-    logical :: more
-    integer(ip) :: order
-    integer(ip) :: order_1d(dim_num)
-    real(dp) :: quad
-    real(dp) :: quad_unit_volume
-    integer(ip) :: t
-    real(dp), allocatable :: v(:)
-    real(dp), allocatable :: w(:)
-    real(dp), allocatable :: xy(:,:)
+    integer(int32) degree_max
+    integer(int32) expon(dim_num)
+    integer(int32) h
+    integer(int32) k
+    logical more
+    integer(int32) order
+    integer(int32) order_1d(dim_num)
+    real(real64) quad
+    real(real64) quad_unit_volume
+    integer(int32) t
+    real(real64), allocatable :: v(:)
+    real(real64), allocatable :: w(:)
+    real(real64), allocatable :: xy(:,:)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'QUAD_UNIT_QUAD_TEST'
@@ -2892,10 +2854,9 @@ contains
       end if
 
     end do
-  end subroutine quad_unit_quad_test
+  end
 
-  subroutine quad_unit_rule ( order_1d, w, xy ) &
-        bind(C, name="quad_unit_rule")
+  subroutine quad_unit_rule ( order_1d, w, xy )
 
   !*****************************************************************************80
   !
@@ -2929,23 +2890,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) ORDER_1D(2), the order of the rule in
+  !    Input, integer(int32) ORDER_1D(2), the order of the rule in
   !    each dimension.  1 <= ORDER_1D(I) <= 5.
   !
-  !    Output, real(dp) W(ORDER_1D(1)*ORDER_1D(2)), the weights.
+  !    Output, real(real64) W(ORDER_1D(1)*ORDER_1D(2)), the weights.
   !
-  !    Output, real(dp) XY(2,ORDER_1D(1)*ORDER_1D(2)), the abscissas.
+  !    Output, real(real64) XY(2,ORDER_1D(1)*ORDER_1D(2)), the abscissas.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip) :: dim
-    integer(ip) :: order
-    integer(ip), intent(in) :: order_1d(2)
-    real(dp), intent(out) :: w(order_1D(1)*order_1D(2))
-    real(dp), allocatable :: w_1d(:)
-    real(dp), allocatable :: x_1d(:)
-    real(dp), intent(out) :: xy(2,order_1D(1)*order_1D(2))
+    integer(int32) dim
+    integer(int32) order
+    integer(int32) order_1d(2)
+    real(real64) w(order_1D(1)*order_1D(2))
+    real(real64), allocatable :: w_1d(:)
+    real(real64), allocatable :: x_1d(:)
+    real(real64) xy(2,order_1D(1)*order_1D(2))
 
     order = product ( order_1d(1:dim_num) )
 
@@ -2981,10 +2942,9 @@ contains
       deallocate ( x_1d )
 
     end do
-  end subroutine quad_unit_rule
+  end
 
-  pure function quad_unit_volume ( ) &
-        bind(C, name="quad_unit_volume")
+  function quad_unit_volume ( )
 
   !*****************************************************************************80
   !
@@ -3011,16 +2971,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) QUAD_UNIT_VOLUME, the volume.
+  !    Output, real(real64) QUAD_UNIT_VOLUME, the volume.
   !
 
-    real(dp) :: quad_unit_volume
+    real(real64) quad_unit_volume
 
-    quad_unit_volume = 4.0_dp
-  end function quad_unit_volume
+    quad_unit_volume = 4.0e+00_real64
+  end
 
-  pure function r8_choose ( n, k ) &
-        bind(C, name="r8_choose")
+  function r8_choose ( n, k )
 
   !*****************************************************************************80
   !
@@ -3057,46 +3016,45 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, K, are the values of N and K.
+  !    Input, integer(int32) N, K, are the values of N and K.
   !
-  !    Output, real(dp) R8_CHOOSE, the number of combinations of N
+  !    Output, real(real64) R8_CHOOSE, the number of combinations of N
   !    things taken K at a time.
   !
 
-    integer(ip) :: i
-    integer(ip), intent(in), value :: k
-    integer(ip) :: mn
-    integer(ip) :: mx
-    integer(ip), intent(in), value :: n
-    real(dp) :: r8_choose
-    real(dp) :: value
+    integer(int32) i
+    integer(int32) k
+    integer(int32) mn
+    integer(int32) mx
+    integer(int32) n
+    real(real64) r8_choose
+    real(real64) value
 
     mn = min ( k, n - k )
 
     if ( mn < 0 ) then
 
-      value = 0.0_dp
+      value = 0.0e+00_real64
 
     else if ( mn == 0 ) then
 
-      value = 1.0_dp
+      value = 1.0e+00_real64
 
     else
 
       mx = max ( k, n - k )
-      value = real ( mx + 1, dp)
+      value = real ( mx + 1, real64)
 
       do i = 2, mn
-        value = ( value * real ( mx + i, dp) ) / real ( i, dp)
+        value = ( value * real ( mx + i, real64) ) / real ( i, real64)
       end do
 
     end if
 
     r8_choose = value
-  end function r8_choose
+  end
 
-  pure function r8_mop ( i ) &
-        bind(C, name="r8_mop")
+  function r8_mop ( i )
 
   !*****************************************************************************80
   !
@@ -3104,7 +3062,7 @@ contains
   !
   !  Discussion:
   !
-  !    An R8 is a real(dp) value.
+  !    An R8 is a real(real64) value.
   !
   !  Licensing:
   !
@@ -3120,23 +3078,22 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) I, the power of -1.
+  !    Input, integer(int32) I, the power of -1.
   !
-  !    Output, real(dp) R8_MOP, the I-th power of -1.
+  !    Output, real(real64) R8_MOP, the I-th power of -1.
   !
 
-    integer(ip), intent(in), value :: i
-    real(dp) :: r8_mop
+    integer(int32) i
+    real(real64) r8_mop
 
     if ( mod ( i, 2 ) == 0 ) then
-      r8_mop = + 1.0_dp
+      r8_mop = + 1.0e+00_real64
     else
-      r8_mop = - 1.0_dp
+      r8_mop = - 1.0e+00_real64
     end if
-  end function r8_mop
+  end
 
-  pure function r8mat_det_4d ( a ) &
-        bind(C, name="r8mat_det_4d")
+  function r8mat_det_4d ( a )
 
   !*****************************************************************************80
   !
@@ -3156,13 +3113,13 @@ contains
   !
   !  Parameters:
   !
-  !    Input, real(dp) A(4,4), the matrix whose determinant is desired.
+  !    Input, real(real64) A(4,4), the matrix whose determinant is desired.
   !
-  !    Output, real(dp) R8MAT_DET_4D, the determinant of the matrix.
+  !    Output, real(real64) R8MAT_DET_4D, the determinant of the matrix.
   !
 
-    real(dp), intent(in) :: a(4,4)
-    real(dp) :: r8mat_det_4d
+    real(real64) a(4,4)
+    real(real64) r8mat_det_4d
 
     r8mat_det_4d = &
         a(1,1) * ( &
@@ -3181,11 +3138,10 @@ contains
           a(2,1) * ( a(3,2) * a(4,3) - a(3,3) * a(4,2) ) &
         - a(2,2) * ( a(3,1) * a(4,3) - a(3,3) * a(4,1) ) &
         + a(2,3) * ( a(3,1) * a(4,2) - a(3,2) * a(4,1) ) )
-  end function r8mat_det_4d
+  end
 
   subroutine r8vec_direct_product ( factor_index, factor_order, factor_value, &
-    factor_num, point_num, x ) &
-        bind(C, name="r8vec_direct_product")
+    factor_num, point_num, x )
 
   !*****************************************************************************80
   !
@@ -3279,20 +3235,20 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR_INDEX, the index of the factor being
+  !    Input, integer(int32) FACTOR_INDEX, the index of the factor being
   !    processed.  The first factor processed must be factor 1!
   !
-  !    Input, integer(ip) FACTOR_ORDER, the order of the factor.
+  !    Input, integer(int32) FACTOR_ORDER, the order of the factor.
   !
-  !    Input, real(dp) FACTOR_VALUE(FACTOR_ORDER), the factor values
+  !    Input, real(real64) FACTOR_VALUE(FACTOR_ORDER), the factor values
   !    for factor FACTOR_INDEX.
   !
-  !    Input, integer(ip) FACTOR_NUM, the number of factors.
+  !    Input, integer(int32) FACTOR_NUM, the number of factors.
   !
-  !    Input, integer(ip) POINT_NUM, the number of elements in the
+  !    Input, integer(int32) POINT_NUM, the number of elements in the
   !    direct product.
   !
-  !    Input/output, real(dp) X(FACTOR_NUM,POINT_NUM), the elements of
+  !    Input/output, real(real64) X(FACTOR_NUM,POINT_NUM), the elements of
   !    the direct product, which are built up gradually.
   !
   !  Local Parameters:
@@ -3307,25 +3263,25 @@ contains
   !    Local, integer REP, the number of blocks of values to set.
   !
 
-    integer(ip), intent(in), value :: factor_num
-    integer(ip), intent(in), value :: factor_order
-    integer(ip), intent(in), value :: point_num
+    integer(int32) factor_num
+    integer(int32) factor_order
+    integer(int32) point_num
 
-    integer(ip), save :: contig
-    integer(ip), intent(in), value :: factor_index
-    real(dp), intent(in) :: factor_value(factor_order)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), save :: rep
-    integer(ip), save :: skip
-    integer(ip) :: start
-    real(dp), intent(inout) :: x(factor_num,point_num)
+    integer(int32), save :: contig
+    integer(int32) factor_index
+    real(real64) factor_value(factor_order)
+    integer(int32) j
+    integer(int32) k
+    integer(int32), save :: rep
+    integer(int32), save :: skip
+    integer(int32) start
+    real(real64) x(factor_num,point_num)
 
     if ( factor_index == 1 ) then
       contig = 1
       skip = 1
       rep = point_num
-      x(1:factor_num,1:point_num) = 0.0_dp
+      x(1:factor_num,1:point_num) = 0.0e+00_real64
     end if
 
     rep = rep / factor_order
@@ -3343,11 +3299,10 @@ contains
     end do
 
     contig = contig * factor_order
-  end subroutine r8vec_direct_product
+  end
 
   subroutine r8vec_direct_product2 ( factor_index, factor_order, factor_value, &
-    factor_num, point_num, w ) &
-        bind(C, name="r8vec_direct_product2")
+    factor_num, point_num, w )
 
   !*****************************************************************************80
   !
@@ -3441,28 +3396,28 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) FACTOR_INDEX, the index of the factor being
+  !    Input, integer(int32) FACTOR_INDEX, the index of the factor being
   !    processed.  The first factor processed must be factor 1!
   !
-  !    Input, integer(ip) FACTOR_ORDER, the order of the factor.
+  !    Input, integer(int32) FACTOR_ORDER, the order of the factor.
   !
-  !    Input, real(dp) FACTOR_VALUE(FACTOR_ORDER), the factor values
+  !    Input, real(real64) FACTOR_VALUE(FACTOR_ORDER), the factor values
   !    for factor FACTOR_INDEX.
   !
-  !    Input, integer(ip) FACTOR_NUM, the number of factors.
+  !    Input, integer(int32) FACTOR_NUM, the number of factors.
   !
-  !    Input, integer(ip) POINT_NUM, the number of elements in the
+  !    Input, integer(int32) POINT_NUM, the number of elements in the
   !    direct product.
   !
-  !    Input/output, real(dp) W(POINT_NUM), the elements of the
+  !    Input/output, real(real64) W(POINT_NUM), the elements of the
   !    direct product, which are built up gradually.
   !
   !  Local Parameters:
   !
-  !    Local, integer(ip) START, the first location of a block of values
+  !    Local, integer(int32) START, the first location of a block of values
   !    to set.
   !
-  !    Local, integer(ip) CONTIG, the number of consecutive values 
+  !    Local, integer(int32) CONTIG, the number of consecutive values 
   !    to set.
   !
   !    Local, integer SKIP, the distance from the current value of START
@@ -3471,25 +3426,25 @@ contains
   !    Local, integer REP, the number of blocks of values to set.
   !
 
-    integer(ip), intent(in), value :: factor_num
-    integer(ip), intent(in), value :: factor_order
-    integer(ip), intent(in), value :: point_num
+    integer(int32) factor_num
+    integer(int32) factor_order
+    integer(int32) point_num
 
-    integer(ip), save :: contig
-    integer(ip), intent(in), value :: factor_index
-    real(dp), intent(in) :: factor_value(factor_order)
-    integer(ip) :: j
-    integer(ip) :: k
-    integer(ip), save :: rep
-    integer(ip), save :: skip
-    integer(ip) :: start
-    real(dp), intent(inout) :: w(point_num)
+    integer(int32), save :: contig
+    integer(int32) factor_index
+    real(real64) factor_value(factor_order)
+    integer(int32) j
+    integer(int32) k
+    integer(int32), save :: rep
+    integer(int32), save :: skip
+    integer(int32) start
+    real(real64) w(point_num)
 
     if ( factor_index == 1 ) then
       contig = 1
       skip = 1
       rep = point_num
-      w(1:point_num) = 1.0_dp
+      w(1:point_num) = 1.0e+00_real64
     end if
 
     rep = rep / factor_order
@@ -3507,10 +3462,9 @@ contains
     end do
 
     contig = contig * factor_order
-  end subroutine r8vec_direct_product2
+  end
 
-  subroutine subcomp_next ( n, k, a, more, h, t ) &
-        bind(C, name="subcomp_next")
+  subroutine subcomp_next ( n, k, a, more, h, t )
 
   !*****************************************************************************80
   !
@@ -3542,12 +3496,12 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) N, the integer whose subcompositions
+  !    Input, integer(int32) N, the integer whose subcompositions
   !    are desired.
   !
-  !    Input, integer(ip) K, the number of parts in the subcomposition.
+  !    Input, integer(int32) K, the number of parts in the subcomposition.
   !
-  !    Input/output, integer(ip) A(K), the parts of the subcomposition.
+  !    Input/output, integer(int32) A(K), the parts of the subcomposition.
   !
   !    Input/output, logical MORE, set by the user to start the computation,
   !    and by the routine to terminate it.
@@ -3557,15 +3511,15 @@ contains
   !    program, include them in the calling sequence, but never alter them!
   !
 
-    integer(ip), intent(in), value :: k
+    integer(int32) k
 
-    integer(ip), intent(inout) :: a(k)
-    integer(ip), intent(inout) :: h
-    logical, intent(inout) :: more
+    integer(int32) a(k)
+    integer(int32) h
+    logical more
     logical, save :: more2 = .false.
-    integer(ip), intent(in), value :: n
-    integer(ip), save :: n2 = 0
-    integer(ip), intent(inout) :: t
+    integer(int32) n
+    integer(int32), save :: n2 = 0
+    integer(int32) t
   !
   !  The first computation.
   !
@@ -3599,10 +3553,9 @@ contains
     if ( .not. more2 .and. n2 == n ) then
       more = .false.
     end if
-  end subroutine subcomp_next
+  end
 
-  pure subroutine tetr_unit_monomial ( expon, value ) &
-        bind(C, name="tetr_unit_monomial")
+  subroutine tetr_unit_monomial ( expon, value )
 
   !*****************************************************************************80
   !
@@ -3642,19 +3595,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) EXPON(3), the exponents.
+  !    Input, integer(int32) EXPON(3), the exponents.
   !
-  !    Output, real(dp) VALUE, the integral of the monomial.
+  !    Output, real(real64) VALUE, the integral of the monomial.
   !
 
-    integer(ip), intent(in) :: expon(3)
-    integer(ip) :: i
-    integer(ip) :: k
-    real(dp), intent(out) :: value
+    integer(int32) expon(3)
+    integer(int32) i
+    integer(int32) k
+    real(real64) value
   !
   !  The first computation ends with VALUE = 1.0;
   !
-    value = 1.0_dp
+    value = 1.0e+00_real64
   !
   !  The first loop simply calculates 1, so we short circuit it.
   !
@@ -3662,32 +3615,31 @@ contains
   !
   ! do i = 1, expon(1)
   !   k = k + 1
-  !   value = value * real ( i, dp) / real ( k, dp)
+  !   value = value * real ( i, real64) / real ( k, real64)
   ! end do
 
     k = expon(1)
     do i = 1, expon(2)
       k = k + 1
-      value = value * real ( i, dp) / real ( k, dp)
+      value = value * real ( i, real64) / real ( k, real64)
     end do
 
     do i = 1, expon(3)
       k = k + 1
-      value = value * real ( i, dp) / real ( k, dp)
+      value = value * real ( i, real64) / real ( k, real64)
     end do
 
     k = k + 1
-    value = value / real ( k, dp)
+    value = value / real ( k, real64)
 
     k = k + 1
-    value = value / real ( k, dp)
+    value = value / real ( k, real64)
 
     k = k + 1
-    value = value / real ( k, dp)
-  end subroutine tetr_unit_monomial
+    value = value / real ( k, real64)
+  end
 
-  subroutine tetr_unit_monomial_test ( degree_max ) &
-        bind(C, name="tetr_unit_monomial_test")
+  subroutine tetr_unit_monomial_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -3707,17 +3659,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip) :: alpha
-    integer(ip) :: beta
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(3)
-    integer(ip) :: gamma
-    real(dp) :: tetr_unit_volume
-    real(dp) :: value
+    integer(int32) alpha
+    integer(int32) beta
+    integer(int32) degree_max
+    integer(int32) expon(3)
+    integer(int32) gamma
+    real(real64) tetr_unit_volume
+    real(real64) value
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TETR_UNIT_MONOMIAL_TEST'
@@ -3741,10 +3693,9 @@ contains
         end do
       end do
     end do
-  end subroutine tetr_unit_monomial_test
+  end
 
-  pure subroutine tetr_unit_o01 ( w, xyz ) &
-        bind(C, name="tetr_unit_o01")
+  subroutine tetr_unit_o01 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -3780,28 +3731,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(1), the weights.
+  !    Output, real(real64) W(1), the weights.
   !
-  !    Output, real(dp) XYZ(3,1), the abscissas.
+  !    Output, real(real64) XYZ(3,1), the abscissas.
   !
 
-    integer(ip), parameter :: order = 1
+    integer(int32), parameter :: order = 1
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(1) = (/ &
-      1.0000000000000000000_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,1) = reshape ( (/ &
-      0.25000000000000000000_dp,  0.25000000000000000000_dp,  &
-      0.25000000000000000000_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(1) = (/ &
+      1.0000000000000000000e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,1) = reshape ( (/ &
+      0.25000000000000000000e+00_real64,  0.25000000000000000000e+00_real64,  &
+      0.25000000000000000000e+00_real64 /), &
     (/ 3, 1 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o01
+  end
 
-  pure subroutine tetr_unit_o04 ( w, xyz ) &
-        bind(C, name="tetr_unit_o04")
+  subroutine tetr_unit_o04 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -3837,40 +3787,39 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(4), the weights.
+  !    Output, real(real64) W(4), the weights.
   !
-  !    Output, real(dp) XYZ(3,4), the abscissas.
+  !    Output, real(real64) XYZ(3,4), the abscissas.
   !
 
-    integer(ip), parameter :: order = 4
+    integer(int32), parameter :: order = 4
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(4) = (/ &
-      0.25000000000000000000_dp, &
-      0.25000000000000000000_dp, &
-      0.25000000000000000000_dp, &
-      0.25000000000000000000_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,4) = reshape ( (/ &
-      0.58541019662496845446_dp, &
-      0.13819660112501051518_dp, &
-      0.13819660112501051518_dp, &
-      0.13819660112501051518_dp, &
-      0.58541019662496845446_dp, &
-      0.13819660112501051518_dp, &
-      0.13819660112501051518_dp, &
-      0.13819660112501051518_dp, &
-      0.58541019662496845446_dp, &
-      0.13819660112501051518_dp, &
-      0.13819660112501051518_dp, &
-      0.13819660112501051518_dp /), (/ 3, 4 /) )
+    real(real64) w(order)
+    real(real64) :: w_save(4) = (/ &
+      0.25000000000000000000e+00_real64, &
+      0.25000000000000000000e+00_real64, &
+      0.25000000000000000000e+00_real64, &
+      0.25000000000000000000e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,4) = reshape ( (/ &
+      0.58541019662496845446e+00_real64, &
+      0.13819660112501051518e+00_real64, &
+      0.13819660112501051518e+00_real64, &
+      0.13819660112501051518e+00_real64, &
+      0.58541019662496845446e+00_real64, &
+      0.13819660112501051518e+00_real64, &
+      0.13819660112501051518e+00_real64, &
+      0.13819660112501051518e+00_real64, &
+      0.58541019662496845446e+00_real64, &
+      0.13819660112501051518e+00_real64, &
+      0.13819660112501051518e+00_real64, &
+      0.13819660112501051518e+00_real64 /), (/ 3, 4 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o04
+  end
 
-  pure subroutine tetr_unit_o08 ( w, xyz ) &
-        bind(C, name="tetr_unit_o08")
+  subroutine tetr_unit_o08 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -3906,57 +3855,56 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(8), the weights.
+  !    Output, real(real64) W(8), the weights.
   !
-  !    Output, real(dp) XYZ(3,8), the abscissas.
+  !    Output, real(real64) XYZ(3,8), the abscissas.
   !
 
-    integer(ip), parameter :: order = 8
+    integer(int32), parameter :: order = 8
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(8) = (/ &
-      0.13852796651186214232_dp, &
-      0.13852796651186214232_dp, &
-      0.13852796651186214232_dp, &
-      0.13852796651186214232_dp, &
-      0.11147203348813785768_dp, &
-      0.11147203348813785768_dp, &
-      0.11147203348813785768_dp, &
-      0.11147203348813785768_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,8) = reshape ( (/ &
-      0.015835909865720057993_dp, &
-      0.32805469671142664734_dp,  &
-      0.32805469671142664734_dp,  &
-      0.32805469671142664734_dp,  &
-      0.015835909865720057993_dp, &
-      0.32805469671142664734_dp,  &
-      0.32805469671142664734_dp,  &
-      0.32805469671142664734_dp,  &
-      0.015835909865720057993_dp, &
-      0.32805469671142664734_dp,  &
-      0.32805469671142664734_dp,  &
-      0.32805469671142664734_dp,  &
-      0.67914317820120795168_dp,  &
-      0.10695227393293068277_dp,  &
-      0.10695227393293068277_dp,  &
-      0.10695227393293068277_dp,  &
-      0.67914317820120795168_dp,  &
-      0.10695227393293068277_dp,  &
-      0.10695227393293068277_dp,  &
-      0.10695227393293068277_dp,  &
-      0.67914317820120795168_dp,  &
-      0.10695227393293068277_dp,  &
-      0.10695227393293068277_dp,  &
-      0.10695227393293068277_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(8) = (/ &
+      0.13852796651186214232e+00_real64, &
+      0.13852796651186214232e+00_real64, &
+      0.13852796651186214232e+00_real64, &
+      0.13852796651186214232e+00_real64, &
+      0.11147203348813785768e+00_real64, &
+      0.11147203348813785768e+00_real64, &
+      0.11147203348813785768e+00_real64, &
+      0.11147203348813785768e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,8) = reshape ( (/ &
+      0.015835909865720057993e+00_real64, &
+      0.32805469671142664734e+00_real64,  &
+      0.32805469671142664734e+00_real64,  &
+      0.32805469671142664734e+00_real64,  &
+      0.015835909865720057993e+00_real64, &
+      0.32805469671142664734e+00_real64,  &
+      0.32805469671142664734e+00_real64,  &
+      0.32805469671142664734e+00_real64,  &
+      0.015835909865720057993e+00_real64, &
+      0.32805469671142664734e+00_real64,  &
+      0.32805469671142664734e+00_real64,  &
+      0.32805469671142664734e+00_real64,  &
+      0.67914317820120795168e+00_real64,  &
+      0.10695227393293068277e+00_real64,  &
+      0.10695227393293068277e+00_real64,  &
+      0.10695227393293068277e+00_real64,  &
+      0.67914317820120795168e+00_real64,  &
+      0.10695227393293068277e+00_real64,  &
+      0.10695227393293068277e+00_real64,  &
+      0.10695227393293068277e+00_real64,  &
+      0.67914317820120795168e+00_real64,  &
+      0.10695227393293068277e+00_real64,  &
+      0.10695227393293068277e+00_real64,  &
+      0.10695227393293068277e+00_real64 /), &
     (/ 3, 8 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o08
+  end
 
-  pure subroutine tetr_unit_o08b ( w, xyz ) &
-        bind(C, name="tetr_unit_o08b")
+  subroutine tetr_unit_o08b ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -3992,57 +3940,56 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(8), the weights.
+  !    Output, real(real64) W(8), the weights.
   !
-  !    Output, real(dp) XYZ(3,8), the abscissas.
+  !    Output, real(real64) XYZ(3,8), the abscissas.
   !
 
-    integer(ip), parameter :: order = 8
+    integer(int32), parameter :: order = 8
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(8) = (/ &
-      0.025000000000000000000_dp, &
-      0.025000000000000000000_dp, &
-      0.025000000000000000000_dp, &
-      0.025000000000000000000_dp, &
-      0.22500000000000000000_dp, &
-      0.22500000000000000000_dp, &
-      0.22500000000000000000_dp, &
-      0.22500000000000000000_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,8) = reshape ( (/ &
-      1.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      1.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      1.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-      0.00000000000000000000_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-      0.00000000000000000000_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(8) = (/ &
+      0.025000000000000000000e+00_real64, &
+      0.025000000000000000000e+00_real64, &
+      0.025000000000000000000e+00_real64, &
+      0.025000000000000000000e+00_real64, &
+      0.22500000000000000000e+00_real64, &
+      0.22500000000000000000e+00_real64, &
+      0.22500000000000000000e+00_real64, &
+      0.22500000000000000000e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,8) = reshape ( (/ &
+      1.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      1.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      1.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64 /), &
     (/ 3, 8 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o08b
+  end
 
-  pure subroutine tetr_unit_o14 ( w, xyz ) &
-        bind(C, name="tetr_unit_o14")
+  subroutine tetr_unit_o14 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -4078,81 +4025,80 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(ORDER), the weights.
+  !    Output, real(real64) W(ORDER), the weights.
   !
-  !    Output, real(dp) XYZ(3,ORDER), the abscissas.
+  !    Output, real(real64) XYZ(3,ORDER), the abscissas.
   !
 
-    integer(ip), parameter :: order = 14
+    integer(int32), parameter :: order = 14
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(14) = (/ &
-      0.073493043116361949544_dp, &
-      0.073493043116361949544_dp, &
-      0.073493043116361949544_dp, &
-      0.073493043116361949544_dp, &
-      0.11268792571801585080_dp, &
-      0.11268792571801585080_dp, &
-      0.11268792571801585080_dp, &
-      0.11268792571801585080_dp, &
-      0.042546020777081466438_dp, &
-      0.042546020777081466438_dp, &
-      0.042546020777081466438_dp, &
-      0.042546020777081466438_dp, &
-      0.042546020777081466438_dp, &
-      0.042546020777081466438_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,14) = reshape ( (/ &
-      0.72179424906732632079_dp, &
-      0.092735250310891226402_dp, &
-      0.092735250310891226402_dp, &
-      0.092735250310891226402_dp, &
-      0.72179424906732632079_dp, &
-      0.092735250310891226402_dp, &
-      0.092735250310891226402_dp, &
-      0.092735250310891226402_dp, &
-      0.72179424906732632079_dp, &
-      0.092735250310891226402_dp, &
-      0.092735250310891226402_dp, &
-      0.092735250310891226402_dp, &
-      0.067342242210098170608_dp, &
-      0.31088591926330060980_dp, &
-      0.31088591926330060980_dp, &
-      0.31088591926330060980_dp, &
-      0.067342242210098170608_dp, &
-      0.31088591926330060980_dp, &
-      0.31088591926330060980_dp, &
-      0.31088591926330060980_dp, &
-      0.067342242210098170608_dp, &
-      0.31088591926330060980_dp, &
-      0.31088591926330060980_dp, &
-      0.31088591926330060980_dp, &
-      0.045503704125649649492_dp, &
-      0.045503704125649649492_dp, &
-      0.45449629587435035051_dp, &
-      0.045503704125649649492_dp, &
-      0.45449629587435035051_dp, &
-      0.045503704125649649492_dp, &
-      0.045503704125649649492_dp, &
-      0.45449629587435035051_dp, &
-      0.45449629587435035051_dp, &
-      0.45449629587435035051_dp, &
-      0.045503704125649649492_dp, &
-      0.045503704125649649492_dp, &
-      0.45449629587435035051_dp, &
-      0.045503704125649649492_dp, &
-      0.45449629587435035051_dp, &
-      0.45449629587435035051_dp, &
-      0.45449629587435035051_dp, &
-      0.045503704125649649492_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(14) = (/ &
+      0.073493043116361949544e+00_real64, &
+      0.073493043116361949544e+00_real64, &
+      0.073493043116361949544e+00_real64, &
+      0.073493043116361949544e+00_real64, &
+      0.11268792571801585080e+00_real64, &
+      0.11268792571801585080e+00_real64, &
+      0.11268792571801585080e+00_real64, &
+      0.11268792571801585080e+00_real64, &
+      0.042546020777081466438e+00_real64, &
+      0.042546020777081466438e+00_real64, &
+      0.042546020777081466438e+00_real64, &
+      0.042546020777081466438e+00_real64, &
+      0.042546020777081466438e+00_real64, &
+      0.042546020777081466438e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,14) = reshape ( (/ &
+      0.72179424906732632079e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.72179424906732632079e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.72179424906732632079e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.092735250310891226402e+00_real64, &
+      0.067342242210098170608e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.067342242210098170608e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.067342242210098170608e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.31088591926330060980e+00_real64, &
+      0.045503704125649649492e+00_real64, &
+      0.045503704125649649492e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.045503704125649649492e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.045503704125649649492e+00_real64, &
+      0.045503704125649649492e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.045503704125649649492e+00_real64, &
+      0.045503704125649649492e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.045503704125649649492e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.45449629587435035051e+00_real64, &
+      0.045503704125649649492e+00_real64 /), &
     (/ 3, 14 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o14
+  end
 
-  pure subroutine tetr_unit_o14b ( w, xyz ) &
-        bind(C, name="tetr_unit_o14b")
+  subroutine tetr_unit_o14b ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -4188,81 +4134,80 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(14), the weights.
+  !    Output, real(real64) W(14), the weights.
   !
-  !    Output, real(dp) XYZ(3,14), the abscissas.
+  !    Output, real(real64) XYZ(3,14), the abscissas.
   !
 
-    integer(ip), parameter :: order = 14
+    integer(int32), parameter :: order = 14
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(14) = (/ &
-      0.13283874668559071814_dp, &
-      0.13283874668559071814_dp, &
-      0.13283874668559071814_dp, &
-      0.13283874668559071814_dp, &
-      0.088589824742980710434_dp, &
-      0.088589824742980710434_dp, &
-      0.088589824742980710434_dp, &
-      0.088589824742980710434_dp, &
-      0.019047619047619047619_dp, &
-      0.019047619047619047619_dp, &
-      0.019047619047619047619_dp, &
-      0.019047619047619047619_dp, &
-      0.019047619047619047619_dp, &
-      0.019047619047619047619_dp  /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,14) = reshape ( (/ &
-      0.056881379520423421748_dp, &
-      0.31437287349319219275_dp, &
-      0.31437287349319219275_dp, &
-      0.31437287349319219275_dp, &
-      0.056881379520423421748_dp, &
-      0.31437287349319219275_dp, &
-      0.31437287349319219275_dp, &
-      0.31437287349319219275_dp, &
-      0.056881379520423421748_dp, &
-      0.31437287349319219275_dp, &
-      0.31437287349319219275_dp, &
-      0.31437287349319219275_dp, &
-      0.69841970432438656092_dp, &
-      0.10052676522520447969_dp, &
-      0.10052676522520447969_dp, &
-      0.10052676522520447969_dp, &
-      0.69841970432438656092_dp, &
-      0.10052676522520447969_dp, &
-      0.10052676522520447969_dp, &
-      0.10052676522520447969_dp, &
-      0.69841970432438656092_dp, &
-      0.10052676522520447969_dp, &
-      0.10052676522520447969_dp, &
-      0.10052676522520447969_dp, &
-      0.50000000000000000000_dp, &
-      0.50000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.50000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.50000000000000000000_dp, &
-      0.50000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.50000000000000000000_dp, &
-      0.50000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.50000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.00000000000000000000_dp, &
-      0.50000000000000000000_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(14) = (/ &
+      0.13283874668559071814e+00_real64, &
+      0.13283874668559071814e+00_real64, &
+      0.13283874668559071814e+00_real64, &
+      0.13283874668559071814e+00_real64, &
+      0.088589824742980710434e+00_real64, &
+      0.088589824742980710434e+00_real64, &
+      0.088589824742980710434e+00_real64, &
+      0.088589824742980710434e+00_real64, &
+      0.019047619047619047619e+00_real64, &
+      0.019047619047619047619e+00_real64, &
+      0.019047619047619047619e+00_real64, &
+      0.019047619047619047619e+00_real64, &
+      0.019047619047619047619e+00_real64, &
+      0.019047619047619047619e+00_real64  /)
+    real(real64) xyz(3,order) 
+    real(real64) :: xyz_save(3,14) = reshape ( (/ &
+      0.056881379520423421748e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.056881379520423421748e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.056881379520423421748e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.31437287349319219275e+00_real64, &
+      0.69841970432438656092e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.69841970432438656092e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.69841970432438656092e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.10052676522520447969e+00_real64, &
+      0.50000000000000000000e+00_real64, &
+      0.50000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.50000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.50000000000000000000e+00_real64, &
+      0.50000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.50000000000000000000e+00_real64, &
+      0.50000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.50000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.00000000000000000000e+00_real64, &
+      0.50000000000000000000e+00_real64 /), &
     (/ 3, 14 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o14b
+  end
 
-  pure subroutine tetr_unit_o15 ( w, xyz ) &
-        bind(C, name="tetr_unit_o15")
+  subroutine tetr_unit_o15 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -4298,85 +4243,84 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(15), the weights.
+  !    Output, real(real64) W(15), the weights.
   !
-  !    Output, real(dp) XYZ(3,15), the abscissas.
+  !    Output, real(real64) XYZ(3,15), the abscissas.
   !
 
-    integer(ip), parameter :: order = 15
+    integer(int32), parameter :: order = 15
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(15) = (/ &
-      0.071937083779018620010_dp, &
-      0.071937083779018620010_dp, &
-      0.071937083779018620010_dp, &
-      0.071937083779018620010_dp, &
-      0.069068207226272385281_dp, &
-      0.069068207226272385281_dp, &
-      0.069068207226272385281_dp, &
-      0.069068207226272385281_dp, &
-      0.052910052910052910053_dp, &
-      0.052910052910052910053_dp, &
-      0.052910052910052910053_dp, &
-      0.052910052910052910053_dp, &
-      0.052910052910052910053_dp, &
-      0.052910052910052910053_dp, &
-      0.11851851851851851852_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,15) = reshape ( (/ &
-      0.72408676584183090163_dp, &
-    0.091971078052723032789_dp, &
-    0.091971078052723032789_dp, &
-      0.091971078052723032789_dp, &
-    0.72408676584183090163_dp, &
-    0.091971078052723032789_dp, &
-      0.091971078052723032789_dp, &
-    0.091971078052723032789_dp, &
-    0.72408676584183090163_dp, &
-      0.091971078052723032789_dp, &
-    0.091971078052723032789_dp, &
-    0.091971078052723032789_dp, &
-      0.040619116511110274837_dp, &
-    0.31979362782962990839_dp, &
-    0.31979362782962990839_dp, &
-      0.31979362782962990839_dp, &
-    0.040619116511110274837_dp, &
-    0.31979362782962990839_dp, &
-      0.31979362782962990839_dp, &
-    0.31979362782962990839_dp, &
-    0.040619116511110274837_dp, &
-      0.31979362782962990839_dp, &
-    0.31979362782962990839_dp, &
-    0.31979362782962990839_dp, &
-      0.44364916731037084426_dp, &
-    0.44364916731037084426_dp, &
-    0.056350832689629155741_dp, &
-      0.44364916731037084426_dp, &
-    0.056350832689629155741_dp, &
-    0.44364916731037084426_dp, &
-      0.44364916731037084426_dp, &
-    0.056350832689629155741_dp, &
-    0.056350832689629155741_dp, &
-      0.056350832689629155741_dp, &
-    0.44364916731037084426_dp, &
-    0.44364916731037084426_dp, &
-      0.056350832689629155741_dp, &
-    0.44364916731037084426_dp, &
-    0.056350832689629155741_dp, &
-      0.056350832689629155741_dp, &
-    0.056350832689629155741_dp, &
-    0.44364916731037084426_dp, &
-      0.25000000000000000000_dp, &
-    0.25000000000000000000_dp, &
-    0.25000000000000000000_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(15) = (/ &
+      0.071937083779018620010e+00_real64, &
+      0.071937083779018620010e+00_real64, &
+      0.071937083779018620010e+00_real64, &
+      0.071937083779018620010e+00_real64, &
+      0.069068207226272385281e+00_real64, &
+      0.069068207226272385281e+00_real64, &
+      0.069068207226272385281e+00_real64, &
+      0.069068207226272385281e+00_real64, &
+      0.052910052910052910053e+00_real64, &
+      0.052910052910052910053e+00_real64, &
+      0.052910052910052910053e+00_real64, &
+      0.052910052910052910053e+00_real64, &
+      0.052910052910052910053e+00_real64, &
+      0.052910052910052910053e+00_real64, &
+      0.11851851851851851852e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,15) = reshape ( (/ &
+      0.72408676584183090163e+00_real64, &
+    0.091971078052723032789e+00_real64, &
+    0.091971078052723032789e+00_real64, &
+      0.091971078052723032789e+00_real64, &
+    0.72408676584183090163e+00_real64, &
+    0.091971078052723032789e+00_real64, &
+      0.091971078052723032789e+00_real64, &
+    0.091971078052723032789e+00_real64, &
+    0.72408676584183090163e+00_real64, &
+      0.091971078052723032789e+00_real64, &
+    0.091971078052723032789e+00_real64, &
+    0.091971078052723032789e+00_real64, &
+      0.040619116511110274837e+00_real64, &
+    0.31979362782962990839e+00_real64, &
+    0.31979362782962990839e+00_real64, &
+      0.31979362782962990839e+00_real64, &
+    0.040619116511110274837e+00_real64, &
+    0.31979362782962990839e+00_real64, &
+      0.31979362782962990839e+00_real64, &
+    0.31979362782962990839e+00_real64, &
+    0.040619116511110274837e+00_real64, &
+      0.31979362782962990839e+00_real64, &
+    0.31979362782962990839e+00_real64, &
+    0.31979362782962990839e+00_real64, &
+      0.44364916731037084426e+00_real64, &
+    0.44364916731037084426e+00_real64, &
+    0.056350832689629155741e+00_real64, &
+      0.44364916731037084426e+00_real64, &
+    0.056350832689629155741e+00_real64, &
+    0.44364916731037084426e+00_real64, &
+      0.44364916731037084426e+00_real64, &
+    0.056350832689629155741e+00_real64, &
+    0.056350832689629155741e+00_real64, &
+      0.056350832689629155741e+00_real64, &
+    0.44364916731037084426e+00_real64, &
+    0.44364916731037084426e+00_real64, &
+      0.056350832689629155741e+00_real64, &
+    0.44364916731037084426e+00_real64, &
+    0.056350832689629155741e+00_real64, &
+      0.056350832689629155741e+00_real64, &
+    0.056350832689629155741e+00_real64, &
+    0.44364916731037084426e+00_real64, &
+      0.25000000000000000000e+00_real64, &
+    0.25000000000000000000e+00_real64, &
+    0.25000000000000000000e+00_real64 /), &
     (/ 3, 15 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o15
+  end
 
-  pure subroutine tetr_unit_o15b ( w, xyz ) &
-        bind(C, name="tetr_unit_o15b")
+  subroutine tetr_unit_o15b ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -4412,85 +4356,84 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(15), the weights.
+  !    Output, real(real64) W(15), the weights.
   !
-  !    Output, real(dp) XYZ(3,15), the abscissas.
+  !    Output, real(real64) XYZ(3,15), the abscissas.
   !
 
-    integer(ip), parameter :: order = 15
+    integer(int32), parameter :: order = 15
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(15) = (/ &
-      0.036160714285714285714_dp, &
-      0.036160714285714285714_dp, &
-      0.036160714285714285714_dp, &
-      0.036160714285714285714_dp, &
-      0.069871494516173816465_dp, &
-      0.069871494516173816465_dp, &
-      0.069871494516173816465_dp, &
-      0.069871494516173816465_dp, &
-      0.065694849368318756074_dp, &
-      0.065694849368318756074_dp, &
-      0.065694849368318756074_dp, &
-      0.065694849368318756074_dp, &
-      0.065694849368318756074_dp, &
-      0.065694849368318756074_dp, &
-      0.18170206858253505484_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,15) = reshape ( (/ &
-      0.00000000000000000000_dp, &
-    0.33333333333333333333_dp, &
-    0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-    0.00000000000000000000_dp, &
-    0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-    0.33333333333333333333_dp, &
-    0.00000000000000000000_dp, &
-      0.33333333333333333333_dp, &
-    0.33333333333333333333_dp, &
-    0.33333333333333333333_dp, &
-      0.72727272727272727273_dp, &
-    0.090909090909090909091_dp, &
-    0.090909090909090909091_dp, &
-      0.090909090909090909091_dp, &
-    0.72727272727272727273_dp, &
-    0.090909090909090909091_dp, &
-      0.090909090909090909091_dp, &
-    0.090909090909090909091_dp, &
-    0.72727272727272727273_dp, &
-      0.090909090909090909091_dp, &
-    0.090909090909090909091_dp, &
-    0.090909090909090909091_dp, &
-      0.43344984642633570176_dp, &
-    0.43344984642633570176_dp, &
-    0.066550153573664298240_dp, &
-      0.43344984642633570176_dp, &
-    0.066550153573664298240_dp, &
-    0.43344984642633570176_dp, &
-      0.43344984642633570176_dp, &
-    0.066550153573664298240_dp, &
-    0.066550153573664298240_dp, &
-      0.066550153573664298240_dp, &
-    0.43344984642633570176_dp, &
-    0.43344984642633570176_dp, &
-      0.066550153573664298240_dp, &
-    0.43344984642633570176_dp, &
-    0.066550153573664298240_dp, &
-      0.066550153573664298240_dp, &
-    0.066550153573664298240_dp, &
-    0.43344984642633570176_dp, &
-      0.25000000000000000000_dp, &
-    0.25000000000000000000_dp, &
-    0.250000000000000000_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(15) = (/ &
+      0.036160714285714285714e+00_real64, &
+      0.036160714285714285714e+00_real64, &
+      0.036160714285714285714e+00_real64, &
+      0.036160714285714285714e+00_real64, &
+      0.069871494516173816465e+00_real64, &
+      0.069871494516173816465e+00_real64, &
+      0.069871494516173816465e+00_real64, &
+      0.069871494516173816465e+00_real64, &
+      0.065694849368318756074e+00_real64, &
+      0.065694849368318756074e+00_real64, &
+      0.065694849368318756074e+00_real64, &
+      0.065694849368318756074e+00_real64, &
+      0.065694849368318756074e+00_real64, &
+      0.065694849368318756074e+00_real64, &
+      0.18170206858253505484e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,15) = reshape ( (/ &
+      0.00000000000000000000e+00_real64, &
+    0.33333333333333333333e+00_real64, &
+    0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+    0.00000000000000000000e+00_real64, &
+    0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+    0.33333333333333333333e+00_real64, &
+    0.00000000000000000000e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+    0.33333333333333333333e+00_real64, &
+    0.33333333333333333333e+00_real64, &
+      0.72727272727272727273e+00_real64, &
+    0.090909090909090909091e+00_real64, &
+    0.090909090909090909091e+00_real64, &
+      0.090909090909090909091e+00_real64, &
+    0.72727272727272727273e+00_real64, &
+    0.090909090909090909091e+00_real64, &
+      0.090909090909090909091e+00_real64, &
+    0.090909090909090909091e+00_real64, &
+    0.72727272727272727273e+00_real64, &
+      0.090909090909090909091e+00_real64, &
+    0.090909090909090909091e+00_real64, &
+    0.090909090909090909091e+00_real64, &
+      0.43344984642633570176e+00_real64, &
+    0.43344984642633570176e+00_real64, &
+    0.066550153573664298240e+00_real64, &
+      0.43344984642633570176e+00_real64, &
+    0.066550153573664298240e+00_real64, &
+    0.43344984642633570176e+00_real64, &
+      0.43344984642633570176e+00_real64, &
+    0.066550153573664298240e+00_real64, &
+    0.066550153573664298240e+00_real64, &
+      0.066550153573664298240e+00_real64, &
+    0.43344984642633570176e+00_real64, &
+    0.43344984642633570176e+00_real64, &
+      0.066550153573664298240e+00_real64, &
+    0.43344984642633570176e+00_real64, &
+    0.066550153573664298240e+00_real64, &
+      0.066550153573664298240e+00_real64, &
+    0.066550153573664298240e+00_real64, &
+    0.43344984642633570176e+00_real64, &
+      0.25000000000000000000e+00_real64, &
+    0.25000000000000000000e+00_real64, &
+    0.250000000000000000e+00_real64 /), &
     (/ 3, 15 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o15b
+  end
 
-  pure subroutine tetr_unit_o24 ( w, xyz ) &
-        bind(C, name="tetr_unit_o24")
+  subroutine tetr_unit_o24 ( w, xyz )
 
   !*****************************************************************************80
   !
@@ -4526,121 +4469,120 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(24), the weights.
+  !    Output, real(real64) W(24), the weights.
   !
-  !    Output, real(dp) XYZ(3,24), the abscissas.
+  !    Output, real(real64) XYZ(3,24), the abscissas.
   !
 
-    integer(ip), parameter :: order = 24
+    integer(int32), parameter :: order = 24
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(24) = (/ &
-      0.039922750257869636194_dp, &
-      0.039922750257869636194_dp, &
-      0.039922750257869636194_dp, &
-      0.039922750257869636194_dp, &
-      0.010077211055345822612_dp, &
-      0.010077211055345822612_dp, &
-      0.010077211055345822612_dp, &
-      0.010077211055345822612_dp, &
-      0.055357181543927398338_dp, &
-      0.055357181543927398338_dp, &
-      0.055357181543927398338_dp, &
-      0.055357181543927398338_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp, &
-      0.048214285714285714286_dp /)
-    real(dp), intent(out) :: xyz(3,order)
-    real(dp) :: xyz_save(3,24) = reshape ( (/ &
-      0.35619138622025439121_dp, &
-      0.21460287125991520293_dp, &
-      0.21460287125991520293_dp, &
-      0.21460287125991520293_dp, &
-      0.35619138622025439121_dp, &
-      0.21460287125991520293_dp, &
-      0.21460287125991520293_dp, &
-      0.21460287125991520293_dp, &
-      0.35619138622025439121_dp, &
-      0.21460287125991520293_dp, &
-      0.21460287125991520293_dp, &
-      0.21460287125991520293_dp, &
-      0.87797812439616594065_dp, &
-      0.040673958534611353116_dp, &
-      0.040673958534611353116_dp, &
-      0.040673958534611353116_dp, &
-      0.87797812439616594065_dp, &
-      0.040673958534611353116_dp, &
-      0.040673958534611353116_dp, &
-      0.040673958534611353116_dp, &
-      0.87797812439616594065_dp, &
-      0.040673958534611353116_dp, &
-      0.040673958534611353116_dp, &
-      0.040673958534611353116_dp, &
-      0.032986329573173468968_dp, &
-      0.32233789014227551034_dp, &
-      0.32233789014227551034_dp, &
-      0.32233789014227551034_dp, &
-      0.032986329573173468968_dp, &
-      0.32233789014227551034_dp, &
-      0.32233789014227551034_dp, &
-      0.32233789014227551034_dp, &
-      0.032986329573173468968_dp, &
-      0.32233789014227551034_dp, &
-      0.32233789014227551034_dp, &
-      0.32233789014227551034_dp, &
-      0.60300566479164914137_dp, &
-      0.26967233145831580803_dp, &
-      0.063661001875017525299_dp, &
-      0.60300566479164914137_dp, &
-      0.063661001875017525299_dp, &
-      0.26967233145831580803_dp, &
-      0.60300566479164914137_dp, &
-      0.063661001875017525299_dp, &
-      0.063661001875017525299_dp, &
-      0.063661001875017525299_dp, &
-      0.60300566479164914137_dp, &
-      0.26967233145831580803_dp, &
-      0.063661001875017525299_dp, &
-      0.60300566479164914137_dp, &
-      0.063661001875017525299_dp, &
-      0.063661001875017525299_dp, &
-      0.063661001875017525299_dp, &
-      0.60300566479164914137_dp, &
-      0.26967233145831580803_dp, &
-      0.60300566479164914137_dp, &
-      0.063661001875017525299_dp, &
-      0.26967233145831580803_dp, &
-      0.063661001875017525299_dp, &
-      0.60300566479164914137_dp, &
-      0.26967233145831580803_dp, &
-      0.063661001875017525299_dp, &
-      0.063661001875017525299_dp, &
-      0.063661001875017525299_dp, &
-      0.26967233145831580803_dp, &
-      0.60300566479164914137_dp, &
-      0.063661001875017525299_dp, &
-      0.26967233145831580803_dp, &
-      0.063661001875017525299_dp, &
-      0.063661001875017525299_dp, &
-      0.063661001875017525299_dp, &
-      0.26967233145831580803_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(24) = (/ &
+      0.039922750257869636194e+00_real64, &
+      0.039922750257869636194e+00_real64, &
+      0.039922750257869636194e+00_real64, &
+      0.039922750257869636194e+00_real64, &
+      0.010077211055345822612e+00_real64, &
+      0.010077211055345822612e+00_real64, &
+      0.010077211055345822612e+00_real64, &
+      0.010077211055345822612e+00_real64, &
+      0.055357181543927398338e+00_real64, &
+      0.055357181543927398338e+00_real64, &
+      0.055357181543927398338e+00_real64, &
+      0.055357181543927398338e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64, &
+      0.048214285714285714286e+00_real64 /)
+    real(real64) xyz(3,order)
+    real(real64) :: xyz_save(3,24) = reshape ( (/ &
+      0.35619138622025439121e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.35619138622025439121e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.35619138622025439121e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.21460287125991520293e+00_real64, &
+      0.87797812439616594065e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.87797812439616594065e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.87797812439616594065e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.040673958534611353116e+00_real64, &
+      0.032986329573173468968e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.032986329573173468968e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.032986329573173468968e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.32233789014227551034e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.26967233145831580803e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.26967233145831580803e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.26967233145831580803e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.26967233145831580803e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.26967233145831580803e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.26967233145831580803e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.26967233145831580803e+00_real64, &
+      0.60300566479164914137e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.26967233145831580803e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.063661001875017525299e+00_real64, &
+      0.26967233145831580803e+00_real64 /), &
     (/ 3, 24 /) )
 
     w(1:order) = w_save(1:order)
     xyz(1:3,1:order) = xyz_save(1:3,1:order)
-  end subroutine tetr_unit_o24
+  end
 
-  subroutine tetr_unit_quad_test ( degree_max ) &
-        bind(C, name="tetr_unit_quad_test")
+  subroutine tetr_unit_quad_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -4660,23 +4602,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip), parameter :: dim_num = 3
+    integer(int32), parameter :: dim_num = 3
 
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(dim_num)
-    integer(ip) :: h
-    logical :: more
-    integer(ip) :: order
-    real(dp) :: quad
-    integer(ip) :: t
-    real(dp) :: tetr_unit_volume
-    real(dp), allocatable :: v(:)
-    real(dp), allocatable :: w(:)
-    real(dp), allocatable :: xyz(:,:)
+    integer(int32) degree_max
+    integer(int32) expon(dim_num)
+    integer(int32) h
+    logical more
+    integer(int32) order
+    real(real64) quad
+    integer(int32) t
+    real(real64) tetr_unit_volume
+    real(real64), allocatable :: v(:)
+    real(real64), allocatable :: w(:)
+    real(real64), allocatable :: xyz(:,:)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TETR_UNIT_QUAD_TEST'
@@ -4820,10 +4762,9 @@ contains
       end if
 
     end do
-  end subroutine tetr_unit_quad_test
+  end
 
-  pure function tetr_unit_volume ( ) &
-        bind(C, name="tetr_unit_volume")
+  function tetr_unit_volume ( )
 
   !*****************************************************************************80
   !
@@ -4852,16 +4793,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) TETR_UNIT_VOLUME, the volume.
+  !    Output, real(real64) TETR_UNIT_VOLUME, the volume.
   !
 
-    real(dp) :: tetr_unit_volume
+    real(real64) tetr_unit_volume
 
-    tetr_unit_volume = 1.0_dp / 6.0_dp
-  end function tetr_unit_volume
+    tetr_unit_volume = 1.0e+00_real64 / 6.0e+00_real64
+  end
 
-  pure subroutine trig_unit_monomial ( expon, value ) &
-        bind(C, name="trig_unit_monomial")
+  subroutine trig_unit_monomial ( expon, value )
 
   !*****************************************************************************80
   !
@@ -4899,19 +4839,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) EXPON(2), the exponents.
+  !    Input, integer(int32) EXPON(2), the exponents.
   !
-  !    Output, real(dp) VALUE, the integral of the monomial.
+  !    Output, real(real64) VALUE, the integral of the monomial.
   !
 
-    integer(ip), intent(in) :: expon(2)
-    integer(ip) :: i
-    integer(ip) :: k
-    real(dp), intent(out) :: value
+    integer(int32) expon(2)
+    integer(int32) i
+    integer(int32) k
+    real(real64) value
   !
   !  The first computation ends with VALUE = 1.0;
   !
-    value = 1.0_dp
+    value = 1.0e+00_real64
 
   ! k = 0
   !
@@ -4919,25 +4859,24 @@ contains
   !
   ! do i = 1, expon(1)
   !   k = k + 1
-  !   value = value * real ( i, dp) / real ( k, dp)
+  !   value = value * real ( i, real64) / real ( k, real64)
   ! end do
 
     k = expon(1)
 
     do i = 1, expon(2)
       k = k + 1
-      value = value * real ( i, dp) / real ( k, dp)
+      value = value * real ( i, real64) / real ( k, real64)
     end do
 
     k = k + 1
-    value = value / real ( k, dp)
+    value = value / real ( k, real64)
 
     k = k + 1
-    value = value / real ( k, dp)
-  end subroutine trig_unit_monomial
+    value = value / real ( k, real64)
+  end
 
-  subroutine trig_unit_monomial_test ( degree_max ) &
-        bind(C, name="trig_unit_monomial_test")
+  subroutine trig_unit_monomial_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -4957,16 +4896,16 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip) :: alpha
-    integer(ip) :: beta
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(2)
-    real(dp) :: trig_unit_volume
-    real(dp) :: value
+    integer(int32) alpha
+    integer(int32) beta
+    integer(int32) degree_max
+    integer(int32) expon(2)
+    real(real64) trig_unit_volume
+    real(real64) value
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIG_UNIT_MONOMIAL_TEST'
@@ -4987,10 +4926,9 @@ contains
         write ( *, '(2x,i8,2x,i8,2x,g14.6)' ) expon(1:2), value
       end do
     end do
-  end subroutine trig_unit_monomial_test
+  end
 
-  pure subroutine trig_unit_o01 ( w, xy ) &
-        bind(C, name="trig_unit_o01")
+  subroutine trig_unit_o01 ( w, xy )
 
   !*****************************************************************************80
   !
@@ -5027,28 +4965,27 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(1), the weights.
+  !    Output, real(real64) W(1), the weights.
   !
-  !    Output, real(dp) XY(2,1), the abscissas.
+  !    Output, real(real64) XY(2,1), the abscissas.
   !
 
-    integer(ip), parameter :: order = 1
+    integer(int32), parameter :: order = 1
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(1) = (/ &
-      1.0_dp /)
-    real(dp), intent(out) :: xy(2,order)
-    real(dp) :: xy_save(2,1) = reshape ( (/ &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(1) = (/ &
+      1.0e+00_real64 /)
+    real(real64) xy(2,order)
+    real(real64) :: xy_save(2,1) = reshape ( (/ &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64 /), &
     (/ 2, 1 /) )
 
     w(1:order) = w_save(1:order)
     xy(1:2,1:order) = xy_save(1:2,1:order)
-  end subroutine trig_unit_o01
+  end
 
-  pure subroutine trig_unit_o03 ( w, xy ) &
-        bind(C, name="trig_unit_o03")
+  subroutine trig_unit_o03 ( w, xy )
 
   !*****************************************************************************80
   !
@@ -5085,34 +5022,33 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(3), the weights.
+  !    Output, real(real64) W(3), the weights.
   !
-  !    Output, real(dp) XY(2,3), the abscissas.
+  !    Output, real(real64) XY(2,3), the abscissas.
   !
 
-    integer(ip), parameter :: order = 3
+    integer(int32), parameter :: order = 3
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(3) = (/ &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp /)
-    real(dp), intent(out) :: xy(2,order)
-    real(dp) :: xy_save(2,3) = reshape ( (/ &
-      0.66666666666666666667_dp, &
-      0.16666666666666666667_dp, &
-      0.16666666666666666667_dp, &
-      0.66666666666666666667_dp, &
-      0.16666666666666666667_dp, &
-      0.16666666666666666667_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(3) = (/ &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64 /)
+    real(real64) xy(2,order)
+    real(real64) :: xy_save(2,3) = reshape ( (/ &
+      0.66666666666666666667e+00_real64, &
+      0.16666666666666666667e+00_real64, &
+      0.16666666666666666667e+00_real64, &
+      0.66666666666666666667e+00_real64, &
+      0.16666666666666666667e+00_real64, &
+      0.16666666666666666667e+00_real64 /), &
     (/ 2, 3 /) )
 
     w(1:order) = w_save(1:order)
     xy(1:2,1:order) = xy_save(1:2,1:order)
-  end subroutine trig_unit_o03
+  end
 
-  pure subroutine trig_unit_o03b ( w, xy ) &
-        bind(C, name="trig_unit_o03b")
+  subroutine trig_unit_o03b ( w, xy )
 
   !*****************************************************************************80
   !
@@ -5149,34 +5085,33 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(3), the weights.
+  !    Output, real(real64) W(3), the weights.
   !
-  !    Output, real(dp) XY(2,3), the abscissas.
+  !    Output, real(real64) XY(2,3), the abscissas.
   !
 
-    integer(ip), parameter :: order = 3
+    integer(int32), parameter :: order = 3
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(3) = (/ &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp /)
-    real(dp), intent(out) :: xy(2,order)
-    real(dp) :: xy_save(2,3) = reshape ( (/ &
-      0.0_dp, &
-      0.5_dp, &
-      0.5_dp, &
-      0.0_dp, &
-      0.5_dp, &
-      0.5_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(3) = (/ &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64 /)
+    real(real64) xy(2,order)
+    real(real64) :: xy_save(2,3) = reshape ( (/ &
+      0.0e+00_real64, &
+      0.5e+00_real64, &
+      0.5e+00_real64, &
+      0.0e+00_real64, &
+      0.5e+00_real64, &
+      0.5e+00_real64 /), &
     (/ 2, 3 /) )
 
     w(1:order) = w_save(1:order)
     xy(1:2,1:order) = xy_save(1:2,1:order)
-  end subroutine trig_unit_o03b
+  end
 
-  pure subroutine trig_unit_o06 ( w, xy ) &
-        bind(C, name="trig_unit_o06")
+  subroutine trig_unit_o06 ( w, xy )
 
   !*****************************************************************************80
   !
@@ -5213,43 +5148,42 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(6), the weights.
+  !    Output, real(real64) W(6), the weights.
   !
-  !    Output, real(dp) XY(2,6), the abscissas.
+  !    Output, real(real64) XY(2,6), the abscissas.
   !
 
-    integer(ip), parameter :: order = 6
+    integer(int32), parameter :: order = 6
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(6) = (/ &
-      0.22338158967801146570_dp, &
-      0.22338158967801146570_dp, &
-      0.22338158967801146570_dp, &
-      0.10995174365532186764_dp, &
-      0.10995174365532186764_dp, &
-      0.10995174365532186764_dp /)
-    real(dp), intent(out) :: xy(2,order)
-    real(dp) :: xy_save(2,6) = reshape ( (/ &
-      0.10810301816807022736_dp, &
-      0.44594849091596488632_dp, &
-      0.44594849091596488632_dp, &
-      0.10810301816807022736_dp, &
-      0.44594849091596488632_dp, &
-      0.44594849091596488632_dp, &
-      0.81684757298045851308_dp, &
-      0.091576213509770743460_dp, &
-      0.091576213509770743460_dp, &
-      0.81684757298045851308_dp, &
-      0.091576213509770743460_dp, &
-      0.091576213509770743460_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(6) = (/ &
+      0.22338158967801146570e+00_real64, &
+      0.22338158967801146570e+00_real64, &
+      0.22338158967801146570e+00_real64, &
+      0.10995174365532186764e+00_real64, &
+      0.10995174365532186764e+00_real64, &
+      0.10995174365532186764e+00_real64 /)
+    real(real64) xy(2,order)
+    real(real64) :: xy_save(2,6) = reshape ( (/ &
+      0.10810301816807022736e+00_real64, &
+      0.44594849091596488632e+00_real64, &
+      0.44594849091596488632e+00_real64, &
+      0.10810301816807022736e+00_real64, &
+      0.44594849091596488632e+00_real64, &
+      0.44594849091596488632e+00_real64, &
+      0.81684757298045851308e+00_real64, &
+      0.091576213509770743460e+00_real64, &
+      0.091576213509770743460e+00_real64, &
+      0.81684757298045851308e+00_real64, &
+      0.091576213509770743460e+00_real64, &
+      0.091576213509770743460e+00_real64 /), &
     (/ 2, 6 /) )
 
     w(1:order) = w_save(1:order)
     xy(1:2,1:order) = xy_save(1:2,1:order)
-  end subroutine trig_unit_o06
+  end
 
-  pure subroutine trig_unit_o06b ( w, xy ) &
-        bind(C, name="trig_unit_o06b")
+  subroutine trig_unit_o06b ( w, xy )
 
   !*****************************************************************************80
   !
@@ -5286,43 +5220,42 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(6), the weights.
+  !    Output, real(real64) W(6), the weights.
   !
-  !    Output, real(dp) XY(2,6), the abscissas.
+  !    Output, real(real64) XY(2,6), the abscissas.
   !
 
-    integer(ip), parameter :: order = 6
+    integer(int32), parameter :: order = 6
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(6) = (/ &
-      0.30000000000000000000_dp, &
-      0.30000000000000000000_dp, &
-      0.30000000000000000000_dp, &
-      0.033333333333333333333_dp, &
-      0.033333333333333333333_dp, &
-      0.033333333333333333333_dp /)
-    real(dp), intent(out) :: xy(2,order)
-    real(dp) :: xy_save(2,6) = reshape ( (/ &
-      0.66666666666666666667_dp, &
-      0.16666666666666666667_dp, &
-      0.16666666666666666667_dp, &
-      0.66666666666666666667_dp, &
-      0.16666666666666666667_dp, &
-      0.16666666666666666667_dp, &
-      0.0_dp, &
-      0.5_dp, &
-      0.5_dp, &
-      0.0_dp, &
-      0.5_dp, &
-      0.5_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(6) = (/ &
+      0.30000000000000000000e+00_real64, &
+      0.30000000000000000000e+00_real64, &
+      0.30000000000000000000e+00_real64, &
+      0.033333333333333333333e+00_real64, &
+      0.033333333333333333333e+00_real64, &
+      0.033333333333333333333e+00_real64 /)
+    real(real64) xy(2,order)
+    real(real64) :: xy_save(2,6) = reshape ( (/ &
+      0.66666666666666666667e+00_real64, &
+      0.16666666666666666667e+00_real64, &
+      0.16666666666666666667e+00_real64, &
+      0.66666666666666666667e+00_real64, &
+      0.16666666666666666667e+00_real64, &
+      0.16666666666666666667e+00_real64, &
+      0.0e+00_real64, &
+      0.5e+00_real64, &
+      0.5e+00_real64, &
+      0.0e+00_real64, &
+      0.5e+00_real64, &
+      0.5e+00_real64 /), &
     (/ 2, 6 /) )
 
     w(1:order) = w_save(1:order)
     xy(1:2,1:order) = xy_save(1:2,1:order)
-  end subroutine trig_unit_o06b
+  end
 
-  pure subroutine trig_unit_o07 ( w, xy ) &
-        bind(C, name="trig_unit_o07")
+  subroutine trig_unit_o07 ( w, xy )
 
   !*****************************************************************************80
   !
@@ -5359,46 +5292,45 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(7), the weights.
+  !    Output, real(real64) W(7), the weights.
   !
-  !    Output, real(dp) XY(2,7), the abscissas.
+  !    Output, real(real64) XY(2,7), the abscissas.
   !
 
-    integer(ip), parameter :: order = 7
+    integer(int32), parameter :: order = 7
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(7) = (/ &
-      0.12593918054482715260_dp, &
-      0.12593918054482715260_dp, &
-      0.12593918054482715260_dp, &
-      0.13239415278850618074_dp, &
-      0.13239415278850618074_dp, &
-      0.13239415278850618074_dp, &
-      0.22500000000000000000_dp /)
-    real(dp), intent(out) :: xy(2,order)
-    real(dp) :: xy_save(2,7) = reshape ( (/ &
-      0.79742698535308732240_dp, &
-      0.10128650732345633880_dp, &
-      0.10128650732345633880_dp, &
-      0.79742698535308732240_dp, &
-      0.10128650732345633880_dp, &
-      0.10128650732345633880_dp, &
-      0.059715871789769820459_dp, &
-      0.47014206410511508977_dp, &
-      0.47014206410511508977_dp, &
-      0.059715871789769820459_dp, &
-      0.47014206410511508977_dp, &
-      0.47014206410511508977_dp, &
-      0.33333333333333333333_dp, &
-      0.33333333333333333333_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(7) = (/ &
+      0.12593918054482715260e+00_real64, &
+      0.12593918054482715260e+00_real64, &
+      0.12593918054482715260e+00_real64, &
+      0.13239415278850618074e+00_real64, &
+      0.13239415278850618074e+00_real64, &
+      0.13239415278850618074e+00_real64, &
+      0.22500000000000000000e+00_real64 /)
+    real(real64) xy(2,order)
+    real(real64) :: xy_save(2,7) = reshape ( (/ &
+      0.79742698535308732240e+00_real64, &
+      0.10128650732345633880e+00_real64, &
+      0.10128650732345633880e+00_real64, &
+      0.79742698535308732240e+00_real64, &
+      0.10128650732345633880e+00_real64, &
+      0.10128650732345633880e+00_real64, &
+      0.059715871789769820459e+00_real64, &
+      0.47014206410511508977e+00_real64, &
+      0.47014206410511508977e+00_real64, &
+      0.059715871789769820459e+00_real64, &
+      0.47014206410511508977e+00_real64, &
+      0.47014206410511508977e+00_real64, &
+      0.33333333333333333333e+00_real64, &
+      0.33333333333333333333e+00_real64 /), &
     (/ 2, 7 /) )
 
     w(1:order) = w_save(1:order)
     xy(1:2,1:order) = xy_save(1:2,1:order)
-  end subroutine trig_unit_o07
+  end
 
-  pure subroutine trig_unit_o12 ( w, xy ) &
-        bind(C, name="trig_unit_o12")
+  subroutine trig_unit_o12 ( w, xy )
 
   !*****************************************************************************80
   !
@@ -5435,61 +5367,60 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) W(12), the weights.
+  !    Output, real(real64) W(12), the weights.
   !
-  !    Output, real(dp) XY(2,12), the abscissas.
+  !    Output, real(real64) XY(2,12), the abscissas.
   !
 
-    integer(ip), parameter :: order = 12
+    integer(int32), parameter :: order = 12
 
-    real(dp), intent(out) :: w(order)
-    real(dp) :: w_save(12) = (/ &
-       0.050844906370206816921_dp, &
-       0.050844906370206816921_dp, &
-       0.050844906370206816921_dp, &
-       0.11678627572637936603_dp, &
-       0.11678627572637936603_dp, &
-       0.11678627572637936603_dp, &
-       0.082851075618373575194_dp, &
-       0.082851075618373575194_dp, &
-       0.082851075618373575194_dp, &
-       0.082851075618373575194_dp, &
-       0.082851075618373575194_dp, &
-       0.082851075618373575194_dp /)
-    real(dp), intent(out) :: xy(2,order)
-    real(dp) :: xy_save(2,12) = reshape ( (/ &
-      0.87382197101699554332_dp, &
-      0.063089014491502228340_dp, &
-      0.063089014491502228340_dp, &
-      0.87382197101699554332_dp, &
-      0.063089014491502228340_dp, &
-      0.063089014491502228340_dp, &
-      0.50142650965817915742_dp, &
-      0.24928674517091042129_dp, &
-      0.24928674517091042129_dp, &
-      0.50142650965817915742_dp, &
-      0.24928674517091042129_dp, &
-      0.24928674517091042129_dp, &
-      0.053145049844816947353_dp, &
-      0.31035245103378440542_dp, &
-      0.31035245103378440542_dp, &
-      0.053145049844816947353_dp, &
-      0.053145049844816947353_dp, &
-      0.63650249912139864723_dp, &
-      0.31035245103378440542_dp, &
-      0.63650249912139864723_dp, &
-      0.63650249912139864723_dp, &
-      0.053145049844816947353_dp, &
-      0.63650249912139864723_dp, &
-      0.31035245103378440542_dp /), &
+    real(real64) w(order)
+    real(real64) :: w_save(12) = (/ &
+       0.050844906370206816921e+00_real64, &
+       0.050844906370206816921e+00_real64, &
+       0.050844906370206816921e+00_real64, &
+       0.11678627572637936603e+00_real64, &
+       0.11678627572637936603e+00_real64, &
+       0.11678627572637936603e+00_real64, &
+       0.082851075618373575194e+00_real64, &
+       0.082851075618373575194e+00_real64, &
+       0.082851075618373575194e+00_real64, &
+       0.082851075618373575194e+00_real64, &
+       0.082851075618373575194e+00_real64, &
+       0.082851075618373575194e+00_real64 /)
+    real(real64) xy(2,order)
+    real(real64) :: xy_save(2,12) = reshape ( (/ &
+      0.87382197101699554332e+00_real64, &
+      0.063089014491502228340e+00_real64, &
+      0.063089014491502228340e+00_real64, &
+      0.87382197101699554332e+00_real64, &
+      0.063089014491502228340e+00_real64, &
+      0.063089014491502228340e+00_real64, &
+      0.50142650965817915742e+00_real64, &
+      0.24928674517091042129e+00_real64, &
+      0.24928674517091042129e+00_real64, &
+      0.50142650965817915742e+00_real64, &
+      0.24928674517091042129e+00_real64, &
+      0.24928674517091042129e+00_real64, &
+      0.053145049844816947353e+00_real64, &
+      0.31035245103378440542e+00_real64, &
+      0.31035245103378440542e+00_real64, &
+      0.053145049844816947353e+00_real64, &
+      0.053145049844816947353e+00_real64, &
+      0.63650249912139864723e+00_real64, &
+      0.31035245103378440542e+00_real64, &
+      0.63650249912139864723e+00_real64, &
+      0.63650249912139864723e+00_real64, &
+      0.053145049844816947353e+00_real64, &
+      0.63650249912139864723e+00_real64, &
+      0.31035245103378440542e+00_real64 /), &
     (/ 2, 12 /) )
 
     w(1:order) = w_save(1:order)
     xy(1:2,1:order) = xy_save(1:2,1:order)
-  end subroutine trig_unit_o12
+  end
 
-  subroutine trig_unit_quad_test ( degree_max ) &
-        bind(C, name="trig_unit_quad_test")
+  subroutine trig_unit_quad_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -5509,23 +5440,23 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip), parameter :: dim_num = 2
+    integer(int32), parameter :: dim_num = 2
 
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(dim_num)
-    integer(ip) :: h
-    logical :: more
-    integer(ip) :: order
-    real(dp) :: quad
-    integer(ip) :: t
-    real(dp) :: trig_unit_volume
-    real(dp), allocatable :: v(:)
-    real(dp), allocatable :: w(:)
-    real(dp), allocatable :: xy(:,:)
+    integer(int32) degree_max
+    integer(int32) expon(dim_num)
+    integer(int32) h
+    logical more
+    integer(int32) order
+    real(real64) quad
+    integer(int32) t
+    real(real64) trig_unit_volume
+    real(real64), allocatable :: v(:)
+    real(real64), allocatable :: w(:)
+    real(real64), allocatable :: xy(:,:)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIG_UNIT_QUAD_TEST'
@@ -5642,10 +5573,9 @@ contains
       end if
 
     end do
-  end subroutine trig_unit_quad_test
+  end
 
-  pure function trig_unit_volume ( ) &
-        bind(C, name="trig_unit_volume")
+  function trig_unit_volume ( )
 
   !*****************************************************************************80
   !
@@ -5673,16 +5603,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) TRIG_UNIT_VOLUME, the volume.
+  !    Output, real(real64) TRIG_UNIT_VOLUME, the volume.
   !
 
-    real(dp) :: trig_unit_volume
+    real(real64) trig_unit_volume
 
-    trig_unit_volume = 0.5_dp
-  end function trig_unit_volume
+    trig_unit_volume = 0.5e+00_real64
+  end
 
-  subroutine wedg_unit_monomial ( expon, value ) &
-        bind(C, name="wedg_unit_monomial")
+  subroutine wedg_unit_monomial ( expon, value )
 
   !*****************************************************************************80
   !
@@ -5725,19 +5654,19 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) EXPON(3), the exponents.
+  !    Input, integer(int32) EXPON(3), the exponents.
   !
-  !    Output, real(dp) VALUE, the integral of the monomial.
+  !    Output, real(real64) VALUE, the integral of the monomial.
   !
 
-    integer(ip), intent(in) :: expon(3)
-    integer(ip) :: i
-    integer(ip) :: k
-    real(dp), intent(out) :: value
+    integer(int32) expon(3)
+    integer(int32) i
+    integer(int32) k
+    real(real64) value
   !
   !  The first computation ends with VALUE = 1.0;
   !
-    value = 1.0_dp
+    value = 1.0e+00_real64
 
   ! k = 0
   !
@@ -5745,21 +5674,21 @@ contains
   !
   ! do i = 1, expon(1)
   !   k = k + 1
-  !   value = value * real ( i, dp) / real ( k, dp)
+  !   value = value * real ( i, real64) / real ( k, real64)
   ! end do
 
     k = expon(1)
 
     do i = 1, expon(2)
       k = k + 1
-      value = value * real ( i, dp) / real ( k, dp)
+      value = value * real ( i, real64) / real ( k, real64)
     end do
 
     k = k + 1
-    value = value / real ( k, dp)
+    value = value / real ( k, real64)
 
     k = k + 1
-    value = value / real ( k, dp)
+    value = value / real ( k, real64)
   !
   !  Now account for integration in Z.
   !
@@ -5769,14 +5698,13 @@ contains
       write ( *, '(a)' ) '  EXPON(3) = -1 is not a legal input.'
       stop 1
     else if ( mod ( expon(3), 2 ) == 1 ) then
-      value = 0.0_dp
+      value = 0.0e+00_real64
     else
-      value = value * 2.0_dp / real ( expon(3) + 1, dp)
+      value = value * 2.0e+00_real64 / real ( expon(3) + 1, real64)
     end if
-  end subroutine wedg_unit_monomial
+  end
 
-  subroutine wedg_unit_monomial_test ( degree_max ) &
-        bind(C, name="wedg_unit_monomial_test")
+  subroutine wedg_unit_monomial_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -5796,17 +5724,17 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip) :: alpha
-    integer(ip) :: beta
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(3)
-    integer(ip) :: gamma
-    real(dp) :: value
-    real(dp) :: wedg_unit_volume
+    integer(int32) alpha
+    integer(int32) beta
+    integer(int32) degree_max
+    integer(int32) expon(3)
+    integer(int32) gamma
+    real(real64) value
+    real(real64) wedg_unit_volume
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'WEDG_UNIT_MONOMIAL_TEST'
@@ -5830,10 +5758,9 @@ contains
         end do
       end do
     end do
-  end subroutine wedg_unit_monomial_test
+  end
 
-  subroutine wedg_unit_quad_test ( degree_max ) &
-        bind(C, name="wedg_unit_quad_test")
+  subroutine wedg_unit_quad_test ( degree_max )
 
   !*****************************************************************************80
   !
@@ -5853,32 +5780,32 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) DEGREE_MAX, the maximum total degree of the
+  !    Input, integer(int32) DEGREE_MAX, the maximum total degree of the
   !    monomials to check.
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), parameter :: test_num = 7
+    integer(int32), parameter :: dim_num = 3
+    integer(int32), parameter :: test_num = 7
 
-    integer(ip), intent(in), value :: degree_max
-    integer(ip) :: expon(dim_num)
-    integer(ip) :: h
-    integer(ip) :: line_order
-    integer(ip) :: line_order_array(test_num) = (/ &
+    integer(int32) degree_max
+    integer(int32) expon(dim_num)
+    integer(int32) h
+    integer(int32) line_order
+    integer(int32) :: line_order_array(test_num) = (/ &
       1, 2, 2, 3, 2, 3, 4 /)
-    logical :: more
-    integer(ip) :: order
-    real(dp) :: quad
-    integer(ip) :: t
-    integer(ip) :: test
-    integer(ip) :: trig_order
-    integer(ip) :: trig_order_index
-    integer(ip) :: trig_order_array(test_num) = (/ &
+    logical more
+    integer(int32) order
+    real(real64) quad
+    integer(int32) t
+    integer(int32) test
+    integer(int32) trig_order
+    integer(int32) trig_order_index
+    integer(int32) :: trig_order_array(test_num) = (/ &
       1, 3, -3, 6, -6, 7, 12 /)
-    real(dp) :: wedg_unit_volume
-    real(dp), allocatable :: v(:)
-    real(dp), allocatable :: w(:)
-    real(dp), allocatable :: xyz(:,:)
+    real(real64) wedg_unit_volume
+    real(real64), allocatable :: v(:)
+    real(real64), allocatable :: w(:)
+    real(real64), allocatable :: xyz(:,:)
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'WEDG_UNIT_QUAD_TEST'
@@ -5934,10 +5861,9 @@ contains
       end if
 
     end do
-  end subroutine wedg_unit_quad_test
+  end
 
-  subroutine wedg_unit_rule ( line_order, trig_order, w, xyz ) &
-        bind(C, name="wedg_unit_rule")
+  subroutine wedg_unit_rule ( line_order, trig_order, w, xyz )
 
   !*****************************************************************************80
   !
@@ -5987,30 +5913,30 @@ contains
   !
   !  Parameters:
   !
-  !    Input, integer(ip) LINE_ORDER, the index of the line rule.
+  !    Input, integer(int32) LINE_ORDER, the index of the line rule.
   !    The index of the rule is equal to the order of the rule.
   !    1 <= LINE_ORDER <= 5.
   !
-  !    Input, integer(ip) TRIG_ORDER, the indes of the triangle rule.
+  !    Input, integer(int32) TRIG_ORDER, the indes of the triangle rule.
   !    The index of the rule is 1, 3, -3, 6, -6, 7 or 12.
   !
-  !    Output, real(dp) W(LINE_ORDER*abs(TRIG_ORDER)), the weights.
+  !    Output, real(real64) W(LINE_ORDER*abs(TRIG_ORDER)), the weights.
   !
-  !    Output, real(dp) XYZ(3,LINE_ORDER*abs(TRIG_ORDER)), the abscissas.
+  !    Output, real(real64) XYZ(3,LINE_ORDER*abs(TRIG_ORDER)), the abscissas.
   !
 
-    integer(ip), intent(in), value :: line_order
-    integer(ip), intent(in), value :: trig_order
+    integer(int32) line_order
+    integer(int32) trig_order
 
-    integer(ip) :: i
-    integer(ip) :: j
-    integer(ip) :: k
-    real(dp) :: line_w(line_order)
-    real(dp) :: line_x(line_order)
-    real(dp) :: trig_w(abs(trig_order))
-    real(dp) :: trig_xy(2,abs(trig_order))
-    real(dp), intent(out) :: w(line_order*abs(trig_order))
-    real(dp), intent(out) :: xyz(3,line_order*abs(trig_order))
+    integer(int32) i
+    integer(int32) j
+    integer(int32) k
+    real(real64) line_w(line_order)
+    real(real64) line_x(line_order)
+    real(real64) trig_w(abs(trig_order))
+    real(real64) trig_xy(2,abs(trig_order))
+    real(real64) w(line_order*abs(trig_order))
+    real(real64) xyz(3,line_order*abs(trig_order))
 
     if ( line_order == 1 ) then
       call line_unit_o01 ( line_w, line_x )
@@ -6059,10 +5985,9 @@ contains
         xyz(3,k) = line_x(i)
       end do
     end do
-  end subroutine wedg_unit_rule
+  end
 
-  pure function wedg_unit_volume ( ) &
-        bind(C, name="wedg_unit_volume")
+  function wedg_unit_volume ( )
 
   !*****************************************************************************80
   !
@@ -6091,16 +6016,15 @@ contains
   !
   !  Parameters:
   !
-  !    Output, real(dp) WEDG_UNIT_VOLUME, the volume.
+  !    Output, real(real64) WEDG_UNIT_VOLUME, the volume.
   !
 
-    real(dp) :: wedg_unit_volume
+    real(real64) wedg_unit_volume
 
-    wedg_unit_volume = 1.0_dp
-  end function wedg_unit_volume
+    wedg_unit_volume = 1.0e+00_real64
+  end
 
-  subroutine wedg_unit_write_test ( ) &
-        bind(C, name="wedg_unit_write_test")
+  subroutine wedg_unit_write_test ( )
 
   !*****************************************************************************80
   !
@@ -6121,21 +6045,21 @@ contains
   !  Parameters:
   !
 
-    integer(ip), parameter :: dim_num = 3
-    integer(ip), parameter :: rule_num = 7
+    integer(int32), parameter :: dim_num = 3
+    integer(int32), parameter :: rule_num = 7
 
-    integer(ip) :: line_order
-    integer(ip) :: line_order_array(rule_num) = (/ &
+    integer(int32) line_order
+    integer(int32) :: line_order_array(rule_num) = (/ &
       1, 2, 2, 3, 2, 3, 4 /)
-    integer(ip) :: order
-    integer(ip) :: rule
-    integer(ip) :: trig_order
-    integer(ip) :: trig_order_array(rule_num) = (/ &
+    integer(int32) order
+    integer(int32) rule
+    integer(int32) trig_order
+    integer(int32) :: trig_order_array(rule_num) = (/ &
       1, 3, -3, 6, -6, 7, 12 /)
-    real(dp), allocatable :: w(:)
-    character ( len = 255 ) :: w_filename
-    real(dp), allocatable :: x(:,:)
-    character ( len = 255 ) :: x_filename
+    real(real64), allocatable :: w(:)
+    character ( len = 255 ) w_filename
+    real(real64), allocatable :: x(:,:)
+    character ( len = 255 ) x_filename
 
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'WEDG_UNIT_WRITE_TEST'
@@ -6188,6 +6112,6 @@ contains
       deallocate ( x )
 
     end do
-  end subroutine wedg_unit_write_test
+  end
 
 end module felippa_mod
