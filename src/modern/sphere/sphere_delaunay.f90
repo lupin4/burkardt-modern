@@ -1,489 +1,482 @@
 !> sphere_delaunay — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
+!> Standalone routines (no module wrapping) for clean C symbol names.
 
-module sphere_delaunay_mod
-  use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
+subroutine stripack_interface ( point_file_name )
+
+!*****************************************************************************80
+!
+!! STRIPACK_INTERFACE calls STRIPACK routines.
+!
+!  Discussion:
+!
+!    10 June 2002: Changed this routine so that it can handle any size
+!    problem, by making all arrays allocatable.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    10 June 2002
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, character ( len = * ) POINT_FILE_NAME, the name of the input file.
+!
   implicit none
-  private
 
-  public :: stripack_interface, tr_to_xyzl, xyz_read
+  double precision a
+  character ( len = 255 ) delaunay_plot_file_name
+  double precision , allocatable, dimension ( : ) :: ds
+  double precision elat
+  double precision elon
+  integer i
+  integer ierror
+  integer iunit
+  integer , allocatable, dimension ( : ) :: iwk
+  integer k
+  integer kt
+  integer , allocatable, dimension ( :, : ) :: lbtri
+  integer , allocatable, dimension ( : ) :: lend
+  integer , allocatable, dimension ( : ) :: list
+  integer , allocatable, dimension ( : ) :: listc
+  integer lnew
+  integer lp
+  integer lpl
+  integer , allocatable, dimension ( : ) :: lptr
+  integer , allocatable, dimension ( :, : ) :: ltri
+  integer n
+  integer na
+  integer nb
+  integer nn
+  double precision norm
+  integer nt
+  integer ntemp
+  logical numbr
+  integer nv
+  double precision , parameter :: pltsiz = 7.5D+00
+  character ( len = * ) point_file_name
+  double precision , allocatable, dimension ( : ) :: rc
+  integer side_max
+  character ( len = 255 ) trplot_title
+  double precision vlat
+  double precision vlon
+  double precision , allocatable, dimension ( : ) :: x
+  double precision , allocatable, dimension ( : ) :: xc
+  double precision , allocatable, dimension ( : ) :: y
+  double precision , allocatable, dimension ( : ) :: yc
+  double precision , allocatable, dimension ( : ) :: z
+  double precision , allocatable, dimension ( : ) :: zc
+!
+!  Count the number of lines of (X,Y,Z) data.
+!
+  call file_row_count ( point_file_name, n )
 
-contains
-
-  subroutine stripack_interface ( point_file_name )
-
-  !*****************************************************************************80
-  !
-  !! STRIPACK_INTERFACE calls STRIPACK routines.
-  !
-  !  Discussion:
-  !
-  !    10 June 2002: Changed this routine so that it can handle any size
-  !    problem, by making all arrays allocatable.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    10 June 2002
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, character ( len = * ) POINT_FILE_NAME, the name of the input file.
-  !
-
-    real(real64) a
-    character ( len = 255 ) delaunay_plot_file_name
-    real(real64), allocatable, dimension ( : ) :: ds
-    real(real64) elat
-    real(real64) elon
-    integer(int32) i
-    integer(int32) ierror
-    integer(int32) iunit
-    integer(int32), allocatable, dimension ( : ) :: iwk
-    integer(int32) k
-    integer(int32) kt
-    integer(int32), allocatable, dimension ( :, : ) :: lbtri
-    integer(int32), allocatable, dimension ( : ) :: lend
-    integer(int32), allocatable, dimension ( : ) :: list
-    integer(int32), allocatable, dimension ( : ) :: listc
-    integer(int32) lnew
-    integer(int32) lp
-    integer(int32) lpl
-    integer(int32), allocatable, dimension ( : ) :: lptr
-    integer(int32), allocatable, dimension ( :, : ) :: ltri
-    integer(int32) n
-    integer(int32) na
-    integer(int32) nb
-    integer(int32) nn
-    real(real64) norm
-    integer(int32) nt
-    integer(int32) ntemp
-    logical numbr
-    integer(int32) nv
-    real(real64), parameter :: pltsiz = 7.5e+00_real64
-    character ( len = * ) point_file_name
-    real(real64), allocatable, dimension ( : ) :: rc
-    integer(int32) side_max
-    character ( len = 255 ) trplot_title
-    real(real64) vlat
-    real(real64) vlon
-    real(real64), allocatable, dimension ( : ) :: x
-    real(real64), allocatable, dimension ( : ) :: xc
-    real(real64), allocatable, dimension ( : ) :: y
-    real(real64), allocatable, dimension ( : ) :: yc
-    real(real64), allocatable, dimension ( : ) :: z
-    real(real64), allocatable, dimension ( : ) :: zc
-  !
-  !  Count the number of lines of (X,Y,Z) data.
-  !
-    call file_row_count ( point_file_name, n )
-
-    if ( n <= 0 ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
-      write ( *, '(a)' ) '  The input file has no data.'
-    end if
-  !
-  !  Allocate everything.
-  !
-    allocate ( ds(1:n) )
-    allocate ( iwk(1:2*n) )
-    allocate ( lbtri(1:6,1:n) )
-    allocate ( lend(1:n) )
-    allocate ( list(1:6*(n-2)) )
-    allocate ( listc(1:6*(n-2)) )
-    allocate ( lptr(1:6*(n-2)) )
-    allocate ( ltri(1:9,1:2*(n-2)) )
-    allocate ( rc(1:2*(n-2)) )
-    allocate ( x(1:n) )
-    allocate ( xc(1:2*(n-2)) )
-    allocate ( y(1:n) )
-    allocate ( yc(1:2*(n-2)) )
-    allocate ( z(1:n) )
-    allocate ( zc(1:2*(n-2)) )
-  !
-  !  Read the (X,Y,Z) data from a file.
-  !
-    call xyz_read ( point_file_name, n, x, y, z, ierror )
-  !
-  !  Make sure the data is on the unit sphere.
-  !
-    do i = 1, n
-      norm = sqrt ( x(i)**2 + y(i)**2 + z(i)**2 )
-      x(i) = x(i) / norm
-      y(i) = y(i) / norm
-      z(i) = z(i) / norm
-    end do
-  !
-  !  Create the triangulation.
-  !
-    call trmesh ( n, x, y, z, list, lptr, lend, lnew, iwk, iwk(n+1), ds, ierror )
-
-    if ( ierror == -2 ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
-      write ( *, '(a)' ) '  Error in TRMESH.'
-      write ( *, '(a)' ) '  The first 3 nodes are collinear.'
-      stop
-    end if
-
-    if ( 0 < ierror ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
-      write ( *, '(a)' ) '  Error in TRMESH.'
-      write ( *, '(a)' ) '  Duplicate nodes encountered.'
-      stop
-    end if
-  !
-  !  Create a triangle list.
-  !
-    call trlist ( n, list, lptr, lend, 9, nt, ltri, ierror )
-
-    if ( ierror /= 0 ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
-      write ( *, '(a)' ) '  Error in TRLIST.'
-      stop
-    end if
-  !
-  !  Plot the portion of the triangulation contained 
-  !  in the hemisphere centered at E = (ELAT,ELON), where ELAT and ELON
-  !  are taken to be the center of the range of
-  !  the nodal latitudes and longitudes.
-  !
-    elat = 0.0e+00_real64
-    elon = 0.0e+00_real64
-    a = 90.0e+00_real64
-    numbr = ( n <= 200 )
-
-    trplot_title = '(' // trim ( point_file_name ) // ')'
-
-    delaunay_plot_file_name = point_file_name
-    call file_name_ext_swap ( delaunay_plot_file_name, 'eps' )
-
-    call get_unit ( iunit )
-
-    open ( unit = iunit, file = delaunay_plot_file_name )
-
-    call trplot ( iunit, pltsiz, elat, elon, a, n, x, y, z, list, &
-      lptr, lend, trplot_title, numbr, ierror )
-
-    close ( unit = iunit )
-
-    if ( ierror /= 0 ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'STRIPACK_INTERFACE - Warning!'
-      write ( *, '(a,i8)' ) '  TRPLOT returned error code ', ierror
-      stop
-    end if
-
+  if ( n <= 0 ) then
     write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'TRPLOT created the triangulation plot file: "' // &
-      trim ( delaunay_plot_file_name ) // '".'
-  !
-  !  Write the XYZL file that indexes the points that form Delaunay 
-  !  triangulation lines.
-  !
-    call tr_to_xyzl ( n, x, y, z, list, lptr, lend, point_file_name )
-  !
-  !  Free memory.
-  !
-    deallocate ( ds )
-    deallocate ( iwk )
-    deallocate ( lbtri )
-    deallocate ( lend )
-    deallocate ( list )
-    deallocate ( listc )
-    deallocate ( lptr )
-    deallocate ( ltri )
-    deallocate ( rc )
-    deallocate ( x )
-    deallocate ( xc )
-    deallocate ( y )
-    deallocate ( yc )
-    deallocate ( z )
-    deallocate ( zc )
-  end
+    write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
+    write ( *, '(a)' ) '  The input file has no data.'
+  end if
+!
+!  Allocate everything.
+!
+  allocate ( ds(1:n) )
+  allocate ( iwk(1:2*n) )
+  allocate ( lbtri(1:6,1:n) )
+  allocate ( lend(1:n) )
+  allocate ( list(1:6*(n-2)) )
+  allocate ( listc(1:6*(n-2)) )
+  allocate ( lptr(1:6*(n-2)) )
+  allocate ( ltri(1:9,1:2*(n-2)) )
+  allocate ( rc(1:2*(n-2)) )
+  allocate ( x(1:n) )
+  allocate ( xc(1:2*(n-2)) )
+  allocate ( y(1:n) )
+  allocate ( yc(1:2*(n-2)) )
+  allocate ( z(1:n) )
+  allocate ( zc(1:2*(n-2)) )
+!
+!  Read the (X,Y,Z) data from a file.
+!
+  call xyz_read ( point_file_name, n, x, y, z, ierror )
+!
+!  Make sure the data is on the unit sphere.
+!
+  do i = 1, n
+    norm = sqrt ( x(i)**2 + y(i)**2 + z(i)**2 )
+    x(i) = x(i) / norm
+    y(i) = y(i) / norm
+    z(i) = z(i) / norm
+  end do
+!
+!  Create the triangulation.
+!
+  call trmesh ( n, x, y, z, list, lptr, lend, lnew, iwk, iwk(n+1), ds, ierror )
 
-  subroutine tr_to_xyzl ( n, x, y, z, list, lptr, lend, point_file_name )
+  if ( ierror == -2 ) then
+    write ( *, '(a)' ) ' '
+    write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
+    write ( *, '(a)' ) '  Error in TRMESH.'
+    write ( *, '(a)' ) '  The first 3 nodes are collinear.'
+    stop
+  end if
 
-  !*****************************************************************************80
-  !
-  !! TR_TO_XYZL makes an XYZL file of Delaunay triangulation data.
-  !
-  !  Discussion:
-  !
-  !    The XYZL file, in combination with the original XYZ file, can be used
-  !    to draw the lines that form the Delaunay triangulation.
-  !
-  !    The XYZL file is simply a list of point indices from the XYZ file
-  !    which are to be connected.  The termination of a line is
-  !    indicated by an index value of -1.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    19 December 2008
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the number of nodes.
-  !
-  !    Input, real(real64) X(N), Y(N), Z(N), the coordinates of the nodes.
-  !
-  !    Input, integer(int32) LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
-  !    information defining the triangulation, created by TRMESH.
-  !
-  !    Input, character ( len = * ) POINT_FILE_NAME, the name of the
-  !    file containing the point coordinates.
-  !
+  if ( 0 < ierror ) then
+    write ( *, '(a)' ) ' '
+    write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
+    write ( *, '(a)' ) '  Error in TRMESH.'
+    write ( *, '(a)' ) '  Duplicate nodes encountered.'
+    stop
+  end if
+!
+!  Create a triangle list.
+!
+  call trlist ( n, list, lptr, lend, 9, nt, ltri, ierror )
 
-    integer(int32) n
+  if ( ierror /= 0 ) then
+    write ( *, '(a)' ) ' '
+    write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
+    write ( *, '(a)' ) '  Error in TRLIST.'
+    stop
+  end if
+!
+!  Plot the portion of the triangulation contained 
+!  in the hemisphere centered at E = (ELAT,ELON), where ELAT and ELON
+!  are taken to be the center of the range of
+!  the nodal latitudes and longitudes.
+!
+  elat = 0.0D+00
+  elon = 0.0D+00
+  a = 90.0D+00
+  numbr = ( n <= 200 )
 
-    character ( len = 80 ) delaunay_file_name
-    logical, parameter :: header = .false.
-    integer(int32) iunit
-    integer(int32) lend(n)
-    integer(int32) list(6*(n-2))
-    integer(int32) lp
-    integer(int32) lpl
-    integer(int32) lptr(6*(n-2))
-    integer(int32) node1
-    integer(int32) node2
-    character ( len = *  ) point_file_name
-    character ( len = 40 ) string
-    real(real64) x(n)
-    real(real64) y(n)
-    real(real64) z(n)
+  trplot_title = '(' // trim ( point_file_name ) // ')'
 
-    delaunay_file_name = point_file_name
+  delaunay_plot_file_name = point_file_name
+  call file_name_ext_swap ( delaunay_plot_file_name, 'eps' )
 
-    call file_name_ext_swap ( delaunay_file_name, 'xyzl' )
+  call get_unit ( iunit )
 
-    call get_unit ( iunit )
+  open ( unit = iunit, file = delaunay_plot_file_name )
 
-    open ( unit = iunit, file = delaunay_file_name )
-  !
-  !  Write header.
-  !
-    if ( header ) then
-      write ( iunit, '(a)' ) '# "' // trim ( delaunay_file_name ) // '".'
-      write ( iunit, '(a)' ) '# created by SPHERE_DELAUNAY.F90.'
-      write ( iunit, '(a)' ) '#'
-      write ( iunit, '(a)' ) &
-        '# This file contains the indices of points to be connected'
-      write ( iunit, '(a)' ) '# by lines, to form a Delaunay triangulation.'
-      write ( iunit, '(a)' ) &
-        '# The points are in the file "' // trim ( point_file_name ) // '".'
-      write ( iunit, '(a)' ) '#'
-      write ( iunit, '(a)' ) &
-        '# This file lists the indices of points to be connected'
-      write ( iunit, '(a)' ) '# by lines.  A line may include several points.'
-      write ( iunit, '(a)' ) '# Each line is terminated by an index of -1.'
-      write ( iunit, '(a)' ) '#'
+  call trplot ( iunit, pltsiz, elat, elon, a, n, x, y, z, list, &
+    lptr, lend, trplot_title, numbr, ierror )
+
+  close ( unit = iunit )
+
+  if ( ierror /= 0 ) then
+    write ( *, '(a)' ) ' '
+    write ( *, '(a)' ) 'STRIPACK_INTERFACE - Warning!'
+    write ( *, '(a,i8)' ) '  TRPLOT returned error code ', ierror
+    stop
+  end if
+
+  write ( *, '(a)' ) ' '
+  write ( *, '(a)' ) 'TRPLOT created the triangulation plot file: "' // &
+    trim ( delaunay_plot_file_name ) // '".'
+!
+!  Write the XYZL file that indexes the points that form Delaunay 
+!  triangulation lines.
+!
+  call tr_to_xyzl ( n, x, y, z, list, lptr, lend, point_file_name )
+!
+!  Free memory.
+!
+  deallocate ( ds )
+  deallocate ( iwk )
+  deallocate ( lbtri )
+  deallocate ( lend )
+  deallocate ( list )
+  deallocate ( listc )
+  deallocate ( lptr )
+  deallocate ( ltri )
+  deallocate ( rc )
+  deallocate ( x )
+  deallocate ( xc )
+  deallocate ( y )
+  deallocate ( yc )
+  deallocate ( z )
+  deallocate ( zc )
+end
+
+subroutine tr_to_xyzl ( n, x, y, z, list, lptr, lend, point_file_name )
+
+!*****************************************************************************80
+!
+!! TR_TO_XYZL makes an XYZL file of Delaunay triangulation data.
+!
+!  Discussion:
+!
+!    The XYZL file, in combination with the original XYZ file, can be used
+!    to draw the lines that form the Delaunay triangulation.
+!
+!    The XYZL file is simply a list of point indices from the XYZ file
+!    which are to be connected.  The termination of a line is
+!    indicated by an index value of -1.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    19 December 2008
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer N, the number of nodes.
+!
+!    Input, double precision X(N), Y(N), Z(N), the coordinates of the nodes.
+!
+!    Input, integer LIST(6*(N-2)), LPTR(6*(N-2)), LEND(N),
+!    information defining the triangulation, created by TRMESH.
+!
+!    Input, character ( len = * ) POINT_FILE_NAME, the name of the
+!    file containing the point coordinates.
+!
+  implicit none
+
+  integer n
+
+  character ( len = 80 ) delaunay_file_name
+  logical, parameter :: header = .false.
+  integer iunit
+  integer lend(n)
+  integer list(6*(n-2))
+  integer lp
+  integer lpl
+  integer lptr(6*(n-2))
+  integer node1
+  integer node2
+  character ( len = *  ) point_file_name
+  character ( len = 40 ) string
+  double precision x(n)
+  double precision y(n)
+  double precision z(n)
+
+  delaunay_file_name = point_file_name
+
+  call file_name_ext_swap ( delaunay_file_name, 'xyzl' )
+
+  call get_unit ( iunit )
+
+  open ( unit = iunit, file = delaunay_file_name )
+!
+!  Write header.
+!
+  if ( header ) then
+    write ( iunit, '(a)' ) '# "' // trim ( delaunay_file_name ) // '".'
+    write ( iunit, '(a)' ) '# created by SPHERE_DELAUNAY.F90.'
+    write ( iunit, '(a)' ) '#'
+    write ( iunit, '(a)' ) &
+      '# This file contains the indices of points to be connected'
+    write ( iunit, '(a)' ) '# by lines, to form a Delaunay triangulation.'
+    write ( iunit, '(a)' ) &
+      '# The points are in the file "' // trim ( point_file_name ) // '".'
+    write ( iunit, '(a)' ) '#'
+    write ( iunit, '(a)' ) &
+      '# This file lists the indices of points to be connected'
+    write ( iunit, '(a)' ) '# by lines.  A line may include several points.'
+    write ( iunit, '(a)' ) '# Each line is terminated by an index of -1.'
+    write ( iunit, '(a)' ) '#'
+  end if
+!
+!  List all the line segments that emanate from a point.
+!  This will involve listing some segments twice.
+!
+  do node1 = 1, n
+
+    lpl = lend(node1)
+    lp = lpl
+
+    do
+
+      lp = lptr(lp)
+      node2 = abs ( list(lp) )
+
+      write ( iunit, '(i8)' ) node1
+      write ( iunit, '(i8)' ) node2
+      write ( iunit, '(i8)' ) -1
+
+      if ( lp == lpl ) then
+        exit
+      end if
+
+    end do
+
+  end do
+
+  close ( unit = iunit )
+
+  write ( *, '(a)' ) ' '
+  write ( *, '(a)' ) 'TR_TO_XYZL:'
+  write ( *, '(a)' ) '  Wrote the Delaunay XYZL file "' // &
+    trim ( delaunay_file_name ) // '".'
+end
+
+subroutine xyz_read ( point_file_name, n, x, y, z, ierror )
+
+!*****************************************************************************80
+!
+!! XYZ_READ reads graphics information from an XYZ file.
+!
+!  Discussion:
+!
+!    Comment lines begin with '#";
+!    The XYZ coordinates of a point are written on a single line.
+!
+!  Example:
+!
+!     # cube.xyz
+!     #
+!     0 0 0
+!     0 0 1
+!     0 1 0
+!     0 1 1
+!     1 0 0
+!     1 0 1
+!     1 1 0
+!     1 1 1
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    05 June 2002
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, character ( len = * ) XYZ_FILE_NAME, the name of the input file.
+!
+!    Input, integer N, the number of points.
+!
+!    Output, double precision X(N), Y(N), Z(N), the point coordinates.
+!
+!    Output, integer IERROR, error flag.
+!    0, no error occurred.
+!    nonzero, an error occurred.
+!
+  implicit none
+
+  integer n
+
+  logical done
+  integer i
+  integer ierror
+  integer ios
+  integer iunit
+  integer lchar
+  character ( len = 256 ) line
+  integer n2
+  double precision temp(3)
+  integer text_num
+  character ( len = 100 ) word
+  double precision x(n)
+  character ( len = * ) point_file_name
+  double precision y(n)
+  double precision z(n)
+
+  n2 = 0
+  ierror = 0
+  word = ' '
+  text_num = 0
+
+  call get_unit ( iunit )
+
+  open ( unit = iunit, file = point_file_name, status = 'old', iostat = ios )
+
+  if ( ios /= 0 ) then
+    write ( *, '(a)' ) ' '
+    write ( *, '(a)' ) 'XYZ_READ - Fatal error!'
+    write ( *, '(a)' ) '  Could not open the input file.'
+    ierror = 1
+    stop
+  end if
+!
+!  Read a line of text from the file.
+!
+  do
+
+    read ( iunit, '(a)', iostat = ios ) line
+
+    if ( ios /= 0 ) then
+      exit
     end if
-  !
-  !  List all the line segments that emanate from a point.
-  !  This will involve listing some segments twice.
-  !
-    do node1 = 1, n
 
-      lpl = lend(node1)
-      lp = lpl
+    text_num = text_num + 1
+!
+!  If this line begins with '#' , then it's a comment.  Read a new line.
+!
+    if ( line(1:1) == '#' ) then
+      cycle
+    end if
+!
+!  If this line is blank, then record that information.
+!
+    if ( len_trim ( line ) == 0 ) then
+      cycle
+    end if
+!
+!  This line records a node's coordinates.
+!
+    n2 = n2 + 1
 
-      do
+    if ( n2 <= n ) then
 
-        lp = lptr(lp)
-        node2 = abs ( list(lp) )
+      done = .true.
 
-        write ( iunit, '(i8)' ) node1
-        write ( iunit, '(i8)' ) node2
-        write ( iunit, '(i8)' ) -1
+      do i = 1, 3
 
-        if ( lp == lpl ) then
+        call word_next_read ( line, word, done )
+
+        call s_to_r8 ( word, temp(i), ierror, lchar )
+
+        if ( ierror /= 0 ) then
+          write ( *, '(a)' ) ' '
+          write ( *, '(a)' ) 'XYZ_READ - Fatal error!'
+          write ( *, '(a,i8)' ) '  S_TO_R8 returned IERROR = ', ierror
+          write ( *, '(a,i8)' ) '  Reading (X,Y,Z) component ', i
           exit
         end if
 
       end do
 
-    end do
-
-    close ( unit = iunit )
-
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'TR_TO_XYZL:'
-    write ( *, '(a)' ) '  Wrote the Delaunay XYZL file "' // &
-      trim ( delaunay_file_name ) // '".'
-  end
-
-  subroutine xyz_read ( point_file_name, n, x, y, z, ierror )
-
-  !*****************************************************************************80
-  !
-  !! XYZ_READ reads graphics information from an XYZ file.
-  !
-  !  Discussion:
-  !
-  !    Comment lines begin with '#";
-  !    The XYZ coordinates of a point are written on a single line.
-  !
-  !  Example:
-  !
-  !     # cube.xyz
-  !     #
-  !     0 0 0
-  !     0 0 1
-  !     0 1 0
-  !     0 1 1
-  !     1 0 0
-  !     1 0 1
-  !     1 1 0
-  !     1 1 1
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    05 June 2002
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, character ( len = * ) XYZ_FILE_NAME, the name of the input file.
-  !
-  !    Input, integer(int32) N, the number of points.
-  !
-  !    Output, real(real64) X(N), Y(N), Z(N), the point coordinates.
-  !
-  !    Output, integer(int32) IERROR, error flag.
-  !    0, no error occurred.
-  !    nonzero, an error occurred.
-  !
-
-    integer(int32) n
-
-    logical done
-    integer(int32) i
-    integer(int32) ierror
-    integer(int32) ios
-    integer(int32) iunit
-    integer(int32) lchar
-    character ( len = 256 ) line
-    integer(int32) n2
-    real(real64) temp(3)
-    integer(int32) text_num
-    character ( len = 100 ) word
-    real(real64) x(n)
-    character ( len = * ) point_file_name
-    real(real64) y(n)
-    real(real64) z(n)
-
-    n2 = 0
-    ierror = 0
-    word = ' '
-    text_num = 0
-
-    call get_unit ( iunit )
-
-    open ( unit = iunit, file = point_file_name, status = 'old', iostat = ios )
-
-    if ( ios /= 0 ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'XYZ_READ - Fatal error!'
-      write ( *, '(a)' ) '  Could not open the input file.'
-      ierror = 1
-      stop
-    end if
-  !
-  !  Read a line of text from the file.
-  !
-    do
-
-      read ( iunit, '(a)', iostat = ios ) line
-
-      if ( ios /= 0 ) then
+      if ( ierror /= 0 ) then
         exit
       end if
 
-      text_num = text_num + 1
-  !
-  !  If this line begins with '#' , then it's a comment.  Read a new line.
-  !
-      if ( line(1:1) == '#' ) then
-        cycle
-      end if
-  !
-  !  If this line is blank, then record that information.
-  !
-      if ( len_trim ( line ) == 0 ) then
-        cycle
-      end if
-  !
-  !  This line records a node's coordinates.
-  !
-      n2 = n2 + 1
+      x(n2) = temp(1)
+      y(n2) = temp(2)
+      z(n2) = temp(3)
 
-      if ( n2 <= n ) then
+    end if
 
-        done = .true.
+  end do
 
-        do i = 1, 3
-
-          call word_next_read ( line, word, done )
-
-          call s_to_r8 ( word, temp(i), ierror, lchar )
-
-          if ( ierror /= 0 ) then
-            write ( *, '(a)' ) ' '
-            write ( *, '(a)' ) 'XYZ_READ - Fatal error!'
-            write ( *, '(a,i8)' ) '  S_TO_R8 returned IERROR = ', ierror
-            write ( *, '(a,i8)' ) '  Reading (X,Y,Z) component ', i
-            exit
-          end if
-
-        end do
-
-        if ( ierror /= 0 ) then
-          exit
-        end if
-
-        x(n2) = temp(1)
-        y(n2) = temp(2)
-        z(n2) = temp(3)
-
-      end if
-
-    end do
-
-    close ( unit = iunit )
-  !
-  !  Report.
-  !
-    write ( *, '(a)' ) ' '
-    write ( *, '(a,i8,a)' ) 'XYZ_READ:'
-    write ( *, '(a,i8,a)' ) '  Read ', text_num, ' text lines from ' &
-      // trim ( point_file_name )
-    write ( *, '(a,i8,a)' ) '  Read ', n2, ' sets of (X,Y,Z) coordinates.'
-  end
-
-end module sphere_delaunay_mod
+  close ( unit = iunit )
+!
+!  Report.
+!
+  write ( *, '(a)' ) ' '
+  write ( *, '(a,i8,a)' ) 'XYZ_READ:'
+  write ( *, '(a,i8,a)' ) '  Read ', text_num, ' text lines from ' &
+    // trim ( point_file_name )
+  write ( *, '(a,i8,a)' ) '  Read ', n2, ' sets of (X,Y,Z) coordinates.'
+end

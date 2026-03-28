@@ -1,345 +1,340 @@
 !> simplex_coordinates — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
+!> Standalone routines (no module wrapping) for clean C symbol names.
 
-module simplex_coordinates_mod
-  use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
+function r8_factorial ( n )
+
+!*****************************************************************************80
+!
+!! R8_FACTORIAL computes the factorial of N.
+!
+!  Discussion:
+!
+!    factorial ( N ) = product ( 1 <= I <= N ) I
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    16 January 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer N, the argument of the factorial function.
+!    If N is less than 1, the function value is returned as 1.
+!
+!    Output, double precision R8_FACTORIAL, the factorial of N.
+!
   implicit none
-  private
 
-  public :: r8_factorial, r8mat_det, simplex_coordinates1, simplex_coordinates2, simplex_volume
+  double precision r8_factorial
+  integer i
+  integer n
 
-contains
+  r8_factorial = 1.0D+00
 
-  function r8_factorial ( n )
+  do i = 1, n
+    r8_factorial = r8_factorial * real ( i)
+  end do
+end
 
-  !*****************************************************************************80
-  !
-  !! R8_FACTORIAL computes the factorial of N.
-  !
-  !  Discussion:
-  !
-  !    factorial ( N ) = product ( 1 <= I <= N ) I
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    16 January 1999
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the argument of the factorial function.
-  !    If N is less than 1, the function value is returned as 1.
-  !
-  !    Output, real(real64) R8_FACTORIAL, the factorial of N.
-  !
+subroutine r8mat_det ( n, a, det )
 
-    real(real64) r8_factorial
-    integer(int32) i
-    integer(int32) n
+!*****************************************************************************80
+!
+!! R8MAT_DET computes the determinant of an R8MAT.
+!
+!  Discussion:
+!
+!    An R8MAT is an array of R8 values.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    07 December 2004
+!
+!  Author:
+!
+!    Original FORTRAN77 version by Helmut Spaeth.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    Helmut Spaeth,
+!    Cluster Analysis Algorithms
+!    for Data Reduction and Classification of Objects,
+!    Ellis Horwood, 1980, page 125-127.
+!
+!  Parameters:
+!
+!    Input, integer N, the order of the matrix.
+!
+!    Input, double precision A(N,N), the matrix whose determinant is desired.
+!
+!    Output, double precision DET, the determinant of the matrix.
+!
+  implicit none
 
-    r8_factorial = 1.0e+00_real64
+  integer n
 
-    do i = 1, n
-      r8_factorial = r8_factorial * real ( i, real64)
-    end do
-  end
+  double precision a(n,n)
+  double precision b(n,n)
+  double precision det
+  integer j
+  integer k
+  integer m
+  integer piv(1)
+  double precision t
 
-  subroutine r8mat_det ( n, a, det )
+  b(1:n,1:n) = a(1:n,1:n)
 
-  !*****************************************************************************80
-  !
-  !! R8MAT_DET computes the determinant of an R8MAT.
-  !
-  !  Discussion:
-  !
-  !    An R8MAT is an array of R8 values.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    07 December 2004
-  !
-  !  Author:
-  !
-  !    Original FORTRAN77 version by Helmut Spaeth.
-  !    FORTRAN90 version by John Burkardt.
-  !
-  !  Reference:
-  !
-  !    Helmut Spaeth,
-  !    Cluster Analysis Algorithms
-  !    for Data Reduction and Classification of Objects,
-  !    Ellis Horwood, 1980, page 125-127.
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the order of the matrix.
-  !
-  !    Input, real(real64) A(N,N), the matrix whose determinant is desired.
-  !
-  !    Output, real(real64) DET, the determinant of the matrix.
-  !
+  det = 1.0D+00
 
-    integer(int32) n
+  do k = 1, n
 
-    real(real64) a(n,n)
-    real(real64) b(n,n)
-    real(real64) det
-    integer(int32) j
-    integer(int32) k
-    integer(int32) m
-    integer(int32) piv(1)
-    real(real64) t
+    piv = maxloc ( abs ( b(k:n,k) ) )
 
-    b(1:n,1:n) = a(1:n,1:n)
+    m = piv(1) + k - 1
 
-    det = 1.0e+00_real64
+    if ( m /= k ) then
+      det = - det
+      t      = b(m,k)
+      b(m,k) = b(k,k)
+      b(k,k) = t
+    end if
 
-    do k = 1, n
+    det = det * b(k,k)
 
-      piv = maxloc ( abs ( b(k:n,k) ) )
+    if ( b(k,k) /= 0.0D+00 ) then
 
-      m = piv(1) + k - 1
+      b(k+1:n,k) = -b(k+1:n,k) / b(k,k)
 
-      if ( m /= k ) then
-        det = - det
-        t      = b(m,k)
-        b(m,k) = b(k,k)
-        b(k,k) = t
-      end if
-
-      det = det * b(k,k)
-
-      if ( b(k,k) /= 0.0e+00_real64 ) then
-
-        b(k+1:n,k) = -b(k+1:n,k) / b(k,k)
-
-        do j = k + 1, n
-          if ( m /= k ) then
-            t      = b(m,j)
-            b(m,j) = b(k,j)
-            b(k,j) = t
-          end if
-          b(k+1:n,j) = b(k+1:n,j) + b(k+1:n,k) * b(k,j)
-        end do
-
-      end if
-
-    end do
-  end
-
-  subroutine simplex_coordinates1 ( n, x )
-
-  !*****************************************************************************80
-  !
-  !! SIMPLEX_COORDINATES1 computes the Cartesian coordinates of simplex vertices.
-  !
-  !  Discussion:
-  !
-  !    The simplex will have its centroid at 0;
-  !
-  !    The sum of the vertices will be zero.
-  !
-  !    The distance of each vertex from the origin will be 1.
-  !
-  !    The length of each edge will be constant.
-  !
-  !    The dot product of the vectors defining any two vertices will be - 1 / N.
-  !    This also means the angle subtended by the vectors from the origin
-  !    to any two distinct vertices will be arccos ( - 1 / N ).
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license.
-  !
-  !  Modified:
-  !
-  !    19 September 2010
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the spatial dimension.
-  !
-  !    Output, real(real64) X(N,N+1), the coordinates of the vertices
-  !    of a simplex in N dimensions.  
-  !
-
-    integer(int32) n
-
-    integer(int32) i
-    integer(int32) j
-    real(real64) x(n,n+1)
-
-    x(1:n,1:n+1) = 0.0e+00_real64
-
-    do i = 1, n
-  !
-  !  Set X(I,I) so that sum ( X(1:I,I)**2 ) = 1.
-  !
-      x(i,i) = sqrt ( 1.0e+00_real64 - sum ( x(1:i-1,i)**2 ) )
-  !
-  !  Set X(I,J) for J = I+1 to N+1 by using the fact that XI dot XJ = - 1 / N 
-  !
-      do j = i + 1, n + 1
-        x(i,j) = ( - 1.0e+00_real64 / real ( n, real64) &
-          - dot_product ( x(1:i-1,i), x(1:i-1,j) ) ) / x(i,i)
+      do j = k + 1, n
+        if ( m /= k ) then
+          t      = b(m,j)
+          b(m,j) = b(k,j)
+          b(k,j) = t
+        end if
+        b(k+1:n,j) = b(k+1:n,j) + b(k+1:n,k) * b(k,j)
       end do
 
-    end do
-  end
+    end if
 
-  subroutine simplex_coordinates2 ( n, x )
+  end do
+end
 
-  !*****************************************************************************80
-  !
-  !! SIMPLEX_COORDINATES2 computes the Cartesian coordinates of simplex vertices.
-  !
-  !  Discussion:
-  !
-  !    This routine uses a simple approach to determining the coordinates of
-  !    the vertices of a regular simplex in n dimensions.
-  !
-  !    We want the vertices of the simplex to satisfy the following conditions:
-  !
-  !    1) The centroid, or average of the vertices, is 0.
-  !    2) The distance of each vertex from the centroid is 1.
-  !       By 1), this is equivalent to requiring that the sum of the squares
-  !       of the coordinates of any vertex be 1.
-  !    3) The distance between any pair of vertices is equal (and is not zero.)
-  !    4) The dot product of any two coordinate vectors for distinct vertices
-  !       is -1/N; equivalently, the angle subtended by two distinct vertices
-  !       from the centroid is arccos ( -1/N).
-  !
-  !    Note that if we choose the first N vertices to be the columns of the
-  !    NxN identity matrix, we are almost there.  By symmetry, the last column
-  !    must have all entries equal to some value A.  Because the square of the
-  !    distance between the last column and any other column must be 2 (because
-  !    that's the distance between any pair of columns), we deduce that
-  !    (A-1)^2 + (N-1)*A^2 = 2, hence A = (1-sqrt(1+N))/N.  Now compute the 
-  !    centroid C of the vertices, and subtract that, to center the simplex 
-  !    around the origin.  Finally, compute the norm of one column, and rescale 
-  !    the matrix of coordinates so each vertex has unit distance from the origin.
-  !
-  !    This approach devised by John Burkardt, 19 September 2010.  What,
-  !    I'm not the first?
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license.
-  !
-  !  Modified:
-  !
-  !    19 September 2010
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the spatial dimension.
-  !
-  !    Output, real(real64) X(N,N+1), the coordinates of the vertices
-  !    of a simplex in N dimensions.  
-  !
+subroutine simplex_coordinates1 ( n, x )
 
-    integer(int32) n
+!*****************************************************************************80
+!
+!! SIMPLEX_COORDINATES1 computes the Cartesian coordinates of simplex vertices.
+!
+!  Discussion:
+!
+!    The simplex will have its centroid at 0;
+!
+!    The sum of the vertices will be zero.
+!
+!    The distance of each vertex from the origin will be 1.
+!
+!    The length of each edge will be constant.
+!
+!    The dot product of the vectors defining any two vertices will be - 1 / N.
+!    This also means the angle subtended by the vectors from the origin
+!    to any two distinct vertices will be arccos ( - 1 / N ).
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    19 September 2010
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer N, the spatial dimension.
+!
+!    Output, double precision X(N,N+1), the coordinates of the vertices
+!    of a simplex in N dimensions.  
+!
+  implicit none
 
-    real(real64) a
-    real(real64) c(n)
-    integer(int32) j
-    real(real64) s
-    real(real64) x(n,n+1)
+  integer n
 
-    x(1:n,1:n+1) = 0.0e+00_real64
+  integer i
+  integer j
+  double precision x(n,n+1)
 
-    do j = 1, n
-      x(j,j) = 1.0e+00_real64
+  x(1:n,1:n+1) = 0.0D+00
+
+  do i = 1, n
+!
+!  Set X(I,I) so that sum ( X(1:I,I)**2 ) = 1.
+!
+    x(i,i) = sqrt ( 1.0D+00 - sum ( x(1:i-1,i)**2 ) )
+!
+!  Set X(I,J) for J = I+1 to N+1 by using the fact that XI dot XJ = - 1 / N 
+!
+    do j = i + 1, n + 1
+      x(i,j) = ( - 1.0D+00 / real ( n) &
+        - dot_product ( x(1:i-1,i), x(1:i-1,j) ) ) / x(i,i)
     end do
 
-    a = ( 1.0e+00_real64 - sqrt ( 1.0e+00_real64 + real ( n, real64) ) ) &
-      / real ( n, real64)
+  end do
+end
 
-    x(1:n,n+1) = a
-  !
-  !  Now adjust coordinates so the centroid is at zero.
-  !
-    c(1:n) = sum ( x(1:n,1:n+1), dim = 2 ) / real ( n + 1, real64)
+subroutine simplex_coordinates2 ( n, x )
 
-    do j = 1, n + 1
-      x(1:n,j) = x(1:n,j) - c(1:n)
-    end do
-  !
-  !  Now scale so each column has norm 1.
-  !
-    s = sqrt ( sum ( x(1:n,1)**2 ) )
+!*****************************************************************************80
+!
+!! SIMPLEX_COORDINATES2 computes the Cartesian coordinates of simplex vertices.
+!
+!  Discussion:
+!
+!    This routine uses a simple approach to determining the coordinates of
+!    the vertices of a regular simplex in n dimensions.
+!
+!    We want the vertices of the simplex to satisfy the following conditions:
+!
+!    1) The centroid, or average of the vertices, is 0.
+!    2) The distance of each vertex from the centroid is 1.
+!       By 1), this is equivalent to requiring that the sum of the squares
+!       of the coordinates of any vertex be 1.
+!    3) The distance between any pair of vertices is equal (and is not zero.)
+!    4) The dot product of any two coordinate vectors for distinct vertices
+!       is -1/N; equivalently, the angle subtended by two distinct vertices
+!       from the centroid is arccos ( -1/N).
+!
+!    Note that if we choose the first N vertices to be the columns of the
+!    NxN identity matrix, we are almost there.  By symmetry, the last column
+!    must have all entries equal to some value A.  Because the square of the
+!    distance between the last column and any other column must be 2 (because
+!    that's the distance between any pair of columns), we deduce that
+!    (A-1)^2 + (N-1)*A^2 = 2, hence A = (1-sqrt(1+N))/N.  Now compute the 
+!    centroid C of the vertices, and subtract that, to center the simplex 
+!    around the origin.  Finally, compute the norm of one column, and rescale 
+!    the matrix of coordinates so each vertex has unit distance from the origin.
+!
+!    This approach devised by John Burkardt, 19 September 2010.  What,
+!    I'm not the first?
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    19 September 2010
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer N, the spatial dimension.
+!
+!    Output, double precision X(N,N+1), the coordinates of the vertices
+!    of a simplex in N dimensions.  
+!
+  implicit none
 
-    x(1:n,1:n+1) = x(1:n,1:n+1) / s
-  end
+  integer n
 
-  subroutine simplex_volume ( n, x, volume )
+  double precision a
+  double precision c(n)
+  integer j
+  double precision s
+  double precision x(n,n+1)
 
-  !*****************************************************************************80
-  !
-  !! SIMPLEX_VOLUME computes the volume of a simplex.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license.
-  !
-  !  Modified:
-  !
-  !    19 September 2010
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the spatial dimension.
-  !
-  !    Input, real(real64) X(N,N+1), the coordinates of the vertices
-  !    of a simplex in N dimensions.  
-  !
-  !    Output, real(real64) VOLUME, the volume of the simplex.
-  !
+  x(1:n,1:n+1) = 0.0D+00
 
-    integer(int32) n
+  do j = 1, n
+    x(j,j) = 1.0D+00
+  end do
 
-    real(real64) a(n,n)
-    real(real64) det
-    integer(int32) i
-    integer(int32) j
-    real(real64) volume
-    real(real64) x(n,n+1)
+  a = ( 1.0D+00 - sqrt ( 1.0D+00 + real ( n) ) ) &
+    / real ( n)
 
-    a(1:n,1:n) = x(1:n,1:n)
-    do j = 1, n
-      a(1:n,j) = a(1:n,j) - x(1:n,n+1)
-    end do
+  x(1:n,n+1) = a
+!
+!  Now adjust coordinates so the centroid is at zero.
+!
+  c(1:n) = sum ( x(1:n,1:n+1), dim = 2 ) / real ( n + 1)
 
-    call r8mat_det ( n, a, det )
+  do j = 1, n + 1
+    x(1:n,j) = x(1:n,j) - c(1:n)
+  end do
+!
+!  Now scale so each column has norm 1.
+!
+  s = sqrt ( sum ( x(1:n,1)**2 ) )
 
-    volume = abs ( det )
-    do i = 1, n
-      volume = volume / real ( i, real64)
-    end do
-  end
+  x(1:n,1:n+1) = x(1:n,1:n+1) / s
+end
 
-end module simplex_coordinates_mod
+subroutine simplex_volume ( n, x, volume )
+
+!*****************************************************************************80
+!
+!! SIMPLEX_VOLUME computes the volume of a simplex.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    19 September 2010
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer N, the spatial dimension.
+!
+!    Input, double precision X(N,N+1), the coordinates of the vertices
+!    of a simplex in N dimensions.  
+!
+!    Output, double precision VOLUME, the volume of the simplex.
+!
+  implicit none
+
+  integer n
+
+  double precision a(n,n)
+  double precision det
+  integer i
+  integer j
+  double precision volume
+  double precision x(n,n+1)
+
+  a(1:n,1:n) = x(1:n,1:n)
+  do j = 1, n
+    a(1:n,j) = a(1:n,j) - x(1:n,n+1)
+  end do
+
+  call r8mat_det ( n, a, det )
+
+  volume = abs ( det )
+  do i = 1, n
+    volume = volume / real ( i)
+  end do
+end

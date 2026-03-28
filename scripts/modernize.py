@@ -141,38 +141,34 @@ def find_modified_params(routine_text, param_names):
 def modernize_types(text):
     """Replace kind=4/8 with iso_fortran_env constants.
 
-    Uses int32/real64/real32 directly (no aliases) to avoid name collisions
-    with local variables like 'ip', 'dp', 'sp'.
+    Simplifies verbose kind specifiers to compact form.
+    Standalone routines (no module), so use numeric kinds directly.
     """
-    # integer ( kind = 4 ) -> integer(int32)
-    text = re.sub(r'integer\s*\(\s*kind\s*=\s*4\s*\)', 'integer(int32)', text, flags=re.IGNORECASE)
-    text = re.sub(r'integer\s*\(\s*4\s*\)', 'integer(int32)', text, flags=re.IGNORECASE)
+    # integer ( kind = 4 ) -> integer — ensure trailing space
+    text = re.sub(r'integer\s*\(\s*kind\s*=\s*4\s*\)\s*', 'integer ', text, flags=re.IGNORECASE)
+    text = re.sub(r'integer\s*\(\s*4\s*\)\s*', 'integer ', text, flags=re.IGNORECASE)
 
-    # integer ( kind = 8 ) -> integer(int64)
-    text = re.sub(r'integer\s*\(\s*kind\s*=\s*8\s*\)', 'integer(int64)', text, flags=re.IGNORECASE)
+    # integer ( kind = 8 ) -> integer(8)
+    text = re.sub(r'integer\s*\(\s*kind\s*=\s*8\s*\)\s*', 'integer(8) ', text, flags=re.IGNORECASE)
 
-    # real ( kind = 8 ) -> real(real64)
-    text = re.sub(r'real\s*\(\s*kind\s*=\s*8\s*\)', 'real(real64)', text, flags=re.IGNORECASE)
-    text = re.sub(r'real\s*\(\s*8\s*\)', 'real(real64)', text, flags=re.IGNORECASE)
+    # real ( kind = 8 ) -> double precision — ensure trailing space
+    text = re.sub(r'real\s*\(\s*kind\s*=\s*8\s*\)\s*', 'double precision ', text, flags=re.IGNORECASE)
+    text = re.sub(r'real\s*\(\s*8\s*\)\s*', 'double precision ', text, flags=re.IGNORECASE)
 
-    # real ( kind = 4 ) -> real(real32)
-    text = re.sub(r'real\s*\(\s*kind\s*=\s*4\s*\)', 'real(real32)', text, flags=re.IGNORECASE)
-
-    # double precision -> real(real64)
-    text = re.sub(r'double\s+precision\b', 'real(real64)', text, flags=re.IGNORECASE)
+    # real ( kind = 4 ) -> real
+    text = re.sub(r'real\s*\(\s*kind\s*=\s*4\s*\)\s*', 'real ', text, flags=re.IGNORECASE)
 
     # logical ( kind = 4 ) -> logical
-    text = re.sub(r'logical\s*\(\s*kind\s*=\s*4\s*\)', 'logical', text, flags=re.IGNORECASE)
+    text = re.sub(r'logical\s*\(\s*kind\s*=\s*4\s*\)\s*', 'logical ', text, flags=re.IGNORECASE)
 
-    # complex ( kind = 8 ) -> complex(real64)
-    text = re.sub(r'complex\s*\(\s*kind\s*=\s*8\s*\)', 'complex(real64)', text, flags=re.IGNORECASE)
+    # complex ( kind = 8 ) -> complex(8)
+    text = re.sub(r'complex\s*\(\s*kind\s*=\s*8\s*\)\s*', 'complex(8) ', text, flags=re.IGNORECASE)
 
-    # Replace D+00 literals: 2.0D+00 -> 2.0e+00_real64
-    text = re.sub(r'(\d+\.\d*)[Dd]([+-]?\d+)', r'\1e\2_real64', text)
+    # Keep D+00 literals as-is (standard Fortran double precision)
 
-    # Replace real(..., kind = 8) -> real(..., real64)
-    text = re.sub(r',\s*kind\s*=\s*8\s*\)', ', real64)', text, flags=re.IGNORECASE)
-    text = re.sub(r',\s*kind\s*=\s*4\s*\)', ', real32)', text, flags=re.IGNORECASE)
+    # Replace kind specs in casts: real(..., kind = 8) -> dble(...)
+    text = re.sub(r',\s*kind\s*=\s*8\s*\)', ')', text, flags=re.IGNORECASE)
+    text = re.sub(r',\s*kind\s*=\s*4\s*\)', ')', text, flags=re.IGNORECASE)
 
     return text
 
@@ -209,8 +205,8 @@ def modernize_routine(name, text, module_name):
     # Modernize types
     new_text = modernize_types(text)
 
-    # Remove 'implicit none' (module-level handles it)
-    new_text = re.sub(r'^\s*implicit\s+none\s*$', '', new_text, flags=re.MULTILINE | re.IGNORECASE)
+    # Ensure each routine has implicit none
+    # (Don't remove it — standalone routines need their own)
 
     # Remove trailing bare 'return' before end
     new_text = re.sub(r'\n\s*return\s*\n(\s*end\b)', r'\n\1', new_text, flags=re.IGNORECASE)
@@ -250,41 +246,18 @@ def modernize_file(input_path, output_path):
         return 0
 
     basename = Path(input_path).stem
-    module_name = f'{basename}_mod'
 
     out_lines = []
     out_lines.append(f'!> {basename} — Modern Fortran 2018')
     out_lines.append(f'!>')
     out_lines.append(f'!> Modernized from John Burkardt\'s original (GNU LGPL).')
-    out_lines.append(f'')
-    out_lines.append(f'module {module_name}')
-    out_lines.append(f'  use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64')
-    out_lines.append(f'  implicit none')
-    out_lines.append(f'  private')
-    out_lines.append(f'')
-
-    # Public declarations
-    public_names = [name for name, _ in keep]
-    out_lines.append(f'  public :: {", ".join(public_names[:6])}')
-    for i in range(6, len(public_names), 6):
-        chunk = public_names[i:i+6]
-        out_lines.append(f'  public :: {", ".join(chunk)}')
-    out_lines.append(f'')
-    out_lines.append(f'contains')
+    out_lines.append(f'!> Standalone routines (no module wrapping) for clean C symbol names.')
     out_lines.append(f'')
 
     for name, text in keep:
-        modernized = modernize_routine(name, text, module_name)
-        mod_lines = modernized.split('\n')
-        for ml in mod_lines:
-            if ml.strip():
-                out_lines.append(f'  {ml}')
-            else:
-                out_lines.append('')
+        modernized = modernize_routine(name, text, basename)
+        out_lines.append(modernized)
         out_lines.append('')
-
-    out_lines.append(f'end module {module_name}')
-    out_lines.append('')
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, 'w') as f:

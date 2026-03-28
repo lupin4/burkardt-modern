@@ -1,437 +1,432 @@
 !> sphere_llt_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
+!> Standalone routines (no module wrapping) for clean C symbol names.
 
-module sphere_llt_grid_mod
-  use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
+subroutine sphere_llt_grid_display ( ng, xg, line_num, line_data, prefix )
+
+!*****************************************************************************80
+!
+!! SPHERE_LLT_GRID_DISPLAY displays an LLT grid on a sphere.
+!
+!  Discussion:
+!
+!    A SPHERE LLT grid imposes a grid of triangles on a sphere,
+!    using latitude and longitude lines.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    19 May 2015
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer NG, the number of points.
+!
+!    Input, double precision XG(3,NG), the points.
+!
+!    Input, integer(8) LINE_NUM, the number of grid lines.
+!
+!    Input, integer(8) LINE_DATA(2,LINE_NUM), contains pairs of 
+!    point indices for line segments that make up the grid.
+!
+!    Input, character ( len = * ) PREFIX, a prefix for the filenames.
+!
   implicit none
-  private
 
-  public :: sphere_llt_grid_display, sphere_llt_grid_line_count, sphere_llt_grid_lines, sphere_llt_grid_point_count, sphere_llt_grid_points
+  integer line_num
+  integer ng
 
-contains
+  character ( len = 255 ) command_filename
+  integer command_unit
+  integer j
+  integer j1
+  integer j2
+  integer l
+  integer line_data(2,line_num)
+  character ( len = 255 ) line_filename
+  integer line_unit
+  character ( len = 255 ) node_filename
+  integer node_unit
+  character ( len = 255 ) plot_filename
+  character ( len = * ) prefix
+  double precision xg(3,ng)
+!
+!  Create graphics data files.
+!
+  call get_unit ( node_unit )
+  node_filename = trim ( prefix ) // '_nodes.txt'
+  open ( unit = node_unit, file = node_filename, status = 'replace' )
+  do j = 1, ng
+    write ( node_unit, '(2x,g14.6,2x,g14.6,2x,g14.6)' ) xg(1:3,j)
+  end do
+  close ( unit = node_unit )
+  write ( *, '(a)' ) ' '
+  write ( *, '(a)' ) '  Created node file "' // trim ( node_filename ) // '".'
 
-  subroutine sphere_llt_grid_display ( ng, xg, line_num, line_data, prefix )
+  call get_unit ( line_unit )
+  line_filename = trim ( prefix ) // '_lines.txt'
+  open ( unit = line_unit, file = line_filename, status = 'replace' )
+  do l = 1, line_num
+    if ( 1 < l ) then
+      write ( line_unit, '(a)' ) ''
+      write ( line_unit, '(a)' ) ''
+    end if
+    j1 = line_data(1,l)
+    j2 = line_data(2,l)
+    write ( line_unit, '(2x,g14.6,2x,g14.6,2x,g14.6)' ) xg(1:3,j1)
+    write ( line_unit, '(2x,g14.6,2x,g14.6,2x,g14.6)' ) xg(1:3,j2)
+  end do
+  close ( unit = line_unit )
+  write ( *, '(a)' ) '  Created line file "' // trim ( line_filename ) // '".'
+!
+!  Create graphics command file.
+!
+  call get_unit ( command_unit )
+  command_filename = trim ( prefix ) // '_commands.txt'
+  open ( unit = command_unit, file = command_filename, status = 'replace' )
+  write ( command_unit, '(a)' ) '# ' // trim ( command_filename )
+  write ( command_unit, '(a)' ) '#'
+  write ( command_unit, '(a)' ) '# Usage:'
+  write ( command_unit, '(a)' ) '#  gnuplot < ' // trim ( command_filename )
+  write ( command_unit, '(a)' ) '#'
+  write ( command_unit, '(a)' ) 'set term png'
+  plot_filename = trim ( prefix ) // '.png'
+  write ( command_unit, '(a)' ) 'set output "' // trim ( plot_filename ) // '"'
+  write ( command_unit, '(a)' ) 'set xlabel "<--- X --->"'
+  write ( command_unit, '(a)' ) 'set ylabel "<--- Y --->"'
+  write ( command_unit, '(a)' ) 'set zlabel "<--- Z --->"'
+  write ( command_unit, '(a)' ) 'set title "' // trim ( prefix ) // '"'
+  write ( command_unit, '(a)' ) 'set grid'
+  write ( command_unit, '(a)' ) 'set key off'
+  write ( command_unit, '(a)' ) 'set style data points'
+  write ( command_unit, '(a)' ) 'set timestamp'
+  write ( command_unit, '(a)' ) 'set view equal xyz'
+  write ( command_unit, '(a)' ) 'splot "' // &
+    trim ( line_filename ) // &
+    '" with lines lw 3, \'
+  write ( command_unit, '(a)' ) '     "' // &
+    trim ( node_filename ) // '" with points pt 7 lt 0'
+  write ( command_unit, '(a)' ) 'quit'
+  close ( unit = command_unit )
 
-  !*****************************************************************************80
-  !
-  !! SPHERE_LLT_GRID_DISPLAY displays an LLT grid on a sphere.
-  !
-  !  Discussion:
-  !
-  !    A SPHERE LLT grid imposes a grid of triangles on a sphere,
-  !    using latitude and longitude lines.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license.
-  !
-  !  Modified:
-  !
-  !    19 May 2015
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) NG, the number of points.
-  !
-  !    Input, real(real64) XG(3,NG), the points.
-  !
-  !    Input, integer(int64) LINE_NUM, the number of grid lines.
-  !
-  !    Input, integer(int64) LINE_DATA(2,LINE_NUM), contains pairs of 
-  !    point indices for line segments that make up the grid.
-  !
-  !    Input, character ( len = * ) PREFIX, a prefix for the filenames.
-  !
+  write ( *, '(a)' ) &
+    '  Created command file "' // trim ( command_filename ) // '".'
+end
 
-    integer(int32) line_num
-    integer(int32) ng
+subroutine sphere_llt_grid_line_count ( lat_num, long_num, line_num )
 
-    character ( len = 255 ) command_filename
-    integer(int32) command_unit
-    integer(int32) j
-    integer(int32) j1
-    integer(int32) j2
-    integer(int32) l
-    integer(int32) line_data(2,line_num)
-    character ( len = 255 ) line_filename
-    integer(int32) line_unit
-    character ( len = 255 ) node_filename
-    integer(int32) node_unit
-    character ( len = 255 ) plot_filename
-    character ( len = * ) prefix
-    real(real64) xg(3,ng)
-  !
-  !  Create graphics data files.
-  !
-    call get_unit ( node_unit )
-    node_filename = trim ( prefix ) // '_nodes.txt'
-    open ( unit = node_unit, file = node_filename, status = 'replace' )
-    do j = 1, ng
-      write ( node_unit, '(2x,g14.6,2x,g14.6,2x,g14.6)' ) xg(1:3,j)
+!*****************************************************************************80
+!
+!! SPHERE_LLT_GRID_LINE_COUNT counts latitude/longitude triangle grid lines.
+!
+!  Discussion:
+!
+!    An LLT grid is a grid of triangles bounded by latitude and longitude 
+!    lines over the surface of a sphere in 3D.
+!
+!    The number returned is the number of pairs of points to be connected.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    19 May 2015
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer LAT_NUM, LONG_NUM, the number of latitude and
+!    longitude lines to draw.  The latitudes do not include the North and South
+!    poles, which will be included automatically, so LAT_NUM = 5, for instance,
+!    will result in points along 7 lines of latitude.
+!
+!    Output, integer LINE_NUM, the number of grid lines.
+!
+  implicit none
+
+  integer lat_num
+  integer line_num
+  integer long_num
+
+  line_num = long_num * ( lat_num + 1 ) &
+           + long_num *   lat_num &
+           + long_num * ( lat_num - 1 )
+end
+
+subroutine sphere_llt_grid_lines ( lat_num, long_num, line_num, line )
+
+!*****************************************************************************80
+!
+!! SPHERE_LLT_GRID_LINES: latitude/longitude triangle grid lines.
+!
+!  Discussion:
+!
+!    A SPHERE LLT grid imposes a grid of triangles on a sphere,
+!    using latitude and longitude lines.
+!
+!    The point numbering system is the same used in SPHERE_LLT_POINTS,
+!    and that routine may be used to compute the coordinates of the points.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    19 May 2015
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer LAT_NUM, LONG_NUM, the number of latitude and
+!    longitude lines to draw.  The latitudes do not include the North and South
+!    poles, which will be included automatically, so LAT_NUM = 5, for instance,
+!    will result in points along 7 lines of latitude.
+!
+!    Input, integer LINE_NUM, the number of grid lines.
+!
+!    Output, integer LINE(2,LINE_NUM), contains pairs of point 
+!    indices for line segments that make up the grid.
+!
+  implicit none
+
+  integer line_num
+
+  integer i
+  integer j
+  integer lat_num
+  integer l
+  integer line(2,line_num)
+  integer long_num
+  integer new
+  integer newcol
+  integer old
+
+  l = 0
+!
+!  "Vertical" lines.
+!
+  do j = 0, long_num - 1
+
+    old = 1
+    new = j + 2
+
+    l = l + 1
+    line(1:2,l) = (/ old, new /)
+
+    do i = 1, lat_num - 1
+
+      old = new
+      new = old + long_num
+
+      l = l + 1
+      line(1:2,l) = (/ old, new /)
+
     end do
-    close ( unit = node_unit )
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) '  Created node file "' // trim ( node_filename ) // '".'
 
-    call get_unit ( line_unit )
-    line_filename = trim ( prefix ) // '_lines.txt'
-    open ( unit = line_unit, file = line_filename, status = 'replace' )
-    do l = 1, line_num
-      if ( 1 < l ) then
-        write ( line_unit, '(a)' ) ''
-        write ( line_unit, '(a)' ) ''
+    old = new
+
+    l = l + 1
+    line(1:2,l) = (/ old, 1 + lat_num * long_num + 1 /)
+
+  end do
+!
+!  "Horizontal" lines.
+!
+  do i = 1, lat_num
+
+    new = 1 + ( i - 1 ) * long_num + 1
+
+    do j = 0, long_num - 2
+      old = new
+      new = old + 1
+      l = l + 1
+      line(1:2,l) = (/ old, new /)
+    end do
+
+    old = new
+    new = 1 + ( i - 1 ) * long_num + 1
+    l = l + 1
+    line(1:2,l) = (/ old, new /)
+
+  end do
+!
+!  "Diagonal" lines.
+!
+  do j = 0, long_num - 1
+
+    old = 1
+    new = j + 2
+    newcol = j
+
+    do i = 1, lat_num - 1
+
+      old = new
+      new = old + long_num + 1
+      newcol = newcol + 1
+      if ( long_num - 1 < newcol ) then
+        newcol = 0
+        new = new - long_num
       end if
-      j1 = line_data(1,l)
-      j2 = line_data(2,l)
-      write ( line_unit, '(2x,g14.6,2x,g14.6,2x,g14.6)' ) xg(1:3,j1)
-      write ( line_unit, '(2x,g14.6,2x,g14.6,2x,g14.6)' ) xg(1:3,j2)
-    end do
-    close ( unit = line_unit )
-    write ( *, '(a)' ) '  Created line file "' // trim ( line_filename ) // '".'
-  !
-  !  Create graphics command file.
-  !
-    call get_unit ( command_unit )
-    command_filename = trim ( prefix ) // '_commands.txt'
-    open ( unit = command_unit, file = command_filename, status = 'replace' )
-    write ( command_unit, '(a)' ) '# ' // trim ( command_filename )
-    write ( command_unit, '(a)' ) '#'
-    write ( command_unit, '(a)' ) '# Usage:'
-    write ( command_unit, '(a)' ) '#  gnuplot < ' // trim ( command_filename )
-    write ( command_unit, '(a)' ) '#'
-    write ( command_unit, '(a)' ) 'set term png'
-    plot_filename = trim ( prefix ) // '.png'
-    write ( command_unit, '(a)' ) 'set output "' // trim ( plot_filename ) // '"'
-    write ( command_unit, '(a)' ) 'set xlabel "<--- X --->"'
-    write ( command_unit, '(a)' ) 'set ylabel "<--- Y --->"'
-    write ( command_unit, '(a)' ) 'set zlabel "<--- Z --->"'
-    write ( command_unit, '(a)' ) 'set title "' // trim ( prefix ) // '"'
-    write ( command_unit, '(a)' ) 'set grid'
-    write ( command_unit, '(a)' ) 'set key off'
-    write ( command_unit, '(a)' ) 'set style data points'
-    write ( command_unit, '(a)' ) 'set timestamp'
-    write ( command_unit, '(a)' ) 'set view equal xyz'
-    write ( command_unit, '(a)' ) 'splot "' // &
-      trim ( line_filename ) // &
-      '" with lines lw 3, \'
-    write ( command_unit, '(a)' ) '     "' // &
-      trim ( node_filename ) // '" with points pt 7 lt 0'
-    write ( command_unit, '(a)' ) 'quit'
-    close ( unit = command_unit )
-
-    write ( *, '(a)' ) &
-      '  Created command file "' // trim ( command_filename ) // '".'
-  end
-
-  subroutine sphere_llt_grid_line_count ( lat_num, long_num, line_num )
-
-  !*****************************************************************************80
-  !
-  !! SPHERE_LLT_GRID_LINE_COUNT counts latitude/longitude triangle grid lines.
-  !
-  !  Discussion:
-  !
-  !    An LLT grid is a grid of triangles bounded by latitude and longitude 
-  !    lines over the surface of a sphere in 3D.
-  !
-  !    The number returned is the number of pairs of points to be connected.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    19 May 2015
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude and
-  !    longitude lines to draw.  The latitudes do not include the North and South
-  !    poles, which will be included automatically, so LAT_NUM = 5, for instance,
-  !    will result in points along 7 lines of latitude.
-  !
-  !    Output, integer(int32) LINE_NUM, the number of grid lines.
-  !
-
-    integer(int32) lat_num
-    integer(int32) line_num
-    integer(int32) long_num
-
-    line_num = long_num * ( lat_num + 1 ) &
-             + long_num *   lat_num &
-             + long_num * ( lat_num - 1 )
-  end
-
-  subroutine sphere_llt_grid_lines ( lat_num, long_num, line_num, line )
-
-  !*****************************************************************************80
-  !
-  !! SPHERE_LLT_GRID_LINES: latitude/longitude triangle grid lines.
-  !
-  !  Discussion:
-  !
-  !    A SPHERE LLT grid imposes a grid of triangles on a sphere,
-  !    using latitude and longitude lines.
-  !
-  !    The point numbering system is the same used in SPHERE_LLT_POINTS,
-  !    and that routine may be used to compute the coordinates of the points.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    19 May 2015
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude and
-  !    longitude lines to draw.  The latitudes do not include the North and South
-  !    poles, which will be included automatically, so LAT_NUM = 5, for instance,
-  !    will result in points along 7 lines of latitude.
-  !
-  !    Input, integer(int32) LINE_NUM, the number of grid lines.
-  !
-  !    Output, integer(int32) LINE(2,LINE_NUM), contains pairs of point 
-  !    indices for line segments that make up the grid.
-  !
-
-    integer(int32) line_num
-
-    integer(int32) i
-    integer(int32) j
-    integer(int32) lat_num
-    integer(int32) l
-    integer(int32) line(2,line_num)
-    integer(int32) long_num
-    integer(int32) new
-    integer(int32) newcol
-    integer(int32) old
-
-    l = 0
-  !
-  !  "Vertical" lines.
-  !
-    do j = 0, long_num - 1
-
-      old = 1
-      new = j + 2
 
       l = l + 1
       line(1:2,l) = (/ old, new /)
 
-      do i = 1, lat_num - 1
+    end do
 
-        old = new
-        new = old + long_num
+  end do
+end
 
-        l = l + 1
-        line(1:2,l) = (/ old, new /)
+subroutine sphere_llt_grid_point_count ( lat_num, long_num, point_num )
 
-      end do
+!*****************************************************************************80
+!
+!! SPHERE_LLT_GRID_POINT_COUNT counts points for a latitude/longitude grid.
+!
+!  Discussion:
+!
+!    An LLT grid is a grid of triangles defined by latitude and longitude
+!    lines over the surface of a sphere in 3D.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    19 May 2015
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer LAT_NUM, LONG_NUM, the number of latitude 
+!    and longitude lines to draw.  The latitudes do not include the North and 
+!    South poles, which will be included automatically, so LAT_NUM = 5, for 
+!    instance, will result in points along 7 lines of latitude.
+!
+!    Output, integer POINT_NUM, the number of grid points.
+!
+  implicit none
 
-      old = new
+  integer lat_num
+  integer long_num
+  integer point_num
 
-      l = l + 1
-      line(1:2,l) = (/ old, 1 + lat_num * long_num + 1 /)
+  point_num = 2 + lat_num * long_num
+end
+
+subroutine sphere_llt_grid_points ( r, pc, lat_num, long_num, point_num, p )
+
+!*****************************************************************************80
+!
+!! SPHERE_LLT_GRID_POINTS: points for a latitude/longitude triangle grid.
+!
+!  Discussion:
+!
+!    A SPHERE LLT grid imposes a grid of triangles on a sphere,
+!    using latitude and longitude lines.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    19 May 2015
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, double precision R, the radius of the sphere.
+!
+!    Input, double precision PC(3), the center of the sphere.
+!
+!    Input, integer LAT_NUM, LONG_NUM, the number of latitude 
+!    and longitude lines to draw.  The latitudes do not include the North and 
+!    South poles, which will be included automatically, so LAT_NUM = 5, for 
+!    instance, will result in points along 7 lines of latitude.
+!
+!    Input, integer POINT_NUM, the number of points.
+!
+!    Output, double precision P(3,POINT_NUM), the grid points.
+!
+  implicit none
+
+  integer lat_num
+  integer long_num
+  integer point_num
+
+  integer lat
+  integer lon
+  integer n
+  double precision p(3,point_num)
+  double precision pc(3)
+  double precision phi
+  double precision r
+  double precision , parameter :: r8_pi = 3.141592653589793D+00
+  double precision theta
+
+  n = 0
+!
+!  The north pole.
+!
+  theta = 0.0D+00
+  phi = 0.0D+00
+  n = n + 1
+  p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
+  p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
+  p(3,n) = pc(3) + r * cos ( phi )
+!
+!  Do each intermediate ring of latitude.
+!
+  do lat = 1, lat_num
+
+    phi = real ( lat) * r8_pi &
+        / real ( lat_num + 1)
+!
+!  Along that ring of latitude, compute points at various longitudes.
+!
+    do lon = 0, long_num - 1
+
+      theta = real ( lon) * 2.0D+00 * r8_pi &
+            / real ( long_num)
+
+      n = n + 1
+      p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
+      p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
+      p(3,n) = pc(3) + r * cos ( phi )
 
     end do
-  !
-  !  "Horizontal" lines.
-  !
-    do i = 1, lat_num
-
-      new = 1 + ( i - 1 ) * long_num + 1
-
-      do j = 0, long_num - 2
-        old = new
-        new = old + 1
-        l = l + 1
-        line(1:2,l) = (/ old, new /)
-      end do
-
-      old = new
-      new = 1 + ( i - 1 ) * long_num + 1
-      l = l + 1
-      line(1:2,l) = (/ old, new /)
-
-    end do
-  !
-  !  "Diagonal" lines.
-  !
-    do j = 0, long_num - 1
-
-      old = 1
-      new = j + 2
-      newcol = j
-
-      do i = 1, lat_num - 1
-
-        old = new
-        new = old + long_num + 1
-        newcol = newcol + 1
-        if ( long_num - 1 < newcol ) then
-          newcol = 0
-          new = new - long_num
-        end if
-
-        l = l + 1
-        line(1:2,l) = (/ old, new /)
-
-      end do
-
-    end do
-  end
-
-  subroutine sphere_llt_grid_point_count ( lat_num, long_num, point_num )
-
-  !*****************************************************************************80
-  !
-  !! SPHERE_LLT_GRID_POINT_COUNT counts points for a latitude/longitude grid.
-  !
-  !  Discussion:
-  !
-  !    An LLT grid is a grid of triangles defined by latitude and longitude
-  !    lines over the surface of a sphere in 3D.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    19 May 2015
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude 
-  !    and longitude lines to draw.  The latitudes do not include the North and 
-  !    South poles, which will be included automatically, so LAT_NUM = 5, for 
-  !    instance, will result in points along 7 lines of latitude.
-  !
-  !    Output, integer(int32) POINT_NUM, the number of grid points.
-  !
-
-    integer(int32) lat_num
-    integer(int32) long_num
-    integer(int32) point_num
-
-    point_num = 2 + lat_num * long_num
-  end
-
-  subroutine sphere_llt_grid_points ( r, pc, lat_num, long_num, point_num, p )
-
-  !*****************************************************************************80
-  !
-  !! SPHERE_LLT_GRID_POINTS: points for a latitude/longitude triangle grid.
-  !
-  !  Discussion:
-  !
-  !    A SPHERE LLT grid imposes a grid of triangles on a sphere,
-  !    using latitude and longitude lines.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license. 
-  !
-  !  Modified:
-  !
-  !    19 May 2015
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, real(real64) R, the radius of the sphere.
-  !
-  !    Input, real(real64) PC(3), the center of the sphere.
-  !
-  !    Input, integer(int32) LAT_NUM, LONG_NUM, the number of latitude 
-  !    and longitude lines to draw.  The latitudes do not include the North and 
-  !    South poles, which will be included automatically, so LAT_NUM = 5, for 
-  !    instance, will result in points along 7 lines of latitude.
-  !
-  !    Input, integer(int32) POINT_NUM, the number of points.
-  !
-  !    Output, real(real64) P(3,POINT_NUM), the grid points.
-  !
-
-    integer(int32) lat_num
-    integer(int32) long_num
-    integer(int32) point_num
-
-    integer(int32) lat
-    integer(int32) lon
-    integer(int32) n
-    real(real64) p(3,point_num)
-    real(real64) pc(3)
-    real(real64) phi
-    real(real64) r
-    real(real64), parameter :: r8_pi = 3.141592653589793e+00_real64
-    real(real64) theta
-
-    n = 0
-  !
-  !  The north pole.
-  !
-    theta = 0.0e+00_real64
-    phi = 0.0e+00_real64
-    n = n + 1
-    p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
-    p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
-    p(3,n) = pc(3) + r * cos ( phi )
-  !
-  !  Do each intermediate ring of latitude.
-  !
-    do lat = 1, lat_num
-
-      phi = real ( lat, real64) * r8_pi &
-          / real ( lat_num + 1, real64)
-  !
-  !  Along that ring of latitude, compute points at various longitudes.
-  !
-      do lon = 0, long_num - 1
-
-        theta = real ( lon, real64) * 2.0e+00_real64 * r8_pi &
-              / real ( long_num, real64)
-
-        n = n + 1
-        p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
-        p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
-        p(3,n) = pc(3) + r * cos ( phi )
-
-      end do
-    end do
-  !
-  !  The south pole.
-  !
-    theta = 0.0e+00_real64
-    phi = r8_pi
-    n = n + 1
-    p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
-    p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
-    p(3,n) = pc(3) + r * cos ( phi )
-  end
-
-end module sphere_llt_grid_mod
+  end do
+!
+!  The south pole.
+!
+  theta = 0.0D+00
+  phi = r8_pi
+  n = n + 1
+  p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
+  p(2,n) = pc(2) + r * sin ( phi ) * sin ( theta )
+  p(3,n) = pc(3) + r * cos ( phi )
+end

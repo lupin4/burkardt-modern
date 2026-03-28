@@ -1,321 +1,315 @@
 !> wedge_grid — Modern Fortran 2018
 !>
 !> Modernized from John Burkardt's original (GNU LGPL).
+!> Standalone routines (no module wrapping) for clean C symbol names.
 
-module wedge_grid_mod
-  use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
+subroutine wedge_grid ( n, ng, g )  
+
+!*****************************************************************************80
+!
+!! WEDGE_GRID computes grid points in the unit wedge in 3D.
+!
+!  Discussion:
+!
+!    The interior of the unit wedge in 3D is defined by the constraints:
+!      0 <= X
+!      0 <= Y
+!           X + Y <= 1
+!     -1 <= Z <= +1
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    21 August 2014
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer N, the number of subintervals.
+!    0 <= N.
+!
+!    Input, integer NG, the number of grid points.
+!    This can be computed by WEDGE_GRID_SIZE, or else determined by
+!    NG =(N+1)*((N+1)*(N+2))/2.
+!
+!    Output, double precision G(3,NG), the coordinates
+!    of the grid points.
+!
   implicit none
-  private
 
-  public :: wedge_grid, wedge_grid_size, wedge_grid_plot, wedge_vertices
+  integer n
+  integer ng
 
-contains
+  integer i
+  double precision ir
+  integer j
+  double precision jr
+  integer k
+  double precision kr
+  double precision nr
+  integer p
+  double precision g(3,ng)
 
-  subroutine wedge_grid ( n, ng, g )  
+  if ( n == 0 ) then
+    g(1,1) = 0.5D+00
+    g(2,1) = 0.5D+00
+    g(3,1) = 0.0D+00
+  end if
 
-  !*****************************************************************************80
-  !
-  !! WEDGE_GRID computes grid points in the unit wedge in 3D.
-  !
-  !  Discussion:
-  !
-  !    The interior of the unit wedge in 3D is defined by the constraints:
-  !      0 <= X
-  !      0 <= Y
-  !           X + Y <= 1
-  !     -1 <= Z <= +1
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license.
-  !
-  !  Modified:
-  !
-  !    21 August 2014
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the number of subintervals.
-  !    0 <= N.
-  !
-  !    Input, integer(int32) NG, the number of grid points.
-  !    This can be computed by WEDGE_GRID_SIZE, or else determined by
-  !    NG =(N+1)*((N+1)*(N+2))/2.
-  !
-  !    Output, real(real64) G(3,NG), the coordinates
-  !    of the grid points.
-  !
+  p = 0
+  nr = real ( n)
 
-    integer(int32) n
-    integer(int32) ng
-
-    integer(int32) i
-    real(real64) ir
-    integer(int32) j
-    real(real64) jr
-    integer(int32) k
-    real(real64) kr
-    real(real64) nr
-    integer(int32) p
-    real(real64) g(3,ng)
-
-    if ( n == 0 ) then
-      g(1,1) = 0.5e+00_real64
-      g(2,1) = 0.5e+00_real64
-      g(3,1) = 0.0e+00_real64
-    end if
-
-    p = 0
-    nr = real ( n, real64)
-
-    do k = 0, n
-      kr = real ( 2 * k - n, real64) / nr
-      do j = 0, n
-        jr = real ( j, real64) / nr
-        do i = 0, n - j
-          ir = real ( i, real64) / nr
-          p = p + 1
-          g(1,p) = ir
-          g(2,p) = jr
-          g(3,p) = kr
-        end do
+  do k = 0, n
+    kr = real ( 2 * k - n) / nr
+    do j = 0, n
+      jr = real ( j) / nr
+      do i = 0, n - j
+        ir = real ( i) / nr
+        p = p + 1
+        g(1,p) = ir
+        g(2,p) = jr
+        g(3,p) = kr
       end do
     end do
-  end
+  end do
+end
 
-  subroutine wedge_grid_size ( n, ng )  
+subroutine wedge_grid_size ( n, ng )  
 
-  !*****************************************************************************80
-  !
-  !! WEDGE_GRID_SIZE counts the points in a grid of the unit wedge in 3D.
-  !
-  !  Discussion:
-  !
-  !    The interior of the unit wedge in 3D is defined by the constraints:
-  !      0 <= X
-  !      0 <= Y
-  !           X + Y <= 1
-  !     -1 <= Z <= +1
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license.
-  !
-  !  Modified:
-  !
-  !    21 August 2014
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the number of subintervals.
-  !    0 <= N.
-  !
-  !    Output, integer(int32) NG, the number of grid points.
-  !
+!*****************************************************************************80
+!
+!! WEDGE_GRID_SIZE counts the points in a grid of the unit wedge in 3D.
+!
+!  Discussion:
+!
+!    The interior of the unit wedge in 3D is defined by the constraints:
+!      0 <= X
+!      0 <= Y
+!           X + Y <= 1
+!     -1 <= Z <= +1
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    21 August 2014
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer N, the number of subintervals.
+!    0 <= N.
+!
+!    Output, integer NG, the number of grid points.
+!
+  implicit none
 
-    integer(int32) n
-    integer(int32) ng
+  integer n
+  integer ng
 
-    ng = ( n + 1 ) * ( ( n + 1 ) * ( n + 2 ) ) / 2
-  end
+  ng = ( n + 1 ) * ( ( n + 1 ) * ( n + 2 ) ) / 2
+end
 
-  subroutine wedge_grid_plot ( n, ng, g, header )
+subroutine wedge_grid_plot ( n, ng, g, header )
 
-  !*****************************************************************************80
-  !
-  !! WEDGE_GRID_PLOT sets up a GNUPLOT plot of a unit wedge grid.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license.
-  !
-  !  Modified:
-  !
-  !    21 August 2014
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Input, integer(int32) N, the number of subintervals.
-  !
-  !    Input, integer(int32) NG, the number of nodes.
-  !
-  !    Input, real(real64) G(3,NG), the grid point coordinates.
-  !
-  !    Input, character ( len = * ) HEADER, the header for the files.
-  !
+!*****************************************************************************80
+!
+!! WEDGE_GRID_PLOT sets up a GNUPLOT plot of a unit wedge grid.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    21 August 2014
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer N, the number of subintervals.
+!
+!    Input, integer NG, the number of nodes.
+!
+!    Input, double precision G(3,NG), the grid point coordinates.
+!
+!    Input, character ( len = * ) HEADER, the header for the files.
+!
+  implicit none
 
-    integer(int32) ng
+  integer ng
 
-    character ( len = 255 ) command_filename
-    integer(int32) command_unit
-    real(real64) g(3,ng)
-    character ( len = * ) header
-    integer(int32) j
-    integer(int32) n
-    character ( len = 255 ) node_filename
-    integer(int32) node_unit
-    character ( len = 255 ) plot_filename
-    real(real64) v1(3)
-    real(real64) v2(3)
-    real(real64) v3(3)
-    real(real64) v4(3)
-    real(real64) v5(3)
-    real(real64) v6(3)
-    character ( len = 255 ) vertex_filename
-    integer(int32) vertex_unit
-  !
-  !  Create the vertex file.
-  !
-    call wedge_vertices ( v1, v2, v3, v4, v5, v6 )
+  character ( len = 255 ) command_filename
+  integer command_unit
+  double precision g(3,ng)
+  character ( len = * ) header
+  integer j
+  integer n
+  character ( len = 255 ) node_filename
+  integer node_unit
+  character ( len = 255 ) plot_filename
+  double precision v1(3)
+  double precision v2(3)
+  double precision v3(3)
+  double precision v4(3)
+  double precision v5(3)
+  double precision v6(3)
+  character ( len = 255 ) vertex_filename
+  integer vertex_unit
+!
+!  Create the vertex file.
+!
+  call wedge_vertices ( v1, v2, v3, v4, v5, v6 )
 
-    call get_unit ( vertex_unit )
-    vertex_filename = trim ( header ) // '_vertices.txt'
-    open ( unit = vertex_unit, file = vertex_filename, &
-      status = 'replace' )
+  call get_unit ( vertex_unit )
+  vertex_filename = trim ( header ) // '_vertices.txt'
+  open ( unit = vertex_unit, file = vertex_filename, &
+    status = 'replace' )
 
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v1(1), v1(2), v1(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v2(1), v2(2), v2(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v3(1), v3(2), v3(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v1(1), v1(2), v1(3)
-    write ( vertex_unit, '(a)' ) ''
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v1(1), v1(2), v1(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v2(1), v2(2), v2(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v3(1), v3(2), v3(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v1(1), v1(2), v1(3)
+  write ( vertex_unit, '(a)' ) ''
 
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v4(1), v4(2), v4(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v5(1), v5(2), v5(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v6(1), v6(2), v6(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v4(1), v4(2), v4(3)
-    write ( vertex_unit, '(a)' ) ''
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v4(1), v4(2), v4(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v5(1), v5(2), v5(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v6(1), v6(2), v6(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v4(1), v4(2), v4(3)
+  write ( vertex_unit, '(a)' ) ''
 
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v1(1), v1(2), v1(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v4(1), v4(2), v4(3)
-    write ( vertex_unit, '(a)' ) ''
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v1(1), v1(2), v1(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v4(1), v4(2), v4(3)
+  write ( vertex_unit, '(a)' ) ''
 
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v2(1), v2(2), v2(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v5(1), v5(2), v5(3)
-    write ( vertex_unit, '(a)' ) ''
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v2(1), v2(2), v2(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v5(1), v5(2), v5(3)
+  write ( vertex_unit, '(a)' ) ''
 
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v3(1), v3(2), v3(3)
-    write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
-      v6(1), v6(2), v6(3)
-    write ( vertex_unit, '(a)' ) ''
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v3(1), v3(2), v3(3)
+  write ( vertex_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) &
+    v6(1), v6(2), v6(3)
+  write ( vertex_unit, '(a)' ) ''
 
-    close ( unit = vertex_unit )
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) '  Created vertex file "' // &
-      trim ( vertex_filename ) // '".'
-  !
-  !  Create the node file.
-  !
-    call get_unit ( node_unit )
-    node_filename = trim ( header ) // '_nodes.txt'
-    open ( unit = node_unit, file = node_filename, &
-      status = 'replace' )
-    do j = 1, ng
-      write ( node_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) g(1:3,j)
-    end do
-    close ( unit = node_unit )
-    write ( *, '(a)' ) '  Created node file "' // &
-      trim ( node_filename ) // '".'
-  !
-  !  Create the command file.
-  !
-    call get_unit ( command_unit )
-    command_filename = trim ( header ) // '_commands.txt'
-    open ( unit = command_unit, file = command_filename, &
-      status = 'replace' )
-    write ( command_unit, '(a)' ) '# ' // trim ( command_filename )
-    write ( command_unit, '(a)' ) '#'
-    write ( command_unit, '(a)' ) '# Usage:'
-    write ( command_unit, '(a)' ) '#  gnuplot < ' // &
-      trim ( command_filename )
-    write ( command_unit, '(a)' ) '#'
-    write ( command_unit, '(a)' ) 'set term png'
-    plot_filename = trim ( header ) // '.png'
-    write ( command_unit, '(a)' ) 'set output "' // &
-      trim ( plot_filename ) // '"'
-    write ( command_unit, '(a)' ) 'set xlabel "<--- X --->"'
-    write ( command_unit, '(a)' ) 'set ylabel "<--- Y --->"'
-    write ( command_unit, '(a)' ) 'set zlabel "<--- Z --->"'
-    write ( command_unit, '(a)' ) &
-      'set title "' // trim ( header ) // '"'
-    write ( command_unit, '(a)' ) 'set grid'
-    write ( command_unit, '(a)' ) 'set key off'
-    write ( command_unit, '(a)' ) '#set view equal xyz'
-    write ( command_unit, '(a)' ) 'set view 80, 85'
-    write ( command_unit, '(a)' ) 'set style data lines'
-    write ( command_unit, '(a)' ) 'set timestamp'
-    write ( command_unit, '(a)' ) 'splot "' // &
-      trim ( vertex_filename ) // &
-      '" with lines lw 3, \'
-    write ( command_unit, '(a)' ) '     "' // &
-      trim ( node_filename ) // '" with points pt 7 lt 0'
-    close ( unit = command_unit )
+  close ( unit = vertex_unit )
+  write ( *, '(a)' ) ' '
+  write ( *, '(a)' ) '  Created vertex file "' // &
+    trim ( vertex_filename ) // '".'
+!
+!  Create the node file.
+!
+  call get_unit ( node_unit )
+  node_filename = trim ( header ) // '_nodes.txt'
+  open ( unit = node_unit, file = node_filename, &
+    status = 'replace' )
+  do j = 1, ng
+    write ( node_unit, '(g14.6,2x,g14.6,2x,g14.6)' ) g(1:3,j)
+  end do
+  close ( unit = node_unit )
+  write ( *, '(a)' ) '  Created node file "' // &
+    trim ( node_filename ) // '".'
+!
+!  Create the command file.
+!
+  call get_unit ( command_unit )
+  command_filename = trim ( header ) // '_commands.txt'
+  open ( unit = command_unit, file = command_filename, &
+    status = 'replace' )
+  write ( command_unit, '(a)' ) '# ' // trim ( command_filename )
+  write ( command_unit, '(a)' ) '#'
+  write ( command_unit, '(a)' ) '# Usage:'
+  write ( command_unit, '(a)' ) '#  gnuplot < ' // &
+    trim ( command_filename )
+  write ( command_unit, '(a)' ) '#'
+  write ( command_unit, '(a)' ) 'set term png'
+  plot_filename = trim ( header ) // '.png'
+  write ( command_unit, '(a)' ) 'set output "' // &
+    trim ( plot_filename ) // '"'
+  write ( command_unit, '(a)' ) 'set xlabel "<--- X --->"'
+  write ( command_unit, '(a)' ) 'set ylabel "<--- Y --->"'
+  write ( command_unit, '(a)' ) 'set zlabel "<--- Z --->"'
+  write ( command_unit, '(a)' ) &
+    'set title "' // trim ( header ) // '"'
+  write ( command_unit, '(a)' ) 'set grid'
+  write ( command_unit, '(a)' ) 'set key off'
+  write ( command_unit, '(a)' ) '#set view equal xyz'
+  write ( command_unit, '(a)' ) 'set view 80, 85'
+  write ( command_unit, '(a)' ) 'set style data lines'
+  write ( command_unit, '(a)' ) 'set timestamp'
+  write ( command_unit, '(a)' ) 'splot "' // &
+    trim ( vertex_filename ) // &
+    '" with lines lw 3, \'
+  write ( command_unit, '(a)' ) '     "' // &
+    trim ( node_filename ) // '" with points pt 7 lt 0'
+  close ( unit = command_unit )
 
-    write ( *, '(a)' ) &
-      '  Created command file "' // trim ( command_filename ) // '".'
-  end
+  write ( *, '(a)' ) &
+    '  Created command file "' // trim ( command_filename ) // '".'
+end
 
-  subroutine wedge_vertices ( v1, v2, v3, v4, v5, v6 )
+subroutine wedge_vertices ( v1, v2, v3, v4, v5, v6 )
 
-  !*****************************************************************************80
-  !
-  !! WEDGE_VERTICES returns the vertices of the unit wege.
-  !
-  !  Licensing:
-  !
-  !    This code is distributed under the GNU LGPL license.
-  !
-  !  Modified:
-  !
-  !    21 August 2014
-  !
-  !  Author:
-  !
-  !    John Burkardt
-  !
-  !  Parameters:
-  !
-  !    Output, real(real64) V1(3), V2(3), V3(3), V4(3), V5(3), V6(3),
-  !    the vertices.
-  !
+!*****************************************************************************80
+!
+!! WEDGE_VERTICES returns the vertices of the unit wege.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    21 August 2014
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Output, double precision V1(3), V2(3), V3(3), V4(3), V5(3), V6(3),
+!    the vertices.
+!
+  implicit none
 
-    real(real64) v1(3)
-    real(real64) v2(3)
-    real(real64) v3(3)
-    real(real64) v4(3)
-    real(real64) v5(3)
-    real(real64) v6(3)
+  double precision v1(3)
+  double precision v2(3)
+  double precision v3(3)
+  double precision v4(3)
+  double precision v5(3)
+  double precision v6(3)
 
-    v1(1:3) = (/  0.0e+00_real64,  0.0e+00_real64, -1.0e+00_real64 /)
-    v2(1:3) = (/  1.0e+00_real64,  0.0e+00_real64, -1.0e+00_real64 /)
-    v3(1:3) = (/  0.0e+00_real64,  1.0e+00_real64, -1.0e+00_real64 /)
-    v4(1:3) = (/  0.0e+00_real64,  0.0e+00_real64, +1.0e+00_real64 /)
-    v5(1:3) = (/  1.0e+00_real64,  0.0e+00_real64, +1.0e+00_real64 /)
-    v6(1:3) = (/  0.0e+00_real64,  1.0e+00_real64, +1.0e+00_real64 /)
-  end
-
-end module wedge_grid_mod
+  v1(1:3) = (/  0.0D+00,  0.0D+00, -1.0D+00 /)
+  v2(1:3) = (/  1.0D+00,  0.0D+00, -1.0D+00 /)
+  v3(1:3) = (/  0.0D+00,  1.0D+00, -1.0D+00 /)
+  v4(1:3) = (/  0.0D+00,  0.0D+00, +1.0D+00 /)
+  v5(1:3) = (/  1.0D+00,  0.0D+00, +1.0D+00 /)
+  v6(1:3) = (/  0.0D+00,  1.0D+00, +1.0D+00 /)
+end
