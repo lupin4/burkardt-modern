@@ -267,49 +267,6 @@ subroutine addnod ( nst, k, x, y, z, list, lptr, lend, lnew, ier )
   end do
 end
 
-function arc_cosine ( c )
-
-!*****************************************************************************80
-!
-!! ARC_COSINE computes the arc cosine function, with argument truncation.
-!
-!  Discussion:
-!
-!    If you call your system ACOS routine with an input argument that is
-!    outside the range [-1.0, 1.0 ], you may get an unpleasant surprise.
-!    This routine truncates arguments outside the range.
-!
-!  Licensing:
-!
-!    This code is distributed under the GNU LGPL license. 
-!
-!  Modified:
-!
-!    02 December 2000
-!
-!  Author:
-!
-!    John Burkardt
-!
-!  Parameters:
-!
-!    Input, double precision C, the argument.
-!
-!    Output, double precision ARC_COSINE, an angle whose cosine is C.
-!
-  implicit none
-
-  double precision arc_cosine
-  double precision c
-  double precision c2
-
-  c2 = c
-  c2 = max ( c2, -1.0D+00 )
-  c2 = min ( c2, +1.0D+00 )
-
-  arc_cosine = acos ( c2 )
-end
-
 function areas ( v1, v2, v3 )
 
 !*****************************************************************************80
@@ -4728,54 +4685,6 @@ subroutine optim ( x, y, z, na, list, lptr, lend, nit, iwk, ier )
 
   nit = iter
   ier = 0
-end
-
-subroutine r83vec_normalize ( n, x, y, z )
-
-!*****************************************************************************80
-!
-!! R83VEC_NORMALIZE normalizes each R83 in an R83VEC to have unit norm.
-!
-!  Licensing:
-!
-!    This code is distributed under the GNU LGPL license. 
-!
-!  Modified:
-!
-!    25 June 2002
-!
-!  Author:
-!
-!    John Burkardt
-!
-!  Parameters:
-!
-!    Input, integer N, the number of vectors.
-!
-!    Input/output, double precision X(N), Y(N), Z(N), the components of
-!    the vectors.
-!
-  implicit none
-
-  integer n
-
-  integer i
-  double precision norm
-  double precision x(n)
-  double precision y(n)
-  double precision z(n)
-
-  do i = 1, n
-
-    norm = sqrt ( x(i)**2 + y(i)**2 + z(i)**2 )
-
-    if ( norm /= 0.0D+00 ) then
-      x(i) = x(i) / norm
-      y(i) = y(i) / norm
-      z(i) = z(i) / norm
-    end if
-
-  end do
 end
 
 subroutine scoord ( px, py, pz, plat, plon, pnrm )

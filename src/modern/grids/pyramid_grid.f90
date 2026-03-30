@@ -316,35 +316,3 @@ subroutine pyramid_unit_vertices ( v1, v2, v3, v4, v5 )
   v4(1:3) = (/ +1.0D+00, +1.0D+00,  0.0D+00 /)
   v5(1:3) = (/ -1.0D+00, +1.0D+00,  0.0D+00 /)
 end
-
-subroutine r8_print ( r, title )
-
-!*****************************************************************************80
-!
-!! R8_PRINT prints an R8.
-!
-!  Licensing:
-!
-!    This code is distributed under the GNU LGPL license.
-!
-!  Modified:
-!
-!    14 August 2014
-!
-!  Author:
-!
-!    John Burkardt
-!
-!  Parameters:
-!
-!    Input, double precision R, the value.
-!
-!    Input, character ( len = * ) TITLE, a title.
-!
-  implicit none
-
-  double precision r
-  character ( len = * ) title
-
-  write ( *, '(a,2x,g14.6)' ) trim ( title ), r
-end

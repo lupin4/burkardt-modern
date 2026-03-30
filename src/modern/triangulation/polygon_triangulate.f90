@@ -632,49 +632,6 @@ function intersect_prop ( xa, ya, xb, yb, xc, yc, xd, yd )
   intersect_prop = value
 end
 
-function l4_xor ( l1, l2 )
-
-!*****************************************************************************80
-!
-!! L4_XOR returns the exclusive OR of two L4's.
-!
-!  Discussion:
-!
-!    An L4 is a logical value.
-!
-!  Licensing:
-!
-!    This code is distributed under the GNU LGPL license.
-!
-!  Modified:
-!
-!    04 May 2014
-!
-!  Author:
-!
-!   John Burkardt
-!
-!  Parameters:
-!
-!    Input, logical L1, L2, two values whose exclusive OR 
-!    is needed.
-!
-!    Output, logical L4_XOR, the exclusive OR of L1 and L2.
-!
-  implicit none
-
-  logical l1
-  logical l2
-  logical l4_xor
-  logical value1
-  logical value2
-
-  value1 = (         l1   .and. ( .not. l2 ) )
-  value2 = ( ( .not. l1 ) .and.         l2   )
-
-  l4_xor = ( value1 .or. value2 )
-end
-
 function polygon_area ( n, x, y )
 
 !*****************************************************************************80

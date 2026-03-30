@@ -21,21 +21,43 @@ import os
 import sys
 from pathlib import Path
 
-# Utilities that appear in many files — skip them (they'll be in a shared module)
-SKIP_ROUTINES = {
+# Explicit utility routines to skip (I/O, printing, strings, timing).
+SKIP_ROUTINES_EXACT = {
     'timestamp', 'get_unit', 'get_seed', 'random_initialize',
-    'r8mat_write', 'r8vec_print', 'r83vec_print_part', 'r8mat_print',
-    'r8mat_print_some', 'r8vec_transpose_print', 'i4vec_print',
-    'r8mat_transpose_print', 'r8mat_transpose_print_some',
-    'i4mat_print', 'i4mat_print_some', 'i4mat_transpose_print',
-    'i4mat_transpose_print_some', 'file_column_count', 'file_row_count',
-    'r8mat_data_read', 'r8mat_header_read', 'i4mat_data_read',
-    'i4mat_header_read', 'r8mat_write', 'i4mat_write',
-    'file_name_ext_get', 'file_name_ext_swap', 's_to_r8',
-    's_to_r8vec', 's_to_i4', 's_to_i4vec', 's_word_count',
-    's_blank_delete', 's_index_last_c', 'ch_cap', 'ch_eqi',
-    'ch_to_digit', 'word_next_read',
+    'file_column_count', 'file_row_count',
+    'file_name_ext_get', 'file_name_ext_swap',
+    'word_next_read', 'xyz_read',
+    'ch_cap', 'ch_eqi', 'ch_to_digit',
+    'triangulation_order3_print', 'triangulation_order3_plot',
+    'triangulation_plot_eps',
+    'sort_heap_external',
+    'l4_xor', 'prime', 'mesh_base_one', 'bandwidth',
+    'alpha_measure', 'area_measure', 'q_measure',
+    'urand', 'gtime',
+    'plane_normal_basis_3d',
+    'arc_cosine', 'arc_sine',
+    'radians_to_degrees', 'degrees_to_radians',
 }
+
+# Prefix patterns for Burkardt utility routines provided by forMath.
+# Any routine whose name starts with one of these is a generic utility,
+# not a geometry-specific routine.
+SKIP_PREFIXES = (
+    'i4_', 'i4vec_', 'i4col_', 'i4mat_', 'i4row_', 'i4i4',
+    'r8_', 'r8vec_', 'r8mat_', 'r82vec_', 'r83vec_',
+    'perm_',
+    's_to_', 's_word_', 's_blank_', 's_index_',
+)
+
+
+def should_skip(name):
+    """Return True if routine is a Burkardt utility (not geometry-specific)."""
+    if name in SKIP_ROUTINES_EXACT:
+        return True
+    for prefix in SKIP_PREFIXES:
+        if name.startswith(prefix):
+            return True
+    return False
 
 
 def parse_routines(content):
@@ -241,7 +263,7 @@ def modernize_file(input_path, output_path):
     if not routines:
         return 0
 
-    keep = [(name, text) for name, text in routines if name not in SKIP_ROUTINES]
+    keep = [(name, text) for name, text in routines if not should_skip(name)]
     if not keep:
         return 0
 
