@@ -1,0 +1,10 @@
+<title>burkardt-modern — Status 2026-07-04</title>
+<style>body{background:#12141a;color:#d8dce6;font-family:-apple-system,Helvetica,sans-serif;max-width:900px;margin:2rem auto;padding:0 1.5rem;line-height:1.55}h1{color:#7ecfff;font-size:1.4rem}code{background:#1b2029;padding:.1rem .35rem;border-radius:4px;color:#ffd479}.fix{background:#16211a;border-left:4px solid #2ecc71;padding:.8rem 1rem;border-radius:6px;margin:1rem 0}</style>
+<h1>burkardt-modern — public-repo health pass</h1>
+<p>2026-07-04 · This repo is the modern (Fortran 2018) interpretation of John Burkardt's classic computational-geometry libraries, original + modernized side by side.</p>
+<div class="fix"><b>Fixed today:</b><br>
+&bull; <b>Build was broken out of the box</b>: <code>FC ?= gfortran</code> never fires because make predefines <code>FC=f77</code> as a built-in — every fresh clone died with "f77: No such file". Detected via <code>$(origin FC)</code> and fixed; <code>make FC=...</code> still overrides.<br>
+&bull; <b><code>make test</code> pointed at a directory that did not exist.</b> A real regression harness now lives in <code>src/tests/</code>: one driver built twice — against the original objects and the modern objects — and the outputs diffed. <b>Current result: REGRESSION PASS, modern == original (8 checks: triangle area, arcsine incl. domain clamp, gcd, unit-sphere areas n=2..5).</b><br>
+&bull; <b><code>get_unit</code> restored to the modern tree</b> — the modernization pass dropped it while <code>points_plot</code> still calls it, so modern <code>geometry.f90</code> could not link standalone (leftover of the strip/revert cycle).<br>
+&bull; <code>make bench</code> now says honestly that benchmarks are not yet implemented instead of erroring into a missing folder.</div>
+<p>53 modern objects build clean under <code>-std=f2018</code>. The <code>macos</code> branch carries the pre-revert lineage and is superseded by <code>main</code>.</p>

@@ -9,7 +9,13 @@
 #   make test       Regression test: modern == original
 #   make bench      Benchmark original vs modern
 
-FC ?= gfortran
+# NOTE: plain 'FC ?= gfortran' NEVER fires — make PREDEFINES FC=f77 as a
+# built-in default, so ?= sees it 'set' and the build dies with 'f77: No
+# such file'. Detect the built-in and replace it; a user-exported FC or
+# 'make FC=...' still wins.
+ifeq ($(origin FC),default)
+FC = gfortran
+endif
 
 # Original: compile as-is (Fortran 90 compat)
 FFLAGS_ORIG = -O2 -fPIC -std=legacy -fall-intrinsics -fno-underscoring -cpp
@@ -47,8 +53,9 @@ test:
 	@cd src/tests && bash run_tests.sh
 
 bench:
-	@echo "Running benchmarks..."
-	@cd benchmarks && bash run_bench.sh
+	@echo "benchmarks not yet implemented — the regression suite (make test)"
+	@echo "verifies modern==original numerically; timing comparisons welcome."
+	@exit 1
 
 clean:
 	rm -rf build/
