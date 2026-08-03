@@ -41,7 +41,7 @@ function r8_factorial ( n )
   r8_factorial = 1.0D+00
 
   do i = 1, n
-    r8_factorial = r8_factorial * real ( i)
+    r8_factorial = r8_factorial * dble ( i )
   end do
 end
 
@@ -191,7 +191,7 @@ subroutine simplex_coordinates1 ( n, x )
 !  Set X(I,J) for J = I+1 to N+1 by using the fact that XI dot XJ = - 1 / N 
 !
     do j = i + 1, n + 1
-      x(i,j) = ( - 1.0D+00 / real ( n) &
+      x(i,j) = ( - 1.0D+00 / dble ( n ) &
         - dot_product ( x(1:i-1,i), x(1:i-1,j) ) ) / x(i,i)
     end do
 
@@ -268,14 +268,14 @@ subroutine simplex_coordinates2 ( n, x )
     x(j,j) = 1.0D+00
   end do
 
-  a = ( 1.0D+00 - sqrt ( 1.0D+00 + real ( n) ) ) &
-    / real ( n)
+  a = ( 1.0D+00 - sqrt ( 1.0D+00 + dble ( n ) ) ) &
+    / dble ( n )
 
   x(1:n,n+1) = a
 !
 !  Now adjust coordinates so the centroid is at zero.
 !
-  c(1:n) = sum ( x(1:n,1:n+1), dim = 2 ) / real ( n + 1)
+  c(1:n) = sum ( x(1:n,1:n+1), dim = 2 ) / dble ( n + 1 )
 
   do j = 1, n + 1
     x(1:n,j) = x(1:n,j) - c(1:n)
@@ -335,6 +335,6 @@ subroutine simplex_volume ( n, x, volume )
 
   volume = abs ( det )
   do i = 1, n
-    volume = volume / real ( i)
+    volume = volume / dble ( i )
   end do
 end

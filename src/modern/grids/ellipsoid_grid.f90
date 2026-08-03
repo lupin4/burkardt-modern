@@ -69,17 +69,17 @@ subroutine ellipsoid_grid ( n, r, c, ng, xyz )
   double precision z
 
   if ( r(1) == minval ( r(1:3) ) ) then
-    h = 2.0D+00 * r(1) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(1) / dble ( 2 * n + 1 )
     ni = n
     nj = i4_ceiling ( r(2) / r(1) ) * n
     nk = i4_ceiling ( r(3) / r(1) ) * n
   else if ( r(2) == minval ( r(1:3) ) ) then
-    h = 2.0D+00 * r(2) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(2) / dble ( 2 * n + 1 )
     nj = n
     ni = i4_ceiling ( r(1) / r(2) ) * n
     nk = i4_ceiling ( r(3) / r(2) ) * n
   else
-    h = 2.0D+00 * r(3) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(3) / dble ( 2 * n + 1 )
     nk = n
     ni = i4_ceiling ( r(1) / r(3) ) * n
     nj = i4_ceiling ( r(2) / r(3) ) * n
@@ -88,11 +88,11 @@ subroutine ellipsoid_grid ( n, r, c, ng, xyz )
   ng2 = 0
 
   do k = 0, nk
-    z = c(3) + real ( k) * h
+    z = c(3) + dble ( k ) * h
     do j = 0, nj
-      y = c(2) + real ( j) * h
+      y = c(2) + dble ( j ) * h
       do i = 0, ni
-        x = c(1) + real ( i) * h
+        x = c(1) + dble ( i ) * h
 !
 !  If we have left the ellipsoid, the I loop is completed.
 !
@@ -203,17 +203,17 @@ subroutine ellipsoid_grid_count ( n, r, c, ng )
   double precision z
 
   if ( r(1) == minval ( r(1:3) ) ) then
-    h = 2.0D+00 * r(1) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(1) / dble ( 2 * n + 1 )
     ni = n
     nj = i4_ceiling ( r(2) / r(1) ) * n
     nk = i4_ceiling ( r(3) / r(1) ) * n
   else if ( r(2) == minval ( r(1:3) ) ) then
-    h = 2.0D+00 * r(2) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(2) / dble ( 2 * n + 1 )
     nj = n
     ni = i4_ceiling ( r(1) / r(2) ) * n
     nk = i4_ceiling ( r(3) / r(2) ) * n
   else
-    h = 2.0D+00 * r(3) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(3) / dble ( 2 * n + 1 )
     nk = n
     ni = i4_ceiling ( r(1) / r(3) ) * n
     nj = i4_ceiling ( r(2) / r(3) ) * n
@@ -222,11 +222,11 @@ subroutine ellipsoid_grid_count ( n, r, c, ng )
   ng = 0
 
   do k = 0, nk
-    z = c(3) + real ( k) * h
+    z = c(3) + dble ( k ) * h
     do j = 0, nj
-      y = c(2) + real ( j) * h
+      y = c(2) + dble ( j ) * h
       do i = 0, ni
-        x = c(1) + real ( i) * h
+        x = c(1) + dble ( i ) * h
 !
 !  If we have left the ellipsoid, the I loop is completed.
 !
@@ -303,7 +303,7 @@ function i4_ceiling ( r )
   integer value
 
   value = int ( r )
-  if ( real ( value) < r ) then
+  if ( dble ( value ) < r ) then
     value = value + 1
   end if
 

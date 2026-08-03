@@ -434,7 +434,7 @@ subroutine r8vec_mean ( n, a, mean )
   double precision a(n)
   double precision mean
 
-  mean = sum ( a(1:n) ) / real ( n)
+  mean = sum ( a(1:n) ) / dble ( n )
 end
 
 subroutine r8vec_variance ( n, a, variance )
@@ -486,11 +486,11 @@ subroutine r8vec_variance ( n, a, variance )
 
   else
 
-    mean = sum ( a(1:n) ) / real ( n)
+    mean = sum ( a(1:n) ) / dble ( n )
 
     variance = sum ( ( a(1:n) - mean )**2 )
 
-    variance = variance / real ( n - 1)
+    variance = variance / dble ( n - 1 )
 
   end if
 end

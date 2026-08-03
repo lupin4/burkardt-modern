@@ -131,10 +131,10 @@ subroutine sphere_fibonacci_grid_points ( ng, xyz )
   double precision xyz(3,ng)
 
   r8_phi = ( 1.0D+00 + sqrt ( 5.0D+00 ) ) / 2.0D+00
-  ng_r8 = real ( ng)
+  ng_r8 = dble ( ng )
 
   do j = 1, ng
-    i_r8 = real ( - ng - 1 + 2 * j)
+    i_r8 = dble ( - ng - 1 + 2 * j )
     theta = 2.0D+00 * r8_pi * i_r8 / r8_phi
     sphi = i_r8 / ng_r8
     cphi = sqrt ( ( ng_r8 + i_r8 ) * ( ng_r8 - i_r8 ) ) / ng_r8

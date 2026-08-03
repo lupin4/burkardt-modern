@@ -165,13 +165,13 @@ function hypersphere_01_area ( m )
     m2 = m / 2
     area = 2.0D+00 * ( r8_pi ) ** m2
     do i = 1, m2 - 1
-      area = area / real ( i)
+      area = area / dble ( i )
     end do
   else
     m2 = ( m - 1 ) / 2
     area = ( r8_pi ** m2 ) * ( 2.0D+00 ** m )
     do i = m2 + 1, 2 * m2
-      area = area / real ( i)
+      area = area / dble ( i )
     end do
   end if
 
@@ -375,7 +375,7 @@ subroutine hypersphere_01_interior_uniform ( m, n, seed, x )
   integer seed
   double precision x(m,n)
 
-  exponent = 1.0D+00 / real ( m)
+  exponent = 1.0D+00 / dble ( m )
 
   do j = 1, n
 !
@@ -544,13 +544,13 @@ function hypersphere_01_volume ( m )
     m2 = m / 2
     volume = r8_pi ** m2
     do i = 1, m2
-      volume = volume / real ( i)
+      volume = volume / dble ( i )
     end do
   else
     m2 = ( m - 1 ) / 2
     volume = ( r8_pi ** m2 ) * ( 2.0D+00 ** m )
     do i = m2 + 1, 2 * m2 + 1
-      volume = volume / real ( i)
+      volume = volume / dble ( i )
     end do
   end if
 
@@ -1135,7 +1135,7 @@ function r8_uniform_01 ( seed )
     seed = seed + i4_huge
   end if
 
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 function r8mat_norm_fro_affine ( m, n, a1, a2 )
@@ -1352,7 +1352,7 @@ subroutine r8mat_uniform_01 ( m, n, seed, r )
         seed = seed + i4_huge
       end if
 
-      r(i,j) = real ( seed) * 4.656612875D-10
+      r(i,j) = dble ( seed ) * 4.656612875D-10
 
     end do
   end do
@@ -1561,7 +1561,7 @@ subroutine r8vec_uniform_01 ( n, seed, r )
       seed = seed + 2147483647
     end if
 
-    r(i) = real ( seed) * 4.656612875D-10
+    r(i) = dble ( seed ) * 4.656612875D-10
 
   end do
 end

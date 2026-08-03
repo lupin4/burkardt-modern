@@ -690,9 +690,9 @@ subroutine simplex_grid_index_to_point ( m, n, ng, g, v, x )
     do i = 1, m
       x(i,j) = 0.0D+00
       do k = 1, m + 1
-        x(i,j) = x(i,j) + v(i,k) * real ( g(k,j))
+        x(i,j) = x(i,j) + v(i,k) * dble ( g(k,j) )
       end do
-      x(i,j) = x(i,j) / real ( n)
+      x(i,j) = x(i,j) / dble ( n )
     end do
   end do
 end

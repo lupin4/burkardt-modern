@@ -1017,7 +1017,7 @@ subroutine ball01_sample_nd ( dim_num, seed, p )
     r = r8_uniform_01 ( seed )
     random_cosine = 2.0D+00 * r - 1.0D+00
     r = r8_uniform_01 ( seed )
-    random_sign = real ( 2 * int ( 2.0D+00 * r ) - 1)
+    random_sign = dble ( 2 * int ( 2.0D+00 * r ) - 1 )
     r = r8_uniform_01 ( seed )
     random_sine = random_sign * sqrt ( 1.0D+00 - random_cosine * random_cosine )
 
@@ -1029,7 +1029,7 @@ subroutine ball01_sample_nd ( dim_num, seed, p )
 
   r = r8_uniform_01 ( seed )
 
-  r = r ** ( 1.0D+00 / real ( dim_num) )
+  r = r ** ( 1.0D+00 / dble ( dim_num ) )
 
   p(1:dim_num) = r * p(1:dim_num)
 end
@@ -2504,7 +2504,7 @@ subroutine circle_imp_point_near_2d ( r, pc, p, pn, dist )
 
   if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
     dist = r
-    pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num) )
+    pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( dble ( dim_num ) )
     return
   end if
 
@@ -2567,7 +2567,7 @@ subroutine circle_imp_points_2d ( r, pc, n, p )
   double precision theta
 
   do j = 1, n
-    theta = 2.0D+00 * r8_pi * real ( j - 1) / real ( n)
+    theta = 2.0D+00 * r8_pi * dble ( j - 1 ) / dble ( n )
     p(1:dim_num,j) = pc(1:dim_num) + r * (/ cos ( theta ), sin ( theta ) /)
   end do
 end
@@ -2644,8 +2644,8 @@ subroutine circle_imp_points_3d ( r, pc, nc, n, p )
 !
   do j = 1, n
 
-    theta = ( 2.0D+00 * r8_pi * real ( j - 1) ) &
-      / real ( n)
+    theta = ( 2.0D+00 * r8_pi * dble ( j - 1 ) ) &
+      / dble ( n )
 
     p(1:dim_num,j) = pc(1:dim_num) &
       + r * ( cos ( theta ) * n1(1:dim_num) &
@@ -2723,9 +2723,9 @@ subroutine circle_imp_points_arc_2d ( r, pc, theta1, theta2, n, p )
   do i = 1, n
 
     if ( 1 < n ) then
-      theta = ( real ( n - i) * theta1   &
-              + real (     i - 1) * theta3 ) &
-              / real ( n     - 1)
+      theta = ( dble ( n - i ) * theta1   &
+              + dble ( i - 1 ) * theta3 ) &
+              / dble ( n     - 1 )
     else
       theta = 0.5D+00 * ( theta1 + theta3 )
     end if
@@ -5481,9 +5481,9 @@ subroutine dms_to_radians ( degrees, minutes, seconds, radians )
   double precision radians
   integer seconds
 
-  angle =   real ( degrees) &
-        + ( real ( minutes) &
-        + ( real ( seconds) / 60.0D+00 ) ) / 60.0D+00
+  angle =   dble ( degrees ) &
+        + ( dble ( minutes ) &
+        + ( dble ( seconds ) / 60.0D+00 ) ) / 60.0D+00
 
   radians = ( angle / 180.0D+00 ) * r8_pi
 end
@@ -6316,8 +6316,8 @@ subroutine ellipse_points_2d ( pc, r1, r2, psi, n, p )
 
   do i = 1, n
 
-    theta = ( 2.0D+00 * r8_pi * real ( i - 1) ) &
-      / real ( n)
+    theta = ( 2.0D+00 * r8_pi * dble ( i - 1 ) ) &
+      / dble ( n )
 
     p(1,i) = pc(1) + r1 * cos ( psi ) * cos ( theta ) &
                    - r2 * sin ( psi ) * sin ( theta )
@@ -6404,9 +6404,9 @@ subroutine ellipse_points_arc_2d ( pc, r1, r2, psi, theta1, theta2, n, p )
   do i = 1, n
 
     if ( 1 < n ) then
-      theta = ( real ( n - i) * theta1 &
-              + real (     i - 1) * theta3 ) &
-              / real ( n     - 1)
+      theta = ( dble ( n - i ) * theta1 &
+              + dble ( i - 1 ) * theta3 ) &
+              / dble ( n     - 1 )
     else
       theta = 0.5D+00 * ( theta1 + theta3 )
     end if
@@ -7024,9 +7024,9 @@ subroutine helix_shape_3d ( a, n, r, theta1, theta2, p )
     if ( n == 1 ) then
       theta = 0.5D+00 * ( theta1 + theta2 )
     else
-      theta = ( real ( n - i) * theta1 &
-              + real (     i - 1) * theta2 ) &
-              / real ( n     - 1)
+      theta = ( dble ( n - i ) * theta1 &
+              + dble ( i - 1 ) * theta2 ) &
+              / dble ( n     - 1 )
     end if
 
     p(1,i) = r * cos ( theta )
@@ -7389,13 +7389,13 @@ function hyperball01_volume ( m )
     m_half = ( m / 2 )
     volume = r8_pi ** m_half
     do i = 1, m_half
-      volume = volume / real ( i)
+      volume = volume / dble ( i )
     end do
   else
     m_half = ( ( m - 1 ) / 2 )
     volume = r8_pi ** m_half * 2.0D+00 ** m
     do i = m_half + 1, 2 * m_half + 1
-      volume = volume / real ( i)
+      volume = volume / dble ( i )
     end do
   end if
 
@@ -7442,8 +7442,8 @@ function i4_dedekind_factor ( p, q )
   if ( mod ( p, q ) == 0 ) then
     i4_dedekind_factor = 0.0D+00
   else
-    i4_dedekind_factor = real ( p) / real ( q) &
-      - real ( ( p / q )) - 0.5D+00
+    i4_dedekind_factor = dble ( p ) / dble ( q ) &
+      - dble ( ( p / q ) ) - 0.5D+00
   end if
 end
 
@@ -14159,15 +14159,15 @@ subroutine plane_exp_grid_3d ( p1, p2, p3, ncor3, line_num, cor3, lines, &
 
   do j = 1, ny
 
-    b = ( real ( ny - j) * bmin &
-        + real (      j - 1) * bmax ) &
-        / real ( ny     - 1)
+    b = ( dble ( ny - j ) * bmin &
+        + dble ( j - 1 ) * bmax ) &
+        / dble ( ny     - 1 )
 
     do i = 1, nx
 
-      a = ( real ( nx - i) * amin &
-          + real (      i - 1) * amax ) &
-          / real ( nx     - 1)
+      a = ( dble ( nx - i ) * amin &
+          + dble ( i - 1 ) * amax ) &
+          / dble ( nx     - 1 )
 
       ncor3 = ncor3 + 1
       cor3(1:dim_num,ncor3) = a * v1(1:dim_num) + b * v2(1:dim_num)
@@ -17490,7 +17490,7 @@ subroutine points_plot ( file_name, node_num, node_xy, node_label )
 
   if ( x_scale < y_scale ) then
 
-    delta = nint ( real ( x_ps_max - x_ps_min) &
+    delta = nint ( dble ( x_ps_max - x_ps_min ) &
       * ( y_scale - x_scale ) / ( 2.0D+00 * y_scale ) )
 
     x_ps_max = x_ps_max - delta
@@ -17503,7 +17503,7 @@ subroutine points_plot ( file_name, node_num, node_xy, node_label )
 
   else if ( y_scale < x_scale ) then
 
-    delta = nint ( real ( y_ps_max - y_ps_min) &
+    delta = nint ( dble ( y_ps_max - y_ps_min ) &
       * ( x_scale - y_scale ) / ( 2.0D+00 * x_scale ) )
 
     y_ps_max = y_ps_max - delta
@@ -17600,13 +17600,13 @@ subroutine points_plot ( file_name, node_num, node_xy, node_label )
   do node = 1, node_num
 
     x_ps = int ( &
-      ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min)   &
-      + (         node_xy(1,node) - x_min ) * real ( x_ps_max) ) &
+      ( ( x_max - node_xy(1,node)         ) * dble ( x_ps_min )   &
+      + (         node_xy(1,node) - x_min ) * dble ( x_ps_max ) ) &
       / ( x_max                   - x_min ) )
 
     y_ps = int ( &
-      ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min)   &
-      + (         node_xy(2,node) - y_min ) * real ( y_ps_max) ) &
+      ( ( y_max - node_xy(2,node)         ) * dble ( y_ps_min )   &
+      + (         node_xy(2,node) - y_min ) * dble ( y_ps_max ) ) &
       / ( y_max                   - y_min ) )
 
     write ( file_unit, '(a,i4,2x,i4,2x,i4,2x,a)' ) 'newpath ', x_ps, y_ps, &
@@ -17631,13 +17631,13 @@ subroutine points_plot ( file_name, node_num, node_xy, node_label )
     do node = 1, node_num
 
       x_ps = int ( &
-        ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min)   &
-        + (       + node_xy(1,node) - x_min ) * real ( x_ps_max) ) &
+        ( ( x_max - node_xy(1,node)         ) * dble ( x_ps_min )   &
+        + (       + node_xy(1,node) - x_min ) * dble ( x_ps_max ) ) &
         / ( x_max                   - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min)   &
-        + (         node_xy(2,node) - y_min ) * real ( y_ps_max) ) &
+        ( ( y_max - node_xy(2,node)         ) * dble ( y_ps_min )   &
+        + (         node_xy(2,node) - y_min ) * dble ( y_ps_max ) ) &
         / ( y_max                   - y_min ) )
 
       write ( string, '(i4)' ) node
@@ -18116,7 +18116,7 @@ subroutine polygon_area_3d ( n, v, area, normal )
   if ( area /= 0.0D+00 ) then
     normal(1:dim_num) = normal(1:dim_num) / area
   else
-    normal(1:dim_num) = 1.0D+00 / sqrt ( real ( dim_num) )
+    normal(1:dim_num) = 1.0D+00 / sqrt ( dble ( dim_num ) )
   end if
 
   area = 0.5D+00 * area
@@ -18865,8 +18865,8 @@ subroutine polygon_inrad_data_2d ( n, radin, area, radout, side )
     stop 1
   end if
 
-  angle = r8_pi / real ( n)
-  area = real ( n) * radin * radin * tan ( angle )
+  angle = r8_pi / dble ( n )
+  area = dble ( n ) * radin * radin * tan ( angle )
   side = 2.0D+00 * radin * tan ( angle )
   radout = 0.5D+00 * side / sin ( angle )
 end
@@ -19084,7 +19084,7 @@ subroutine polygon_lattice_area_2d ( i, b, area )
   integer b
   integer i
 
-  area = real ( i) + real ( b) / 2.0D+00 - 1.0D+00
+  area = dble ( i ) + dble ( b ) / 2.0D+00 - 1.0D+00
 end
 
 subroutine polygon_normal_3d ( n, v, normal ) 
@@ -19230,8 +19230,8 @@ subroutine polygon_outrad_data_2d ( n, radout, area, radin, side )
     stop 1
   end if
 
-  angle = r8_pi / real ( n)
-  area = 0.5D+00 * real ( n) * radout * radout &
+  angle = r8_pi / dble ( n )
+  area = 0.5D+00 * dble ( n ) * radout * radout &
     * sin ( 2.0D+00 * angle )
   side = 2.0D+00 * radout * sin ( angle )
   radin = 0.5D+00 * side / tan ( angle )
@@ -19416,8 +19416,8 @@ subroutine polygon_side_data_2d ( n, side, area, radin, radout )
     stop 1
   end if
 
-  angle = r8_pi / real ( n)
-  area = 0.25D+00 * real ( n) * side * side / tan ( angle )
+  angle = r8_pi / dble ( n )
+  area = 0.25D+00 * dble ( n ) * side * side / tan ( angle )
   radin = 0.5D+00 * side / tan ( angle )
   radout = 0.5D+00 * side / sin ( angle )
 end
@@ -19554,7 +19554,7 @@ subroutine polygon_solid_angle_3d ( n, v, p, solid_angle )
 
   end do
 
-  area = area - r8_pi * real ( n - 2)
+  area = area - r8_pi * dble ( n - 2 )
 
   if ( 0.0D+00 < dot_product ( plane(1:dim_num), r1(1:dim_num) ) ) then
     solid_angle = -area
@@ -20795,9 +20795,9 @@ subroutine polyline_points_nd ( dim_num, n, p, nt, pt )
 
   do it = 1,  nt
 
-    st = ( real ( nt - it) * 0.0D+00 + &
-           real (      it - 1) * s(n) ) &
-         / real ( nt      - 1)
+    st = ( dble ( nt - it ) * 0.0D+00 + &
+           dble ( it - 1 ) * s(n) ) &
+         / dble ( nt      - 1 )
 
     do
 
@@ -21004,9 +21004,9 @@ subroutine polyloop_points_nd ( dim_num, nk, pk, nt, pt )
 
   do it = 1,  nt
 
-    st = ( real ( nt - it) * 0.0D+00 + &
-           real (      it - 1) * sk(nk+1) ) &
-         / real ( nt      - 1)
+    st = ( dble ( nt - it ) * 0.0D+00 + &
+           dble ( it - 1 ) * sk(nk+1) ) &
+         / dble ( nt      - 1 )
 
     do
 
@@ -22120,11 +22120,11 @@ function r8_is_int ( r )
   double precision r
   logical r8_is_int
 
-  if ( real ( huge ( i )) < r ) then
+  if ( dble ( huge ( i ) ) < r ) then
     r8_is_int = .false.
-  else if ( r < - real ( huge ( i )) ) then
+  else if ( r < - dble ( huge ( i ) ) ) then
     r8_is_int = .false.
-  else if ( r == real ( int ( r )) ) then
+  else if ( r == dble ( int ( r ) ) ) then
     r8_is_int = .true.
   else
     r8_is_int = .false.
@@ -22564,7 +22564,7 @@ function r8_uniform ( a, b, seed )
     seed = seed + 2147483647
   end if
 
-  r8_uniform = a + ( b - a ) * real ( seed) * 4.656612875D-10
+  r8_uniform = a + ( b - a ) * dble ( seed ) * 4.656612875D-10
 end
 
 function r8_uniform_01 ( seed )
@@ -22664,7 +22664,7 @@ function r8_uniform_01 ( seed )
 !  Although SEED can be represented exactly as a 32 bit integer,
 !  it generally cannot be represented exactly as a 32 bit real number!
 !
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 subroutine r82vec_permute ( n, p, a )
@@ -23754,7 +23754,7 @@ subroutine r8mat_uniform ( m, n, a, b, seed, r )
         seed = seed + 2147483647
       end if
 
-      r(i,j) = a + ( b - a ) * real ( seed) * 4.656612875D-10
+      r(i,j) = a + ( b - a ) * dble ( seed ) * 4.656612875D-10
 
     end do
   end do
@@ -23842,7 +23842,7 @@ subroutine r8mat_uniform_01 ( m, n, seed, r )
         seed = seed + 2147483647
       end if
 
-      r(i,j) = real ( seed) * 4.656612875D-10
+      r(i,j) = dble ( seed ) * 4.656612875D-10
 
     end do
   end do
@@ -25141,7 +25141,7 @@ subroutine r8vec_uniform_01 ( n, seed, r )
       seed = seed + 2147483647
     end if
 
-    r(i) = real ( seed) * 4.656612875D-10
+    r(i) = dble ( seed ) * 4.656612875D-10
 
   end do
 end
@@ -25225,7 +25225,7 @@ subroutine r8vec_uniform_ab ( n, a, b, seed, r )
       seed = seed + 2147483647
     end if
 
-    r(i) = a + ( b - a ) * real ( seed) * 4.656612875D-10
+    r(i) = a + ( b - a ) * dble ( seed ) * 4.656612875D-10
 
   end do
 end
@@ -25487,9 +25487,9 @@ subroutine radians_to_dms ( angle_rad, degrees, minutes, seconds )
   angle_deg = 180.0D+00 * abs ( angle_rad ) / r8_pi
 
   degrees = int ( angle_deg )
-  angle_deg = ( angle_deg - real ( degrees) ) * 60.0D+00
+  angle_deg = ( angle_deg - dble ( degrees ) ) * 60.0D+00
   minutes = int ( angle_deg )
-  angle_deg = ( angle_deg - real ( minutes) ) * 60.0D+00
+  angle_deg = ( angle_deg - dble ( minutes ) ) * 60.0D+00
   seconds = nint ( angle_deg )
 
   if ( angle_rad < 0.0D+00 ) then
@@ -26923,7 +26923,7 @@ subroutine shape_point_dist_2d ( pc, p1, side_num, p, dist )
 !
 !  Determine the angle subtended by a single side.
 !
-  sector_angle = 360.0D+00 / real ( side_num)
+  sector_angle = 360.0D+00 / dble ( side_num )
 !
 !  How long is the half-diagonal?
 !
@@ -26941,7 +26941,7 @@ subroutine shape_point_dist_2d ( pc, p1, side_num, p, dist )
 !  nearest distance is the midpoint of any such side.
 !
   if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
-    dist = radius * cos ( r8_pi / real ( side_num) )
+    dist = radius * cos ( r8_pi / dble ( side_num ) )
     return
   end if
 !
@@ -26956,12 +26956,12 @@ subroutine shape_point_dist_2d ( pc, p1, side_num, p, dist )
 !
 !  Generate the two corner points that terminate the SECTOR-th side.
 !
-  angle2 = real ( sector_index - 1) * sector_angle
+  angle2 = dble ( sector_index - 1 ) * sector_angle
   angle2 = degrees_to_radians ( angle2 )
 
   call vector_rotate_base_2d ( p1, pc, angle2, pa )
 
-  angle2 = real ( sector_index) * sector_angle
+  angle2 = dble ( sector_index ) * sector_angle
   angle2 = degrees_to_radians ( angle2 )
 
   call vector_rotate_base_2d ( p1, pc, angle2, pb )
@@ -27035,7 +27035,7 @@ subroutine shape_point_near_2d ( pc, p1, side_num, p, pn, dist )
 !
 !  Determine the angle subtended by a single side.
 !
-  sector_angle = 360.0D+00 / real ( side_num)
+  sector_angle = 360.0D+00 / dble ( side_num )
 !
 !  How long is the half-diagonal?
 !
@@ -27054,7 +27054,7 @@ subroutine shape_point_near_2d ( pc, p1, side_num, p, pn, dist )
 !  nearest distance is the midpoint of any such side.
 !
   if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
-    angle = r8_pi / real ( side_num)
+    angle = r8_pi / dble ( side_num )
     pd(1) =   ( p(1) - pc(1) ) * cos ( angle ) &
             + ( p(2) - pc(2) ) * sin ( angle )
     pd(2) = - ( p(1) - pc(1) ) * sin ( angle ) &
@@ -27076,12 +27076,12 @@ subroutine shape_point_near_2d ( pc, p1, side_num, p, pn, dist )
 !
 !  Generate the two corner points that terminate the SECTOR-th side.
 !
-  angle2 = real ( sector_index - 1) * sector_angle
+  angle2 = dble ( sector_index - 1 ) * sector_angle
   angle2 = degrees_to_radians ( angle2 )
 
   call vector_rotate_base_2d ( p1, pc, angle2, pa )
 
-  angle2 = real ( sector_index) * sector_angle
+  angle2 = dble ( sector_index ) * sector_angle
   angle2 = degrees_to_radians ( angle2 )
 
   call vector_rotate_base_2d ( p1, pc, angle2, pb )
@@ -27238,7 +27238,7 @@ subroutine shape_ray_int_2d ( pc, p1, side_num, pa, pb, pint )
 !
 !  Determine the angle subtended by a single side.
 !
-  sector_angle = 360.0D+00 / real ( side_num)
+  sector_angle = 360.0D+00 / dble ( side_num )
 !
 !  How long is the half-diagonal?
 !
@@ -27263,7 +27263,7 @@ subroutine shape_ray_int_2d ( pc, p1, side_num, pa, pb, pint )
 !
     if ( sector_index == 1 ) then
 
-      angle2 = real ( sector_index - 1) * sector_angle
+      angle2 = dble ( sector_index - 1 ) * sector_angle
       angle2 = degrees_to_radians ( angle2 )
 
       call vector_rotate_base_2d ( p1, pc, angle2, v1 )
@@ -27274,7 +27274,7 @@ subroutine shape_ray_int_2d ( pc, p1, side_num, pa, pb, pint )
 
     end if
 
-    angle2 = real ( sector_index) * sector_angle
+    angle2 = dble ( sector_index ) * sector_angle
     angle2 = degrees_to_radians ( angle2 )
 
     call vector_rotate_base_2d ( p1, pc, angle2, v2 )
@@ -27642,7 +27642,7 @@ subroutine simplex01_volume_nd ( dim_num, volume )
 
   volume = 1.0D+00
   do i = 1, dim_num
-    volume = volume / real ( i)
+    volume = volume / dble ( i )
   end do
 end
 
@@ -27711,7 +27711,7 @@ subroutine simplex_volume_nd ( dim_num, a, volume )
 
     volume = abs ( det )
     do i = 1, dim_num
-      volume = volume / real ( i)
+      volume = volume / dble ( i )
     end do
 
   end if
@@ -27791,9 +27791,9 @@ function sin_power_int ( a, b, n )
   end if
 
   do m = mlo, n, 2
-    value = ( real ( m - 1) * value &
+    value = ( dble ( m - 1 ) * value &
               + sa**( m - 1 ) * ca - sb**( m - 1 ) * cb ) &
-      / real ( m)
+      / dble ( m )
   end do
 
   sin_power_int = value
@@ -28429,9 +28429,9 @@ subroutine sphere_cap_area_nd ( dim_num, r, h, area )
     do i = 2, dim_num-2
       tk = tj
       tj = ti
-      ti = ( real ( i - 1) * tk &
+      ti = ( dble ( i - 1 ) * tk &
         - cos ( theta ) * sin ( theta ) ** ( i - 1 ) ) &
-        / real ( i)
+        / dble ( i )
     end do
 
     area = sphere_k ( dim_num-1 ) * ti * r ** ( dim_num - 1 )
@@ -29141,7 +29141,7 @@ subroutine sphere_exp_point_near_3d ( p1, p2, p3, p4, p, pn )
   norm = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
 
   if ( norm == 0.0D+00 ) then
-    pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num) )
+    pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( dble ( dim_num ) )
     return
   end if
 !
@@ -29576,9 +29576,9 @@ subroutine sphere_imp_line_project_3d ( r, pc, n, p, maxpnt2, n2, pp, &
             do j = 1, nfill-1
 
               pd(1:dim_num) = &
-                ( real ( nfill - j) &
+                ( dble ( nfill - j ) &
                 * ( p1(1:dim_num) - pc(1:dim_num) ) &
-                + real (         j) &
+                + dble ( j ) &
                 * ( p2(1:dim_num) - pc(1:dim_num) ) )
 
               tnorm = sqrt ( sum ( pd(1:dim_num)**2 ) )
@@ -29717,7 +29717,7 @@ subroutine sphere_imp_point_near_3d ( r, pc, p, pn )
   norm = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
 
   if ( norm == 0.0D+00 ) then
-    pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num) )
+    pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( dble ( dim_num ) )
     return
   end if
 !
@@ -29776,7 +29776,7 @@ subroutine sphere_imp_point_project_3d ( r, pc, p, pp )
 
   else if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
 
-    pp(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num) )
+    pp(1:dim_num) = pc(1:dim_num) + r / sqrt ( dble ( dim_num ) )
 
   else
 
@@ -30140,7 +30140,7 @@ function sphere_k ( dim_num )
     sphere_k = 2.0D+00 * ( 2.0D+00 * r8_pi ) ** ( ( dim_num - 1 ) / 2 )
   end if
 
-  sphere_k = sphere_k / real ( i4_factorial2 ( dim_num - 2 ))
+  sphere_k = sphere_k / dble ( i4_factorial2 ( dim_num - 2 ) )
 end
 
 subroutine sphere_triangle_angles_to_area ( r, a, b, c, area )
@@ -30650,13 +30650,13 @@ function sphere01_area_nd ( dim_num )
     m = dim_num / 2
     area = 2.0D+00 * ( r8_pi ) ** m
     do i = 1, m - 1
-      area = area / real ( i)
+      area = area / dble ( i )
     end do
   else
     m = ( dim_num - 1 ) / 2
     area = ( r8_pi ) ** m * 2.0D+00 ** dim_num
     do i = m + 1, 2 * m
-      area = area / real ( i)
+      area = area / dble ( i )
     end do
   end if
 
@@ -31036,7 +31036,7 @@ subroutine sphere01_sample_nd ( dim_num, seed, x )
     random_cosine = r8_uniform_01 ( seed )
     random_cosine = 2.0D+00 * random_cosine - 1.0D+00
     random_sign = r8_uniform_01 ( seed )
-    random_sign = real ( 2 * int ( 2.0D+00 * random_sign ) - 1)
+    random_sign = dble ( 2 * int ( 2.0D+00 * random_sign ) - 1 )
     random_sine = random_sign * sqrt ( 1.0D+00 - random_cosine**2 )
     xi = x(i)
     x(i  ) = random_cosine * xi
@@ -31221,13 +31221,13 @@ function sphere01_volume_nd ( dim_num )
     m = dim_num / 2
     volume = r8_pi ** m
     do i = 1, m
-      volume = volume / real ( i)
+      volume = volume / dble ( i )
     end do
   else
     m = ( dim_num - 1 ) / 2
     volume = r8_pi ** m * 2.0D+00**dim_num
     do i = m + 1, 2 * m + 1
-      volume = volume / real ( i)
+      volume = volume / dble ( i )
     end do
   end if
 
@@ -32320,8 +32320,8 @@ subroutine super_ellipse_points_2d ( pc, r1, r2, expo, psi, n, p )
 
   do i = 1, n
 
-    theta = ( 2.0D+00 * r8_pi * real ( i - 1) ) &
-      / real ( n)
+    theta = ( 2.0D+00 * r8_pi * dble ( i - 1 ) ) &
+      / dble ( n )
 
     act = abs ( cos ( theta ) )
     sct = sign ( 1.0D+00, cos ( theta ) )
@@ -36805,15 +36805,15 @@ subroutine triangle_gridpoints_2d ( t, sub_num, grid_max, grid_num, g )
 
         grid_num = grid_num + 1
 
-        g(1,grid_num) = ( real (           i) * t(1,1) &
-                        + real (               j) * t(1,2) &
-                        + real ( sub_num - i - j) * t(1,3) ) &
-                        / real ( sub_num)
+        g(1,grid_num) = ( dble ( i ) * t(1,1) &
+                        + dble ( j ) * t(1,2) &
+                        + dble ( sub_num - i - j ) * t(1,3) ) &
+                        / dble ( sub_num )
 
-        g(2,grid_num) = ( real (           i) * t(2,1) &
-                        + real (               j) * t(2,2) &
-                        + real ( sub_num - i - j) * t(2,3) ) &
-                        / real ( sub_num)
+        g(2,grid_num) = ( dble ( i ) * t(2,1) &
+                        + dble ( j ) * t(2,2) &
+                        + dble ( sub_num - i - j ) * t(2,3) ) &
+                        / dble ( sub_num )
       end if
 
     end do
@@ -39341,31 +39341,31 @@ subroutine voxels_step_3d ( v1, v2, inc, jnc, knc, v3 )
 !  Compute the smallest ALPHA that will change one of V2(1:3) by +-0.5.
 !
   if ( 0 < inc ) then
-    alphai = ( real ( v2(1) - v1(1)) + 0.5D+00 ) &
-             / real ( inc)
+    alphai = ( dble ( v2(1) - v1(1) ) + 0.5D+00 ) &
+             / dble ( inc )
   else if ( inc < 0 ) then
-    alphai = ( real ( v2(1) - v1(1)) - 0.5D+00 ) &
-             / real ( inc)
+    alphai = ( dble ( v2(1) - v1(1) ) - 0.5D+00 ) &
+             / dble ( inc )
   else
     alphai = huge ( alphai )
   end if
 
   if ( 0 < jnc ) then
-    alphaj = ( real ( v2(2) - v1(2)) + 0.5D+00 ) &
-             / real ( jnc)
+    alphaj = ( dble ( v2(2) - v1(2) ) + 0.5D+00 ) &
+             / dble ( jnc )
   else if ( jnc < 0 ) then
-    alphaj = ( real ( v2(2) - v1(2)) - 0.5D+00 ) &
-             / real ( jnc)
+    alphaj = ( dble ( v2(2) - v1(2) ) - 0.5D+00 ) &
+             / dble ( jnc )
   else
     alphaj = huge ( alphaj )
   end if
 
   if ( 0 < knc ) then
-    alphak = ( real ( v2(3) - v1(3)) + 0.5D+00 ) &
-             / real ( knc)
+    alphak = ( dble ( v2(3) - v1(3) ) + 0.5D+00 ) &
+             / dble ( knc )
   else if ( knc < 0 ) then
-    alphak = ( real ( v2(3) - v1(3)) - 0.5D+00 ) &
-             / real ( knc)
+    alphak = ( dble ( v2(3) - v1(3) ) - 0.5D+00 ) &
+             / dble ( knc )
   else
     alphaj = huge ( alphaj )
   end if
@@ -39391,15 +39391,15 @@ subroutine voxels_step_3d ( v1, v2, inc, jnc, knc, v3 )
 !
   if ( alpha == alphai ) then
     v3(1) = v2(1) + sign ( 1, inc )
-    v3(2) = v1(2) + nint ( alpha * real ( jnc) )
-    v3(3) = v1(3) + nint ( alpha * real ( knc) )
+    v3(2) = v1(2) + nint ( alpha * dble ( jnc ) )
+    v3(3) = v1(3) + nint ( alpha * dble ( knc ) )
   else if ( alpha == alphaj ) then
-    v3(1) = v1(1) + nint ( alpha * real ( inc) )
+    v3(1) = v1(1) + nint ( alpha * dble ( inc ) )
     v3(2) = v2(2) + sign ( 1, jnc )
-    v3(3) = v1(3) + nint ( alpha * real ( knc) )
+    v3(3) = v1(3) + nint ( alpha * dble ( knc ) )
   else if ( alpha == alphak ) then
-    v3(1) = v1(1) + nint ( alpha * real ( inc) )
-    v3(2) = v1(2) + nint ( alpha * real ( jnc) )
+    v3(1) = v1(1) + nint ( alpha * dble ( inc ) )
+    v3(2) = v1(2) + nint ( alpha * dble ( jnc ) )
     v3(3) = v2(3) + sign ( 1, knc )
   end if
 end

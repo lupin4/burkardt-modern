@@ -297,7 +297,7 @@ subroutine cvt_energy ( dim_num, n, batch, sample, initialize, sample_num, &
 
   end do
 
-  energy = energy / real ( sample_num)
+  energy = energy / dble ( sample_num )
 end
 
 subroutine cvt_iterate ( dim_num, n, batch, sample, initialize, sample_num, &
@@ -443,7 +443,7 @@ subroutine cvt_iterate ( dim_num, n, batch, sample, initialize, sample_num, &
 !  Estimate the centroids.
 !
   do j = 1, n
-    r2(1:dim_num,j) = r2(1:dim_num,j) / real ( count(j))
+    r2(1:dim_num,j) = r2(1:dim_num,j) / dble ( count(j) )
   end do
 !
 !  Determine the sum of the distances between the old generators 
@@ -460,7 +460,7 @@ subroutine cvt_iterate ( dim_num, n, batch, sample, initialize, sample_num, &
 !
 !  Normalize the discrete energy estimate.
 !
-  energy = energy / real ( sample_num) 
+  energy = energy / dble ( sample_num ) 
 end
 
 subroutine cvt_sample ( dim_num, n, n_now, sample, initialize, seed, r )
@@ -590,8 +590,8 @@ subroutine cvt_sample ( dim_num, n, n_now, sample, initialize, seed, r )
 
     allocate ( tuple(1:dim_num) )
 
-    exponent = 1.0D+00 / real ( dim_num)
-    ngrid = int ( ( real ( n) )**exponent )
+    exponent = 1.0D+00 / dble ( dim_num )
+    ngrid = int ( ( dble ( n ) )**exponent )
     rank_max = ngrid**dim_num
 
     if ( rank_max < n ) then
@@ -610,8 +610,8 @@ subroutine cvt_sample ( dim_num, n, n_now, sample, initialize, seed, r )
       call tuple_next_fast ( ngrid, dim_num, rank, tuple )
       rank = rank + 1
       rank = mod ( rank, rank_max )
-      r(1:dim_num,j) = real ( 2 * tuple(1:dim_num) - 1) &
-        / real ( 2 * ngrid)
+      r(1:dim_num,j) = dble ( 2 * tuple(1:dim_num) - 1 ) &
+        / dble ( 2 * ngrid )
     end do
 
     seed = seed + n_now
@@ -1197,12 +1197,12 @@ subroutine i4_to_halton_sequence ( dim_num, n, step, seed, leap, base, r )
       seed2(j) = seed(i) + ( step + j - 1 ) * leap(i)
     end do
 
-    base_inv = real ( 1.0D+00) / real ( base(i))
+    base_inv = dble ( 1.0D+00 ) / dble ( base(i) )
 
     do while ( any ( seed2(1:n) /= 0 ) )
       digit(1:n) = mod ( seed2(1:n), base(i) )
-      r(i,1:n) = r(i,1:n) + real ( digit(1:n)) * base_inv
-      base_inv = base_inv / real ( base(i))
+      r(i,1:n) = r(i,1:n) + dble ( digit(1:n) ) * base_inv
+      base_inv = base_inv / dble ( base(i) )
       seed2(1:n) = seed2(1:n) / base(i)
     end do
 
@@ -1613,7 +1613,7 @@ subroutine r8mat_uniform_01 ( m, n, seed, r )
         seed = seed + 2147483647
       end if
 
-      r(i,j) = real ( seed) * 4.656612875E-10
+      r(i,j) = dble ( seed ) * 4.656612875E-10
 
     end do
   end do

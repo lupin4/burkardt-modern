@@ -1031,9 +1031,9 @@ subroutine example2_q4_mesh ( node_num, element_num, node_xy, element_node, &
   node_xy(2,k) = 0.0D+00
 
   do row = 1, 4
-    r = real ( row)
+    r = dble ( row )
     do col = 0, 8
-      a = real ( 8 - col) * pi / 8.0D+00
+      a = dble ( 8 - col ) * pi / 8.0D+00
       k = k + 1
       node_xy(1,k) = r * cos ( a )
       node_xy(2,k) = r * sin ( a )
@@ -2029,7 +2029,7 @@ subroutine plot_q4_mesh ( node_num, element_num, node_xy, element_node, &
 
   if ( x_scale < y_scale ) then
 
-    delta = nint ( real ( x_ps_max - x_ps_min) &
+    delta = nint ( dble ( x_ps_max - x_ps_min ) &
       * ( y_scale - x_scale ) / ( 2.0D+00 * y_scale ) )
 
     x_ps_max = x_ps_max - delta
@@ -2042,7 +2042,7 @@ subroutine plot_q4_mesh ( node_num, element_num, node_xy, element_node, &
 
   else if ( y_scale < x_scale ) then
 
-    delta = nint ( real ( y_ps_max - y_ps_min) &
+    delta = nint ( dble ( y_ps_max - y_ps_min ) &
       * ( x_scale - y_scale ) / ( 2.0D+00 * x_scale ) )
 
     y_ps_max      = y_ps_max - delta
@@ -2152,13 +2152,13 @@ subroutine plot_q4_mesh ( node_num, element_num, node_xy, element_node, &
     do node = 1, node_num
 
       x_ps = int ( &
-        ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min)   &
-        + (         node_xy(1,node) - x_min ) * real ( x_ps_max) ) &
+        ( ( x_max - node_xy(1,node)         ) * dble ( x_ps_min )   &
+        + (         node_xy(1,node) - x_min ) * dble ( x_ps_max ) ) &
         / ( x_max                   - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min)   &
-        + (         node_xy(2,node) - y_min ) * real ( y_ps_max) ) &
+        ( ( y_max - node_xy(2,node)         ) * dble ( y_ps_min )   &
+        + (         node_xy(2,node) - y_min ) * dble ( y_ps_max ) ) &
         / ( y_max                   - y_min ) )
 
       write ( output_unit, '(a,i4,2x,i4,2x,i4,2x,a)' ) 'newpath ', x_ps, y_ps, &
@@ -2186,13 +2186,13 @@ subroutine plot_q4_mesh ( node_num, element_num, node_xy, element_node, &
     do node = 1, node_num
 
       x_ps = int ( &
-        ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min)   &
-        + (       + node_xy(1,node) - x_min ) * real ( x_ps_max) ) &
+        ( ( x_max - node_xy(1,node)         ) * dble ( x_ps_min )   &
+        + (       + node_xy(1,node) - x_min ) * dble ( x_ps_max ) ) &
         / ( x_max                   - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min)   &
-        + (         node_xy(2,node) - y_min ) * real ( y_ps_max) ) &
+        ( ( y_max - node_xy(2,node)         ) * dble ( y_ps_min )   &
+        + (         node_xy(2,node) - y_min ) * dble ( y_ps_max ) ) &
         / ( y_max                   - y_min ) )
 
       write ( string, '(i4)' ) node
@@ -2228,16 +2228,16 @@ subroutine plot_q4_mesh ( node_num, element_num, node_xy, element_node, &
 
         x_ps = int ( &
           ( ( x_max - node_xy(1,node)         ) &
-            * real ( x_ps_min)   &
+            * dble ( x_ps_min )   &
           + (         node_xy(1,node) - x_min ) &
-            * real ( x_ps_max) ) &
+            * dble ( x_ps_max ) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
           ( ( y_max - node_xy(2,node)         ) &
-            * real ( y_ps_min)   &
+            * dble ( y_ps_min )   &
           + (         node_xy(2,node) - y_min ) &
-            * real ( y_ps_max) ) &
+            * dble ( y_ps_max ) ) &
           / ( y_max                   - y_min ) )
 
         if ( i == 1 ) then
@@ -2283,17 +2283,17 @@ subroutine plot_q4_mesh ( node_num, element_num, node_xy, element_node, &
 
       end do
 
-      ave_x = ave_x / real ( element_order)
-      ave_y = ave_y / real ( element_order)
+      ave_x = ave_x / dble ( element_order )
+      ave_y = ave_y / dble ( element_order )
 
       x_ps = int ( &
-        ( ( x_max - ave_x         ) * real ( x_ps_min)   &
-        + (       + ave_x - x_min ) * real ( x_ps_max) ) &
+        ( ( x_max - ave_x         ) * dble ( x_ps_min )   &
+        + (       + ave_x - x_min ) * dble ( x_ps_max ) ) &
         / ( x_max         - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - ave_y         ) * real ( y_ps_min)   &
-        + (         ave_y - y_min ) * real ( y_ps_max) ) &
+        ( ( y_max - ave_y         ) * dble ( y_ps_min )   &
+        + (         ave_y - y_min ) * dble ( y_ps_max ) ) &
         / ( y_max         - y_min ) )
 
       write ( string, '(i4)' ) element
@@ -2419,7 +2419,7 @@ function r8_uniform_01 ( seed )
 !  Although SEED can be represented exactly as a 32 bit integer,
 !  it generally cannot be represented exactly as a 32 bit real number!
 !
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 subroutine r8vec_bracket ( n, x, xval, left, right )
@@ -2581,7 +2581,7 @@ subroutine r8vec_uniform_01 ( n, seed, r )
       seed = seed + i4_huge
     end if
 
-    r(i) = real ( seed) * 4.656612875D-10
+    r(i) = dble ( seed ) * 4.656612875D-10
 
   end do
 end

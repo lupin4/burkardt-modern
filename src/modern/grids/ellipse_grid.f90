@@ -62,11 +62,11 @@ subroutine ellipse_grid ( n, r, c, ng, xy )
   double precision y
 
   if ( r(1) < r(2) ) then
-    h = 2.0D+00 * r(1) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(1) / dble ( 2 * n + 1 )
     ni = n
     nj = i4_ceiling ( r(2) / r(1) ) * n
   else
-    h = 2.0D+00 * r(2) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(2) / dble ( 2 * n + 1 )
     nj = n
     ni = i4_ceiling ( r(1) / r(2) ) * n
   end if
@@ -77,7 +77,7 @@ subroutine ellipse_grid ( n, r, c, ng, xy )
 
     i = 0
     x = c(1)
-    y = c(2) + real ( j) * h
+    y = c(2) + dble ( j ) * h
     p = p + 1
     xy(1,p) = x
     xy(2,p) = y
@@ -91,7 +91,7 @@ subroutine ellipse_grid ( n, r, c, ng, xy )
     do
 
       i = i + 1
-      x = c(1) + real ( i) * h
+      x = c(1) + dble ( i ) * h
 
       if ( 1.0D+00 < ( ( x - c(1) ) / r(1) ) ** 2 &
                    + ( ( y - c(2) ) / r(2) ) ** 2 ) then
@@ -174,11 +174,11 @@ subroutine ellipse_grid_count ( n, r, c, ng )
   double precision y
 
   if ( r(1) < r(2) ) then
-    h = 2.0D+00 * r(1) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(1) / dble ( 2 * n + 1 )
     ni = n
     nj = i4_ceiling ( r(2) / r(1) ) * n
   else
-    h = 2.0D+00 * r(2) / real ( 2 * n + 1)
+    h = 2.0D+00 * r(2) / dble ( 2 * n + 1 )
     nj = n
     ni = i4_ceiling ( r(1) / r(2) ) * n
   end if
@@ -189,7 +189,7 @@ subroutine ellipse_grid_count ( n, r, c, ng )
 
     i = 0
     x = c(1)
-    y = c(2) + real ( j) * h
+    y = c(2) + dble ( j ) * h
     p = p + 1
 
     if ( 0 < j ) then
@@ -199,7 +199,7 @@ subroutine ellipse_grid_count ( n, r, c, ng )
     do
 
       i = i + 1
-      x = c(1) + real ( i) * h
+      x = c(1) + dble ( i ) * h
 
       if ( 1.0D+00 < ( ( x - c(1) ) / r(1) ) ** 2 &
                    + ( ( y - c(2) ) / r(2) ) ** 2 ) then
@@ -265,7 +265,7 @@ function i4_ceiling ( r )
   integer value
 
   value = int ( r )
-  if ( real ( value) < r ) then
+  if ( dble ( value ) < r ) then
     value = value + 1
   end if
 

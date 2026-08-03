@@ -164,7 +164,7 @@ subroutine alpha_measure ( n, z, triangle_order, triangle_num, triangle_node, &
 
   end do
 
-  alpha_ave = alpha_ave / real ( triangle_num)
+  alpha_ave = alpha_ave / dble ( triangle_num )
   alpha_area = alpha_area / area_total
 !
 !  Normalize angles from [0,pi/3] degrees into qualities in [0,1].
@@ -2010,7 +2010,7 @@ subroutine r8mat_uniform_01 ( m, n, seed, r )
         seed = seed + i4_huge
       end if
 
-      r(i,j) = real ( seed) * 4.656612875D-10
+      r(i,j) = dble ( seed ) * 4.656612875D-10
 
     end do
   end do
@@ -2965,7 +2965,7 @@ subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
 
   if ( x_scale < y_scale ) then
 
-    delta = nint ( real ( x_ps_max - x_ps_min) &
+    delta = nint ( dble ( x_ps_max - x_ps_min ) &
       * ( y_scale - x_scale ) / ( 2.0D+00 * y_scale ) )
 
     x_ps_max = x_ps_max - delta
@@ -2978,7 +2978,7 @@ subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
 
   else if ( y_scale < x_scale ) then
 
-    delta = nint ( real ( y_ps_max - y_ps_min) &
+    delta = nint ( dble ( y_ps_max - y_ps_min ) &
       * ( x_scale - y_scale ) / ( 2.0D+00 * x_scale ) )
 
     y_ps_max      = y_ps_max - delta
@@ -3076,13 +3076,13 @@ subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
     do node = 1, node_num
 
       x_ps = int ( &
-        ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min)   &
-        + (         node_xy(1,node) - x_min ) * real ( x_ps_max) ) &
+        ( ( x_max - node_xy(1,node)         ) * dble ( x_ps_min )   &
+        + (         node_xy(1,node) - x_min ) * dble ( x_ps_max ) ) &
         / ( x_max                   - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min)   &
-        + (         node_xy(2,node) - y_min ) * real ( y_ps_max) ) &
+        ( ( y_max - node_xy(2,node)         ) * dble ( y_ps_min )   &
+        + (         node_xy(2,node) - y_min ) * dble ( y_ps_max ) ) &
         / ( y_max                   - y_min ) )
 
       write ( file_unit, '(a,i4,2x,i4,2x,i4,2x,a)' ) 'newpath ', x_ps, y_ps, &
@@ -3110,13 +3110,13 @@ subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
     do node = 1, node_num
 
       x_ps = int ( &
-        ( ( x_max - node_xy(1,node)         ) * real ( x_ps_min)   &
-        + (       + node_xy(1,node) - x_min ) * real ( x_ps_max) ) &
+        ( ( x_max - node_xy(1,node)         ) * dble ( x_ps_min )   &
+        + (       + node_xy(1,node) - x_min ) * dble ( x_ps_max ) ) &
         / ( x_max                   - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - node_xy(2,node)         ) * real ( y_ps_min)   &
-        + (         node_xy(2,node) - y_min ) * real ( y_ps_max) ) &
+        ( ( y_max - node_xy(2,node)         ) * dble ( y_ps_min )   &
+        + (         node_xy(2,node) - y_min ) * dble ( y_ps_max ) ) &
         / ( y_max                   - y_min ) )
 
       write ( string, '(i4)' ) node
@@ -3152,16 +3152,16 @@ subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
 
         x_ps = int ( &
           ( ( x_max - node_xy(1,node)         ) &
-          * real ( x_ps_min)   &
+          * dble ( x_ps_min )   &
           + (         node_xy(1,node) - x_min ) &
-          * real ( x_ps_max) ) &
+          * dble ( x_ps_max ) ) &
           / ( x_max                   - x_min ) )
 
         y_ps = int ( &
           ( ( y_max - node_xy(2,node)         ) &
-          * real ( y_ps_min)   &
+          * dble ( y_ps_min )   &
           + (         node_xy(2,node) - y_min ) &
-          * real ( y_ps_max) ) &
+          * dble ( y_ps_max ) ) &
           / ( y_max                   - y_min ) )
 
         if ( i == 1 ) then
@@ -3211,13 +3211,13 @@ subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
       ave_y = ave_y / 3.0D+00
 
       x_ps = int ( &
-        ( ( x_max - ave_x         ) * real ( x_ps_min)   &
-        + (       + ave_x - x_min ) * real ( x_ps_max) ) &
+        ( ( x_max - ave_x         ) * dble ( x_ps_min )   &
+        + (       + ave_x - x_min ) * dble ( x_ps_max ) ) &
         / ( x_max         - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - ave_y         ) * real ( y_ps_min)   &
-        + (         ave_y - y_min ) * real ( y_ps_max) ) &
+        ( ( y_max - ave_y         ) * dble ( y_ps_min )   &
+        + (         ave_y - y_min ) * dble ( y_ps_max ) ) &
         / ( y_max         - y_min ) )
 
       write ( string, '(i4)' ) triangle

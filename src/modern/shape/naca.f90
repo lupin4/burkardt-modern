@@ -219,9 +219,9 @@ subroutine r8vec_linspace ( n, a, b, x )
   else
 
     do i = 1, n
-      x(i) = ( real ( n - i) * a   &
-             + real (     i - 1) * b ) &
-             / real ( n     - 1)
+      x(i) = ( dble ( n - i ) * a   &
+             + dble ( i - 1 ) * b ) &
+             / dble ( n     - 1 )
     end do
 
   end if

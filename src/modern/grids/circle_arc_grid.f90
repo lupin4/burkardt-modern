@@ -48,9 +48,9 @@ subroutine circle_arc_grid ( r, c, a, n, xy )
 
   do j = 1, n
 
-    aj = ( real ( n - j) * a(1)   &
-         + real (     j - 1) * a(2) ) &
-         / real ( n     - 1)
+    aj = ( dble ( n - j ) * a(1)   &
+         + dble ( j - 1 ) * a(2) ) &
+         / dble ( n     - 1 )
 
     xy(1,j) = c(1) + r * cos ( aj * pi / 180.0D+00 )
     xy(2,j) = c(2) + r * sin ( aj * pi / 180.0D+00 )

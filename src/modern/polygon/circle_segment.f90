@@ -484,7 +484,7 @@ subroutine circle_segment_area_from_sample ( r, c, p1, p2, n, seed, area )
 !
 !  The area of the segment is its relative share of the circle area.
 !
-  area = pi * r**2 * real ( m) / real ( n)
+  area = pi * r**2 * dble ( m ) / dble ( n )
 end
 
 subroutine circle_segment_cdf ( r, h, h2, cdf )
@@ -762,8 +762,8 @@ subroutine circle_segment_centroid_from_sample ( r, c, p1, p2, n, seed, d )
 
   call circle_segment_sample_from_chord ( r, c, p1, p2, n, seed, x, y )
 
-  d(1) = sum ( x(1:n) ) / real ( n)
-  d(2) = sum ( y(1:n) ) / real ( n)
+  d(1) = sum ( x(1:n) ) / dble ( n )
+  d(2) = sum ( y(1:n) ) / dble ( n )
 end
 
 subroutine circle_segment_contains_point ( r, c, omega1, omega2, xy, value )
@@ -1756,7 +1756,7 @@ subroutine jacobi_eigenvalue ( n, a, it_max, v, d, it_num, rot_num )
       end do
     end do
 
-    thresh = sqrt ( thresh ) / real ( 4 * n)
+    thresh = sqrt ( thresh ) / dble ( 4 * n )
 
     if ( thresh == 0.0D+00 ) then
       exit 
@@ -1978,7 +1978,7 @@ subroutine r_jacobi ( n, a, b, alpha, beta )
   end if
 
   do i = 2, n
-    i_r8 = real ( i)
+    i_r8 = dble ( i )
     alpha(i) = ( b - a ) * ( b + a ) & 
       / ( 2.0D+00 * ( i_r8 - 1.0D+00 ) + a + b ) &
       / ( 2.0D+00 * i_r8 + a + b )
@@ -1989,7 +1989,7 @@ subroutine r_jacobi ( n, a, b, alpha, beta )
     / ( a + b + 3.0D+00 )
 
   do i = 3, n
-    i_r8 = real ( i)
+    i_r8 = dble ( i )
     nab = 2.0D+00 * ( i_r8 - 1.0D+00 ) + a +  b
     beta(i) = 4.0D+00 * ( i_r8 - 1.0D+00 + a ) * ( i_r8 - 1.0D+00 + b ) &
       * ( i_r8 - 1.0D+00 ) * ( i_r8 - 1.0D+00 + a + b ) &
@@ -2390,7 +2390,7 @@ function r8_gamma ( x )
     else
 
       n = int ( y ) - 1
-      y = y - real ( n)
+      y = y - dble ( n )
       z = y - 1.0D+00
 
     end if
@@ -2556,7 +2556,7 @@ function r8_uniform_01 ( seed )
     seed = seed + i4_huge
   end if
 
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 subroutine r8mat_uniform_01 ( m, n, seed, r )
@@ -2633,7 +2633,7 @@ subroutine r8mat_uniform_01 ( m, n, seed, r )
         seed = seed + i4_huge
       end if
 
-      r(i,j) = real ( seed) * 4.656612875D-10
+      r(i,j) = dble ( seed ) * 4.656612875D-10
 
     end do
   end do
@@ -2690,9 +2690,9 @@ subroutine r8vec_linspace ( n, a, b, x )
   else
 
     do i = 1, n
-      x(i) = ( real ( n - i) * a   &
-             + real (     i - 1) * b ) &
-             / real ( n     - 1)
+      x(i) = ( dble ( n - i ) * a   &
+             + dble ( i - 1 ) * b ) &
+             / dble ( n     - 1 )
     end do
 
   end if
@@ -2773,7 +2773,7 @@ subroutine r8vec_uniform_01 ( n, seed, r )
       seed = seed + 2147483647
     end if
 
-    r(i) = real ( seed) * 4.656612875D-10
+    r(i) = dble ( seed ) * 4.656612875D-10
 
   end do
 end

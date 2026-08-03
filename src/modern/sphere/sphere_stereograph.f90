@@ -181,7 +181,7 @@ function r8_uniform_01 ( seed )
 !  Although SEED can be represented exactly as a 32 bit integer,
 !  it generally cannot be represented exactly as a 32 bit real number!
 !
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 function r8mat_norm_fro_affine ( m, n, a1, a2 )
@@ -382,7 +382,7 @@ subroutine r8mat_uniform_01 ( m, n, seed, r )
         seed = seed + i4_huge
       end if
 
-      r(i,j) = real ( seed) * 4.656612875D-10
+      r(i,j) = dble ( seed ) * 4.656612875D-10
 
     end do
   end do
@@ -902,7 +902,7 @@ subroutine r8vec_uniform_01 ( n, seed, r )
       seed = seed + 2147483647
     end if
 
-    r(i) = real ( seed) * 4.656612875D-10
+    r(i) = dble ( seed ) * 4.656612875D-10
 
   end do
 end

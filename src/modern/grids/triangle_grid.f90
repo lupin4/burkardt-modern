@@ -68,14 +68,14 @@ subroutine triangle_grid ( n, t, tg )
   double precision tg(2,((n+1)*(n+2))/2)
 
   p = 0
-  nr = real ( n)
+  nr = dble ( n )
 
   do i = 0, n
-    ir = real ( i)
+    ir = dble ( i )
     do j = 0, n - i
-      jr = real ( j)
+      jr = dble ( j )
       k = n - i - j
-      kr = real ( k)
+      kr = dble ( k )
       p = p + 1
       tg(1:2,p) = ( ir * t(1:2,1) + jr * t(1:2,2) + kr * t(1:2,3) ) / nr
     end do

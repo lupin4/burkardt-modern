@@ -205,7 +205,7 @@ subroutine hexa_unit_monomial ( expon, value )
       write ( *, '(a)' ) '  Exponent of -1 encountered.'
       stop 1
     else
-      value = value * 2.0D+00 / real ( expon(i) + 1)
+      value = value * 2.0D+00 / dble ( expon(i) + 1 )
     end if
 
   end do
@@ -555,7 +555,7 @@ subroutine line_unit_monomial ( alpha, value )
   else if ( mod ( alpha, 2 ) == 1 ) then
     value = 0.0D+00
   else
-    value = 2.0D+00 / real ( alpha + 1)
+    value = 2.0D+00 / dble ( alpha + 1 )
   end if
 end
 
@@ -1182,12 +1182,12 @@ subroutine pyra_unit_monomial ( expon, value )
 
     do i = 0, i_hi
       value = value + r8_mop ( i ) * r8_choose ( i_hi, i ) &
-      / real ( i + expon(3) + 1)
+      / dble ( i + expon(3) + 1 )
     end do
 
     value = value &
-          * 2.0D+00 / real ( expon(1) + 1) &
-          * 2.0D+00 / real ( expon(2) + 1)
+          * 2.0D+00 / dble ( expon(1) + 1 ) &
+          * 2.0D+00 / dble ( expon(2) + 1 )
 
   end if
 end
@@ -2702,7 +2702,7 @@ subroutine quad_unit_monomial ( expon, value )
       write ( *, '(a)' ) '  Exponent of -1 encountered.'
       stop 1
     else
-      value = value * 2.0D+00 / real ( expon(i) + 1)
+      value = value * 2.0D+00 / dble ( expon(i) + 1 )
     end if
 
   end do
@@ -3060,10 +3060,10 @@ function r8_choose ( n, k )
   else
 
     mx = max ( k, n - k )
-    value = real ( mx + 1)
+    value = dble ( mx + 1 )
 
     do i = 2, mn
-      value = ( value * real ( mx + i) ) / real ( i)
+      value = ( value * dble ( mx + i ) ) / dble ( i )
     end do
 
   end if
@@ -3638,28 +3638,28 @@ subroutine tetr_unit_monomial ( expon, value )
 !
 ! do i = 1, expon(1)
 !   k = k + 1
-!   value = value * real ( i) / real ( k)
+!   value = value * dble ( i ) / dble ( k )
 ! end do
 
   k = expon(1)
   do i = 1, expon(2)
     k = k + 1
-    value = value * real ( i) / real ( k)
+    value = value * dble ( i ) / dble ( k )
   end do
 
   do i = 1, expon(3)
     k = k + 1
-    value = value * real ( i) / real ( k)
+    value = value * dble ( i ) / dble ( k )
   end do
 
   k = k + 1
-  value = value / real ( k)
+  value = value / dble ( k )
 
   k = k + 1
-  value = value / real ( k)
+  value = value / dble ( k )
 
   k = k + 1
-  value = value / real ( k)
+  value = value / dble ( k )
 end
 
 subroutine tetr_unit_monomial_test ( degree_max )
@@ -4895,21 +4895,21 @@ subroutine trig_unit_monomial ( expon, value )
 !
 ! do i = 1, expon(1)
 !   k = k + 1
-!   value = value * real ( i) / real ( k)
+!   value = value * dble ( i ) / dble ( k )
 ! end do
 
   k = expon(1)
 
   do i = 1, expon(2)
     k = k + 1
-    value = value * real ( i) / real ( k)
+    value = value * dble ( i ) / dble ( k )
   end do
 
   k = k + 1
-  value = value / real ( k)
+  value = value / dble ( k )
 
   k = k + 1
-  value = value / real ( k)
+  value = value / dble ( k )
 end
 
 subroutine trig_unit_monomial_test ( degree_max )
@@ -5721,21 +5721,21 @@ subroutine wedg_unit_monomial ( expon, value )
 !
 ! do i = 1, expon(1)
 !   k = k + 1
-!   value = value * real ( i) / real ( k)
+!   value = value * dble ( i ) / dble ( k )
 ! end do
 
   k = expon(1)
 
   do i = 1, expon(2)
     k = k + 1
-    value = value * real ( i) / real ( k)
+    value = value * dble ( i ) / dble ( k )
   end do
 
   k = k + 1
-  value = value / real ( k)
+  value = value / dble ( k )
 
   k = k + 1
-  value = value / real ( k)
+  value = value / dble ( k )
 !
 !  Now account for integration in Z.
 !
@@ -5747,7 +5747,7 @@ subroutine wedg_unit_monomial ( expon, value )
   else if ( mod ( expon(3), 2 ) == 1 ) then
     value = 0.0D+00
   else
-    value = value * 2.0D+00 / real ( expon(3) + 1)
+    value = value * 2.0D+00 / dble ( expon(3) + 1 )
   end if
 end
 

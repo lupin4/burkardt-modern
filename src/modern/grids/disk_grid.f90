@@ -61,7 +61,7 @@ subroutine disk_grid ( n, r, c, ng, cg )
 
     i = 0
     x = c(1)
-    y = c(2) + r * real ( 2 * j) / real ( 2 * n + 1)
+    y = c(2) + r * dble ( 2 * j ) / dble ( 2 * n + 1 )
     p = p + 1
     cg(1,p) = x
     cg(2,p) = y
@@ -75,7 +75,7 @@ subroutine disk_grid ( n, r, c, ng, cg )
     do
 
       i = i + 1
-      x = c(1) + r * real ( 2 * i) / real ( 2 * n + 1)
+      x = c(1) + r * dble ( 2 * i ) / dble ( 2 * n + 1 )
 
       if ( r * r < ( x - c(1) )**2 + ( y - c(2) )**2 ) then
         exit
@@ -155,7 +155,7 @@ subroutine disk_grid_count ( n, r, c, ng )
 
     i = 0
     x = c(1)
-    y = c(2) + r * real ( 2 * j) / real ( 2 * n + 1)
+    y = c(2) + r * dble ( 2 * j ) / dble ( 2 * n + 1 )
     ng = ng + 1
 
     if ( 0 < j ) then
@@ -165,7 +165,7 @@ subroutine disk_grid_count ( n, r, c, ng )
     do
 
       i = i + 1
-      x = c(1) + r * real ( 2 * i) / real ( 2 * n + 1)
+      x = c(1) + r * dble ( 2 * i ) / dble ( 2 * n + 1 )
 
       if ( r * r < ( x - c(1) )**2 + ( y - c(2) )**2 ) then
         exit
@@ -232,12 +232,12 @@ subroutine disk_grid_fibonacci ( n, r, c, g )
   double precision r
   double precision r0
 
-  r0 = r / sqrt ( real ( n) - 0.5D+00 )
+  r0 = r / sqrt ( dble ( n ) - 0.5D+00 )
   phi = ( 1.0D+00 + sqrt ( 5.0D+00 ) ) / 2.0D+00
 
   do i = 1, n
-    gr = r0 * sqrt ( real ( i) - 0.5D+00 )
-    gt = 2.0D+00 * pi * real ( i) / phi
+    gr = r0 * sqrt ( dble ( i ) - 0.5D+00 )
+    gt = 2.0D+00 * pi * dble ( i ) / phi
     g(1,i) = c(1) + gr * cos ( gt )
     g(2,i) = c(2) + gr * sin ( gt )
   end do

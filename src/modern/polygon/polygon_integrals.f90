@@ -89,8 +89,8 @@ subroutine moment ( n, x, y, p, q, nu_pq )
 
   end do
 
-  nu_pq = nu_pq / real ( p + q + 2) &
-    / real ( p + q + 1) &
+  nu_pq = nu_pq / dble ( p + q + 2 ) &
+    / dble ( p + q + 1 ) &
     / r8_choose ( p + q, p )
 end
 
@@ -300,10 +300,10 @@ function r8_choose ( n, k )
   else
 
     mx = max ( k, n - k )
-    value = real ( mx + 1)
+    value = dble ( mx + 1 )
 
     do i = 2, mn
-      value = ( value * real ( mx + i) ) / real ( i)
+      value = ( value * dble ( mx + i ) ) / dble ( i )
     end do
 
   end if

@@ -1092,7 +1092,7 @@ subroutine bnsrt2 ( binexp, n, a, map, bin, iwk )
   double precision ymax
   double precision ymin
 
-  nside = int ( real ( n)**( binexp / 2.0D+00 ) + 0.5D+00 )
+  nside = int ( dble ( n )**( binexp / 2.0D+00 ) + 0.5D+00 )
 
   if ( nside <= 1 ) then
     return
@@ -1103,8 +1103,8 @@ subroutine bnsrt2 ( binexp, n, a, map, bin, iwk )
   ymin = minval ( a(2,map(1:n)) )
   ymax = minval ( a(2,map(1:n)) )
 
-  dx = 1.0001D+00 * (xmax - xmin) / real ( nside)
-  dy = 1.0001D+00 * (ymax - ymin) / real ( nside)
+  dx = 1.0001D+00 * (xmax - xmin) / dble ( nside )
+  dy = 1.0001D+00 * (ymax - ymin) / dble ( nside )
 
   if ( dx == 0.0D+00 ) then
     dx = 1.0D+00
@@ -1220,9 +1220,9 @@ subroutine bnsrt3 ( binexp, n, a, map, bin, iwk )
   zmin = minval ( a(3,map(1:n)) )
   zmax = minval ( a(3,map(1:n)) )
 
-  dx = 1.0001D+00*(xmax - xmin)/ real ( nside)
-  dy = 1.0001D+00*(ymax - ymin)/ real ( nside)
-  dz = 1.0001D+00*(zmax - zmin)/ real ( nside)
+  dx = 1.0001D+00*(xmax - xmin)/ dble ( nside )
+  dy = 1.0001D+00*(ymax - ymin)/ dble ( nside )
+  dz = 1.0001D+00*(zmax - zmin)/ dble ( nside )
   if ( dx == 0.0D+00) dx = 1.0D+00
   if ( dy == 0.0D+00) dy = 1.0D+00
   if ( dz == 0.0D+00) dz = 1.0D+00
@@ -1337,7 +1337,7 @@ subroutine bnsrtk ( k, binexp, n, a, map, bin, iwk, dx )
   do i = 1, k
     xmin = minval ( a(i,map(1:n)) )
     xmax = maxval ( a(i,map(1:n)) )
-    dx(i) = 1.0001D+00*(xmax - xmin)/ real ( nside)
+    dx(i) = 1.0001D+00*(xmax - xmin)/ dble ( nside )
     if ( dx(i) == 0.0D+00 ) then
       dx(i) = 1.0D+00
     end if
@@ -8284,7 +8284,7 @@ subroutine dtrimk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
     do j = 2, kp1
       sum2 = sum2 + vcl(i,vm(j))
     end do
-    wk(i) = sum2 / real ( kp1)
+    wk(i) = sum2 / dble ( kp1 )
   end do
 
   ht(0:sizht-1) = 0
@@ -9357,7 +9357,7 @@ subroutine dtrisk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
     do j = 2, kp1
       sum2 = sum2 + vcl ( i,vm(j) )
     end do
-    wk(i) = sum2 / real ( kp1)
+    wk(i) = sum2 / dble ( kp1 )
   end do
 
   ht(0:sizht-1) = 0
@@ -10560,7 +10560,7 @@ subroutine dtriwk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
     do j = 2, kp1
       sum2 = sum2 + vcl(i,vm(j))
     end do
-    wk(i) = sum2 / real ( kp1)
+    wk(i) = sum2 / dble ( kp1 )
   end do
 
   ht(0:sizht-1) = 0
@@ -15969,7 +15969,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
   tol = 100.0D+00 * epsilon ( tol )
 
   n = int ( ( yc(0) - yc(ibot) ) / h )
-  y = yc(0) - 0.5D+00 * ( yc(0) - yc(ibot ) - real ( n) * h )
+  y = yc(0) - 0.5D+00 * ( yc(0) - yc(ibot ) - dble ( n ) * h )
   l = 0
   r = nvrt
 
@@ -15989,7 +15989,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
     xl = xc(l) + ( xc(l+1) - xc(l) ) * ( y - yc(l) ) / ( yc(l+1) - yc(l) )
     xr = xc(r) + ( xc(r-1) - xc(r) ) * ( y - yc(r) ) / ( yc(r-1) - yc(r) )
     m = int ( ( xr - xl ) / h )
-    x = xl + 0.5D+00 * ( xr - xl - real ( m) * h )
+    x = xl + 0.5D+00 * ( xr - xl - dble ( m ) * h )
 
     if ( maxvc < nvc + m + 1 ) then
       ierror = 3
@@ -16041,7 +16041,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
       l0 = im1l
       x = ( xm1l - xl ) / h
       j = int ( x + tol )
-      if ( abs ( x - real ( j) ) <= tol ) then
+      if ( abs ( x - dble ( j ) ) <= tol ) then
         j = j - 1
       end if
       if ( j < 0 ) then
@@ -16052,7 +16052,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
       l1 = il
       x = ( xl - xm1l ) / h
       j = int ( x + tol )
-      if ( abs ( x - real ( j) ) <= tol ) then
+      if ( abs ( x - dble ( j ) ) <= tol ) then
         j = j - 1
       end if
       if ( j < 0 ) then
@@ -16065,7 +16065,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
       r0 = im1r
       x = ( xr - xm1r ) / h
       j = int ( x + tol )
-      if ( abs ( x - real ( j) ) <= tol ) then
+      if ( abs ( x - dble ( j ) ) <= tol ) then
         j = j - 1
       end if
       if ( j < 0 ) then
@@ -16076,7 +16076,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
       r1 = ir
       x = ( xm1r - xr ) / h
       j = int ( x + tol )
-      if ( abs ( x - real ( j) ) <= tol ) then
+      if ( abs ( x - dble ( j ) ) <= tol ) then
         j = j - 1
       end if
       if ( j < 0 ) then
@@ -16089,8 +16089,8 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
 
       j = l0
       k = l1
-      xj = xm1l + real ( j-im1l) * h
-      xk = xl + real ( k - il) * h
+      xj = xm1l + dble ( j-im1l ) * h
+      xk = xl + dble ( k - il ) * h
 
       do
 
@@ -18087,7 +18087,7 @@ subroutine intmvg ( nsvc, nface, nvert, svcl, hvl, fvl, ibot, itop, h, &
 
     call rotpg ( nvrt, wk(xc), wk(yc), i1, i2, ib, costh, sinth )
     n = int((wk(yc) - wk(yc+ib))/h)
-    y = wk(yc) - 0.5D+00*(wk(yc) - wk(yc+ib) - real ( n) * h )
+    y = wk(yc) - 0.5D+00*(wk(yc) - wk(yc+ib) - dble ( n ) * h )
     l = 0
     r = nvrt
     nvcold = nvc
@@ -18112,7 +18112,7 @@ subroutine intmvg ( nsvc, nface, nvert, svcl, hvl, fvl, ibot, itop, h, &
            (wk(yc+r-1) - wk(yc+r))
 
       m = int ( ( xr - xl ) / h )
-      x = xl + 0.5D+00*(xr - xl - real ( m) * h )
+      x = xl + 0.5D+00*(xr - xl - dble ( m ) * h )
       cy = costh * y
       sy = sinth * y
 
@@ -18544,7 +18544,7 @@ subroutine intph ( hflag, umdf, headp, widp, nfcev, nedev, nvrev, listev, &
 
     end do
 
-    cntrf(1:3) = cntrf(1:3) / real ( n)
+    cntrf(1:3) = cntrf(1:3) / dble ( n )
     mdfif = 0.0D+00
     mdfsf = 0.0D+00
     volf = 0.0D+00
@@ -20978,8 +20978,8 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
         k = k + 1
       end do
 
-      ctrx = sumx / real ( nvrt)
-      ctry = sumy / real ( nvrt)
+      ctrx = sumx / dble ( nvrt )
+      ctry = sumy / dble ( nvrt )
 
       do j = 0,nvrt-1
         wk(xc+j) = wk(xc+j) - ctrx
@@ -21069,8 +21069,8 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
 
       end do
 
-      ctrx = sumx/ real ( nvrt)
-      ctry = sumy/ real ( nvrt)
+      ctrx = sumx/ dble ( nvrt )
+      ctry = sumy/ dble ( nvrt )
       maxn = nvrt + inc
 
       if ( maxiw < nev + maxn + 1 ) then
@@ -21107,7 +21107,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
       if ( angsp2 <= delta ) then
 
         m = int(delta/angspc)
-        delta = delta/ real ( m)
+        delta = delta/ dble ( m )
         dx = x2 - x1
         dy = y2 - y1
         numer = x1*dy - y1*dx
@@ -21554,7 +21554,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
       go to 10
     end if
 
-    cntr(1:3) = cntr(1:3) / real ( n)
+    cntr(1:3) = cntr(1:3) / dble ( n )
 
     call intph(hflag,umdf,hfl(i),widp,nfcev,nedev,nvrev,listev, &
       infoev,ivrt,facval,edgval,vrtval,vcl,facep,fvl,pfl,cntr, &
@@ -21641,7 +21641,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
       go to 60
     end if
 
-    cntr(1:3) = cntr(1:3)/ real ( n)
+    cntr(1:3) = cntr(1:3)/ dble ( n )
     ne = n/2
     indf = cedge + n
     meanf = ne
@@ -21706,7 +21706,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
           go to 80
         end if
 
-        dtol = tol * sum2 / real ( ne)
+        dtol = tol * sum2 / dble ( ne )
 
         call sfc1mf(kp,cntr,mean,nf,iwk(indf),wk(meanf), &
           angacc,mxcos,dtol,nvc,maxvc,vcl,facep,nrml,fvl, &
@@ -26096,7 +26096,7 @@ subroutine resedg ( u, angacc, rdacc, nvc, nface, nvert, npolh, npf, maxvc, &
     go to 10
   end if
 
-  sum2 = sum2 / real ( nedg+1)
+  sum2 = sum2 / dble ( nedg+1 )
   mindis = rdacc * sum2
   dtol = tol * sum2
 
@@ -26711,7 +26711,7 @@ subroutine reshol ( p, nrmlc, pt, dir, angacc, rdacc, nvc, nface, nvert, &
     go to 10
   end if
 
-  sum2 = sum2 / real ( nedg)
+  sum2 = sum2 / dble ( nedg )
   mindis = rdacc * sum2
   dtol = tol * sum2
 !
@@ -30666,7 +30666,7 @@ subroutine sfc2mf ( p, f, hflag, umdf, widp, nfcev, nedev, nvrev, listev, &
     end if
   end do
 
-  vave = vave / real ( n)
+  vave = vave / dble ( n )
   l = m
   i = m
 
@@ -33995,11 +33995,11 @@ subroutine stats ( n, x, a, h, nf, xmin, xmax, mean, stdv, freq )
     freq(k) = freq(k) + 1.0D+00
   end do
 
-  mean = sum ( x(1:n) ) / real ( n)
+  mean = sum ( x(1:n) ) / dble ( n )
 
-  stdv = sqrt ( sum ( ( x(1:n) - mean )**2 ) / real ( n-1) )
+  stdv = sqrt ( sum ( ( x(1:n) - mean )**2 ) / dble ( n-1 ) )
 
-  freq(0:nf) = freq(0:nf) / real ( n) 
+  freq(0:nf) = freq(0:nf) / dble ( n ) 
 end
 
 subroutine swapdg ( k, pos, d, i, sneg, spos, szero, alpha, npt, sizht, bf_num, &
@@ -38272,7 +38272,7 @@ subroutine tetsiz ( ntetd, npolh, facep, hfl, pfl, vol, psi, h, indp, loch )
 
   sum2 = dot_product ( psi(1:npolh), vol(1:npolh) )
 
-  factor = 6.0D+00 / real ( ntetd)
+  factor = 6.0D+00 / dble ( ntetd )
   power = 1.0D+00 / 3.0D+00
 
   do i = 1, npolh
@@ -38742,7 +38742,7 @@ subroutine tribfc ( h, nvc, nface, nvert, maxvc, maxbt, maxiw, maxwk, vcl, &
 !
 !  Generate mesh vertices on edge and set EDST, EDNO entries.
 !
-    hh = hh**( 1.0D+00 / real ( n) )
+    hh = hh**( 1.0D+00 / dble ( n ) )
     li = fvl(loc,i)
     lj = fvl(loc,fvl(succ,i))
     dx = vcl(1,lj) - vcl(1,li)
@@ -38751,7 +38751,7 @@ subroutine tribfc ( h, nvc, nface, nvert, maxvc, maxbt, maxiw, maxwk, vcl, &
     leng = sqrt ( dx**2 + dy**2 + dz**2 )
     n = int ( leng / hh )
 
-    if ( real ( n) / real ( 2*n+1) < leng/hh - n ) then
+    if ( dble ( n ) / dble ( 2*n+1 ) < leng/hh - n ) then
       n = n + 1
     end if
 
@@ -38761,9 +38761,9 @@ subroutine tribfc ( h, nvc, nface, nvert, maxvc, maxbt, maxiw, maxwk, vcl, &
     if ( 1 <= n ) then
 
       start = nvc + 1
-      dx = dx / real ( n+1)
-      dy = dy / real ( n+1)
-      dz = dz / real ( n+1)
+      dx = dx / dble ( n+1 )
+      dy = dy / dble ( n+1 )
+      dz = dz / dble ( n+1 )
 
       if ( maxvc < nvc + n ) then
         ierr = 14
@@ -38772,9 +38772,9 @@ subroutine tribfc ( h, nvc, nface, nvert, maxvc, maxbt, maxiw, maxwk, vcl, &
 
       do k = 1, n
         nvc = nvc + 1
-        vcl(1,nvc) = vcl(1,li) + real ( k) * dx
-        vcl(2,nvc) = vcl(2,li) + real ( k) * dy
-        vcl(3,nvc) = vcl(3,li) + real ( k) * dz
+        vcl(1,nvc) = vcl(1,li) + dble ( k ) * dx
+        vcl(2,nvc) = vcl(2,li) + dble ( k ) * dy
+        vcl(3,nvc) = vcl(3,li) + dble ( k ) * dz
       end do
 
     end if
@@ -39531,9 +39531,9 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
         ctrz = ctrz + vcl(3,j)
       end do
 
-      ctrx = ctrx / real ( nbmv)
-      ctry = ctry / real ( nbmv)
-      ctrz = ctrz / real ( nbmv)
+      ctrx = ctrx / dble ( nbmv )
+      ctry = ctry / dble ( nbmv )
+      ctrz = ctrz / dble ( nbmv )
 
       j = vm(jv)
 
@@ -39757,7 +39757,7 @@ subroutine trisiz ( ntrid, npolg, hvl, pvl, area, psi, h, indp, loch )
 
   sum2 = dot_product ( psi(1:npolg), area(1:npolg) )
 
-  factor = 2.0D+00 / real ( ntrid)
+  factor = 2.0D+00 / dble ( ntrid )
 
   psi(1:npolg) = psi(1:npolg) / sum2
 
@@ -40515,7 +40515,7 @@ function urand ( iy )
     iy = ( iy + m2 ) + m2
   end if
 
-  urand = real ( iy) * s
+  urand = dble ( iy ) * s
 end
 
 subroutine vbedg ( x, y, vcl, til, tnbr, ltri, ledg, rtri, redg )
@@ -41322,14 +41322,14 @@ subroutine visvrt ( angspc, xeye, yeye, nvis, xc, yc, ivis, maxn, nvsvrt, &
 
       k = int ( angdif / angspc )
       ind = -abs(ivis(cur))
-      angdif = angdif / real ( k)
+      angdif = angdif / dble ( k )
       dx = xc(cur) - xc(cur-1)
       dy = yc(cur) - yc(cur-1)
       numer = (xc(cur) - xeye)*dy - (yc(cur) - yeye)*dx
 
       do i = 1, k-1
         top = top + 1
-        theta(top) = ang1 + real ( i) * angdif
+        theta(top) = ang1 + dble ( i ) * angdif
         ang = theta(top) + alpha
         cosang = cos(ang)
         sinang = sin(ang)
@@ -41438,7 +41438,7 @@ function volcph ( nface, vcl, hvl, fvl )
 
   end do
 
-  cntr(1:3) = cntr(1:3) / real ( n)
+  cntr(1:3) = cntr(1:3) / dble ( n )
 !
 !  Use CNTR to form tetrahedra with each face, and sum up volume
 !  of tetrahedra.
@@ -41462,7 +41462,7 @@ function volcph ( nface, vcl, hvl, fvl )
       go to 30
     end if
 
-    cntrf(1:3) = cntrf(1:3) / real ( n)
+    cntrf(1:3) = cntrf(1:3) / dble ( n )
     lb = fvl(loc,a)
 
 40  continue

@@ -61,15 +61,15 @@ subroutine ball_grid ( n, r, c, ng, bg )
 
   do i = 0, n
 
-    x = c(1) + r * real ( 2 * i) / real ( 2 * n + 1)
+    x = c(1) + r * dble ( 2 * i ) / dble ( 2 * n + 1 )
     
     do j = 0, n
 
-      y = c(2) + r * real ( 2 * j) / real ( 2 * n + 1)
+      y = c(2) + r * dble ( 2 * j ) / dble ( 2 * n + 1 )
 
       do k = 0, n
 
-        z = c(3) + r * real ( 2 * k) / real ( 2 * n + 1)
+        z = c(3) + r * dble ( 2 * k ) / dble ( 2 * n + 1 )
 
         if ( r * r < ( x - c(1) )**2 &
                    + ( y - c(2) )**2 &
@@ -188,15 +188,15 @@ subroutine ball_grid_count ( n, r, c, ng )
 
   do i = 0, n
 
-    x = c(1) + r * real ( 2 * i) / real ( 2 * n + 1)
+    x = c(1) + r * dble ( 2 * i ) / dble ( 2 * n + 1 )
     
     do j = 0, n
 
-      y = c(2) + r * real ( 2 * j) / real ( 2 * n + 1)
+      y = c(2) + r * dble ( 2 * j ) / dble ( 2 * n + 1 )
 
       do k = 0, n
 
-        z = c(3) + r * real ( 2 * k) / real ( 2 * n + 1)
+        z = c(3) + r * dble ( 2 * k ) / dble ( 2 * n + 1 )
 
         if ( r * r < ( x - c(1) )**2 &
                    + ( y - c(2) )**2 &

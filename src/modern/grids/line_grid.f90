@@ -60,26 +60,26 @@ subroutine line_grid ( n, a, b, c, x )
       if ( n == 1 ) then
         x(j) = 0.5D+00 * ( a + b )
       else
-        x(j) = (   real ( n - j) * a   &
-                 + real (     j - 1) * b ) & 
-                 / real ( n     - 1)
+        x(j) = (   dble ( n - j ) * a   &
+                 + dble ( j - 1 ) * b ) & 
+                 / dble ( n     - 1 )
       end if
     else if ( c == 2 ) then
-      x(j) = (   real ( n - j + 1) * a   &
-               + real (     j) * b ) & 
-               / real ( n     + 1)
+      x(j) = (   dble ( n - j + 1 ) * a   &
+               + dble ( j ) * b ) & 
+               / dble ( n     + 1 )
     else if ( c == 3 ) then
-      x(j) = (   real ( n - j + 1) * a   &
-               + real (     j - 1) * b ) & 
-               / real ( n)
+      x(j) = (   dble ( n - j + 1 ) * a   &
+               + dble ( j - 1 ) * b ) & 
+               / dble ( n )
     else if ( c == 4 ) then
-      x(j) = (   real ( n - j) * a   &
-               + real (     j) * b ) & 
-               / real ( n)
+      x(j) = (   dble ( n - j ) * a   &
+               + dble ( j ) * b ) & 
+               / dble ( n )
     else if ( c == 5 ) then
-      x(j) = (   real ( 2 * n - 2 * j + 1) * a   &
-               + real (         2 * j - 1) * b ) & 
-               / real ( 2 * n)
+      x(j) = (   dble ( 2 * n - 2 * j + 1 ) * a   &
+               + dble ( 2 * j - 1 ) * b ) & 
+               / dble ( 2 * n )
     end if
 
   end do

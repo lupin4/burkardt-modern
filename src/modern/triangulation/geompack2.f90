@@ -314,8 +314,8 @@ subroutine bedgmv ( nvc, npolg, nvert, maxvc, h, vcl, hvl, pvl, vstart, vnum, &
 
         l = int ( leng / hh )
 
-        if ( real ( l) / real ( 2 * l + 1) &
-          < ( leng / hh ) - real ( l) ) then
+        if ( dble ( l ) / dble ( 2 * l + 1 ) &
+          < ( leng / hh ) - dble ( l ) ) then
           l = l + 1
         end if
 
@@ -326,8 +326,8 @@ subroutine bedgmv ( nvc, npolg, nvert, maxvc, h, vcl, hvl, pvl, vstart, vnum, &
 
         else
 
-          dx = ( vcl(1,v) - x ) / real ( l)
-          dy = ( vcl(2,v) - y ) / real ( l)
+          dx = ( vcl(1,v) - x ) / dble ( l )
+          dy = ( vcl(2,v) - y ) / dble ( l )
           l = l - 1
 
           if ( maxvc < nvc + l ) then
@@ -435,7 +435,7 @@ subroutine bnsrt2 ( binexp, n, a, map, bin, iwk )
   double precision ymax
   double precision ymin
 
-  nside = int ( real ( n)**( binexp / 2.0D+00 ) + 0.5D+00 )
+  nside = int ( dble ( n )**( binexp / 2.0D+00 ) + 0.5D+00 )
 
   if ( nside <= 1 ) then
     return
@@ -453,8 +453,8 @@ subroutine bnsrt2 ( binexp, n, a, map, bin, iwk )
     ymax = max ( ymax, a(2,j) )
   end do
 
-  dx = 1.0001D+00 * ( xmax - xmin ) / real ( nside)
-  dy = 1.0001D+00 * ( ymax - ymin ) / real ( nside)
+  dx = 1.0001D+00 * ( xmax - xmin ) / dble ( nside )
+  dy = 1.0001D+00 * ( ymax - ymin ) / dble ( nside )
 
   if ( dx == 0.0D+00 ) then
     dx = 1.0D+00
@@ -4254,7 +4254,7 @@ subroutine gtime ( time )
 
   call system_clock ( clock_count, clock_rate, clock_max )
 
-  time = real ( clock_count) / real ( clock_rate)
+  time = dble ( clock_count ) / dble ( clock_rate )
 end
 
 subroutine holvrt ( nhole, vcl, hvl, pvl, holv )
@@ -5341,7 +5341,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
   tol = 100.0D+00 * epsilon ( tol )
 
   n = int ( ( yc(0) - yc(ibot) ) / h )
-  y = yc(0) - 0.5D+00 * ( yc(0) - yc(ibot ) - real ( n) * h )
+  y = yc(0) - 0.5D+00 * ( yc(0) - yc(ibot ) - dble ( n ) * h )
   l = 0
   r = nvrt
 
@@ -5361,7 +5361,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
     xl = xc(l) + ( xc(l+1) - xc(l) ) * ( y - yc(l) ) / ( yc(l+1) - yc(l) )
     xr = xc(r) + ( xc(r-1) - xc(r) ) * ( y - yc(r) ) / ( yc(r-1) - yc(r) )
     m = int ( ( xr - xl ) / h )
-    x = xl + 0.5D+00 * ( xr - xl - real ( m) * h )
+    x = xl + 0.5D+00 * ( xr - xl - dble ( m ) * h )
 
     if ( maxvc < nvc + m + 1 ) then
       ierror = 3
@@ -5413,7 +5413,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
       l0 = im1l
       x = ( xm1l - xl ) / h
       j = int(x + tol)
-      if ( abs ( x - real ( j) ) <= tol ) then
+      if ( abs ( x - dble ( j ) ) <= tol ) then
         j = j - 1
       end if
       if ( j < 0 ) then
@@ -5424,7 +5424,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
       l1 = il
       x = ( xl - xm1l ) / h
       j = int ( x + tol )
-      if ( abs ( x - real ( j) ) <= tol ) then
+      if ( abs ( x - dble ( j ) ) <= tol ) then
         j = j - 1
       end if
       if ( j < 0 ) then
@@ -5437,7 +5437,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
       r0 = im1r
       x = ( xr - xm1r ) / h
       j = int ( x + tol )
-      if ( abs ( x - real ( j) ) <= tol ) then
+      if ( abs ( x - dble ( j ) ) <= tol ) then
         j = j - 1
       end if
       if ( j < 0 ) then
@@ -5448,7 +5448,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
       r1 = ir
       x = ( xm1r - xr ) / h
       j = int ( x + tol )
-      if ( abs ( x - real ( j) ) <= tol ) then
+      if ( abs ( x - dble ( j ) ) <= tol ) then
         j = j - 1
       end if
       if ( j < 0 ) then
@@ -5461,8 +5461,8 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
 
       j = l0
       k = l1
-      xj = xm1l + real ( j-im1l) * h
-      xk = xl + real ( k - il) * h
+      xj = xm1l + dble ( j-im1l ) * h
+      xk = xl + dble ( k - il ) * h
 
       do
 
@@ -6829,8 +6829,8 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
         k = k + 1
       end do
 
-      ctrx = sumx / real ( nvrt)
-      ctry = sumy / real ( nvrt)
+      ctrx = sumx / dble ( nvrt )
+      ctry = sumy / dble ( nvrt )
 
       do j = 0, nvrt-1
         wk(xc+j) = wk(xc+j) - ctrx
@@ -6930,8 +6930,8 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
 
           end do
 
-          ctrx = sumx / real ( nvrt)
-          ctry = sumy / real ( nvrt)
+          ctrx = sumx / dble ( nvrt )
+          ctry = sumy / dble ( nvrt )
           maxn = nvrt + inc
 
           if ( maxiw < nev + maxn + 1 ) then
@@ -6972,7 +6972,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
              if ( angsp2 <= delta ) then
 
                m = int ( delta / angspc )
-               delta = delta / real ( m)
+               delta = delta / dble ( m )
                dx = x2 - x1
                dy = y2 - y1
                numer = x1 * dy - y1 * dx
@@ -10444,12 +10444,12 @@ subroutine triangulation_plot_eps ( file_name, g_num, g_xy, tri_num, nod_tri )
 
   do g = 1, g_num
     x_ps = int ( &
-      ( ( x_max - g_xy(1,g) ) * real ( x_ps_min) &
-      + ( g_xy(1,g) - x_min ) * real ( x_ps_max) ) &
+      ( ( x_max - g_xy(1,g) ) * dble ( x_ps_min ) &
+      + ( g_xy(1,g) - x_min ) * dble ( x_ps_max ) ) &
       / ( x_max - x_min ) )
     y_ps = int ( &
-      ( ( y_max - g_xy(2,g) ) * real ( y_ps_min) &
-      + ( g_xy(2,g) - y_min ) * real ( y_ps_max) ) &
+      ( ( y_max - g_xy(2,g) ) * dble ( y_ps_min ) &
+      + ( g_xy(2,g) - y_min ) * dble ( y_ps_max ) ) &
       / ( y_max - y_min ) )
     write ( file_unit, '(a,i3,2x,i3,2x,a)' ) 'newpath ', x_ps, y_ps, &
       ' 5 0 360 arc closepath fill'
@@ -10474,13 +10474,13 @@ subroutine triangulation_plot_eps ( file_name, g_num, g_xy, tri_num, nod_tri )
       k = nod_tri(e,t)
 
       x_ps = int ( &
-        ( ( x_max - g_xy(1,k) ) * real ( x_ps_min) &
-        + ( g_xy(1,k) - x_min ) * real ( x_ps_max) ) &
+        ( ( x_max - g_xy(1,k) ) * dble ( x_ps_min ) &
+        + ( g_xy(1,k) - x_min ) * dble ( x_ps_max ) ) &
         / ( x_max - x_min ) )
 
       y_ps = int ( &
-        ( ( y_max - g_xy(2,k) ) * real ( y_ps_min) &
-        + ( g_xy(2,k) - y_min ) * real ( y_ps_max) ) &
+        ( ( y_max - g_xy(2,k) ) * dble ( y_ps_min ) &
+        + ( g_xy(2,k) - y_min ) * dble ( y_ps_max ) ) &
         / ( y_max - y_min ) )
 
       if ( j == 1 ) then
@@ -10981,7 +10981,7 @@ subroutine trisiz ( ntrid, npolg, hvl, pvl, area, psi, h, indp, loch )
 
   psi(1:npolg) = psi(1:npolg) / dot_product ( psi(1:npolg), area(1:npolg) )
 
-  h(1:npolg) = sqrt ( 2.0D+00  / ( real ( ntrid) * psi(1:npolg) ) )
+  h(1:npolg) = sqrt ( 2.0D+00  / ( dble ( ntrid ) * psi(1:npolg) ) )
 end
 
 subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
@@ -11431,7 +11431,7 @@ function urand ( iy )
     iy = ( iy + m2 ) + m2
   end if
 
-  urand = real ( iy) * s
+  urand = dble ( iy ) * s
 end
 
 subroutine vbedg ( x, y, vcl, til, tnbr, ltri, ledg, rtri, redg )
@@ -11961,14 +11961,14 @@ subroutine visvrt ( angspc, xeye, yeye, nvis, xc, yc, ivis, maxn, nvsvrt, &
 
         k = int ( angdif / angspc )
         ind = -abs ( ivis(cur))
-        angdif = angdif / real ( k)
+        angdif = angdif / dble ( k )
         dx = xc(cur) - xc(cur-1)
         dy = yc(cur) - yc(cur-1)
         numer = ( xc(cur) - xeye ) * dy - ( yc(cur) - yeye ) * dx
 
         do i = 1, k-1
           top = top + 1
-          theta(top) = ang1 + real ( i) * angdif
+          theta(top) = ang1 + dble ( i ) * angdif
           ang = theta(top) + alpha
           cosang = cos(ang)
           sinang = sin(ang)

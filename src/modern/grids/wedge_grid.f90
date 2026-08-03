@@ -64,14 +64,14 @@ subroutine wedge_grid ( n, ng, g )
   end if
 
   p = 0
-  nr = real ( n)
+  nr = dble ( n )
 
   do k = 0, n
-    kr = real ( 2 * k - n) / nr
+    kr = dble ( 2 * k - n ) / nr
     do j = 0, n
-      jr = real ( j) / nr
+      jr = dble ( j ) / nr
       do i = 0, n - j
-        ir = real ( i) / nr
+        ir = dble ( i ) / nr
         p = p + 1
         g(1,p) = ir
         g(2,p) = jr

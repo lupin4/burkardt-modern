@@ -152,6 +152,53 @@ def find_modified_params(routine_text, param_names):
     return modified
 
 
+_RE_REAL_OPEN = re.compile(r'\breal\s*\(', re.IGNORECASE)
+# trailing ", kind = 8" of a cast; `&` and newlines may sit between tokens
+# because Burkardt splits long expressions across continuation lines.
+_RE_KIND8_TAIL = re.compile(r',[\s&\n]*kind[\s&\n]*=[\s&\n]*8[\s&\n]*$', re.IGNORECASE)
+
+
+def _real_kind8_casts_to_dble(text):
+    """real ( expr, kind = 8 )  ->  dble ( expr )
+
+    Paren-matched, not regex-matched: `expr` routinely contains its own calls and
+    parentheses — real ( a(i) - b(j), kind = 8 ) — so a non-nesting pattern would
+    cut at the wrong ')'.
+
+    Declarations are unaffected: `real ( kind = 8 ) x` has no comma and has
+    already been rewritten to `double precision` by the time this runs.
+    """
+    out, i = [], 0
+    while True:
+        m = _RE_REAL_OPEN.search(text, i)
+        if not m:
+            out.append(text[i:])
+            return ''.join(out)
+        out.append(text[i:m.start()])
+
+        open_idx = m.end() - 1
+        depth, j = 0, open_idx
+        while j < len(text):
+            if text[j] == '(':
+                depth += 1
+            elif text[j] == ')':
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        if j >= len(text):  # unbalanced — leave the rest untouched
+            out.append(text[m.start():])
+            return ''.join(out)
+
+        inner = text[open_idx + 1:j]
+        tail = _RE_KIND8_TAIL.search(inner)
+        if tail:
+            out.append('dble ( ' + inner[:tail.start()].strip() + ' )')
+        else:
+            out.append(text[m.start():j + 1])
+        i = j + 1
+
+
 def modernize_types(text):
     """Replace kind=4/8 with iso_fortran_env constants.
 
@@ -180,8 +227,18 @@ def modernize_types(text):
 
     # Keep D+00 literals as-is (standard Fortran double precision)
 
-    # Replace kind specs in casts: real(..., kind = 8) -> dble(...)
-    text = re.sub(r',\s*kind\s*=\s*8\s*\)', ')', text, flags=re.IGNORECASE)
+    # Casts: real ( expr, kind = 8 ) -> dble ( expr )
+    #
+    # This used to just delete the ", kind = 8", leaving `real ( expr )` — which
+    # is a conversion to DEFAULT REAL (single precision), not double. The value
+    # was rounded to 24-bit mantissa and only then promoted back, so anything
+    # above 2**24 came out wrong and everything below carried single-precision
+    # rounding into a double-precision expression. 821 sites across the tree.
+    text = _real_kind8_casts_to_dble(text)
+
+    # kind = 4 casts are genuinely redundant: kind 4 IS default real/integer,
+    # so `real ( x, kind = 4 )` == `real ( x )` and `nint ( x, kind = 4 )` ==
+    # `nint ( x )`. Dropping the specifier here changes nothing. (19 real, 6 nint)
     text = re.sub(r',\s*kind\s*=\s*4\s*\)', ')', text, flags=re.IGNORECASE)
 
     return text

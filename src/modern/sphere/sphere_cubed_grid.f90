@@ -49,8 +49,8 @@ subroutine sphere_cubed_grid_ijk_to_xyz ( n, i, j, k, xyz )
   else if ( i == n ) then
     xc = +1.0D+00
   else
-    xc = tan ( real ( 2 * i - n) * 0.25D+00 * r8_pi &
-      / real ( n) )
+    xc = tan ( dble ( 2 * i - n ) * 0.25D+00 * r8_pi &
+      / dble ( n ) )
   end if
 
   if ( j == 0 ) then
@@ -58,8 +58,8 @@ subroutine sphere_cubed_grid_ijk_to_xyz ( n, i, j, k, xyz )
   else if ( j == n ) then
     yc = +1.0D+00
   else
-    yc = tan ( real ( 2 * j - n) * 0.25D+00 * r8_pi &
-      / real ( n) )
+    yc = tan ( dble ( 2 * j - n ) * 0.25D+00 * r8_pi &
+      / dble ( n ) )
   end if
 
   if ( k == 0 ) then
@@ -67,8 +67,8 @@ subroutine sphere_cubed_grid_ijk_to_xyz ( n, i, j, k, xyz )
   else if ( k == n ) then
     zc = +1.0D+00
   else
-    zc = tan ( real ( 2 * k - n) * 0.25D+00 * r8_pi &
-      / real ( n) )
+    zc = tan ( dble ( 2 * k - n ) * 0.25D+00 * r8_pi &
+      / dble ( n ) )
   end if
 
   xyzn = sqrt ( xc ** 2 + yc ** 2 + zc ** 2 )
@@ -852,8 +852,8 @@ subroutine sphere_cubed_grid_points_face ( n, i1, j1, k1, i2, j2, k2, ns, xyz )
   do i = i1, i2
 
     if ( i1 < i2 ) then
-      xc = tan ( real ( 2 * i - n) * 0.25D+00 * r8_pi &
-        / real ( n) )
+      xc = tan ( dble ( 2 * i - n ) * 0.25D+00 * r8_pi &
+        / dble ( n ) )
     else if ( i1 == 0 ) then
       xc = -1.0D+00
     else if ( i1 == n ) then
@@ -865,8 +865,8 @@ subroutine sphere_cubed_grid_points_face ( n, i1, j1, k1, i2, j2, k2, ns, xyz )
     do j = j1, j2
 
       if ( j1 < j2 ) then
-        yc = tan ( real ( 2 * j - n) * 0.25D+00 * r8_pi &
-          / real ( n) )
+        yc = tan ( dble ( 2 * j - n ) * 0.25D+00 * r8_pi &
+          / dble ( n ) )
       else if ( j1 == 0 ) then
         yc = -1.0D+00
       else if ( j1 == n ) then
@@ -878,8 +878,8 @@ subroutine sphere_cubed_grid_points_face ( n, i1, j1, k1, i2, j2, k2, ns, xyz )
       do k = k1, k2
 
         if ( k1 < k2 ) then
-          zc = tan ( real ( 2 * k - n) * 0.25D+00 * r8_pi &
-            / real ( n) )
+          zc = tan ( dble ( 2 * k - n ) * 0.25D+00 * r8_pi &
+            / dble ( n ) )
         else if ( k1 == 0 ) then
           zc = -1.0D+00
         else if ( k1 == n ) then

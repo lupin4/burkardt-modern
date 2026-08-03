@@ -553,7 +553,7 @@ function r8_gamma ( x )
     else
 
       n = int ( y ) - 1
-      y = y - real ( n)
+      y = y - dble ( n )
       z = y - 1.0D+00
 
     end if
@@ -722,7 +722,7 @@ function r8_uniform_01 ( seed )
 !  Although SEED can be represented exactly as a 32 bit integer,
 !  it generally cannot be represented exactly as a 32 bit real number!
 !
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 function r8vec_norm ( n, a )
@@ -1027,11 +1027,11 @@ subroutine sphere01_monomial_integral ( e, integral )
     integral = 2.0D+00
 
     do i = 1, 3
-      integral = integral * r8_gamma ( 0.5D+00 * real ( e(i) + 1) )
+      integral = integral * r8_gamma ( 0.5D+00 * dble ( e(i) + 1 ) )
     end do
 
     integral = integral &
-      / r8_gamma ( 0.5D+00 * ( real ( sum ( e(1:3) + 1 )) ) )
+      / r8_gamma ( 0.5D+00 * ( dble ( sum ( e(1:3) + 1 ) ) ) )
 
   end if
 end
@@ -1854,13 +1854,13 @@ subroutine sphere01_quad_llc ( f, h, n, result )
 !
   phi_num = int ( pi / h )
 
-  if ( h * real ( phi_num) < pi ) then
+  if ( h * dble ( phi_num ) < pi ) then
     phi_num = phi_num + 1
   end if
 
   theta_num = int ( 2.0D+00 * pi / h )
 
-  if ( h * real ( theta_num) < pi ) then
+  if ( h * dble ( theta_num ) < pi ) then
     theta_num = theta_num + 1
   end if
 
@@ -1886,14 +1886,14 @@ subroutine sphere01_quad_llc ( f, h, n, result )
   else if ( phi_num == 1 ) then
 
     sphere_area = 4.0D+00 * pi
-    sector_area = sphere_area / real ( theta_num)
+    sector_area = sphere_area / dble ( theta_num )
 
     result = 0.0D+00
 
     do j = 1, theta_num
 
-      theta = real ( ( j - 1 ) * 2) * pi &
-            / real ( theta_num)
+      theta = dble ( ( j - 1 ) * 2 ) * pi &
+            / dble ( theta_num )
       phi = pi / 2.0D+00
       call tp_to_xyz ( theta, phi, x )
       call f ( 1, x, v )
@@ -1916,14 +1916,14 @@ subroutine sphere01_quad_llc ( f, h, n, result )
 !    V12----V22
 !
     phi1 = 0.0D+00
-    phi2 = pi / real ( phi_num)
+    phi2 = pi / dble ( phi_num )
 
     do j = 1, theta_num
 
-      theta1 = real ( j - 1) * 2.0D+00 * pi &
-             / real ( theta_num)
-      theta2 = real ( j    ) * 2.0D+00 * pi &
-             / real ( theta_num)
+      theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+             / dble ( theta_num )
+      theta2 = dble ( j ) * 2.0D+00 * pi &
+             / dble ( theta_num )
 
       call tp_to_xyz ( theta1, phi1, x1 )
       call tp_to_xyz ( theta1, phi2, x12 )
@@ -1946,15 +1946,15 @@ subroutine sphere01_quad_llc ( f, h, n, result )
 !
     do i = 2, phi_num-1
 
-      phi1 = real ( i - 1) * pi / real ( phi_num)
-      phi2 = real ( i) * pi / real ( phi_num)
+      phi1 = dble ( i - 1 ) * pi / dble ( phi_num )
+      phi2 = dble ( i ) * pi / dble ( phi_num )
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1) * 2.0D+00 * pi &
-               / real ( theta_num)
-        theta2 = real ( j) * 2.0D+00 * pi &
-               / real ( theta_num)
+        theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+               / dble ( theta_num )
+        theta2 = dble ( j ) * 2.0D+00 * pi &
+               / dble ( theta_num )
 
         call tp_to_xyz ( theta1, phi1, x11 )
         call tp_to_xyz ( theta2, phi1, x21 )
@@ -1984,16 +1984,16 @@ subroutine sphere01_quad_llc ( f, h, n, result )
 !       \  /
 !        V2
 !
-    phi1 = real ( phi_num - 1) * pi &
-         / real ( phi_num)
+    phi1 = dble ( phi_num - 1 ) * pi &
+         / dble ( phi_num )
     phi2 =                                  pi
 
     do j = 1, theta_num
 
-      theta1 = real ( j - 1) * 2.0D+00 * pi &
-             / real ( theta_num)
-      theta2 = real ( j) * 2.0D+00 * pi &
-             / real ( theta_num)
+      theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+             / dble ( theta_num )
+      theta2 = dble ( j ) * 2.0D+00 * pi &
+             / dble ( theta_num )
 
       call tp_to_xyz ( theta1, phi1, x11 )
       call tp_to_xyz ( theta2, phi1, x21 )
@@ -2085,13 +2085,13 @@ subroutine sphere01_quad_llm ( f, h, n, result )
 !
   phi_num = int ( pi / h )
 
-  if ( h * real ( phi_num) < pi ) then
+  if ( h * dble ( phi_num ) < pi ) then
     phi_num = phi_num + 1
   end if
 
   theta_num = int ( 2.0D+00 * pi / h )
 
-  if ( h * real ( theta_num) < pi ) then
+  if ( h * dble ( theta_num ) < pi ) then
     theta_num = theta_num + 1
   end if
 
@@ -2116,14 +2116,14 @@ subroutine sphere01_quad_llm ( f, h, n, result )
   else if ( phi_num == 1 ) then
 
     sphere_area = 4.0D+00 * pi
-    sector_area = sphere_area / real ( theta_num)
+    sector_area = sphere_area / dble ( theta_num )
 
     result = 0.0D+00
 
     do j = 1, theta_num
 
-      theta = real ( ( j - 1 ) * 2) * pi &
-            / real ( theta_num)
+      theta = dble ( ( j - 1 ) * 2 ) * pi &
+            / dble ( theta_num )
       phi = pi / 2.0D+00
       call tp_to_xyz ( theta, phi, x )
       call f ( 1, x, v )
@@ -2146,14 +2146,14 @@ subroutine sphere01_quad_llm ( f, h, n, result )
 !    V12----V22
 !
     phi1 = 0.0D+00
-    phi2 = pi / real ( phi_num)
+    phi2 = pi / dble ( phi_num )
 
     do j = 1, theta_num
 
-      theta1 = real ( j - 1) * 2.0D+00 * pi &
-             / real ( theta_num)
-      theta2 = real ( j) * 2.0D+00 * pi &
-             / real ( theta_num)
+      theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+             / dble ( theta_num )
+      theta2 = dble ( j ) * 2.0D+00 * pi &
+             / dble ( theta_num )
 
       call tp_to_xyz ( theta1, phi1, x1 )
       call tp_to_xyz ( theta1, phi2, x12 )
@@ -2185,17 +2185,17 @@ subroutine sphere01_quad_llm ( f, h, n, result )
 !
     do i = 2, phi_num-1
 
-      phi1 = real ( i - 1) * pi &
-           / real ( phi_num)
-      phi2 = real ( i) * pi &
-           / real ( phi_num)
+      phi1 = dble ( i - 1 ) * pi &
+           / dble ( phi_num )
+      phi2 = dble ( i ) * pi &
+           / dble ( phi_num )
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1) * 2.0D+00 * pi &
-               / real ( theta_num)
-        theta2 = real ( j) * 2.0D+00 * pi &
-               / real ( theta_num)
+        theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+               / dble ( theta_num )
+        theta2 = dble ( j ) * 2.0D+00 * pi &
+               / dble ( theta_num )
 
         call tp_to_xyz ( theta1, phi1, x11 )
         call tp_to_xyz ( theta2, phi1, x21 )
@@ -2243,16 +2243,16 @@ subroutine sphere01_quad_llm ( f, h, n, result )
 !       \  /
 !        V2
 !
-    phi1 = real ( phi_num - 1) * pi &
-         / real ( phi_num)
+    phi1 = dble ( phi_num - 1 ) * pi &
+         / dble ( phi_num )
     phi2 =                                  pi
 
     do j = 1, theta_num
 
-      theta1 = real ( j - 1) * 2.0D+00 * pi &
-             / real ( theta_num)
-      theta2 = real ( j) * 2.0D+00 * pi &
-             / real ( theta_num)
+      theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+             / dble ( theta_num )
+      theta2 = dble ( j ) * 2.0D+00 * pi &
+             / dble ( theta_num )
 
       call tp_to_xyz ( theta1, phi1, x11 )
       call tp_to_xyz ( theta2, phi1, x21 )
@@ -2350,13 +2350,13 @@ subroutine sphere01_quad_llv ( f, h, n, result )
 !
   phi_num = int ( pi / h )
 
-  if ( h * real ( phi_num) < pi ) then
+  if ( h * dble ( phi_num ) < pi ) then
     phi_num = phi_num + 1
   end if
 
   theta_num = int ( 2.0D+00 * pi / h )
 
-  if ( h * real ( theta_num) < pi ) then
+  if ( h * dble ( theta_num ) < pi ) then
     theta_num = theta_num + 1
   end if
 
@@ -2380,14 +2380,14 @@ subroutine sphere01_quad_llv ( f, h, n, result )
   else if ( phi_num == 1 ) then
 
     sphere_area = 4.0D+00 * pi
-    sector_area = sphere_area / real ( theta_num)
+    sector_area = sphere_area / dble ( theta_num )
 
     result = 0.0D+00
 
     do j = 1, theta_num
 
-      theta = real ( ( j - 1 ) * 2) * pi &
-        / real ( theta_num)
+      theta = dble ( ( j - 1 ) * 2 ) * pi &
+        / dble ( theta_num )
       phi = pi / 2.0D+00
       call tp_to_xyz ( theta, phi, x )
       call f ( 1, x, v )
@@ -2410,14 +2410,14 @@ subroutine sphere01_quad_llv ( f, h, n, result )
 !    V12----V22
 !
     phi1 = 0.0D+00
-    phi2 = pi / real ( phi_num)
+    phi2 = pi / dble ( phi_num )
 
     do j = 1, theta_num
 
-      theta1 = real ( j - 1) * 2.0D+00 * pi &
-             / real ( theta_num)
-      theta2 = real ( j) * 2.0D+00 * pi &
-             / real ( theta_num)
+      theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+             / dble ( theta_num )
+      theta2 = dble ( j ) * 2.0D+00 * pi &
+             / dble ( theta_num )
 
       call tp_to_xyz ( theta1, phi1, x1 )
       call tp_to_xyz ( theta1, phi2, x12 )
@@ -2446,17 +2446,17 @@ subroutine sphere01_quad_llv ( f, h, n, result )
 !
     do i = 2, phi_num-1
 
-      phi1 = real ( i - 1) * pi &
-           / real ( phi_num)
-      phi2 = real ( i) * pi &
-           / real ( phi_num)
+      phi1 = dble ( i - 1 ) * pi &
+           / dble ( phi_num )
+      phi2 = dble ( i ) * pi &
+           / dble ( phi_num )
 
       do j = 1, theta_num
 
-        theta1 = real ( j - 1) * 2.0D+00 * pi &
-               / real ( theta_num)
-        theta2 = real ( j) * 2.0D+00 * pi &
-               / real ( theta_num)
+        theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+               / dble ( theta_num )
+        theta2 = dble ( j ) * 2.0D+00 * pi &
+               / dble ( theta_num )
 
         call tp_to_xyz ( theta1, phi1, x11 )
         call tp_to_xyz ( theta2, phi1, x21 )
@@ -2498,16 +2498,16 @@ subroutine sphere01_quad_llv ( f, h, n, result )
 !       \  /
 !        V2
 !
-    phi1 = real ( phi_num - 1) * pi &
-         / real ( phi_num)
+    phi1 = dble ( phi_num - 1 ) * pi &
+         / dble ( phi_num )
     phi2 =                                  pi
 
     do j = 1, theta_num
 
-      theta1 = real ( j - 1) * 2.0D+00 * pi &
-             / real ( theta_num)
-      theta2 = real ( j) * 2.0D+00 * pi &
-             / real ( theta_num)
+      theta1 = dble ( j - 1 ) * 2.0D+00 * pi &
+             / dble ( theta_num )
+      theta2 = dble ( j ) * 2.0D+00 * pi &
+             / dble ( theta_num )
 
       call tp_to_xyz ( theta1, phi1, x11 )
       call tp_to_xyz ( theta2, phi1, x21 )
@@ -2591,7 +2591,7 @@ subroutine sphere01_quad_mc ( f, h, seed, n, result )
 
   call f ( n, x, v )
 
-  result = sphere_area * sum ( v(1:n) ) / real ( n)
+  result = sphere_area * sum ( v(1:n) ) / dble ( n )
 end
 
 subroutine sphere01_quad_mc_size ( h, n )
@@ -2822,10 +2822,10 @@ subroutine sphere01_triangle_project ( a_xyz, b_xyz, c_xyz, f1, f2, f3, &
   double precision r8vec_norm
 
   node_xyz(1:3) = &
-    ( real ( f1) * a_xyz(1:3)   &
-    + real (      f2) * b_xyz(1:3)   &
-    + real (           f3) * c_xyz(1:3) ) &
-    / real ( f1 + f2 + f3)
+    ( dble ( f1 ) * a_xyz(1:3)   &
+    + dble ( f2 ) * b_xyz(1:3)   &
+    + dble ( f3 ) * c_xyz(1:3) ) &
+    / dble ( f1 + f2 + f3 )
 
   node_norm = r8vec_norm ( 3, node_xyz(1:3) )
 
@@ -2935,12 +2935,12 @@ subroutine sphere01_triangle_project2 ( a_xyz, b_xyz, c_xyz, f1, f2, f3, &
 !  Determine AB and AC that use cos ( ( F2 + F3 ) / ( F1 + F2 + F3 ) ) of A
 !  and cos ( F1 / ( F1 + F2 + F3 ) ) of B or C.
 !
-  angle = ( real ( f2 + f3) * theta_ab ) &
-    / real ( f1 + f2 + f3)
+  angle = ( dble ( f2 + f3 ) * theta_ab ) &
+    / dble ( f1 + f2 + f3 )
   ab(1:3) = cos ( angle ) * a_xyz(1:3) + sin ( angle ) * bn(1:3)
 
-  angle = ( real ( f2 + f3) * theta_ac ) &
-    / real ( f1 + f2 + f3)
+  angle = ( dble ( f2 + f3 ) * theta_ac ) &
+    / dble ( f1 + f2 + f3 )
   ac(1:3) = cos ( angle ) * a_xyz(1:3) + sin ( angle ) * cn(1:3)
 !
 !  Determine the angular distance between AB and AC.
@@ -2954,7 +2954,7 @@ subroutine sphere01_triangle_project2 ( a_xyz, b_xyz, c_xyz, f1, f2, f3, &
 !
 !  The interval between AB and AC is marked by F2+F3+1 vertices 0 through F2+F3.
 !
-  angle = ( real ( f3) * theta_bc ) / real ( f2 + f3)
+  angle = ( dble ( f3 ) * theta_bc ) / dble ( f2 + f3 )
 
   node_xyz(1:3) = cos ( angle ) * ab(1:3) + sin ( angle ) * acn(1:3)
 end

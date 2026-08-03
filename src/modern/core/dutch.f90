@@ -3797,7 +3797,7 @@ subroutine polycon_minkowski_sum_linear ( nu, ux, uy, nv, vx, vy, nw, wx, wy )
     p3(2) = uy(ip1w)
 
     u_angle = angle_rad_2d ( p1, p2, p3 )
-    u_angle = u_angle + real ( i - nu) / real ( nu) &
+    u_angle = u_angle + dble ( i - nu ) / dble ( nu ) &
       * 2.0D+00 * 3.141592653589793D+00
 
     jp1w = i4_wrap ( j+1, 1, nv )
@@ -3810,7 +3810,7 @@ subroutine polycon_minkowski_sum_linear ( nu, ux, uy, nv, vx, vy, nw, wx, wy )
     q3(2) = vy(jp1w)
 
     v_angle = angle_rad_2d ( q1, q2, q3 )
-    v_angle = v_angle + real ( j - nv) / real ( nv) &
+    v_angle = v_angle + dble ( j - nv ) / dble ( nv ) &
       * 2.0D+00 * 3.141592653589793D+00
 
     if ( u_angle < v_angle ) then

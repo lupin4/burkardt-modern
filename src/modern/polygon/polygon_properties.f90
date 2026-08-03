@@ -1664,8 +1664,8 @@ subroutine polygon_inrad_data ( n, radin, area, radout, side )
     stop 1
   end if
 
-  angle = r8_pi / real ( n)
-  area = real ( n) * radin * radin * tan ( angle )
+  angle = r8_pi / dble ( n )
+  area = dble ( n ) * radin * radin * tan ( angle )
   side = 2.0D+00 * radin * tan ( angle )
   radout = 0.5D+00 * side / sin ( angle )
 end
@@ -2365,7 +2365,7 @@ subroutine polygon_lattice_area ( i, b, area )
   integer b
   integer i
 
-  area = real ( i) + real ( b) / 2.0D+00 - 1.0D+00
+  area = dble ( i ) + dble ( b ) / 2.0D+00 - 1.0D+00
 end
 
 subroutine polygon_outrad_data ( n, radout, area, radin, side )
@@ -2421,8 +2421,8 @@ subroutine polygon_outrad_data ( n, radout, area, radin, side )
     stop 1
   end if
 
-  angle = r8_pi / real ( n)
-  area = 0.5D+00 * real ( n) * radout * radout &
+  angle = r8_pi / dble ( n )
+  area = 0.5D+00 * dble ( n ) * radout * radout &
     * sin ( 2.0D+00 * angle )
   side = 2.0D+00 * radout * sin ( angle )
   radin = 0.5D+00 * side / tan ( angle )
@@ -2536,15 +2536,15 @@ subroutine polygon_perimeter_quad ( n, v, hmax, f, value )
     ip1 = i4_wrap ( i + 1, 1, n )
     l = sqrt ( ( v(1,ip1) - v(1,i) ) ** 2 + ( v(2,ip1) - v(2,i) ) ** 2 )
     m = ceiling ( l / hmax )
-    dxy = l / real ( m)
+    dxy = l / dble ( m )
 
     do j = 1, 2 * m - 1, 2
-      x = ( real ( 2 * m - j) * v(1,i) &
-          + real (         j) * v(1,ip1) ) &
-          / real ( 2 * m)
-      y = ( real ( 2 * m - j) * v(2,i) &
-          + real (         j) * v(2,ip1) ) &
-          / real ( 2 * m)
+      x = ( dble ( 2 * m - j ) * v(1,i) &
+          + dble ( j ) * v(1,ip1) ) &
+          / dble ( 2 * m )
+      y = ( dble ( 2 * m - j ) * v(2,i) &
+          + dble ( j ) * v(2,ip1) ) &
+          / dble ( 2 * m )
       fxy = f ( x, y )
       value = value + fxy * dxy
     end do
@@ -2838,8 +2838,8 @@ subroutine polygon_side_data ( n, side, area, radin, radout )
     stop 1
   end if
 
-  angle = r8_pi / real ( n)
-  area = 0.25D+00 * real ( n) * side * side / tan ( angle )
+  angle = r8_pi / dble ( n )
+  area = 0.25D+00 * dble ( n ) * side * side / tan ( angle )
   radin = 0.5D+00 * side / tan ( angle )
   radout = 0.5D+00 * side / sin ( angle )
 end
@@ -3152,7 +3152,7 @@ function r8_uniform_01 ( seed )
     seed = seed + i4_huge
   end if
 
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 subroutine r8mat_solve ( n, rhs_num, a, info )
@@ -3333,7 +3333,7 @@ subroutine r8vec_uniform_01 ( n, seed, r )
       seed = seed + 2147483647
     end if
 
-    r(i) = real ( seed) * 4.656612875D-10
+    r(i) = dble ( seed ) * 4.656612875D-10
 
   end do
 end

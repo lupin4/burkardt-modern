@@ -82,26 +82,26 @@ subroutine hypercube_grid ( m, n, ns, a, b, c, x )
         if ( s == 1 ) then
           xs(j) = 0.5D+00 * ( a(i) + b(i) )
         else
-          xs(j) = (   real ( s - j) * a(i)   &
-                    + real (     j - 1) * b(i) ) & 
-                    / real ( s     - 1)
+          xs(j) = (   dble ( s - j ) * a(i)   &
+                    + dble ( j - 1 ) * b(i) ) & 
+                    / dble ( s     - 1 )
         end if
       else if ( c(i) == 2 ) then
-        xs(j) = (   real ( s - j + 1) * a(i)   &
-                  + real (     j) * b(i) ) & 
-                  / real ( s     + 1)
+        xs(j) = (   dble ( s - j + 1 ) * a(i)   &
+                  + dble ( j ) * b(i) ) & 
+                  / dble ( s     + 1 )
       else if ( c(i) == 3 ) then
-        xs(j) = (   real ( s - j + 1) * a(i)   &
-                  + real (     j - 1) * b(i) ) & 
-                  / real ( s)
+        xs(j) = (   dble ( s - j + 1 ) * a(i)   &
+                  + dble ( j - 1 ) * b(i) ) & 
+                  / dble ( s )
       else if ( c(i) == 4 ) then
-        xs(j) = (   real ( s - j) * a(i)   &
-                  + real (     j) * b(i) ) & 
-                  / real ( s)
+        xs(j) = (   dble ( s - j ) * a(i)   &
+                  + dble ( j ) * b(i) ) & 
+                  / dble ( s )
       else if ( c(i) == 5 ) then
-        xs(j) = (   real ( 2 * s - 2 * j + 1) * a(i)   &
-                  + real (         2 * j - 1) * b(i) ) & 
-                  / real ( 2 * s)
+        xs(j) = (   dble ( 2 * s - 2 * j + 1 ) * a(i)   &
+                  + dble ( 2 * j - 1 ) * b(i) ) & 
+                  / dble ( 2 * s )
       end if
 
     end do

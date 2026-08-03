@@ -60,10 +60,10 @@ subroutine tetrahedron_grid ( n, t, ng, tg )
       do k = 0, n - i - j
         l = n - i - j - k
         p = p + 1
-        tg(1:3,p) = ( real ( i) * t(1:3,1) &
-                    + real ( j) * t(1:3,2) &
-                    + real ( k) * t(1:3,3) &
-                    + real ( l) * t(1:3,4) ) / real ( n)
+        tg(1:3,p) = ( dble ( i ) * t(1:3,1) &
+                    + dble ( j ) * t(1:3,2) &
+                    + dble ( k ) * t(1:3,3) &
+                    + dble ( l ) * t(1:3,4) ) / dble ( n )
       end do
     end do
   end do

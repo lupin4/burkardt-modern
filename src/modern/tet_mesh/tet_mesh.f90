@@ -841,7 +841,7 @@ function r8_uniform_01 ( seed )
 !  Although SEED can be represented exactly as a 32 bit integer,
 !  it generally cannot be represented exactly as a 32 bit real number!
 !
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 function r8mat_det_4d ( a )
@@ -1069,7 +1069,7 @@ subroutine r8mat_uniform_01 ( m, n, seed, r )
         seed = seed + i4_huge
       end if
 
-      r(i,j) = real ( seed) * 4.656612875D-10
+      r(i,j) = dble ( seed ) * 4.656612875D-10
 
     end do
   end do
@@ -1202,7 +1202,7 @@ subroutine r8vec_mean ( n, a, mean )
   double precision a(n)
   double precision mean
 
-  mean = sum ( a(1:n) ) / real ( n)
+  mean = sum ( a(1:n) ) / dble ( n )
 end
 
 subroutine r8vec_uniform_01 ( n, seed, r )
@@ -1282,7 +1282,7 @@ subroutine r8vec_uniform_01 ( n, seed, r )
       seed = seed + 2147483647
     end if
 
-    r(i) = real ( seed) * 4.656612875D-10
+    r(i) = dble ( seed ) * 4.656612875D-10
 
   end do
 end
@@ -1336,11 +1336,11 @@ subroutine r8vec_variance ( n, a, variance )
 
   else
 
-    mean = sum ( a(1:n) ) / real ( n)
+    mean = sum ( a(1:n) ) / dble ( n )
 
     variance = sum ( ( a(1:n) - mean )**2 )
 
-    variance = variance / real ( n - 1)
+    variance = variance / dble ( n - 1 )
 
   end if
 end

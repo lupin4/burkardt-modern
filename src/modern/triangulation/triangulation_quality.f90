@@ -164,7 +164,7 @@ subroutine alpha_measure ( n, z, element_order, element_num, element_node, &
 
   end do
 
-  alpha_ave = alpha_ave / real ( element_num)
+  alpha_ave = alpha_ave / dble ( element_num )
   alpha_area = alpha_area / area_total
 !
 !  Normalize angles from [0,pi/3] radians into qualities in [0,1].
@@ -342,7 +342,7 @@ subroutine area_measure ( n, z, element_order, element_num, element_node, &
 
   end do
 
-  area_ave = area_ave / real ( element_num)
+  area_ave = area_ave / dble ( element_num )
 
   area_std = 0.0D+00
   do triangle = 1, element_num
@@ -360,7 +360,7 @@ subroutine area_measure ( n, z, element_order, element_num, element_node, &
 
     area_std = area_std + ( area - area_ave )**2
   end do
-  area_std = sqrt ( area_std / real ( element_num) )
+  area_std = sqrt ( area_std / dble ( element_num ) )
 
   if ( 0.0D+00 < area_max ) then
     area_ratio = area_min / area_max
@@ -708,7 +708,7 @@ subroutine q_measure ( n, z, element_order, element_num, element_node, &
 
   end do
 
-  q_ave = q_ave / real ( element_num)
+  q_ave = q_ave / dble ( element_num )
 
   if ( 0.0D+00 < area_total ) then
     q_area = q_area / area_total

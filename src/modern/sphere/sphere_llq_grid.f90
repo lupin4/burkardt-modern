@@ -333,15 +333,15 @@ subroutine sphere_llq_grid_points ( r, pc, lat_num, long_num, point_num, p )
 !
   do lat = 1, lat_num
 
-    phi = real ( lat) * r8_pi &
-        / real ( lat_num + 1)
+    phi = dble ( lat ) * r8_pi &
+        / dble ( lat_num + 1 )
 !
 !  Along that ring of latitude, compute points at various longitudes.
 !
     do long = 0, long_num - 1
 
-      theta = real ( long) * 2.0D+00 * r8_pi &
-            / real ( long_num)
+      theta = dble ( long ) * 2.0D+00 * r8_pi &
+            / dble ( long_num )
 
       n = n + 1
       p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )

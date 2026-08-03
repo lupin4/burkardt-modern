@@ -4008,12 +4008,12 @@ function jrand ( n, ix, iy, iz )
   iy = mod ( 172 * iy, 30307 )
   iz = mod ( 170 * iz, 30323 )
 
-  x = ( real ( ix) / 30269.0D+00 ) &
-    + ( real ( iy) / 30307.0D+00 ) &
-    + ( real ( iz) / 30323.0D+00 )
+  x = ( dble ( ix ) / 30269.0D+00 ) &
+    + ( dble ( iy ) / 30307.0D+00 ) &
+    + ( dble ( iz ) / 30323.0D+00 )
 
   u = x - int ( x )
-  jrand = real ( n) * u + 1.0D+00
+  jrand = dble ( n ) * u + 1.0D+00
 end
 
 function left ( x1, y1, z1, x2, y2, z2, x0, y0, z0 )
@@ -7282,7 +7282,7 @@ subroutine trplot ( lun, pltsiz, elat, elon, a, n, x, y, z, list, lptr, &
 !  of a viewport box obtained by shrinking the bounding box
 !  by 12% in each dimension.
 !
-  ir = nint ( 0.88D+00 * real ( ir) )
+  ir = nint ( 0.88D+00 * dble ( ir ) )
   ipx1 = 306 - ir
   ipx2 = 306 + ir
   ipy1 = 396 - ir
@@ -7299,7 +7299,7 @@ subroutine trplot ( lun, pltsiz, elat, elon, a, n, x, y, z, list, lptr, &
 !  Set up an affine mapping from the window box [-WR,WR] X
 !  [-WR,WR] to the viewport box.
 !
-  sf = real ( ir) / wr
+  sf = dble ( ir ) / wr
   tx = ipx1 + sf * wr
   ty = ipy1 + sf * wr
   write ( lun, '(2f12.6,a)' ) tx, ty, ' translate'
@@ -8202,7 +8202,7 @@ subroutine vrplot ( lun, pltsiz, elat, elon, a, n, x, y, z, nt, listc, lptr, &
 !  of a viewport box obtained by shrinking the bounding box
 !  by 12% in each dimension.
 !
-  ir = nint ( 0.88D+00 * real ( ir) )
+  ir = nint ( 0.88D+00 * dble ( ir ) )
   ipx1 = 306 - ir
   ipx2 = 306 + ir
   ipy1 = 396 - ir
@@ -8218,7 +8218,7 @@ subroutine vrplot ( lun, pltsiz, elat, elon, a, n, x, y, z, nt, listc, lptr, &
 !  Set up an affine mapping from the window box [-WR,WR] X
 !  [-WR,WR] to the viewport box.
 !
-  sf = real ( ir) / wr
+  sf = dble ( ir ) / wr
   tx = ipx1 + sf * wr
   ty = ipy1 + sf * wr
 

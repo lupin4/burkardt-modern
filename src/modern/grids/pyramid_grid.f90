@@ -120,9 +120,9 @@ subroutine pyramid_unit_grid ( n, ng, pg )
     do j = lo, hi, 2
       do i = lo, hi, 2
         g = g + 1
-        pg(1,g) = real ( i) / real ( n)
-        pg(2,g) = real ( j) / real ( n)
-        pg(3,g) = real ( k) / real ( n)
+        pg(1,g) = dble ( i ) / dble ( n )
+        pg(2,g) = dble ( j ) / dble ( n )
+        pg(3,g) = dble ( k ) / dble ( n )
       end do
     end do
   end do

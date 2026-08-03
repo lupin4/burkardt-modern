@@ -92,8 +92,8 @@ subroutine polygon_grid_display ( n, nv, v, ng, xg, prefix )
 !
 !  Write the vertex file.
 !
-  vc(1) = sum ( v(1,1:nv) ) / real ( nv)
-  vc(2) = sum ( v(2,1:nv) ) / real ( nv)
+  vc(1) = sum ( v(1,1:nv) ) / dble ( nv )
+  vc(2) = sum ( v(2,1:nv) ) / dble ( nv )
 
   call get_unit ( vertex_unit )
   vertex_filename = trim ( prefix ) // '_vertex.txt'
@@ -205,8 +205,8 @@ subroutine polygon_grid_points ( n, nv, v, ng, xg )
 !  Determine the centroid, and use it as the first grid point.
 !
   p = 1
-  vc(1) = sum ( v(1,1:nv) ) / real ( nv)
-  vc(2) = sum ( v(2,1:nv) ) / real ( nv)
+  vc(1) = sum ( v(1,1:nv) ) / dble ( nv )
+  vc(2) = sum ( v(2,1:nv) ) / dble ( nv )
   xg(1:2,p) = vc(1:2)
 !
 !  Consider each triangle formed by two consecutive vertices and the centroid,
@@ -218,10 +218,10 @@ subroutine polygon_grid_points ( n, nv, v, ng, xg )
       do j = 0, n - i
         k = n - i - j
         p = p + 1
-        xg(1:2,p) = ( real ( i) * v(1:2,l)   &
-                    + real ( j) * v(1:2,lp1) & 
-                    + real ( k) * vc(1:2) )  &
-                    / real ( n)
+        xg(1:2,p) = ( dble ( i ) * v(1:2,l)   &
+                    + dble ( j ) * v(1:2,lp1) & 
+                    + dble ( k ) * vc(1:2) )  &
+                    / dble ( n )
       end do
     end do
   end do

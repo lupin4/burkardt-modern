@@ -489,7 +489,7 @@ function r8_uniform_01 ( seed )
 !  Although SEED can be represented exactly as a 32 bit integer,
 !  it generally cannot be represented exactly as a 32 bit real number!
 !
-  r8_uniform_01 = real ( seed) * 4.656612875D-10
+  r8_uniform_01 = dble ( seed ) * 4.656612875D-10
 end
 
 function r8vec_diff_norm ( n, a, b )
@@ -695,8 +695,8 @@ subroutine sphere_cubed_ijk_to_xyz ( n, i, j, k, xyz )
   else if ( i == n ) then
     xc = +1.0D+00
   else
-    xc = tan ( real ( 2 * i - n) * 0.25D+00 * pi &
-      / real ( n) )
+    xc = tan ( dble ( 2 * i - n ) * 0.25D+00 * pi &
+      / dble ( n ) )
   end if
 
   if ( j == 0 ) then
@@ -704,8 +704,8 @@ subroutine sphere_cubed_ijk_to_xyz ( n, i, j, k, xyz )
   else if ( j == n ) then
     yc = +1.0D+00
   else
-    yc = tan ( real ( 2 * j - n) * 0.25D+00 * pi &
-      / real ( n) )
+    yc = tan ( dble ( 2 * j - n ) * 0.25D+00 * pi &
+      / dble ( n ) )
   end if
 
   if ( k == 0 ) then
@@ -713,8 +713,8 @@ subroutine sphere_cubed_ijk_to_xyz ( n, i, j, k, xyz )
   else if ( k == n ) then
     zc = +1.0D+00
   else
-    zc = tan ( real ( 2 * k - n) * 0.25D+00 * pi &
-      / real ( n) )
+    zc = tan ( dble ( 2 * k - n ) * 0.25D+00 * pi &
+      / dble ( n ) )
   end if
 
   xyzn = sqrt ( xc ** 2 + yc ** 2 + zc ** 2 )
@@ -917,8 +917,8 @@ subroutine sphere_cubed_points_face ( n, i1, j1, k1, i2, j2, k2, ns, xyz )
   do i = i1, i2
 
     if ( i1 < i2 ) then
-      xc = tan ( real ( 2 * i - n) * 0.25D+00 * pi &
-        / real ( n) )
+      xc = tan ( dble ( 2 * i - n ) * 0.25D+00 * pi &
+        / dble ( n ) )
     else if ( i1 == 0 ) then
       xc = -1.0D+00
     else if ( i1 == n ) then
@@ -930,8 +930,8 @@ subroutine sphere_cubed_points_face ( n, i1, j1, k1, i2, j2, k2, ns, xyz )
     do j = j1, j2
 
       if ( j1 < j2 ) then
-        yc = tan ( real ( 2 * j - n) * 0.25D+00 * pi &
-          / real ( n) )
+        yc = tan ( dble ( 2 * j - n ) * 0.25D+00 * pi &
+          / dble ( n ) )
       else if ( j1 == 0 ) then
         yc = -1.0D+00
       else if ( j1 == n ) then
@@ -943,8 +943,8 @@ subroutine sphere_cubed_points_face ( n, i1, j1, k1, i2, j2, k2, ns, xyz )
       do k = k1, k2
 
         if ( k1 < k2 ) then
-          zc = tan ( real ( 2 * k - n) * 0.25D+00 * pi &
-            / real ( n) );
+          zc = tan ( dble ( 2 * k - n ) * 0.25D+00 * pi &
+            / dble ( n ) );
         else if ( k1 == 0 ) then
           zc = -1.0D+00
         else if ( k1 == n ) then
@@ -1699,9 +1699,9 @@ subroutine sphere_icos1_points ( factor, node_num, node_xyz )
       node = node + 1
 
       node_xyz(1:3,node) = &
-        ( real ( factor - f) * point_coord(1:3,a)   &
-        + real (          f) * point_coord(1:3,b) ) &
-        / real ( factor)
+        ( dble ( factor - f ) * point_coord(1:3,a)   &
+        + dble ( f ) * point_coord(1:3,b) ) &
+        / dble ( factor )
 
       node_norm = r8vec_norm ( 3, node_xyz(1:3,node) )
 
@@ -1724,10 +1724,10 @@ subroutine sphere_icos1_points ( factor, node_num, node_xyz )
         node = node + 1
 
         node_xyz(1:3,node) = &
-          ( real ( factor - f1 - f2) * point_coord(1:3,a)   &
-          + real (          f1) * point_coord(1:3,b)   &
-          + real (               f2) * point_coord(1:3,c) ) &
-          / real ( factor)
+          ( dble ( factor - f1 - f2 ) * point_coord(1:3,a)   &
+          + dble ( f1 ) * point_coord(1:3,b)   &
+          + dble ( f2 ) * point_coord(1:3,c) ) &
+          / dble ( factor )
 
         node_norm = r8vec_norm ( 3, node_xyz(1:3,node) )
 
@@ -1890,7 +1890,7 @@ subroutine sphere_icos2_points ( factor, node_num, node_xyz )
 
       node = node + 1
 
-      angle = ( real ( f) * theta ) / real ( factor)
+      angle = ( dble ( f ) * theta ) / dble ( factor )
      
       node_xyz(1:3,node) = cos ( angle ) * point_coord(1:3,a) &
                          + sin ( angle ) * bn(1:3)
@@ -1935,10 +1935,10 @@ subroutine sphere_icos2_points ( factor, node_num, node_xyz )
 !  Determine points AB and AC that use cos ( FA / FACTOR ) of A 
 !  and cos ( ( FACTOR - FA ) / FACTOR ) of B or C.
 !
-      angle = ( real ( fa) * theta_ab ) / real ( factor)
+      angle = ( dble ( fa ) * theta_ab ) / dble ( factor )
       ab(1:3) = cos ( angle ) * point_coord(1:3,a) + sin ( angle ) * bn(1:3)
 
-      angle = ( real ( fa) * theta_ac ) / real ( factor)
+      angle = ( dble ( fa ) * theta_ac ) / dble ( factor )
       ac(1:3) = cos ( angle ) * point_coord(1:3,a) + sin ( angle ) * cn(1:3)
 !
 !  Determine the "distance" = angle between points AB and AC.
@@ -1957,8 +1957,8 @@ subroutine sphere_icos2_points ( factor, node_num, node_xyz )
 
         node = node + 1
 
-        angle = ( real ( fbc) * theta_bc ) &
-                / real ( fa)
+        angle = ( dble ( fbc ) * theta_bc ) &
+                / dble ( fa )
      
         node_xyz(1:3,node) = cos ( angle ) * ab(1:3) &
                            + sin ( angle ) * acn(1:3)
@@ -2127,8 +2127,8 @@ subroutine sphere_line_project ( r, pc, n, p, maxpnt2, n2, pp, theta_min, &
             do j = 1, nfill-1
 
               pd(1:3) = &
-                ( real ( nfill - j) * ( p1(1:3) - pc(1:3) ) &
-                + real (         j) * ( p2(1:3) - pc(1:3) ) )
+                ( dble ( nfill - j ) * ( p1(1:3) - pc(1:3) ) &
+                + dble ( j ) * ( p2(1:3) - pc(1:3) ) )
 
               tnorm = r8vec_norm ( 3, pd )
 
@@ -2387,15 +2387,15 @@ subroutine sphere_ll_points ( r, pc, lat_num, long_num, point_num, p )
 !
   do lat = 1, lat_num
 
-    phi = real ( lat) * pi &
-        / real ( lat_num + 1)
+    phi = dble ( lat ) * pi &
+        / dble ( lat_num + 1 )
 !
 !  Along that ring of latitude, compute points at various longitudes.
 !
     do long = 0, long_num - 1
 
-      theta = real ( long) * 2.0D+00 * pi &
-            / real ( long_num)
+      theta = dble ( long ) * 2.0D+00 * pi &
+            / dble ( long_num )
 
       n = n + 1
       p(1,n) = pc(1) + r * sin ( phi ) * cos ( theta )
@@ -2649,16 +2649,16 @@ subroutine sphere_spiralpoints ( r, pc, n, p )
 
   do i = 1, n
 
-    cosphi = ( real ( n - i) * ( -1.0D+00 ) &
-             + real (     i - 1) * ( +1.0D+00 ) ) &
-             / real ( n     - 1)
+    cosphi = ( dble ( n - i ) * ( -1.0D+00 ) &
+             + dble ( i - 1 ) * ( +1.0D+00 ) ) &
+             / dble ( n     - 1 )
 
     sinphi = sqrt ( 1.0D+00 - cosphi * cosphi )
 
     if ( i == 1 .or. i == n ) then
       theta = 0.0D+00
     else
-      theta = theta + 3.6D+00 / ( sinphi * sqrt ( real ( n) ) )
+      theta = theta + 3.6D+00 / ( sinphi * sqrt ( dble ( n ) ) )
       theta = mod ( theta, 2.0D+00 * pi )
     end if
 
