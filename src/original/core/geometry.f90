@@ -17971,7 +17971,8 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
     do i = 1, node_num
 
       if ( i /= q .and. &
-           ( node_xy(1,i) /= q_xy(1) .or. node_xy(2,i) /= q_xy(2) ) ) then
+           ( node_xy(1,i) /= q_xy(1) .or. node_xy(2,i) /= q_xy(2) ) .and. &
+           ( node_xy(1,i) /= p_xy(1) .or. node_xy(2,i) /= p_xy(2) ) ) then
 
         angle = angle_rad_2d ( p_xy, q_xy, node_xy(1:2,i) )
 
