@@ -64,6 +64,7 @@ function angle_deg_2d ( p1, p2, p3 )
 
   if ( p(1) == 0.0D+00 .and. p(2) == 0.0D+00 ) then
     angle_deg_2d = 0.0D+00
+    return
   end if
 
   angle_rad_2d = atan2 ( p(2), p(1) )
@@ -134,6 +135,7 @@ function angle_rad_2d ( p1, p2, p3 )
 
   if ( p(1) == 0.0D+00 .and. p(2) == 0.0D+00 ) then
     angle_rad_2d = 0.0D+00
+    return
   end if
 
   angle_rad_2d = atan2 ( p(2), p(1) )
@@ -302,6 +304,7 @@ subroutine circle_exp2imp_2d ( x1, y1, x2, y2, x3, y3, r, cx, cy )
     cx = 0.0D+00
     cy = 0.0D+00
     r = -1.0D+00
+    return
   end if
 !
 !  The center is halfway along the diameter vector from (X1,Y1).
@@ -1105,6 +1108,7 @@ subroutine i4vec_heap_d_extract ( n, a, val )
 
   if ( n == 1 ) then
     n = 0
+    return
   end if
 !
 !  Shift the last value down.
@@ -1364,6 +1368,7 @@ subroutine i4vec_pop ( n, x, stack1_max, stack1_num, stack1, stack2_max, &
 
   if ( stack1_num < 1 ) then
     n = -1
+    return
   end if
 
   n = stack1(stack1_num)
@@ -1505,6 +1510,7 @@ subroutine i4vec_sort_heap_d ( n, a )
   integer n1
 
   if ( n <= 1 ) then
+    return
   end if
 !
 !  1: Put A into ascending heap form.
@@ -1666,11 +1672,13 @@ subroutine ij_next ( i, j, n )
   if ( n < 1 ) then
     i = 0
     j = 0
+    return
   end if
 
   if ( i < 1 .or. n < i .or. j < 1 .or. n < j ) then
     i = 1
     j = 1
+    return
   end if
 
   if ( j < n ) then
@@ -1726,11 +1734,13 @@ subroutine ij_next_gt ( i, j, n )
   if ( n < 2 ) then
     i = 0
     j = 0
+    return
   end if
 
   if ( i < 1 .or. n < i .or. j < 1 .or. n < j .or. j <= i ) then
     i = 1
     j = 2
+    return
   end if
 
   if ( j < n ) then
@@ -2095,6 +2105,7 @@ subroutine line_seg_vec_int_2d ( n, x1, y1, x2, y2, i, j, flag, xint, yint )
       x2(j), y2(j), flag, xint, yint )
 
     if ( flag == 1 ) then
+      return
     end if
 
   end do
@@ -2282,6 +2293,7 @@ subroutine lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, x, y )
     return
   else if ( a2 == 0.0D+00 .and. b2 == 0.0D+00 ) then
     ival = -2
+    return
   end if
 !
 !  Set up a linear system, and compute its inverse.
@@ -2383,6 +2395,7 @@ subroutine lines_seg_dist_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 )
 
   if ( ival == 0 ) then
     flag = 0
+    return
   end if
 !
 !  Is the point on the first segment?
@@ -2391,6 +2404,7 @@ subroutine lines_seg_dist_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 )
 
   if ( u < 0 .or. 1.0D+00 < u .or. 0.001D+00 < v ) then
     flag = 0
+    return
   end if
 !
 !  Is the point on the second segment?
@@ -2399,6 +2413,7 @@ subroutine lines_seg_dist_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 )
 
   if ( u < 0 .or. 1.0D+00 < u .or. 0.001D+00 < v ) then
     flag = 0
+    return
   end if
 
   flag = 1
@@ -2461,6 +2476,7 @@ subroutine lines_seg_int_1d ( x1, x2, x3, x4, flag, x5, x6 )
   if ( y4 < y1 ) then
     return
   else if ( y2 < y3 ) then
+    return
   end if
 
   flag = 1
@@ -2528,6 +2544,7 @@ subroutine lines_seg_int_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 )
 
   if ( ival == 0 ) then
     flag = 0
+    return
   end if
 !
 !  Is the point on the first segment?
@@ -2536,6 +2553,7 @@ subroutine lines_seg_int_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 )
 
   if ( u < 0 .or. 1.0D+00 < u .or. 0.001D+00 < v ) then
     flag = 0
+    return
   end if
 !
 !  Is the point on the second segment?
@@ -2544,6 +2562,7 @@ subroutine lines_seg_int_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5 )
 
   if ( u < 0 .or. 1.0D+00 < u .or. 0.001D+00 < v ) then
     flag = 0
+    return
   end if
 
   flag = 1
@@ -2879,6 +2898,7 @@ subroutine points_convex_hull_nlogh_2d ( node_num, node_xy, hull_num, hull )
 
   if ( node_num < 1 ) then
     hull_num = 0
+    return
   end if
 !
 !  If NODE_NUM = 1, the hull is the point.
@@ -2886,6 +2906,7 @@ subroutine points_convex_hull_nlogh_2d ( node_num, node_xy, hull_num, hull )
   if ( node_num == 1 ) then
     hull_num = 1
     hull(1) = 1
+    return
   end if
 !
 !  If NODE_NUM = 2, then the convex hull is either the two distinct points,
@@ -2901,6 +2922,9 @@ subroutine points_convex_hull_nlogh_2d ( node_num, node_xy, hull_num, hull )
       hull_num = 1
       hull(1) = 1
     end if
+
+    return
+
   end if
 !
 !  Find the leftmost point and call it "Q".
@@ -3369,6 +3393,7 @@ subroutine points_minidisc_2d ( n, px, py, r, cx, cy )
     r = 0.0D+00
     cx = px(1)
     cy = py(1)
+    return
   end if
 !
 !  N = 2
@@ -3377,6 +3402,7 @@ subroutine points_minidisc_2d ( n, px, py, r, cx, cy )
     r = 0.5D+00 * sqrt ( ( px(1) - px(2) )**2 + ( py(1) - py(2) )**2 )
     cx = 0.5D+00 * ( px(1) + px(2) )
     cy = 0.5D+00 * ( py(1) + py(2) )
+    return
   end if
 !
 !  Determine the smallest disk with P(1), P(2) on its boundary,
@@ -3480,6 +3506,7 @@ subroutine poly_triangulate_2d ( n, x, y, triang )
   double precision y4
 
   if ( n <= 2 ) then
+    return
   end if
 
   degree = n
@@ -4129,6 +4156,7 @@ subroutine r82vec_part_quick_a ( n, a, l, r )
   else if ( n == 1 ) then
     l = 0
     r = 2
+    return
   end if
 
   key(1:dim_num) = a(1:dim_num,1)
@@ -4220,6 +4248,7 @@ subroutine r82vec_sort_quick_a ( n, a )
     write ( *, '(a,i8)' ) '  N = ', n
     stop
   else if ( n == 1 ) then
+    return
   end if
 
   level = 1
@@ -4263,6 +4292,7 @@ subroutine r82vec_sort_quick_a ( n, a )
       do
 
         if ( level <= 1 ) then
+          return
         end if
 
         base = rsave(level)
@@ -4345,6 +4375,7 @@ subroutine r8mat_solve ( a, n, nrhs, info )
 
     if ( apivot == 0.0D+00 ) then
       info = j
+      return
     end if
 !
 !  Interchange.
@@ -4423,6 +4454,8 @@ subroutine r8mat2_inverse ( a, b, det )
   if ( det == 0.0D+00 ) then
 
     b(1:2,1:2) = 0.0D+00
+
+    return
   end if
 !
 !  Compute the entries of the inverse matrix using an explicit formula.
@@ -4920,6 +4953,7 @@ subroutine rect_int_2d ( x1, y1, x2, y2, x3, y3, x4, y4, flag, x5, y5, x6, y6 )
   call lines_seg_int_1d ( x1, x2, x3, x4, flag, x5, x6 )
 
   if ( flag == 0 ) then
+    return
   end if
 
   call lines_seg_int_1d ( y1, y2, y3, y4, flag, y5, y6 )
@@ -5030,12 +5064,15 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -1
       i = i_save
       j = j_save
+      return
+
     end if
 
     if ( 0 < isgn ) then
       indx = 2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -5053,6 +5090,8 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
 
       i = i_save
       j = j_save
+      return
+
     end if
 
     k = k - 1
@@ -5082,6 +5121,7 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -5525,6 +5565,7 @@ subroutine triangulate_common_edge ( triang_num, triang, node1, node2, t1, &
         t2 = t
         j3 = i4_wrap ( j1+2, 1, 3 )
         node3 = triang(j3,t)
+        return
       end if
     end do
   end do

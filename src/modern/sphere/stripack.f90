@@ -413,6 +413,7 @@ function areas ( v1, v2, v3 )
 !
   if ( s12 == 0.0D+00 .or. s23 == 0.0D+00 .or. s31 == 0.0D+00 ) then
     areas = 0.0D+00
+    return
   end if
 
   s12 = sqrt ( s12 )
@@ -691,6 +692,7 @@ subroutine bnodes ( n, list, lptr, lend, nodes, nb, na, nt )
     nb = 0
     na = 3 * ( nn - 2 )
     nt = 2 * ( nn - 2 )
+    return
   end if
 !
 !  NST is the first boundary node encountered.
@@ -804,6 +806,7 @@ subroutine circum ( v1, v2, v3, c, ier )
 !
   if ( cnorm == 0.0D+00 ) then
     ier = 1
+    return
   end if
 
   c(1:3) = cu(1:3) / cnorm
@@ -1131,6 +1134,7 @@ subroutine crlist ( n, ncol, x, y, z, list, lend, lptr, lnew, &
 
   if ( nn < 3 ) then
     ier = 1
+    return
   end if
 !
 !  Search for a boundary node N1.
@@ -1193,6 +1197,7 @@ subroutine crlist ( n, ncol, x, y, z, list, lend, lptr, lnew, &
 
     if ( ncol < nt ) then
       ier = 2
+      return
     end if
 
     ltri(4,nt) = 0
@@ -1346,6 +1351,7 @@ subroutine crlist ( n, ncol, x, y, z, list, lend, lptr, lnew, &
 
       if ( ierr /= 0 ) then
         ier = 3
+        return
       end if
 !
 !  Store the negative circumcenter and radius (computed from <V1,C>).
@@ -1409,6 +1415,7 @@ subroutine crlist ( n, ncol, x, y, z, list, lend, lptr, lnew, &
 
         if ( ierr /= 0 ) then
           ier = 3
+          return
         end if
 !
 !  Store the circumcenter, radius and triangle index.
@@ -1446,6 +1453,7 @@ subroutine crlist ( n, ncol, x, y, z, list, lend, lptr, lnew, &
 
   if ( nt == 0 ) then
     ier = 0
+    return
   end if
 !
 !  Store the first NT triangle indexes in LISTC.
@@ -1643,26 +1651,32 @@ subroutine delarc ( n, io1, io2, list, lptr, lend, lnew, ier )
 !
   if ( n < 4 ) then
     ier = 1
+    return
   end if
 
   if ( n1 < 1 ) then
     ier = 1
+    return
   end if
 
   if ( n < n1 ) then
     ier = 1
+    return
   end if
 
   if ( n2 < 1 ) then
     ier = 1
+    return
   end if
 
   if ( n < n2 ) then
     ier = 1
+    return
   end if
 
   if ( n1 == n2 ) then
     ier = 1
+    return
   end if
 !
 !  Set N1->N2 to the directed boundary edge associated with IO1-IO2:  
@@ -1676,6 +1690,7 @@ subroutine delarc ( n, io1, io2, list, lptr, lend, lnew, ier )
     lpl = lend(n2)
     if ( -list(lpl) /= n1 ) then
       ier = 2
+      return
     end if
   end if
 !
@@ -1690,6 +1705,7 @@ subroutine delarc ( n, io1, io2, list, lptr, lend, lnew, ier )
 
   if ( list(lpl) <= 0 ) then
     ier = 3
+    return
   end if
 !
 !  Delete N2 as a neighbor of N1, making N3 the first
@@ -1701,6 +1717,7 @@ subroutine delarc ( n, io1, io2, list, lptr, lend, lnew, ier )
 
   if ( lph < 0 ) then
     ier = 4
+    return
   end if
 !
 !  Delete N1 as a neighbor of N2, making N3 the new last neighbor.
@@ -1813,11 +1830,13 @@ subroutine delnb ( n0, nb, n, list, lptr, lend, lnew, lph )
 !
   if ( n0 < 1 ) then
     lph = -1
+    return
   end if
 
   if ( nn < n0 .or. nb < 1  .or. &
       nn < nb .or. nn < 3 ) then
     lph = -1
+    return
   end if
 !
 !  Find pointers to neighbors of N0:
@@ -1849,6 +1868,7 @@ subroutine delnb ( n0, nb, n, list, lptr, lend, lnew, lph )
 !
   if ( abs ( list(lpb) ) /= nb ) then
     lph = -2
+    return
   end if
 !
 !  NB is the last neighbor of N0.  Make NP the new last
@@ -2073,18 +2093,22 @@ subroutine delnod ( k, n, x, y, z, list, lptr, lend, lnew, lwk, iwk, ier )
 
   if ( n1 < 1 ) then
     ier = 1
+    return
   end if
 
   if ( nn < n1 ) then
     ier = 1
+    return
   end if
 
   if ( nn < 4 ) then
     ier = 1
+    return
   end if
 
   if ( lwk < 0 ) then
     ier = 1
+    return
   end if
 
   lpl = lend(n1)
@@ -2098,6 +2122,7 @@ subroutine delnod ( k, n, x, y, z, list, lptr, lend, lnew, lwk, iwk, ier )
 
   if ( nnb < 3 ) then
     ier = 3
+    return
   end if
 
   lwkl = lwk
@@ -2105,6 +2130,7 @@ subroutine delnod ( k, n, x, y, z, list, lptr, lend, lnew, lwk, iwk, ier )
 
   if ( lwkl < lwk ) then
     ier = 2
+    return
   end if
 
   iwl = 0
@@ -2298,6 +2324,7 @@ subroutine delnod ( k, n, x, y, z, list, lptr, lend, lnew, lwk, iwk, ier )
 
   if ( .not. bdry .and. 3 < nnb ) then
     ier = 4
+    return
   end if
 !
 !  Initialize for loop on neighbors.  LPL points to the last
@@ -2317,6 +2344,7 @@ subroutine delnod ( k, n, x, y, z, list, lptr, lend, lnew, lwk, iwk, ier )
 
     if ( lph < 0 ) then
       ier = 3
+      return
     end if
 !
 !  LP and LPL may require alteration.
@@ -2430,10 +2458,12 @@ subroutine delnod ( k, n, x, y, z, list, lptr, lend, lnew, lwk, iwk, ier )
       write ( *, '(a)' ) '  OPTIM failed.'
       write ( *, '(a,i8)' ) '  NIT = ', nit
       write ( *, '(a,i8)' ) '  IERR = ', ierr
+      return
     end if
 
     if ( ierr == 1 ) then
       ier = 6
+      return
     end if
 
   end if
@@ -2609,6 +2639,7 @@ subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier )
 
   if ( n1 < 1 .or. n2 < 1 .or. n1 == n2  .or. iwend < 0 ) then
     ier = 1
+    return
   end if
 !
 !  Test for N2 as a neighbor of N1.  LPL points to the last neighbor of N1.
@@ -2621,6 +2652,7 @@ subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier )
 
     if ( n0 == n2 ) then
       ier = 0
+      return
     end if
 
     lp = lptr(lp)
@@ -2754,6 +2786,7 @@ subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier )
       write ( *, '(a)' ) '  null triangles on boundary.'
       write ( *, '(a,i8)' ) '  IN1 = ', in1
       write ( *, '(a,i8)' ) '  IN2 = ', in2
+      return
     end if
 
     nit = 1
@@ -2773,6 +2806,7 @@ subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier )
 
   if ( iwend < iwl ) then
     ier = 2
+    return
   end if
 
   iwk(1,iwl) = nl
@@ -2808,6 +2842,7 @@ subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier )
     write ( *, '(a)' ) '  Invalid triangulation, or null triangles on boundary.'
     write ( *, '(a,i8)' ) '  IN1 = ', in1
     write ( *, '(a,i8)' ) '  IN2 = ', in2
+    return
   end if
 !
 !  Set NEXT to the neighbor following NR, and test for
@@ -3085,6 +3120,7 @@ subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier )
       write ( *, '(a)' ) '  An error occurred in OPTIM.'
       write ( *, '(a,i8)' ) '  NIT = ', nit
       write ( *, '(a,i8)' ) '  IER = ', ier
+      return
     end if
 
     if ( ierr == 1 ) then
@@ -3108,16 +3144,19 @@ subroutine edge ( in1, in2, x, y, z, lwk, iwk, list, lptr, lend, ier )
       write ( *, '(a)' ) '  An error occurred in OPTIM.'
       write ( *, '(a,i8)' ) '  NIT = ', nit
       write ( *, '(a,i8)' ) '  IER = ', ier
+      return
     end if
 
     if ( ierr == 1 ) then
       ier = 5
+      return
     end if
 
   end if
 
   if ( ier == 5 ) then
     ier = 5
+    return
   end if
 end
 
@@ -3223,6 +3262,7 @@ subroutine getnp ( x, y, z, list, lptr, lend, l, npts, df, ier )
 
   if ( l < 2 ) then
     ier = 1
+    return
   end if
 
   ier = 0
@@ -3535,6 +3575,7 @@ function inside ( p, lv, xv, yv, zv, nv, listv, ier )
 !
   if ( n < 3 .or. imx < n ) then
     ier = 1
+    return
   end if
 !
 !  Initialize K0.
@@ -3544,6 +3585,7 @@ function inside ( p, lv, xv, yv, zv, nv, listv, ier )
 
   if ( i1 < 1 .or. imx < i1 ) then
     ier = 2
+    return
   end if
 !
 !  Increment K0 and set Q to a point immediately to the left
@@ -3556,6 +3598,7 @@ function inside ( p, lv, xv, yv, zv, nv, listv, ier )
 
   if ( n < k0 ) then
     ier = 4
+    return
   end if
 
   i1 = listv(k0)
@@ -3568,6 +3611,7 @@ function inside ( p, lv, xv, yv, zv, nv, listv, ier )
 
   if ( i2 < 1 .or. imx < i2 ) then
     ier = 2
+    return
   end if
 
   vn(1) = yv(i1) * zv(i2) - zv(i1) * yv(i2)
@@ -3618,6 +3662,7 @@ function inside ( p, lv, xv, yv, zv, nv, listv, ier )
 
   if ( i2 < 1 .or. imx < i2 ) then
     ier = 2
+    return
   end if
 
   lft2 = 0.0D+00 < cn(1) * xv(i2) + cn(2) * yv(i2) + cn(3) * zv(i2) 
@@ -3632,6 +3677,7 @@ function inside ( p, lv, xv, yv, zv, nv, listv, ier )
 
     if ( i2 < 1 .or. imx < i2 ) then
       ier = 2
+      return
     end if
 
     lft2 = ( 0.0D+00 < cn(1) * xv(i2) + cn(2) * yv(i2) + cn(3) * zv(i2) )
@@ -3691,6 +3737,7 @@ function inside ( p, lv, xv, yv, zv, nv, listv, ier )
 !
   if ( pinr .neqv. even ) then
     ier = 3
+    return
   end if
 
   ier = 0
@@ -3878,6 +3925,7 @@ subroutine intrsc ( p1, p2, cn, p, ier )
 
   if ( d1 == d2 ) then
     ier = 1
+    return
   end if
 !
 !  Solve for T such that <PP,CN> = 0 and compute PP and PPN.
@@ -3892,6 +3940,7 @@ subroutine intrsc ( p1, p2, cn, p, ier )
 !
   if ( ppn == 0.0D+00 ) then
     ier = 2
+    return
   end if
 
   ppn = sqrt ( ppn )
@@ -4328,6 +4377,7 @@ function nearnd ( p, ist, n, x, y, z, list, lptr, lend, al )
   nn = n
 
   if ( nn < 3 ) then
+    return
   end if
 
   nst = ist
@@ -4344,6 +4394,7 @@ function nearnd ( p, ist, n, x, y, z, list, lptr, lend, al )
 !  Test for collinear nodes.
 !
   if ( i1 == 0 ) then
+    return
   end if
 !
 !  Store the linked list of 'neighbors' of P in LISTP and
@@ -4616,6 +4667,7 @@ subroutine optim ( x, y, z, na, list, lptr, lend, nit, iwk, ier )
   if ( nna < 0 .or. maxit < 1 ) then
     nit = 0
     ier = 2
+    return
   end if
 !
 !  Initialize iteration count ITER and test for NA = 0.
@@ -4625,6 +4677,7 @@ subroutine optim ( x, y, z, na, list, lptr, lend, nit, iwk, ier )
   if ( nna == 0 ) then
     nit = 0
     ier = 0
+    return
   end if
 !
 !  Top of loop.
@@ -4635,6 +4688,7 @@ subroutine optim ( x, y, z, na, list, lptr, lend, nit, iwk, ier )
     if ( maxit <= iter ) then
       nit = iter
       ier = 1
+      return
     end if
 
     iter = iter + 1
@@ -4679,6 +4733,7 @@ subroutine optim ( x, y, z, na, list, lptr, lend, nit, iwk, ier )
       if ( abs ( list(lp) ) /= io2 ) then
         nit = iter
         ier = 3
+        return
       end if
 
       if ( list(lp) < 0 ) then
@@ -4706,6 +4761,7 @@ subroutine optim ( x, y, z, na, list, lptr, lend, nit, iwk, ier )
           if ( lp21 == 0 ) then
             nit = iter
             ier = 4
+            return
           end if
 
           swp = .true.
@@ -4961,6 +5017,7 @@ subroutine swap ( in1, in2, io1, io2, list, lptr, lend, lp21 )
 
   if ( abs ( list(lp) ) == in2 ) then
     lp21 = 0
+    return
   end if
 !
 !  Delete IO2 as a neighbor of IO1.
@@ -5450,6 +5507,7 @@ subroutine trfind ( nst, p, n, x, y, z, list, lptr, lend, b1, b2, b3, i1, &
         i1 = 0
         i2 = 0
         i3 = 0
+        return
       end if
 
     end do
@@ -5825,6 +5883,7 @@ subroutine trlist ( n, list, lptr, lend, nrow, nt, ltri, ier )
   if ( n < 3 .or. ( nrow /= 6 .and. nrow /= 9 ) ) then
     nt = 0
     ier = 1
+    return
   end if
 !
 !  Initialize parameters for loop on triangles KT = (N1,N2,
@@ -5909,6 +5968,7 @@ subroutine trlist ( n, list, lptr, lend, nrow, nt, ltri, ier )
         if ( abs ( list(lp) ) /= i2 ) then
           nt = 0
           ier = 2
+          return
         end if
 !
 !  I2 is the last neighbor of I1.  Bypass the search for a neighboring
@@ -6109,6 +6169,7 @@ subroutine trlist2 ( n, list, lptr, lend, nt, ltri, ier )
   if ( n < 3 ) then
     nt = 0
     ier = 1
+    return
   end if
 !
 !  Initialize parameters for loop on triangles KT = (N1,N2,
@@ -6191,6 +6252,7 @@ subroutine trlist2 ( n, list, lptr, lend, nt, ltri, ier )
         if ( abs ( list(lp) ) /= i2 ) then
           nt = 0
           ier = 2
+          return
         end if
 !
 !  I2 is the last neighbor of I1.  Bypass the search for a neighboring
@@ -6367,6 +6429,7 @@ subroutine trlprt ( n, x, y, z, iflag, nrow, nt, ltri )
       ( nrow /= 6 .and. nrow /= 9)  .or. &
       nt < 1 .or. nmax < nt ) then
     write (*,110) n, nrow, nt
+    return
   end if
 !
 !  Print X, Y, and Z.
@@ -6775,6 +6838,7 @@ subroutine trmesh ( n, x, y, z, list, lptr, lend, lnew, near, next, dist, ier )
 
   if ( nn == 3 ) then
     ier = 0
+    return
   end if
 !
 !  A nearest-node data structure (NEAR, NEXT, and DIST) is
@@ -7131,6 +7195,7 @@ subroutine trplot ( lun, pltsiz, elat, elon, a, n, x, y, z, list, lptr, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRPLOT - Fatal error!'
     write ( *, '(a)' ) '  LUN < 0!'
+    return
   end if
 
   if ( 99 < lun ) then
@@ -7138,6 +7203,7 @@ subroutine trplot ( lun, pltsiz, elat, elon, a, n, x, y, z, list, lptr, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRPLOT - Fatal error!'
     write ( *, '(a)' ) '  99 < LUN!'
+    return
   end if
 
   if ( pltsiz < 1.0D+00 ) then
@@ -7157,6 +7223,7 @@ subroutine trplot ( lun, pltsiz, elat, elon, a, n, x, y, z, list, lptr, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRPLOT - Fatal error!'
     write ( *, '(a)' ) '  N < 3!'
+    return
   end if
 
   if ( 90.0D+00 < abs ( elat ) ) then
@@ -7176,6 +7243,7 @@ subroutine trplot ( lun, pltsiz, elat, elon, a, n, x, y, z, list, lptr, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRPLOT - Fatal error!'
     write ( *, '(a)' ) '  90.0 < A!'
+    return
   end if
 !
 !  Compute a conversion factor CF for degrees to radians.
@@ -7538,6 +7606,7 @@ subroutine trprnt ( n, x, y, z, iflag, list, lptr, lend )
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRPRNT - Fatal error!'
     write ( *, '(a)' ) '  N is outside its valid range.'
+    return
   end if
 !
 !  Initialize NL (the number of lines printed on the current
@@ -8076,21 +8145,25 @@ subroutine vrplot ( lun, pltsiz, elat, elon, a, n, x, y, z, nt, listc, lptr, &
 !
   if ( lun < 0 ) then
     ier = 1
+    return
   end if
 
   if ( 99 < lun ) then
     ier = 1
+    return
   end if
 
   if ( pltsiz < 1.0D+00 .or. 8.5D+00 < pltsiz .or. &
       n < 3 .or. nt /= 2*n-4) then
     ier = 1
+    return
   end if
 
   if ( 90.0D+00 < abs ( elat ) .or. &
        180.0D+00 < abs ( elon ) .or. &
        90.0D+00 < a ) then
     ier = 2
+    return
   end if
 !
 !  Compute a conversion factor CF for degrees to radians.

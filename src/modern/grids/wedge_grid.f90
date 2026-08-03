@@ -60,6 +60,7 @@ subroutine wedge_grid ( n, ng, g )
     g(1,1) = 0.5D+00
     g(2,1) = 0.5D+00
     g(3,1) = 0.0D+00
+    return
   end if
 
   p = 0

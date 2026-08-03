@@ -322,9 +322,11 @@ subroutine r82vec_print_part ( n, a, max_print, title )
   character ( len = * )  title
 
   if ( max_print <= 0 ) then
+    return
   end if
 
   if ( n <= 0 ) then
+    return
   end if
 
   write ( *, '(a)' ) ' '

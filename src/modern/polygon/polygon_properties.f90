@@ -114,6 +114,7 @@ function angle_rad ( p1, p2, p3 )
 
   if ( all ( p(1:2) == 0.0D+00)  ) then
     angle_rad = 0.0D+00
+    return
   end if
 
   angle_rad = atan2 ( p(2), p(1) )
@@ -1390,6 +1391,7 @@ subroutine polygon_contains_point_2 ( n, v, p, inside )
     call triangle_contains_point_1 ( t, p, inside )
 
     if ( inside ) then
+      return
     end if
 
   end do
@@ -2230,6 +2232,7 @@ function polygon_is_convex ( n, v )
 !
   if ( n < 3 ) then
     polygon_is_convex = DEGENERATE_CONVEX
+    return
   end if
 
   sense = 0.0D+00
@@ -2272,12 +2275,14 @@ function polygon_is_convex ( n, v )
 
       if ( angle < 0.0D+00 ) then
         polygon_is_convex = NOT_CONVEX
+        return
       end if
 
     else if ( sense == -1.0D+00 ) then
 
       if ( 0.0D+00 < angle ) then
         polygon_is_convex = NOT_CONVEX
+        return
       end if
 
     end if
@@ -2291,6 +2296,7 @@ function polygon_is_convex ( n, v )
 
     if ( 360.0D+00 + tol < abs ( exterior_total ) * RAD_TO_DEG ) then
       polygon_is_convex = NOT_CONVEX
+      return
     end if
 
   end do
@@ -3221,6 +3227,7 @@ subroutine r8mat_solve ( n, rhs_num, a, info )
 
     if ( apivot == 0.0D+00 ) then
       info = j
+      return
     end if
 !
 !  The pivot row moves into the J-th row.

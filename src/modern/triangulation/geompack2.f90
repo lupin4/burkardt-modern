@@ -66,6 +66,7 @@ function angle ( xa, ya, xb, yb, xc, yc )
 
   if ( t == 0.0D+00 ) then
     angle = pi
+    return
   end if
 
   t = ( x1 * x2 + y1 * y2 ) / t
@@ -334,6 +335,7 @@ subroutine bedgmv ( nvc, npolg, nvert, maxvc, h, vcl, hvl, pvl, vstart, vnum, &
             write ( *, '(a)' ) 'BEDGMV - Fatal error!'
             write ( *, '(a)' ) '  MAXVC < NVC + L.'
             ierror = 3
+            return
           end if
 
           vstart(i) = nvc + 1
@@ -436,6 +438,7 @@ subroutine bnsrt2 ( binexp, n, a, map, bin, iwk )
   nside = int ( real ( n)**( binexp / 2.0D+00 ) + 0.5D+00 )
 
   if ( nside <= 1 ) then
+    return
   end if
 
   xmin = a(1,map(1))
@@ -553,6 +556,7 @@ function cmcirc ( x0, y0, x1, y1, x2, y2, x3, y3 )
   det = a11 * a22 - a21 * a12
 
   if ( abs ( det ) <= tolabs ) then
+    return
   end if
 
   b1 = a11 * a11 + a12 * a12
@@ -704,12 +708,14 @@ subroutine cvdec2 ( angspc, angtol, nvc, npolg, nvert, maxvc, maxhv, &
         maxwk, vcl, pvl, iang, w1, w2, iwk, wk, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       call insed2 ( v ,w1, npolg, nvert, maxhv, maxpv, vcl, regnum, hvl, &
         pvl, iang, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       if ( 0 < w2 ) then
@@ -718,6 +724,7 @@ subroutine cvdec2 ( angspc, angtol, nvc, npolg, nvert, maxvc, maxhv, &
       end if
 
       if ( ierror /= 0 ) then
+        return
       end if
 
     end if
@@ -809,6 +816,7 @@ subroutine cvdtri ( inter, ldv, nt, vcl, til, tedg, sptr, ierror )
 
     if ( k == nt ) then
       if ( .not. inter ) then
+        return
       end if
       mxtr = nt
       sflag = .false.
@@ -825,6 +833,7 @@ subroutine cvdtri ( inter, ldv, nt, vcl, til, tedg, sptr, ierror )
       call fndtri ( e, mxtr, sflag, tedg, itr, ind, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       call lop ( itr, ind, k, top, ldv, vcl, til, tedg, sptr )
@@ -1279,6 +1288,7 @@ subroutine diam2 ( nvrt, xc, yc, i1, i2, diamsq, ierror )
       write ( *, '(a)' ) 'DIAM2 - Fatal error!'
       write ( *, '(a)' ) '  M < J or NVRT < K.'
       ierror = 200
+      return
     end if
 
     dist = ( xc(j) - xc(k) )**2 + ( yc(j) - yc(k) )**2
@@ -1353,6 +1363,8 @@ function dless ( k, p, q )
       else
         dless = .false.
       end if
+
+      return
     end if
 
   end do
@@ -1572,6 +1584,7 @@ subroutine dsmcpr ( nhole, nvbc, vcl, maxhv, maxpv, maxho, nvc, npolg, &
     write ( *, '(a)' ) 'DSMCPR - Fatal error!'
     write ( *, '(a)' ) '  MAXHV < NHOLE + 1.'
     ierror = 4
+    return
   end if
 
   if ( maxpv < nvc ) then
@@ -1579,6 +1592,7 @@ subroutine dsmcpr ( nhole, nvbc, vcl, maxhv, maxpv, maxho, nvc, npolg, &
     write ( *, '(a)' ) 'DSMCPR - Fatal error!'
     write ( *, '(a)' ) '  MAXPV < NVC.'
     ierror = 5
+    return
   end if
 
   if ( maxho < 2 * nhole ) then
@@ -1586,6 +1600,7 @@ subroutine dsmcpr ( nhole, nvbc, vcl, maxhv, maxpv, maxho, nvc, npolg, &
     write ( *, '(a)' ) 'DSMCPR - Fatal error!'
     write ( *, '(a)' ) '  MAXHO < 2 * NHOLE.'
     ierror = 2
+    return
   end if
 !
 !  Initialize the HVL and PVL arrays.
@@ -1797,6 +1812,7 @@ subroutine dsmdf2 ( hflag, nvc, npolg, maxwk, vcl, hvl, pvl, iang, ivrt, &
       write ( *, '(a,i6)' ) '  NVRT = ', nvrt
       write ( *, '(a,i6)' ) '  MAXWK = ', maxwk
       ierror = 7
+      return
     end if
 
     xc = 0
@@ -1830,6 +1846,7 @@ subroutine dsmdf2 ( hflag, nvc, npolg, maxwk, vcl, hvl, pvl, iang, ivrt, &
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'DSMDF2 - Fatal error!'
         write ( *, '(a)' ) '  WIDTH2 returns an error condition.'
+        return
       end if
 
     end if
@@ -1881,6 +1898,7 @@ subroutine dsmdf2 ( hflag, nvc, npolg, maxwk, vcl, hvl, pvl, iang, ivrt, &
   xivrt(npolg+1) = l
 
   if ( .not. hflag ) then
+    return
   end if
 
   vrtval(1:nvc) = 0.0D+00
@@ -2173,6 +2191,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv,  &
     return
   else if ( maxho < ( nhole + nholi ) * 2 ) then
     ierror = 2
+    return
   end if
 !
 !  Initialize REGNUM, HVL, PVL arrays for outer boundary curves.
@@ -2226,6 +2245,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv,  &
            edge, ivs, ierror )
 
          if ( ierror /= 0 ) then
+           return
          end if
 
          if ( 0 < ivs ) then
@@ -2251,6 +2271,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv,  &
     write ( *, '(a)' ) 'DSPGDC - Fatal error!'
     write ( *, '(a)' ) '  NHT /= 0.'
     ierror = 215
+    return
   end if
 !
 !  Initialize REGNUM, HVL, PVL arrays for the hole interfaces.
@@ -2361,6 +2382,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv,  &
           go to 150
          else
           ierror = 216
+          return
          end if
       end if
 
@@ -2435,6 +2457,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv,  &
 
          if ( maxho < nh2 + nhola ) then
           ierror = 2
+          return
          end if
 
          holv(nh2+nhola) = kmin
@@ -2630,6 +2653,7 @@ subroutine dtris2 ( npt, vcl, ind, ntri, til, tnbr, ierror )
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'DTRIS2 - Fatal error!'
       write ( *, '(a)' ) '  Consecutive points are too close.'
+      return
     end if
 
   end do
@@ -2649,6 +2673,7 @@ subroutine dtris2 ( npt, vcl, ind, ntri, til, tnbr, ierror )
       write ( *, '(a)' ) 'DTRIS2 - Fatal error!'
       write ( *, '(a)' ) '  Could not find a noncollinear third point.'
       ierror = 225
+      return
     end if
 
     m = ind(j)
@@ -2802,6 +2827,7 @@ subroutine dtris2 ( npt, vcl, ind, ntri, til, tnbr, ierror )
         write ( *, '(a,i6)' ) '  MAXST = ', maxst
         write ( *, '(a,i6)' ) '  TOP =   ', top
         ierror = 8
+        return
       end if
 
       stack(top) = ntri
@@ -2832,6 +2858,7 @@ subroutine dtris2 ( npt, vcl, ind, ntri, til, tnbr, ierror )
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'DTRIS2 - Fatal error!'
       write ( *, '(a,i6)' ) '  SWAPEC returned IERROR = ', ierror
+      return
     end if
 
   end do
@@ -2964,6 +2991,7 @@ subroutine dtriw2 ( npt, maxst, vcl, ind, ntri, til, tnbr, stack, ierror )
 
   if ( npt < i3 ) then
     ierror = 225
+    return
   end if
 
   m = ind(i3)
@@ -3516,6 +3544,8 @@ subroutine edght ( a, b, v, n, htsiz, maxedg, hdfree, last, ht, edge, w, &
         edge(4,ptr) = hdfree
         hdfree = ptr
         w = edge(3,ptr)
+        return
+
       end if
 
     end if
@@ -3540,6 +3570,7 @@ subroutine edght ( a, b, v, n, htsiz, maxedg, hdfree, last, ht, edge, w, &
 
     if ( maxedg < last ) then
       ierror = 1
+      return
     end if
 
   end if
@@ -3727,6 +3758,7 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
     write ( *, '(a)' ) 'EQDIS2 - Fatal error!'
     write ( *, '(a)' ) '  MAXIW < M'
     ierror = 6
+    return
   end if
 
   widsq = 1
@@ -3742,6 +3774,7 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
       write ( *, '(a)' ) 'EQDIS2 - Fatal error!'
       write ( *, '(a)' ) '  MAXWK < N'
       ierror = 7
+      return
     end if
 
   else
@@ -3759,6 +3792,7 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'EQDIS2 - Fatal error!'
     write ( *, '(a)' ) '  DSMDF2 returns error condition.'
+    return
   end if
 
   call mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, nvc, &
@@ -3770,6 +3804,7 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'EQDIS2 - Fatal error!'
     write ( *, '(a)' ) '  MFDEC2 returns error condition.'
+    return
   end if
 
   if ( maxiw < 2 * npolg ) then
@@ -3777,6 +3812,7 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
     write ( *, '(a)' ) 'EQDIS2 - Fatal error!'
     write ( *, '(a)' ) '  MAXIW < 2 * NPOLG.'
     ierror = 6
+    return
   end if
 
   call trisiz ( ntrid, npolg, hvl, pvl, area, psi, h, iwk, iwk(npolg+1) )
@@ -4134,6 +4170,7 @@ subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
       i = i - 1
       if ( i <= 0 ) then
         ierror = 231
+        return
       end if
     end if
 
@@ -4143,6 +4180,7 @@ subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
   ind(k) = j
 
   if ( k == 2 ) then
+    return
   end if
 
   k = 2
@@ -4154,6 +4192,7 @@ subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
 
     if ( i <= 0 ) then
       ierror = 231
+      return
     end if
 
     go to 10
@@ -4169,6 +4208,7 @@ subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
 
   if ( itr(1) <= i ) then
     ierror = 231
+    return
   end if
 
 30 continue
@@ -4672,6 +4712,9 @@ function iless ( k, p, q )
       else
         iless = .false.
       end if
+
+      return
+
     end if
 
   end do
@@ -4766,6 +4809,7 @@ subroutine insed2 ( v, w, npolg, nvert, maxhv, maxpv, vcl, regnum, &
     return
   else if ( maxpv < nvert + 2 ) then
     ierror = 5
+    return
   end if
 !
 !  Split linked list of vertices of the polygon containing vertices
@@ -4914,10 +4958,12 @@ subroutine insvr2 ( xi, yi, wp, nvc, nvert, maxvc, maxpv, vcl, pvl, &
 
   if ( maxvc <= nvc ) then
     ierror = 3
+    return
   end if
 
   if ( maxpv < nvert + 2 ) then
     ierror = 5
+    return
   end if
 !
 !  Update linked list of vertices of polygon containing vertex WP.
@@ -5319,6 +5365,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
 
     if ( maxvc < nvc + m + 1 ) then
       ierror = 3
+      return
     end if
 
     cy = costh * y
@@ -5433,6 +5480,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
 
         if ( maxti < ntri ) then
           ierror = 9
+          return
         end if
 
         til(1,ntri) = j
@@ -5500,6 +5548,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
 
   if ( rw <= lw ) then
     ierror = 10
+    return
   end if
 
   do j = rw, maxcw
@@ -5746,10 +5795,12 @@ subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv,  &
 
   if ( maxvc < nvc + 3 ) then
     ierror = 3
+    return
   end if
 
   if ( maxpv < nvert+5 ) then
     ierror = 5
+    return
   end if
 !
 !  Determine 'closest' vertices on outer boundary which are to the
@@ -5871,6 +5922,7 @@ subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv,  &
 
   if ( ilft == 0 .or. irgt  ==  0 ) then
    ierror = 218
+   return
   end if
 !
 !  Temporarily modify PVL to pass the subregion 'above' top vertex
@@ -5893,6 +5945,7 @@ subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv,  &
 
   if ( iang(vr) < pi - tol .or. pi + tol < iang(vr) ) then
     ierror = 219
+    return
   end if
 
   pvl(loc,vp) = nvc + 2
@@ -5937,6 +5990,7 @@ subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv,  &
   end if
 
   if ( ierror /= 0 ) then
+    return
   end if
 !
 !  Update PVL with cut edge, i.e. join linked lists of vertices
@@ -6262,6 +6316,7 @@ subroutine lufac ( a, lda, n, tol, ipvt, singlr )
   double precision tolabs
 
   if ( n < 1 ) then
+    return
   end if
 
   singlr = .true.
@@ -6292,6 +6347,7 @@ subroutine lufac ( a, lda, n, tol, ipvt, singlr )
     a(k,k) = t
 
     if ( abs ( t) <= tolabs ) then
+      return
     end if
 
     do i = k+1, n
@@ -6730,10 +6786,12 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
 
   if ( hflag .and. maxiw < 2 * nvrt ) then
     ierror = 6
+    return
   end if
 
   if ( maxwk < npolg + 3 * nvrt + 2 ) then
     ierror = 7
+    return
   end if
 
   listev = 1
@@ -6881,6 +6939,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
             return
           else if ( maxwk < 3*maxn + 2 ) then
             ierror = 7
+            return
           end if
 
           yc = xc + maxn + 1
@@ -6963,18 +7022,21 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
 
                 if ( maxwk < yc + 3*nvrt ) then
                   ierror = 7
+                  return
                 end if
 
                 call sepshp ( angtol, nvrt, wk(xc), wk(yc), &
                   iwk(indpvl), iang, i1, i2, wk(yc+nvrt+1), ierror )
 
                 if ( ierror /= 0 ) then
+                  return
                 end if
 
               end if
 
               if ( i1 < 0 ) then
                 ierror = 222
+                return
               end if
 
               v = iwk(indpvl+i1)
@@ -6983,6 +7045,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
                  call insvr2 ( wk(xc+i1)+ctrx, wk(yc+i1)+ctry, -v, &
                    nvc, nvert, maxvc, maxpv, vcl, pvl, iang, v, ierror )
                  if ( ierror /= 0 ) then
+                   return
                  end if
               end if
 
@@ -6992,6 +7055,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
                  call insvr2 ( wk(xc+i2)+ctrx, wk(yc+i2)+ctry, -w, &
                    nvc, nvert, maxvc, maxpv, vcl, pvl, iang, w, ierror )
                  if ( ierror /= 0 ) then
+                   return
                  end if
               end if
 
@@ -6999,6 +7063,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid,  &
             regnum, hvl, pvl, iang, ierror )
 
           if ( ierror /= 0 ) then
+            return
           end if
 
           nvrt = 0
@@ -7386,6 +7451,7 @@ function prime ( k )
     return
   else if ( primes(nprime) <= k ) then
     prime = primes(nprime)
+    return
   end if
 !
 !  Use binary search to find prime greater than or equal to K.
@@ -7403,6 +7469,7 @@ function prime ( k )
       l = m + 1
     else
       prime = primes(m)
+      return
     end if
 
     if ( u < l ) then
@@ -7618,6 +7685,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
   inout = -2
 
   if ( dim < 2 .or. 3 < dim ) then
+    return
   end if
 !
 !  Direction of ray is from PT through midpoint of first edge
@@ -7632,6 +7700,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
     i = i + 1
 
     if ( nv <= i ) then
+      return
     end if
 
     la = lb
@@ -7654,6 +7723,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
       go to 10
     else if ( len2 == 0.0D+00 ) then
       inout = 0
+      return
     end if
 
     if ( dim == 2 ) then
@@ -7784,6 +7854,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
          k = k + 1
       else if ( -dtol <= t ) then
          inout = 0
+         return
       end if
 
    else if ( s == 0 ) then
@@ -7797,6 +7868,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
       end if
 
       if ( i == n) then
+        return
       end if
 
       la = lb
@@ -7820,12 +7892,14 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
 
     if ( abs ( t) <= dtol ) then
       inout = 0
+      return
     end if
 
     if ( la /= l ) then
       ta = ( vcl(m,la) - pt(m) ) / dir(m)
       if ( abs ( ta ) <= dtol .or. t * ta < 0.0D+00 ) then
         inout = 0
+        return
       end if
     end if
 
@@ -8136,6 +8210,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     write ( *, '(a)' ) 'RESVRT - Fatal error!'
     write ( *, '(a)' ) '  MAXIW < MAXN + NVRT.'
     ierror = 6
+    return
   end if
 
   if ( maxwk < maxn + maxn ) then
@@ -8143,6 +8218,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     write ( *, '(a)' ) 'RESVRT - Fatal error!'
     write ( *, '(a)' ) '  MAXWK < MAXN + MAXN.'
     ierror = 7
+    return
   end if
 
   ivis = 1
@@ -8162,6 +8238,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
   call vispol ( xr, yr, nvrt-1, wk(xc), wk(yc), nvis, iwk(ivis), ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 !
 !  XC, YC now contain visibility polygon coordinates. Update MAXN
@@ -8176,6 +8253,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     write ( *, '(a)' ) 'RESVRT - Fatal error!'
     write ( *, '(a)' ) '  MAXWK < THETA + MAXN - 1.'
     ierror = 7
+    return
   end if
 
   call visvrt ( angspc, xr, yr, nvis, wk(xc), wk(yc), iwk(ivis), maxn-1, &
@@ -8203,16 +8281,19 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
 
   if ( maxiw < ivor + nvsvrt ) then
     ierror = 6
+    return
   end if
 
   if ( maxwk < yvor + nvsvrt ) then
     ierror = 7
+    return
   end if
 
   call vornbr ( xr, yr, nvsvrt, wk(xc), wk(yc), nvor, iwk(ivor), wk(xvor), &
     wk(yvor), ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 !
 !  Set up the array WKANG of length NVOR+1 <= NVSVRT+1 in WK for
@@ -8258,6 +8339,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     call insvr2 ( wk(xc+i2), wk(yc+i2), -iwk(ivis+i2), nvc, nvert, maxvc, &
       maxpv, vcl, pvl, iang, w2, ierror )
     if ( ierror /= 0 ) then
+      return
     end if
   else
     w2 = iwk(ivis+i2)
@@ -8267,6 +8349,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     call insvr2 ( wk(xc+i1), wk(yc+i1), -iwk(ivis+i1), nvc, nvert, maxvc, &
       maxpv, vcl, pvl, iang, w1, ierror )
     if ( ierror /= 0 ) then
+      return
     end if
   else
     w1 = iwk(ivis+i1)
@@ -8327,6 +8410,7 @@ subroutine rotiar ( n, arr, shift )
   end if
 
   if ( sh == 0 ) then
+    return
   end if
 
   a = n
@@ -8497,9 +8581,11 @@ subroutine rotipg ( xeye, yeye, nvrt, xc, yc, ierror )
     write ( *, '(a)' ) 'ROTIPG - Fatal error!'
     write ( *, '(a)' ) '  IRGT == N.'
     ierror = 205
+    return
   end if
 
   if ( irgt == 0 .or. irgt == nvrt ) then
+    return
   end if
 
   if ( irgt < 0 ) then
@@ -8988,6 +9074,7 @@ subroutine sepshp ( angtol, nvrt, xc, yc, indpvl, iang, i1, i2, wk, ierror )
   call diam2 ( n, wk, wk(nvrt+1), i1, i2, dist, ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   if ( i2 < i1 ) then
@@ -9609,6 +9696,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'SPDEC2 - Fatal error!'
       write ( *, '(a)' ) '  JNHOLE returned an error condition.'
+      return
     end if
 
   end do
@@ -9628,18 +9716,21 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
         maxwk, vcl, pvl, iang, w1, w2, iwk, wk, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       call insed2 ( vr, w1, npolg, nvert, maxhv, maxpv, vcl, regnum, hvl, &
         pvl, iang, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       if ( 0 < w2 ) then
         call insed2 ( vr, w2, npolg, nvert, maxhv, maxpv, &
           vcl, regnum, hvl, pvl, iang, ierror )
         if ( ierror /= 0 ) then
+          return
         end if
       end if
 
@@ -9648,6 +9739,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
   end do
 
   if ( nhola == 0 ) then
+    return
   end if
 !
 !  Check that polygons are simple. If polygon is simply-connected and
@@ -9658,6 +9750,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
 30 continue
 
   if ( npolg < p ) then
+    return
   end if
 
   i = hvl(p)
@@ -9702,12 +9795,14 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
     maxwk, vcl, pvl, iang, w1, w2, iwk, wk, ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   call insed2 ( vr, w1, npolg, nvert, maxhv, maxpv, vcl, regnum, hvl, &
     pvl, iang, ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   if ( 0 < w2 ) then
@@ -9716,6 +9811,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
       vcl, regnum, hvl, pvl, iang, ierror )
 
     if ( ierror /= 0 ) then
+      return
     end if
 
   end if
@@ -9901,6 +9997,7 @@ subroutine swapec ( i, top, maxst, btri, bedg, vcl, til, tnbr, stack, ierror )
           write ( *, '(a,i6)' ) '  MAXST = ', maxst
           write ( *, '(a,i6)' ) '  TOP =   ', top
           ierror = 8
+          return
         end if
 
         stack(top) = t
@@ -10090,6 +10187,7 @@ subroutine tmerge ( inter, nbl, ncr, chbl, chcr, ldv, vcl, til, tedg, &
 
     tedg(2,1) = ibndry
     if ( nbl + ncr <= 3 ) then
+      return
     end if
 
     nl = nbl - 1
@@ -10179,6 +10277,7 @@ subroutine tmerge ( inter, nbl, ncr, chbl, chcr, ldv, vcl, til, tedg, &
 
       if ( 0 <= lri ) then
         ierror = 230
+        return
       end if
 
     end if
@@ -10494,6 +10593,7 @@ subroutine trinbr ( nvc, ntri, til, tnbr, htsiz, maxedg, ht, edge, ierror )
         hdfree, last, ht, edge, w, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       if ( 0 < w ) then
@@ -10664,6 +10764,7 @@ subroutine tripr2 ( nvc, npolg, nvert, maxvc, maxti, maxiw, maxwk, h, vcl,  &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIPR2 - Fatal error!'
     write ( *, '(a)' ) '  Error return from BEDGMV.'
+    return
   end if
 
   do k = 1, npolg
@@ -10689,10 +10790,12 @@ subroutine tripr2 ( nvc, npolg, nvert, maxvc, maxti, maxiw, maxwk, h, vcl,  &
 
     if ( maxiw < nbc + 1 ) then
       ierror = 6
+      return
     end if
 
     if ( maxwk < 2*nvrt + 2  ) then
       ierror = 7
+      return
     end if
 
     xc = 1
@@ -10752,6 +10855,7 @@ subroutine tripr2 ( nvc, npolg, nvert, maxvc, maxti, maxiw, maxwk, h, vcl,  &
       write ( *, '(a)' ) 'TRIPR2 - Fatal error!'
       write ( *, '(a)' ) '  Error return from TRPOLG.'
       write ( *, '(a,i6)' ) '  IERROR = ', ierror
+      return
     end if
 
   end do
@@ -11008,10 +11112,12 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
 
   if ( maxiw < nvrt + 1 ) then
     ierror = 6
+    return
   end if
 
   if ( maxwk < 3*nvrt + 2 ) then
     ierror = 7
+    return
   end if
 
   xs = 1
@@ -11025,6 +11131,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
     ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   inter = ( 0 < nshr )
@@ -11034,6 +11141,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
     call diam2 ( nshr, wk(xs+1), wk(ys+1), i1, i2, dist, ierror )
 
     if ( ierror /= 0 ) then
+      return
     end if
 
     call rotpg ( nshr, wk(xs), wk(ys), i1, i2, ibot, costh, sinth )
@@ -11042,6 +11150,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
 
     if ( maxiw < maxcw + 1 ) then
       ierror = 6
+      return
     end if
 
     cwalk = 1
@@ -11050,6 +11159,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
       maxvc, maxti, maxcw, vcl, til, ncw, iwk(cwalk), ierror )
 
     if ( ierror /= 0 ) then
+      return
     end if
 !
 !  Determine the mesh vertex which should be moved to front of
@@ -11095,6 +11205,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
     call diam2 ( nvrt, xc(1), yc(1), i1, i2, dist, ierror )
 
     if ( ierror /= 0 ) then
+      return
     end if
 
     ind = 0
@@ -11156,6 +11267,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
     return
   else if ( maxiw < tedg + 4*nt - 1 ) then
     ierror = 6
+    return
   end if
 
   if ( inter ) then
@@ -11167,6 +11279,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
   end if
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   sptr = tedg + 3 * nt
@@ -11424,6 +11537,7 @@ subroutine vbedg ( x, y, vcl, til, tnbr, ltri, ledg, rtri, redg )
   end do
 
   if ( ldone ) then
+    return
   end if
 
   t = ltri
@@ -11658,6 +11772,7 @@ subroutine vispol ( xeye, yeye, nvrt, xc, yc, nvis, ivis, ierror )
 
     if ( ierror /= 0 ) then
       nvis = top
+      return
     end if
 
     if ( 6 < oper ) then
@@ -11988,6 +12103,7 @@ subroutine vornbr ( xeye, yeye, nvrt, xc, yc, nvor, ivor, xvor, yvor, ierror )
 
      if ( abs ( det ) <= tolabs ) then
        ierror = 212
+       return
      end if
 
      b1 = ( a11**2 + a12**2 ) * 0.5D+00
@@ -12024,6 +12140,7 @@ subroutine vornbr ( xeye, yeye, nvrt, xc, yc, nvor, ivor, xvor, yvor, ierror )
 
       if ( abs ( det) <= tolabs ) then
         ierror = 212
+        return
       end if
 
       b1 = ( a11**2 + a12**2 ) * 0.5D+00
@@ -12112,6 +12229,7 @@ subroutine vpleft ( xc, yc, ivis )
 
   if ( cur == nv ) then
     oper = 7
+    return
   end if
 
   if ( .not. beye .and. top <= 2 ) then
@@ -12136,6 +12254,9 @@ subroutine vpleft ( xc, yc, ivis )
       yc(top) = yu
       ivis(top) = -cur
     end if
+
+    return
+
   end if
 !
 !  Process next edge.
@@ -12755,6 +12876,7 @@ subroutine vpscnb ( xc, yc, ivis, ierror )
          if ( lr == 1 ) then
            oper = 2
            cur = k + 1
+           return
          end if
       end if
 
@@ -12897,6 +13019,7 @@ subroutine vpscnc ( xc, yc, ivis, ierror )
         if ( lr == 1 ) then
           oper = 2
           cur = k + 1
+          return
         end if
       end if
 
@@ -13017,6 +13140,7 @@ subroutine vpscnd ( xc, yc, ivis, ierror )
          xc(top) = xc(cur)
          yc(top) = yc(cur)
          ivis(top) = cur
+         return
       end if
 
   end if
@@ -13132,6 +13256,7 @@ subroutine walkt2 ( x, y, ntri, vcl, til, tnbr, itri, iedg, ierror )
       write ( *, '(a)' ) 'WALKT2 - Fatal error!'
       write ( *, '(a)' ) '  All triangles have been searched.'
       ierror = 226
+      return
     end if
 !
 !  Get the vertices of triangle ITRI.
@@ -13367,6 +13492,7 @@ subroutine width2 ( nvrt, xc, yc, i1, i2, widsq, ierror )
       write ( *, '(a,i6)' ) '  K = ', k
       write ( *, '(a,i6)' ) '  NVRT = ', nvrt
       ierror = 201
+      return
     end if
 
     dx = xc(c) - xc(b)
@@ -13455,11 +13581,13 @@ subroutine xedge ( mode, xv1, yv1, xv2, yv2, xw1, yw1, xw2, yw2, xu, yu, &
   denom = dyv * dxw - dxv * dyw
 
   if ( abs ( denom ) <= tolabs ) then
+    return
   end if
 
   t = ( dyv * ( xv1 - xw1 ) - dxv * ( yv1 - yw1 ) ) / denom
 
   if ( t < -tol .or. 1.0D+00 + tol < t ) then
+    return
   end if
 
   xu = xw1 + t * dxw
@@ -13549,6 +13677,7 @@ subroutine xline ( xv1, yv1, xv2, yv2, xw1, yw1, xw2, yw2, dv, dw, xu, &
   det = a11 * a22 - a21 * a12
 
   if ( abs ( det ) <= tolabs ) then
+    return
   end if
 
   b1 = xv1 * a11 + yv1 * a12 - dv * sqrt ( a11**2 + a12**2 )

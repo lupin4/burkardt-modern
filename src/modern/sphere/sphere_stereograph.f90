@@ -447,6 +447,7 @@ subroutine r8vec_any_normal ( dim_num, v1, v2 )
   if ( r8vec_norm ( dim_num, v1 ) == 0.0D+00 ) then
     v2(1) = 1.0D+00
     v2(2:dim_num) = 0.0D+00
+    return
   end if
 !
 !  Seek the largest entry in V1, VJ = V1(J), and the
@@ -732,6 +733,7 @@ subroutine r8vec_normal_01 ( n, seed, x )
     y = 0.0D+00
     return
   else if ( n == 0 ) then
+    return
   end if
 !
 !  Record the range of X we need to fill in.

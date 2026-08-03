@@ -852,6 +852,7 @@ subroutine circle_segment_contains_point ( r, c, omega1, omega2, xy, value )
 
   if ( r < v_r ) then
     value = 0
+    return
   end if
 !
 !  b: Angle made by the vector V must be between OMEGA1 and OMEGA2.
@@ -868,6 +869,7 @@ subroutine circle_segment_contains_point ( r, c, omega1, omega2, xy, value )
 
   if ( omega2 < v_omega ) then
     value = 0
+    return
   end if
 !
 !  c: Projection of V onto unit centerline must be at least R-H.
@@ -880,6 +882,7 @@ subroutine circle_segment_contains_point ( r, c, omega1, omega2, xy, value )
 
   if ( v_project < r - h ) then
     value = 0
+    return
   end if
 
   value = 1
@@ -942,10 +945,12 @@ subroutine circle_segment_height_from_angle ( r, angle, h )
 
   if ( angle == 0.0D+00 ) then
     h = 0.0D+00
+    return
   end if
 
   if ( angle == 2.0D+00 * pi ) then
     h = 2.0D+00 * r
+    return
   end if
 
   if ( 2.0D+00 * pi < angle ) then
@@ -1037,10 +1042,12 @@ subroutine circle_segment_height_from_area ( r, area, h )
 
   if ( area == 0.0D+00 ) then
     h = 0.0D+00
+    return
   end if
 
   if ( area == area_circle ) then
     h = 2.0D+00 * r
+    return
   end if
 
   if ( area_circle < area ) then
@@ -1542,6 +1549,7 @@ subroutine filename_inc ( filename )
       filename(i:i) = c
 
       if ( c /= '0' ) then
+        return
       end if
 
     end if
@@ -1552,6 +1560,7 @@ subroutine filename_inc ( filename )
 !
   if ( change == 0 ) then
     filename = ' '
+    return
   end if
 end
 
@@ -1965,6 +1974,7 @@ subroutine r_jacobi ( n, a, b, alpha, beta )
   beta(1) = mu 
 
   if ( n == 1 ) then
+    return
   end if
 
   do i = 2, n
@@ -2343,6 +2353,8 @@ function r8_gamma ( x )
 
       res = xinf
       r8_gamma = res
+      return
+
     end if
 
   end if
@@ -2358,6 +2370,7 @@ function r8_gamma ( x )
     else
       res = xinf
       r8_gamma = res
+      return
     end if
 
   else if ( y < 12.0D+00 ) then
@@ -2429,6 +2442,8 @@ function r8_gamma ( x )
 
       res = xinf
       r8_gamma = res
+      return
+
     end if
 
   end if

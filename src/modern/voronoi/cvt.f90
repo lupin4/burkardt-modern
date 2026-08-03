@@ -703,6 +703,7 @@ subroutine data_read ( file_in_name, dim_num, n, r, success )
     write ( *, '(a)' ) 'DATA_READ - Fatal error!'
     write ( *, '(a)' ) '  Could not open the input file: ' // &
       trim ( file_in_name )
+    return
   end if
 
   i = 0
@@ -713,6 +714,7 @@ subroutine data_read ( file_in_name, dim_num, n, r, success )
 
     if ( ios /= 0 ) then
       success = .false.
+      return
     end if
 
     if ( line(1:1) == '#' .or. len_trim ( line ) == 0 ) then
@@ -1711,17 +1713,20 @@ function s_eqi ( s1, s2 )
     call ch_cap ( c2 )
 
     if ( c1 /= c2 ) then
+      return
     end if
 
   end do
 
   do i = lenc + 1, len1
     if ( s1(i:i) /= ' ' ) then
+      return
     end if
   end do
 
   do i = lenc + 1, len2
     if ( s2(i:i) /= ' ' ) then
+      return
     end if
   end do
 

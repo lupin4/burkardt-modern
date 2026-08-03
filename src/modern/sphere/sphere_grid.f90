@@ -639,6 +639,7 @@ subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel )
   if ( p_norm == 0.0D+00 ) then
     a_normal(1:n) = a(1:n)
     a_parallel(1:n) = 0.0D+00
+    return
   end if
 
   a_dot_p = dot_product ( a(1:n), p(1:n) ) / p_norm
@@ -2077,6 +2078,7 @@ subroutine sphere_line_project ( r, pc, n, p, maxpnt2, n2, pp, theta_min, &
 !
   if ( r == 0.0D+00 ) then
     n2 = 0
+    return
   end if
 
   p1(1:3) = pc(1:3)

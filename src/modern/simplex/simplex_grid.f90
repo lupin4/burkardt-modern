@@ -370,6 +370,7 @@ subroutine ksub_random ( n, k, seed, a )
   end if
 
   if ( k == 0 ) then
+    return
   end if
 
   do i = 1, k

@@ -37,6 +37,20 @@ SKIP_ROUTINES = {
     'ch_to_digit', 'word_next_read',
 }
 
+# Exceptions to SKIP_ROUTINES, per source file.
+#
+# A skipped utility still has to exist if a KEPT routine calls it. geometry.f90
+# keeps points_plot, which calls get_unit — stripping get_unit leaves the tree
+# unlinkable ("Undefined symbols: _get_unit, referenced from _points_plot").
+#
+# This was previously fixed by hand-editing src/modern/core/geometry.f90
+# (commit 902c596, "get_unit restored"), which regenerating silently undid.
+# Declaring it here means the exception survives `Regenerate all 53 sources`.
+# One owning file per utility, so no duplicate symbol is reintroduced.
+FORCE_KEEP = {
+    'geometry.f90': {'get_unit'},
+}
+
 
 def parse_routines(content):
     """Split Fortran content into individual routine blocks."""
@@ -208,8 +222,25 @@ def modernize_routine(name, text, module_name):
     # Ensure each routine has implicit none
     # (Don't remove it — standalone routines need their own)
 
-    # Remove trailing bare 'return' before end
-    new_text = re.sub(r'\n\s*return\s*\n(\s*end\b)', r'\n\1', new_text, flags=re.IGNORECASE)
+    # Remove the redundant bare 'return' immediately before a routine's
+    # terminating END.
+    #
+    # The negative lookahead is load-bearing. `end\b` also matches `end if`,
+    # `end do`, `end select`, `end where` — so the earlier pattern deleted
+    # EARLY returns, which are control flow, not redundancy:
+    #
+    #     if ( ldone ) then          if ( x < y ) then
+    #       return         DELETED     isgn = -1
+    #     end if                       return        DELETED (isgn kept)
+    #                                end if
+    #
+    # That silently turned guard clauses into no-ops in 1230 places across the
+    # tree — including vbedg, where it made r8tris2 loop forever. Only a bare
+    # END, or END SUBROUTINE / END FUNCTION, terminates a routine.
+    new_text = re.sub(
+        r'\n\s*return\s*\n(\s*end(?!\s*(?:if|do|select|where|block|associate|'
+        r'type|interface|forall|critical|team|enum|file)\b))',
+        r'\n\1', new_text, flags=re.IGNORECASE)
 
     # Add intent to declarations where we know it
     for pname, info in param_info.items():
@@ -241,7 +272,9 @@ def modernize_file(input_path, output_path):
     if not routines:
         return 0
 
-    keep = [(name, text) for name, text in routines if name not in SKIP_ROUTINES]
+    forced = FORCE_KEEP.get(Path(input_path).name, set())
+    keep = [(name, text) for name, text in routines
+            if name not in SKIP_ROUTINES or name in forced]
     if not keep:
         return 0
 

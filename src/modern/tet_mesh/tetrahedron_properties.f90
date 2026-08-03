@@ -197,6 +197,7 @@ subroutine r8mat_solve ( n, rhs_num, a, info )
 
     if ( apivot == 0.0D+00 ) then
       info = j
+      return
     end if
 !
 !  Interchange.
@@ -470,6 +471,7 @@ subroutine tetrahedron_circumsphere ( tetra, r, pc )
   if ( info /= 0 ) then
     r = -1.0D+00
     pc(1:3) = 0.0D+00
+    return
   end if
 !
 !  Compute the radius and center.
@@ -1324,6 +1326,7 @@ subroutine triangle_angles_3d ( t, angle )
 !
   if ( a == 0.0D+00 .and. b == 0.0D+00 .and. c == 0.0D+00 ) then
     angle(1:3) = 2.0D+00 * r8_pi / 3.0D+00
+    return
   end if
 
   if ( c == 0.0D+00 .or. a == 0.0D+00 ) then

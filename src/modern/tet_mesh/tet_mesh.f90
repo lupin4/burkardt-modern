@@ -201,6 +201,7 @@ subroutine i4col_compare ( m, n, a, i, j, isgn )
   isgn = 0
 
   if ( i == j ) then
+    return
   end if
 
   k = 1
@@ -212,6 +213,7 @@ subroutine i4col_compare ( m, n, a, i, j, isgn )
       return
     else if ( a(k,j) < a(k,i) ) then
       isgn = +1
+      return
     end if
 
     k = k + 1
@@ -273,9 +275,11 @@ subroutine i4col_sort_a ( m, n, a )
   integer j
 
   if ( m <= 0 ) then
+    return
   end if
 
   if ( n <= 1 ) then
+    return
   end if
 !
 !  Initialize.
@@ -357,9 +361,11 @@ subroutine i4col_sort2_a ( m, n, a )
   integer t
 
   if ( m <= 1 ) then
+    return
   end if
 
   if ( n <= 0 ) then
+    return
   end if
 !
 !  Initialize.
@@ -452,6 +458,7 @@ subroutine i4col_sorted_unique_count ( m, n, a, unique_num )
 
   if ( n <= 0 ) then
     unique_num = 0
+    return
   end if
 
   unique_num = 1
@@ -536,6 +543,7 @@ subroutine i4col_swap ( m, n, a, j1, j2 )
   end if
 
   if ( j1 == j2 ) then
+    return
   end if
 
   col(1:m)  = a(1:m,j1)
@@ -956,6 +964,7 @@ subroutine r8mat_solve ( n, rhs_num, a, info )
 
     if ( apivot == 0.0D+00 ) then
       info = j
+      return
     end if
 !
 !  The pivot row moves into the J-th row.
@@ -1443,12 +1452,15 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -1
       i = i_save
       j = j_save
+      return
+
     end if
 
     if ( 0 < isgn ) then
       indx = 2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -1466,6 +1478,8 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
 
       i = i_save
       j = j_save
+      return
+
     end if
 
     k = k - 1
@@ -1495,6 +1509,7 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -4456,6 +4471,7 @@ subroutine tet_mesh_search_naive ( node_num, node_xyz, &
     if ( all ( 0 <= alpha(1:4) ) ) then
       tet_index = tet
       step_num = tet
+      return
     end if
 
   end do
@@ -4627,6 +4643,7 @@ subroutine tetrahedron_circumsphere_3d ( tet_xyz, r, pc )
   if ( info /= 0 ) then
     r = -1.0D+00
     pc(1:dim_num) = 0.0D+00
+    return
   end if
 !
 !  Compute the radius and center.
@@ -4868,6 +4885,7 @@ subroutine tetrahedron_order4_physical_to_reference ( tet_xyz, n, phy, ref )
 !
   if ( det == 0.0D+00 ) then
     ref(1:3,1:n) = 0.0D+00
+    return
   end if
 !
 !  Compute the solution.

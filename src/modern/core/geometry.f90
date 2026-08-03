@@ -94,6 +94,7 @@ subroutine angle_box_2d ( dist, p1, p2, p3, p4, p5 )
   if ( dist == 0.0D+00 ) then
     p4(1:2) = p2(1:2)
     p5(1:2) = p2(1:2)
+    return
   end if
 !
 !  Fail if all three points are equal.
@@ -116,6 +117,7 @@ subroutine angle_box_2d ( dist, p1, p2, p3, p4, p5 )
     u2(1:2) = u2(1:2) / temp1
     p4(1:2) = p2(1:2) + dist * u2(1:2)
     p5(1:2) = p2(1:2) - dist * u2(1:2)
+    return
   end if
 !
 !  If P2 = P3, extend the line through the doubled point.
@@ -127,6 +129,7 @@ subroutine angle_box_2d ( dist, p1, p2, p3, p4, p5 )
     u1(1:2) = u1(1:2) / temp1
     p4(1:2) = p2(1:2) + dist * u1(1:2)
     p5(1:2) = p2(1:2) - dist * u1(1:2)
+    return
   end if
 !
 !  Compute the unit normal vectors to each line.
@@ -185,6 +188,7 @@ subroutine angle_box_2d ( dist, p1, p2, p3, p4, p5 )
       / temp1 + dist * u1(1:2)
     p5(1:2) = p2(1:2) + dist * ( p2(1:2) - p1(1:2) ) &
       / temp1 - dist * u1(1:2)
+    return
   end if
 !
 !  Compute the "average" unit normal vector.
@@ -334,6 +338,7 @@ function angle_deg_2d ( p1, p2, p3 )
 
   if ( p(1) == 0.0D+00 .and. p(2) == 0.0D+00 ) then
     angle_deg_2d = 0.0D+00
+    return
   end if
 
   angle_rad_2d = atan2 ( p(2), p(1) )
@@ -456,6 +461,7 @@ function angle_rad_2d ( p1, p2, p3 )
 
   if ( all ( p(1:2) == 0.0D+00)  ) then
     angle_rad_2d = 0.0D+00
+    return
   end if
 
   angle_rad_2d = atan2 ( p(2), p(1) )
@@ -517,12 +523,14 @@ function angle_rad_3d ( p1, p2, p3 )
 
   if ( v1norm == 0.0D+00 ) then
     angle_rad_3d = 0.0D+00
+    return
   end if
 
   v2norm = sqrt ( sum ( ( p3(1:dim_num) - p2(1:dim_num) )**2 ) )
 
   if ( v2norm == 0.0D+00 ) then
     angle_rad_3d = 0.0D+00
+    return
   end if
 
   dot = sum ( ( p1(1:dim_num) - p2(1:dim_num) ) &
@@ -584,12 +592,14 @@ function angle_rad_nd ( dim_num, v1, v2 )
 
   if ( v1norm == 0.0D+00 ) then
     angle_rad_nd = 0.0D+00
+    return
   end if
 
   v2norm = sqrt ( sum ( v2(1:dim_num)**2 ) )
 
   if ( v2norm == 0.0D+00 ) then
     angle_rad_nd = 0.0D+00
+    return
   end if
 
   angle_rad_nd = r8_acos ( dot / ( v1norm * v2norm ) )
@@ -1119,6 +1129,7 @@ subroutine basis_map_3d ( u, v, a, ierror )
 
   if ( det == 0.0D+00 ) then
     ierror = 1
+    return
   end if
 !
 !  A = [ V1 | V2 | V3 ] * inverse [ U1 | U2 | U3 ].
@@ -1231,6 +1242,7 @@ function box_contains_point_nd ( dim_num, p1, p2, p )
 
   do i = 1, dim_num
     if ( p(i) < p1(i) .or. p2(i) < p(i) ) then
+      return
     end if
   end do
 
@@ -1293,9 +1305,11 @@ function box_contains_segment_nd ( dim_num, p1, p2, pa, pb  )
   box_contains_segment_nd = .false.
 
   if ( .not. box_contains_point_nd ( dim_num, p1, p2, pa ) ) then
+    return
   end if
 
   if ( .not. box_contains_point_nd ( dim_num, p1, p2, pb ) ) then
+    return
   end if
 
   box_contains_segment_nd = .true.
@@ -1457,6 +1471,7 @@ subroutine box_segment_clip_2d ( p1, p2, pa, pb, ival )
 !
   if ( pa(1) < p1(1) .and. pb(1) < p1(1) ) then
     ival = -1
+    return
   end if
 
   if ( pa(1) < p1(1) .and. p1(1) <= pb(1) ) then
@@ -1475,6 +1490,7 @@ subroutine box_segment_clip_2d ( p1, p2, pa, pb, ival )
 !
   if ( p2(1) < pa(1) .and. p2(1) < pb(1) ) then
     ival = -1
+    return
   end if
 
   if ( p2(1) < pa(1) .and. pb(1) <= p2(1) ) then
@@ -1493,6 +1509,7 @@ subroutine box_segment_clip_2d ( p1, p2, pa, pb, ival )
 !
   if ( pa(2) < p1(2) .and. pb(2) < p1(2) ) then
     ival = -1
+    return
   end if
 
   if ( pa(2) < p1(2) .and. p1(2) <= pb(2) ) then
@@ -1511,6 +1528,7 @@ subroutine box_segment_clip_2d ( p1, p2, pa, pb, ival )
 !
   if ( p2(2) < pa(2) .and. p2(2) < pb(2) ) then
     ival = -1
+    return
   end if
 
   if ( p2(2) < pa(2) .and. pb(2) <= p2(2) ) then
@@ -1695,6 +1713,7 @@ subroutine circle_arc_point_near_2d ( r, pc, theta1, theta2, p, pn, &
   if ( r == 0.0D+00 ) then
     pn(1:dim_num) = pc(1:dim_num)
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
+    return
   end if
 !
 !  Determine the angle made by the point.
@@ -1897,6 +1916,9 @@ subroutine circle_exp_contains_point_2d ( p1, p2, p3, p, inside )
         inside = 5
       end if
     end if
+
+    return
+
   end if
 !
 !  P1 does not equal P2.  Does P1 = P3?
@@ -1911,6 +1933,9 @@ subroutine circle_exp_contains_point_2d ( p1, p2, p3, p, inside )
     else
       inside = 5
     end if
+
+    return
+
   end if
 !
 !  The points are distinct.  Are they colinear?
@@ -1928,6 +1953,9 @@ subroutine circle_exp_contains_point_2d ( p1, p2, p3, p, inside )
     else
       inside = 3
     end if
+
+    return
+
   end if
 !
 !  The points are distinct and non-colinear.
@@ -2053,6 +2081,7 @@ subroutine circle_exp2imp_2d ( p1, p2, p3, r, pc )
        all ( p1(1:dim_num) == p3(1:dim_num) ) ) then
     r = 0.0D+00
     pc(1:dim_num) = p1(1:dim_num)
+    return
   end if
 !
 !  If exactly two points are equal, then the circle is defined as
@@ -2074,6 +2103,8 @@ subroutine circle_exp2imp_2d ( p1, p2, p3, r, pc )
 
     r = 0.5D+00 * sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
     pc(1:dim_num) = 0.5D+00 * ( p1(1:dim_num) + p2(1:dim_num)  )
+    return
+
   end if
 !
 !  We check for collinearity.  A more useful check would compare the
@@ -2091,6 +2122,7 @@ subroutine circle_exp2imp_2d ( p1, p2, p3, r, pc )
   if ( g == 0.0D+00 ) then
     pc(1:2) = (/ 0.0D+00, 0.0D+00 /)
     r = -1.0D+00
+    return
   end if
 !
 !  The center is halfway along the diameter vector from P1.
@@ -2473,6 +2505,7 @@ subroutine circle_imp_point_near_2d ( r, pc, p, pn, dist )
   if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
     dist = r
     pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num) )
+    return
   end if
 
   r2 = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
@@ -3344,6 +3377,7 @@ subroutine circle_pppr2imp_3d ( p1, p2, p3, r, pc, normal )
     do j = 1, 2
       pc(1:dim_num,j) = 0.5D+00 * ( p1(1:dim_num) + p2(1:dim_num) )
     end do
+    return
   end if
 !
 !  H is the distance from the midpoint of (P1,P2) to the center.
@@ -3449,6 +3483,7 @@ subroutine circle_ppr2imp_2d ( p1, p2, r, pc )
     do j = 1, 2
       pc(1:dim_num,j) = 0.5D+00 * ( p1(1:dim_num) + p2(1:dim_num) )
     end do
+    return
   end if
 !
 !  H is the distance from the midpoint of (P1,P2) to the center.
@@ -3938,6 +3973,9 @@ subroutine circles_intersect_points_2d ( r1, pc1, r2, pc2, int_num, p )
     else
       int_num = 0
     end if
+
+    return
+
   end if
 
   distsq = ( pc1(1) - pc2(1) )**2 + ( pc1(2) - pc2(2) )**2
@@ -3947,6 +3985,7 @@ subroutine circles_intersect_points_2d ( r1, pc1, r2, pc2, int_num, p )
 
   if ( root < -tol ) then
     int_num = 0
+    return
   end if
 
   sc1 = ( distsq - ( r2**2 - r1**2 ) ) / distsq
@@ -3955,6 +3994,7 @@ subroutine circles_intersect_points_2d ( r1, pc1, r2, pc2, int_num, p )
     int_num = 1
     p(1:dim_num,1) = pc1(1:dim_num) &
       + 0.5D+00 * sc1 * ( pc2(1:dim_num) - pc1(1:dim_num) )
+    return
   end if
 
   sc2 = sqrt ( root ) / distsq
@@ -4497,6 +4537,7 @@ subroutine cylinder_point_dist_3d ( p1, p2, r, p, distance )
 
   if ( axis_length == 0.0D+00 ) then
     distance = -huge ( distance )
+    return
   end if
 
   axis(1:dim_num) = axis(1:dim_num) / axis_length
@@ -4601,6 +4642,7 @@ subroutine cylinder_point_dist_signed_3d ( p1, p2, r, p, distance )
 
   if ( axis_length == 0.0D+00 ) then
     distance = -huge ( distance )
+    return
   end if
 
   axis(1:dim_num) = axis(1:dim_num) / axis_length
@@ -4696,6 +4738,7 @@ subroutine cylinder_point_inside_3d ( p1, p2, r, p, inside )
 
   if ( axis_length == 0.0D+00 ) then
     inside = .false.
+    return
   end if
 
   axis(1:dim_num) = axis(1:dim_num) / axis_length
@@ -5362,12 +5405,14 @@ subroutine disk_point_dist_3d ( pc, r, axis, p, dist )
 !
   if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
     dist = 0.0D+00
+    return
   end if
 
   axis_length = r8vec_norm ( dim_num, axis(1:dim_num) )
 
   if ( axis_length == 0.0D+00 ) then
     dist = -huge ( dist )
+    return
   end if
 
   axial_component = dot_product ( p(1:dim_num) - pc(1:dim_num), &
@@ -5378,6 +5423,7 @@ subroutine disk_point_dist_3d ( pc, r, axis, p, dist )
   if ( sum ( p(1:dim_num) - pc(1:dim_num) )**2 <= r * r .and. &
         axial_component == 0.0D+00 ) then
     dist = 0.0D+00
+    return
   end if
 !
 !  Decompose P-PC into axis component and off-axis component.
@@ -5393,6 +5439,7 @@ subroutine disk_point_dist_3d ( pc, r, axis, p, dist )
 !
   if ( off_axis_component <= r ) then
     dist = abs ( axial_component )
+    return
   end if
 !
 !  Otherwise, the nearest point is along the perimeter of the disk.
@@ -6373,6 +6420,68 @@ subroutine ellipse_points_arc_2d ( pc, r1, r2, psi, theta1, theta2, n, p )
   end do
 end
 
+subroutine get_unit ( iunit )
+
+!*****************************************************************************80
+!
+!! GET_UNIT returns a free FORTRAN unit number.
+!
+!  Discussion:
+!
+!    A "free" FORTRAN unit number is a value between 1 and 99 which
+!    is not currently associated with an I/O device.  A free FORTRAN unit
+!    number is needed in order to open a file with the OPEN command.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    02 March 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Output, integer IUNIT.
+!
+!    If IUNIT = 0, then no free FORTRAN unit could be found, although
+!    all 99 units were checked (except for units 5 and 6).
+!
+!    Otherwise, IUNIT is a value between 1 and 99, representing a
+!    free FORTRAN unit.  Note that GET_UNIT assumes that units 5 and 6
+!    are special, and will never return those values.
+!
+  implicit none
+
+  integer i
+  integer ios
+  integer iunit
+  logical lopen
+
+  iunit = 0
+
+  do i = 1, 99
+
+    if ( i /= 5 .and. i /= 6 ) then
+
+      inquire ( unit = i, opened = lopen, iostat = ios )
+
+      if ( ios == 0 ) then
+        if ( .not. lopen ) then
+          iunit = i
+          return
+        end if
+      end if
+
+    end if
+
+  end do
+end
+
 subroutine glob2loc_3d ( cospitch, cosroll, cosyaw, sinpitch, sinroll, sinyaw, &
   globas, glopts, locpts )
 
@@ -7021,6 +7130,8 @@ function hexagon_contains_point_2d ( v, p )
         + p(1  ) * ( v(2,i) - v(2,j) ) < 0.0D+00 ) then
 
       hexagon_contains_point_2d = .false.
+      return
+
     end if
 
   end do
@@ -7420,6 +7531,7 @@ function i4_factorial2 ( n )
 
   if ( n < 1 ) then
     i4_factorial2 = 1
+    return
   end if
 
   n_copy = n
@@ -7488,6 +7600,7 @@ function i4_gcd ( i, j )
     return
   else if ( j == 0 ) then
     i4_gcd = max ( 1, abs ( i ) )
+    return
   end if
 !
 !  Set P to the larger of I and J, Q to the smaller.
@@ -7973,6 +8086,7 @@ subroutine i4col_compare ( m, n, a, i, j, isgn )
   isgn = 0
 
   if ( i == j ) then
+    return
   end if
 
   k = 1
@@ -7984,6 +8098,7 @@ subroutine i4col_compare ( m, n, a, i, j, isgn )
       return
     else if ( a(k,j) < a(k,i) ) then
       isgn = +1
+      return
     end if
 
     k = k + 1
@@ -8041,6 +8156,7 @@ subroutine i4col_find_item ( m, n, a, item, row, col )
       if ( a(i,j) == item ) then
         row = i
         col = j
+        return
       end if
     end do
   end do
@@ -8117,6 +8233,7 @@ subroutine i4col_find_pair_wrap ( m, n, a, item1, item2, row, col )
         if ( a(i2,j) == item2 ) then
           row = i
           col = j
+          return
         end if
 
       end if
@@ -8182,9 +8299,11 @@ subroutine i4col_sort_a ( m, n, a )
   integer j
 
   if ( m <= 0 ) then
+    return
   end if
 
   if ( n <= 1 ) then
+    return
   end if
 !
 !  Initialize.
@@ -8264,6 +8383,7 @@ subroutine i4col_sorted_unique_count ( m, n, a, unique_num )
 
   if ( n <= 0 ) then
     unique_num = 0
+    return
   end if
 
   unique_num = 1
@@ -8348,6 +8468,7 @@ subroutine i4col_swap ( m, n, a, i, j )
   end if
 
   if ( i == j ) then
+    return
   end if
 
   col(1:m) = a(1:m,i)
@@ -8449,6 +8570,7 @@ subroutine i4row_compare ( m, n, a, i, j, isgn )
   isgn = 0
 
   if ( i == j ) then
+    return
   end if
 
   k = 1
@@ -8460,6 +8582,7 @@ subroutine i4row_compare ( m, n, a, i, j, isgn )
       return
     else if ( a(j,k) < a(i,k) ) then
       isgn = +1
+      return
     end if
 
     k = k + 1
@@ -8619,6 +8742,7 @@ subroutine i4row_sorted_unique_count ( m, n, a, unique_num )
 
   if ( n <= 0 ) then
     unique_num = 0
+    return
   end if
 
   unique_num = 1
@@ -8687,6 +8811,7 @@ subroutine i4row_swap ( m, n, a, irow1, irow2 )
   end if
 
   if ( irow1 == irow2 ) then
+    return
   end if
 
   row(1:n) = a(irow1,1:n)
@@ -8899,6 +9024,7 @@ function i4vec_lcm ( n, v )
     if ( v(i) == 0 ) then
       lcm = 0
       i4vec_lcm = lcm
+      return
     end if
 
     lcm = i4_lcm ( lcm, v(i) )
@@ -8949,6 +9075,7 @@ subroutine i4vec_sort_heap_a ( n, a )
   integer n1
 
   if ( n <= 1 ) then
+    return
   end if
 !
 !  1: Put A into descending heap form.
@@ -9016,6 +9143,7 @@ subroutine i4vec_sorted_unique ( n, a, unique_num )
   unique_num = 0
 
   if ( n <= 0 ) then
+    return
   end if
 
   unique_num = 1
@@ -9305,6 +9433,7 @@ subroutine i4vec2_sorted_unique ( n, a1, a2, unique_num )
   unique_num = 0
 
   if ( n <= 0 ) then
+    return
   end if
 
   unique_num = 1
@@ -9620,6 +9749,7 @@ subroutine line_exp_normal_2d ( p1, p2, normal )
 
   if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
     normal(1:dim_num) = sqrt ( 2.0D+00 )
+    return
   end if
 
   norm = sqrt ( ( p2(1) - p1(1) )**2 + ( p2(2) - p1(2) )**2 )
@@ -9694,6 +9824,7 @@ subroutine line_exp_perp_2d ( p1, p2, p3, p4, flag )
   if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
     flag = .true.
     p4(1:2) = r8_huge ( )
+    return
   end if
 
   bot = sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 )
@@ -11148,6 +11279,7 @@ subroutine lines_exp_angle_3d ( p1, p2, q1, q2, angle )
 !   write ( *, '(a)' ) 'LINES_EXP_ANGLE_3D - Fatal error!'
 !   write ( *, '(a)' ) '  The line (P1,P2) is degenerate!'
     angle = -1.0D+00
+    return
   end if
 
   if ( line_exp_is_degenerate_nd ( dim_num, q1, q2 ) ) then
@@ -11155,6 +11287,7 @@ subroutine lines_exp_angle_3d ( p1, p2, q1, q2, angle )
 !   write ( *, '(a)' ) 'LINES_EXP_ANGLE_3D - Warning!'
 !   write ( *, '(a)' ) '  The line (Q1,Q2) is degenerate!'
     angle = -1.0D+00
+    return
   end if
 
   pnorm = sqrt ( sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 ) )
@@ -11531,6 +11664,7 @@ function lines_exp_equal_2d ( p1, p2, q1, q2 )
 
   if ( test1 /= 0.0D+00 ) then
     lines_exp_equal_2d = .false.
+    return
   end if
 !
 !  Slope (Q1,Q2) = Slope (P2,Q1).
@@ -11540,6 +11674,7 @@ function lines_exp_equal_2d ( p1, p2, q1, q2 )
 
   if ( test2 /= 0.0D+00 ) then
     lines_exp_equal_2d = .false.
+    return
   end if
 !
 !  Slope (P1,P2) = Slope (P1,Q2).
@@ -11549,6 +11684,7 @@ function lines_exp_equal_2d ( p1, p2, q1, q2 )
 
   if ( test3 /= 0.0D+00 ) then
     lines_exp_equal_2d = .false.
+    return
   end if
 !
 !  Slope (Q1,Q2) = Slope (P1,Q2).
@@ -11558,6 +11694,7 @@ function lines_exp_equal_2d ( p1, p2, q1, q2 )
 
   if ( test4 /= 0.0D+00 ) then
     lines_exp_equal_2d = .false.
+    return
   end if
 
   lines_exp_equal_2d = .true.
@@ -12057,6 +12194,7 @@ subroutine lines_imp_dist_2d ( a1, b1, c1, a2, b2, c2, dist )
 !
   if ( a1 * b2 /= a2 * b1 ) then
     dist = 0.0D+00
+    return
   end if
 !
 !  Determine the distance between the parallel lines.
@@ -12130,10 +12268,12 @@ subroutine lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, p )
 !
   if ( line_imp_is_degenerate_2d ( a1, b1, c1 ) ) then
     ival = -1
+    return
   end if
 
   if ( line_imp_is_degenerate_2d ( a2, b2, c2 ) ) then
     ival = -2
+    return
   end if
 !
 !  Set up and solve a linear system.
@@ -13375,6 +13515,7 @@ subroutine parallelogram_point_dist_3d ( p1, p2, p3, p, dist )
 
   if ( inside ) then
     dist = sqrt ( sum ( ( pn(1:dim_num) - p(1:dim_num) ) ** 2 ) )
+    return
   end if
 !
 !  Otherwise, find the distance between P and each of the
@@ -13438,17 +13579,20 @@ subroutine parabola_ex ( x1, y1, x2, y2, x3, y3, x, y, ierror )
 
   if ( x1 == x2 .or. x2 == x3 .or. x3 == x1 ) then
     ierror = 1
+    return
   end if
 
   if ( y1 == y2 .and. y2 == y3 .and. y3 == y1 ) then
     x = x1
     y = y1
+    return
   end if
 
   bot = ( x2 - x3 ) * y1 - ( x1 - x3 ) * y2 + ( x1 - x2 ) * y3
 
   if ( bot == 0.0D+00 ) then
     ierror = 2
+    return
   end if
 
   x = 0.5D+00 * ( x1 * x1 * ( y3 - y2 ) &
@@ -13518,11 +13662,13 @@ subroutine parabola_ex2 ( x1, y1, x2, y2, x3, y3, x, y, a, b, c, ierror )
 
   if ( x1 == x2 .or. x2 == x3 .or. x3 == x1 ) then
     ierror = 1
+    return
   end if
 
   if ( y1 == y2 .and. y2 == y3 .and. y3 == y1 ) then
     x = x1
     y = y1
+    return
   end if
 !
 !  Set up the Vandermonde matrix.
@@ -13553,6 +13699,7 @@ subroutine parabola_ex2 ( x1, y1, x2, y2, x3, y3, x, y, a, b, c, ierror )
 !
   if ( a == 0.0D+00 ) then
     ierror = 2
+    return
   end if
 
   x = - b / ( 2.0D+00 * a )
@@ -13625,27 +13772,33 @@ function parallelepiped_contains_point_3d ( p1, p2, p3, p4, p )
                       p2(1:dim_num) - p1(1:dim_num) )
 
   if ( dot < 0.0D+00 ) then
+    return
   end if
 
   if ( sum ( ( p2(1:dim_num) - p1(1:dim_num) ) ** 2 ) < dot ) then
+    return
   end if
 
   dot = dot_product ( p(1:dim_num)  - p1(1:dim_num), &
                       p3(1:dim_num) - p1(1:dim_num) )
 
   if ( dot < 0.0D+00 ) then
+    return
   end if
 
   if ( sum ( ( p3(1:dim_num) - p1(1:dim_num) ) ** 2 ) < dot ) then
+    return
   end if
 
   dot = dot_product ( p(1:dim_num)  - p1(1:dim_num), &
                       p4(1:dim_num) - p1(1:dim_num) )
 
   if ( dot < 0.0D+00 ) then
+    return
   end if
 
   if ( sum ( ( p4(1:dim_num) - p1(1:dim_num) ) ** 2 ) < dot ) then
+    return
   end if
 
   parallelepiped_contains_point_3d = .true.
@@ -14001,6 +14154,7 @@ subroutine plane_exp_grid_3d ( p1, p2, p3, ncor3, line_num, cor3, lines, &
 !
   if ( maxcor3 < ncor3 + nx * ny ) then
     ierror = 1
+    return
   end if
 
   do j = 1, ny
@@ -14030,6 +14184,7 @@ subroutine plane_exp_grid_3d ( p1, p2, p3, ncor3, line_num, cor3, lines, &
 
       if ( line_max <= line_num ) then
         ierror = 2
+        return
       end if
 
       line_num = line_num + 1
@@ -14039,6 +14194,7 @@ subroutine plane_exp_grid_3d ( p1, p2, p3, ncor3, line_num, cor3, lines, &
 
     if ( line_max <= line_num ) then
       ierror = 2
+      return
     end if
 
     line_num = line_num + 1
@@ -14054,6 +14210,7 @@ subroutine plane_exp_grid_3d ( p1, p2, p3, ncor3, line_num, cor3, lines, &
 
       if ( line_max <= line_num ) then
         ierror = 2
+        return
       end if
 
       line_num = line_num + 1
@@ -14063,6 +14220,7 @@ subroutine plane_exp_grid_3d ( p1, p2, p3, ncor3, line_num, cor3, lines, &
 
     if ( line_max <= line_num ) then
       ierror = 2
+      return
     end if
 
     line_num = line_num + 1
@@ -14431,6 +14589,7 @@ subroutine plane_exp_project_3d ( p1, p2, p3, pf, n, po, pp, ivis )
     do i = 1, dim_num
       pp(i,1:n) = pf(i)
     end do
+    return
   end if
 !
 !  Process the points.
@@ -15097,6 +15256,8 @@ subroutine plane_imp_segment_near_3d ( p1, p2, a, b, c, d, dist, p, pn )
     p(1) = pn(1) - an * dot1
     p(2) = pn(2) - bn * dot1
     p(3) = pn(3) - cn * dot1
+    return
+
   end if
 !
 !  Compute the projections of the two points onto the normal vector.
@@ -15235,6 +15396,7 @@ subroutine plane_imp_triangle_int_3d ( a, b, c, d, t, int_num, pint )
 !  If 2 or 3 of the nodes intersect, we're already done.
 !
   if ( 2 <= int_num ) then
+    return
   end if
 !
 !  If one node intersects, then we're done unless the other two
@@ -15258,6 +15420,9 @@ subroutine plane_imp_triangle_int_3d ( a, b, c, d, t, int_num, pint )
         dist1, dist2, int_num, pint )
 
     end if
+
+    return
+
   end if
 !
 !  All nodal distances are nonzero, and there is at least one
@@ -15820,6 +15985,8 @@ subroutine plane_normal_line_exp_int_3d ( pp, normal, p1, p2, ival, pint )
       ival = 0
       pint(1:dim_num) = huge ( temp )
     end if
+
+    return
   end if
 !
 !  Determine the distance along the direction vector to the intersection point.
@@ -16000,6 +16167,7 @@ subroutine plane_normal_tetrahedron_intersect ( pp, normal, t, int_num, pint )
 !
   if ( all ( d(1:4) < 0.0D+00 ) .or. all ( 0.0D+00 < d(1:4) ) ) then
     int_num = 0
+    return
   end if
 !
 !  Points with zero distance are automatically added to the list.
@@ -16138,6 +16306,7 @@ subroutine plane_normal_triangle_int_3d ( pp, normal, t, int_num, pint )
 !  If 2 or 3 of the nodes intersect, we're already done.
 !
   if ( 2 <= int_num ) then
+    return
   end if
 !
 !  If one node intersects, then we're done unless the other two
@@ -16161,6 +16330,9 @@ subroutine plane_normal_triangle_int_3d ( pp, normal, t, int_num, pint )
         dist1, dist2, int_num, pint )
 
     end if
+
+    return
+
   end if
 !
 !  All nodal distances are nonzero, and there is at least one
@@ -16582,12 +16754,14 @@ subroutine planes_imp_angle_3d ( a1, b1, c1, d1, a2, b2, c2, d2, angle )
 
   if ( norm1 == 0.0D+00 ) then
     angle = huge ( angle )
+    return
   end if
 
   norm2 = sqrt ( a2 * a2 + b2 * b2 + c2 * c2 )
 
   if ( norm2 == 0.0D+00 ) then
     angle = huge ( angle )
+    return
   end if
 
   cosine = ( a1 * a2 + b1 * b2 + c1 * c2 ) / ( norm1 * norm2 )
@@ -16654,6 +16828,7 @@ function points_avoid_point_naive_2d ( n, p_set, p )
 
     if ( sqrt ( sum ( ( p_set(1:dim_num,j) - p(1:dim_num) )**2 ) ) < tol ) then
       points_avoid_point_naive_2d = .false.
+      return
     end if
 
   end do
@@ -17102,6 +17277,7 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
 
   if ( node_num < 1 ) then
     hull_num = 0
+    return
   end if
 !
 !  If NODE_NUM = 1, the hull is the point.
@@ -17109,6 +17285,7 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
   if ( node_num == 1 ) then
     hull_num = 1
     hull(1) = 1
+    return
   end if
 !
 !  If NODE_NUM = 2, then the convex hull is either the two distinct points,
@@ -17124,6 +17301,9 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
       hull_num = 1
       hull(1) = 1
     end if
+
+    return
+
   end if
 !
 !  Find the leftmost point and call it "Q".
@@ -17705,6 +17885,7 @@ subroutine polygon_angles_2d ( n, v, angle )
 
   if ( n <= 2 ) then
     angle(1:n) = 0.0D+00
+    return
   end if
  
   do i = 1, n
@@ -18406,6 +18587,7 @@ subroutine polygon_contains_point_2d_2 ( n, v, p, inside )
     call triangle_contains_point_2d_1 ( t, p, inside )
 
     if ( inside ) then
+      return
     end if
 
   end do
@@ -18768,6 +18950,7 @@ function polygon_is_convex_2d ( n, v )
 !
   if ( n < 3 ) then
     polygon_is_convex_2d = DEGENERATE_CONVEX
+    return
   end if
 
   sense = 0.0D+00
@@ -18810,12 +18993,14 @@ function polygon_is_convex_2d ( n, v )
 
       if ( angle < 0.0D+00 ) then
         polygon_is_convex_2d = NOT_CONVEX
+        return
       end if
 
     else if ( sense == -1.0D+00 ) then
 
       if ( 0.0D+00 < angle ) then
         polygon_is_convex_2d = NOT_CONVEX
+        return
       end if
 
     end if
@@ -18829,6 +19014,7 @@ function polygon_is_convex_2d ( n, v )
 
     if ( 360.0D+00 + tol < abs ( exterior_total ) * RAD_TO_DEG ) then
       polygon_is_convex_2d = NOT_CONVEX
+      return
     end if
 
   end do
@@ -18984,6 +19170,7 @@ subroutine polygon_normal_3d ( n, v, normal )
   normal_norm = r8vec_norm ( dim_num, normal )
 
   if ( normal_norm == 0.0D+00 ) then
+    return
   end if
 
   normal(1:dim_num) = normal(1:dim_num) / normal_norm
@@ -19324,6 +19511,7 @@ subroutine polygon_solid_angle_3d ( n, v, p, solid_angle )
 
   if ( n < 3 ) then
     solid_angle = 0.0D+00
+    return
   end if
 
   call polygon_normal_3d ( n, v, plane )
@@ -20482,6 +20670,8 @@ subroutine polyline_index_point_nd ( dim_num, n, p, t, pt )
         pt(1:dim_num) = ( ( t2 - t      ) * p(1:dim_num,i)     &
                         + (      t - t1 ) * p(1:dim_num,i+1) ) &
                         / ( t2     - t1 )
+
+        return
       end if
     end do
   end if
@@ -21222,24 +21412,28 @@ subroutine quad_contains_point_2d ( q, p, inside )
   angle_2 = angle_rad_2d ( q(1:2,1), q(1:2,2), p(1:2) )
 
   if ( angle_1 < angle_2 ) then
+    return
   end if
 
   angle_1 = angle_rad_2d ( q(1:2,2), q(1:2,3), q(1:2,4) )
   angle_2 = angle_rad_2d ( q(1:2,2), q(1:2,3), p(1:2) )
 
   if ( angle_1 < angle_2 ) then
+    return
   end if
 
   angle_1 = angle_rad_2d ( q(1:2,3), q(1:2,4), q(1:2,1) )
   angle_2 = angle_rad_2d ( q(1:2,3), q(1:2,4), p(1:2) )
 
   if ( angle_1 < angle_2 ) then
+    return
   end if
 
   angle_1 = angle_rad_2d ( q(1:2,4), q(1:2,1), q(1:2,2) )
   angle_2 = angle_rad_2d ( q(1:2,4), q(1:2,1), p(1:2) )
 
   if ( angle_1 < angle_2 ) then
+    return
   end if
 
   inside = .true.
@@ -22646,10 +22840,12 @@ subroutine r82vec_sort_heap_index_a ( n, a, indx )
   integer l
 
   if ( n < 1 ) then
+    return
   end if
 
   if ( n == 1 ) then
     indx(1) = 1
+    return
   end if
 
   call i4vec_indicator ( n, indx )
@@ -22843,6 +23039,7 @@ subroutine r8ge_fa ( n, a, pivot, info )
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'R8GE_FA - Warning!'
       write ( *, '(a,i8)' ) '  Zero pivot on step ', info
+      return
     end if
 !
 !  Interchange rows L and K if necessary.
@@ -23226,6 +23423,8 @@ subroutine r8mat_inverse_2d ( a, b, det )
   if ( det == 0.0D+00 ) then
 
     b(1:2,1:2) = 0.0D+00
+
+    return
   end if
 !
 !  Compute the entries of the inverse matrix using an explicit formula.
@@ -23288,6 +23487,8 @@ subroutine r8mat_inverse_3d ( a, b, det )
   if ( det == 0.0D+00 ) then
 
     b(1:3,1:3) = 0.0D+00
+
+    return
   end if
 !
 !  Compute the entries of the inverse matrix using an explicit
@@ -23373,6 +23574,7 @@ subroutine r8mat_solve ( n, rhs_num, a, info )
 
     if ( apivot == 0.0D+00 ) then
       info = j
+      return
     end if
 !
 !  Interchange.
@@ -23456,6 +23658,7 @@ subroutine r8mat_solve_2d ( a, b, det, x )
 !
   if ( det == 0.0D+00 ) then
     x(1:2) = 0.0D+00
+    return
   end if
 !
 !  Compute the solution.
@@ -23745,6 +23948,7 @@ subroutine r8vec_any_normal ( dim_num, v1, v2 )
   if ( r8vec_norm ( dim_num, v1 ) == 0.0D+00 ) then
     v2(1) = 1.0D+00
     v2(2:dim_num) = 0.0D+00
+    return
   end if
 !
 !  Seek the largest entry in V1, VJ = V1(J), and the
@@ -23841,6 +24045,7 @@ subroutine r8vec_bracket ( n, x, xval, left, right )
     if ( xval < x(i) ) then
       left = i - 1
       right = i
+      return
     end if
 
    end do
@@ -24510,6 +24715,7 @@ subroutine r8vec_normal_01 ( n, seed, x )
     y = 0.0D+00
     return
   else if ( n == 0 ) then
+    return
   end if
 !
 !  Record the range of X we need to fill in.
@@ -24753,6 +24959,7 @@ subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel )
   if ( p_norm == 0.0D+00 ) then
     a_normal(1:n) = a(1:n)
     a_parallel(1:n) = 0.0D+00
+    return
   end if
 
   a_dot_p = dot_product ( a(1:n), p(1:n) ) / p_norm
@@ -25350,6 +25557,7 @@ subroutine rotation_axis_vector_3d ( axis, angle, v, w )
 
   if ( axis_norm == 0.0D+00 ) then
     w(1:dim_num) = 0.0D+00
+    return
   end if
 
   u(1:dim_num) = u(1:dim_num) / axis_norm
@@ -25370,6 +25578,7 @@ subroutine rotation_axis_vector_3d ( axis, angle, v, w )
 
   if ( normal_component == 0.0D+00 ) then
     w(1:dim_num) = parallel(1:dim_num)
+    return
   end if
 
   normal(1:dim_num) = normal(1:dim_num) / normal_component
@@ -26197,6 +26406,7 @@ subroutine segments_dist_2d ( p1, p2, q1, q2, dist )
     if ( 0.0D+00 <= rpt .and. rpt <= 1.0D+00 .and. &
          0.0D+00 <= rqt .and. rqt <= 1.0D+00 ) then
       dist = 0.0D+00
+      return
     end if
 
   end if
@@ -26395,6 +26605,7 @@ subroutine segments_dist_3d ( p1, p2, q1, q2, dist )
     pn(1:dim_num) = p1(1:dim_num) + sn * ( p2(1:dim_num) - p1(1:dim_num) )
     qn(1:dim_num) = q1(1:dim_num) + tn * ( q2(1:dim_num) - q1(1:dim_num) )
     dist = sqrt ( sum ( ( pn(1:dim_num) - qn(1:dim_num) )**2 ) )
+    return
   end if
 !
 !  The nearest point did not occur in the interior.
@@ -26474,6 +26685,7 @@ subroutine segments_dist_3d_old ( p1, p2, q1, q2, dist )
 
   if ( t1 == t2 ) then
     call segment_point_dist_3d ( p1, p2, pn1, dist )
+    return
   end if
 
   pm(1:dim_num) = 0.5D+00 * ( pn1(1:dim_num) + pn2(1:dim_num) )
@@ -26629,6 +26841,7 @@ subroutine segments_int_2d ( p1, p2, q1, q2, flag, r )
 
   if ( ival == 0 ) then
     flag = 0
+    return
   end if
 !
 !  Is the intersection point part of the first line segment?
@@ -26637,6 +26850,7 @@ subroutine segments_int_2d ( p1, p2, q1, q2, flag, r )
 
   if ( u(1) < 0.0D+00 .or. 1.0D+00 < u(1) .or. tol < u(2) ) then
     flag = 0
+    return
   end if
 !
 !  Is the intersection point part of the second line segment?
@@ -26645,6 +26859,7 @@ subroutine segments_int_2d ( p1, p2, q1, q2, flag, r )
 
   if ( u(1) < 0.0D+00 .or. 1.0D+00 < u(1) .or. tol < u(2) ) then
     flag = 0
+    return
   end if
 
   flag = 1
@@ -26717,6 +26932,7 @@ subroutine shape_point_dist_2d ( pc, p1, side_num, p, dist )
 !
   if ( radius == 0.0D+00 ) then
     dist = sqrt ( sum ( ( p(1:dim_num) - pc(1:dim_num) )**2 ) )
+    return
   end if
 !
 !  If the test point is at the pc, then the computation is easy.
@@ -26725,6 +26941,7 @@ subroutine shape_point_dist_2d ( pc, p1, side_num, p, dist )
 !
   if ( all ( p(1:dim_num) == pc(1:dim_num) ) ) then
     dist = radius * cos ( r8_pi / real ( side_num) )
+    return
   end if
 !
 !  Determine the angle between the ray to the first corner,
@@ -26828,6 +27045,7 @@ subroutine shape_point_near_2d ( pc, p1, side_num, p, pn, dist )
   if ( radius == 0.0D+00 ) then
     pn(1:dim_num) = pc(1:dim_num)
     dist = sqrt ( sum ( ( p(1:dim_num) - pn(1:dim_num) )**2 ) )
+    return
   end if
 !
 !  If the test point is at the pc, then the computation is easy.
@@ -26843,6 +27061,7 @@ subroutine shape_point_near_2d ( pc, p1, side_num, p, pn, dist )
     pn(1) = pc(1) + pd(1) * cos ( angle )
     pn(2) = pc(2) + pd(2) * sin ( angle )
     dist = radius * cos ( angle )
+    return
   end if
 !
 !  Determine the angle between the ray to the first corner,
@@ -27073,6 +27292,9 @@ subroutine shape_ray_int_2d ( pc, p1, side_num, pa, pb, pint )
     if ( inside ) then
 
       call lines_exp_int_2d ( pa, pb, v1, v2, ival, pint )
+
+      return
+
     end if
 
   end do
@@ -27159,6 +27381,7 @@ subroutine simplex_lattice_layer_point_next ( n, c, v, more )
     else
       more = .false.
     end if
+    return
   end if
 !
 !  Compute the first point.
@@ -27204,6 +27427,7 @@ subroutine simplex_lattice_layer_point_next ( n, c, v, more )
       end if
 
       if ( lhs <= rhs2 ) then
+        return
       end if
 
     end do
@@ -27310,6 +27534,7 @@ subroutine simplex_lattice_point_next ( n, c, v, more )
       if ( lhs + c1n / c(i) <= rhs ) then
         v(i) = v(i) + 1
         more = .true.
+        return
       end if
       lhs = lhs - c1n * v(i) / c(i)
       v(i) = 0
@@ -27904,12 +28129,15 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -1
       i = i_save
       j = j_save
+      return
+
     end if
 
     if ( 0 < isgn ) then
       indx = 2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -27927,6 +28155,8 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
 
       i = i_save
       j = j_save
+      return
+
     end if
 
     k = k - 1
@@ -27956,6 +28186,7 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -28160,10 +28391,12 @@ subroutine sphere_cap_area_nd ( dim_num, r, h, area )
 
   if ( h <= 0.0D+00 ) then
     area = 0.0D+00
+    return
   end if
 
   if ( 2.0D+00 * r <= h ) then
     call sphere_imp_area_nd ( dim_num, r, area )
+    return
   end if
 !
 !  For cases where R < H < 2 * R, work with the complementary region.
@@ -28406,10 +28639,12 @@ subroutine sphere_cap_volume_nd ( dim_num, r, h, volume )
 
   if ( h <= 0.0D+00 ) then
     volume = 0.0D+00
+    return
   end if
 
   if ( 2.0D+00 * r <= h ) then
     call sphere_imp_volume_nd ( dim_num, r, volume )
+    return
   end if
 
   if ( dim_num < 1 ) then
@@ -28906,6 +29141,7 @@ subroutine sphere_exp_point_near_3d ( p1, p2, p3, p4, p, pn )
 
   if ( norm == 0.0D+00 ) then
     pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num) )
+    return
   end if
 !
 !  Compute the nearest point.
@@ -29035,6 +29271,7 @@ subroutine sphere_exp2imp_nd ( n, p, r, pc )
   if ( info /= 0 ) then
     r = -1.0D+00
     pc(1:n) = 0.0D+00
+    return
   end if
 !
 !  Compute the radius and center.
@@ -29287,6 +29524,7 @@ subroutine sphere_imp_line_project_3d ( r, pc, n, p, maxpnt2, n2, pp, &
 !
   if ( r == 0.0D+00 ) then
     n2 = 0
+    return
   end if
 
   p1(1:dim_num) = pc(1:dim_num)
@@ -29479,6 +29717,7 @@ subroutine sphere_imp_point_near_3d ( r, pc, p, pn )
 
   if ( norm == 0.0D+00 ) then
     pn(1:dim_num) = pc(1:dim_num) + r / sqrt ( real ( dim_num) )
+    return
   end if
 !
 !  Compute the nearest point.
@@ -29756,6 +29995,7 @@ subroutine sphere_imp_zone_volume_3d ( r, h1, h2, volume )
 
   if ( 2.0D+00 * r <= h11 ) then
     volume = 0.0D+00
+    return
   end if
 
   h22 = max ( h1, h2 )
@@ -29763,6 +30003,7 @@ subroutine sphere_imp_zone_volume_3d ( r, h1, h2, volume )
 
   if ( h22 <= 0.0D+00 ) then
     volume = 0.0D+00
+    return
   end if
 
   volume = ( 1.0D+00 / 3.0D+00 ) * r8_pi * ( &
@@ -32298,6 +32539,7 @@ subroutine tetrahedron_circumsphere_3d ( tetra, r, pc )
   if ( info /= 0 ) then
     r = -1.0D+00
     pc(1:dim_num) = 0.0D+00
+    return
   end if
 !
 !  Compute the radius and center.
@@ -32771,6 +33013,7 @@ subroutine tetrahedron_lattice_layer_point_next ( c, v, more )
     else
       more = .false.
     end if
+    return
   end if
 !
 !  Compute the first point.
@@ -34285,6 +34528,7 @@ subroutine tmat_rot_vector ( a, angle, axis, b )
   norm = sqrt ( v1 * v1 + v2 * v2 + v3 * v3 )
 
   if ( norm == 0.0D+00 ) then
+    return
   end if
 
   v1 = v1 / norm
@@ -34665,6 +34909,7 @@ subroutine triangle_angles_2d ( t, angle )
 !
   if ( a == 0.0D+00 .and. b == 0.0D+00 .and. c == 0.0D+00 ) then
     angle(1:3) = 2.0D+00 * r8_pi / 3.0D+00
+    return
   end if
 
   if ( c == 0.0D+00 .or. a == 0.0D+00 ) then
@@ -34741,6 +34986,7 @@ subroutine triangle_angles_3d ( t, angle )
 !
   if ( a == 0.0D+00 .and. b == 0.0D+00 .and. c == 0.0D+00 ) then
     angle(1:3) = 2.0D+00 * r8_pi / 3.0D+00
+    return
   end if
 
   if ( c == 0.0D+00 .or. a == 0.0D+00 ) then
@@ -35006,6 +35252,7 @@ subroutine triangle_area_3d_3 ( t, area )
 
   if ( area < 0.0D+00 ) then
     area = -1.0D+00
+    return
   end if
 
   area = 0.25D+00 * sqrt ( area )
@@ -35053,6 +35300,7 @@ subroutine triangle_area_heron ( s, area )
 
   if ( area < 0.0D+00 ) then
     area = -1.0D+00
+    return
   end if
 
   area = 0.25D+00 * sqrt ( area )
@@ -35602,6 +35850,7 @@ subroutine triangle_circumcircle_2d ( t, r, pc )
   if ( bot <= 0.0D+00 ) then
     r = -1.0D+00
     pc(1:2) = 0.0D+00
+    return
   end if
 
   r = a * b * c / sqrt ( bot )
@@ -35758,6 +36007,7 @@ subroutine triangle_circumradius_2d ( t, r )
 
   if ( bot <= 0.0D+00 ) then
     r = -1.0D+00
+    return
   end if
 
   r = a * b * c / sqrt ( bot )
@@ -35880,6 +36130,7 @@ subroutine triangle_contains_line_exp_3d ( t, p1, p2, inside, pint )
   else if ( ival == 2 ) then
     inside = .false.
     pint(1:dim_num) = p1(1:dim_num)
+    return
   end if
 !
 !  Now, check that all three triangles made by two vertices and
@@ -35895,6 +36146,7 @@ subroutine triangle_contains_line_exp_3d ( t, p1, p2, inside, pint )
 
   if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0D+00 ) then
     inside = .false.
+    return
   end if
 
   v1(1:dim_num) = t(1:dim_num,3)  - t(1:dim_num,2)
@@ -35906,6 +36158,7 @@ subroutine triangle_contains_line_exp_3d ( t, p1, p2, inside, pint )
 
   if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0D+00 ) then
     inside = .false.
+    return
   end if
 
   v1(1:dim_num) = t(1:dim_num,1)  - t(1:dim_num,3)
@@ -35917,6 +36170,7 @@ subroutine triangle_contains_line_exp_3d ( t, p1, p2, inside, pint )
 
   if ( dot_product ( normal(1:dim_num), normal2(1:dim_num) ) < 0.0D+00 ) then
     inside = .false.
+    return
   end if
 
   inside = .true.
@@ -36104,6 +36358,7 @@ subroutine triangle_contains_line_par_3d ( t, p0, pd, inside, p )
 
     if ( norm == 0.0D+00 ) then
       inside = .true.
+      return
     end if
 
     v1(1:dim_num) = v1(1:dim_num) / norm
@@ -36112,6 +36367,7 @@ subroutine triangle_contains_line_par_3d ( t, p0, pd, inside, p )
 
     if ( norm == 0.0D+00 ) then
       inside = .true.
+      return
     end if
 
     v2(1:dim_num) = v2(1:dim_num) / norm
@@ -36120,6 +36376,7 @@ subroutine triangle_contains_line_par_3d ( t, p0, pd, inside, p )
 
     if ( norm == 0.0D+00 ) then
       inside = .true.
+      return
     end if
 
     v3(1:dim_num) = v3(1:dim_num) / norm
@@ -36244,6 +36501,7 @@ subroutine triangle_contains_point_2d_2 ( t, p, inside )
     if ( 0.0D+00 < ( p(1) - t(1,j) ) * ( t(2,k) - t(2,j) ) &
                  - ( p(2) - t(2,j) ) * ( t(1,k) - t(1,j) ) ) then
       inside = .false.
+      return
     end if
 
   end do
@@ -36317,6 +36575,7 @@ subroutine triangle_contains_point_2d_3 ( t, p, inside )
     
     if ( dir_new * dir_old < 0.0D+00 ) then
       inside = .false.
+      return
     end if
 
     if ( dir_new /= 0.0D+00 ) then
@@ -36388,6 +36647,7 @@ subroutine triangle_diameter_2d ( t, diameter )
     return
   else if ( csq == 0.0D+00 ) then
     diameter = sqrt ( asq )
+    return
   end if
 !
 !  Make ASQ the largest.
@@ -36533,6 +36793,7 @@ subroutine triangle_gridpoints_2d ( t, sub_num, grid_max, grid_num, g )
       g(1,1) = ( t(1,1) + t(1,2) + t(1,3) ) / 3.0D+00
       g(2,1) = ( t(2,1) + t(2,2) + t(2,3) ) / 3.0D+00
     end if
+    return
   end if
 
   do i = 0, sub_num
@@ -36693,6 +36954,7 @@ subroutine triangle_incircle_2d ( t, r, pc )
   if ( perimeter == 0.0D+00 ) then
     pc(1:dim_num) = t(1:dim_num,1)
     r = 0.0D+00
+    return
   end if
 
   pc(1:dim_num) = (  &
@@ -36765,6 +37027,7 @@ subroutine triangle_inradius_2d ( t, r )
 
   if ( perimeter == 0.0D+00 ) then
     r = 0.0D+00
+    return
   end if
 
   r = 0.5D+00 * sqrt ( &
@@ -36895,6 +37158,7 @@ subroutine triangle_lattice_layer_point_next ( c, v, more )
     else
       more = .false.
     end if
+    return
   end if
 !
 !  Compute first point.
@@ -37160,6 +37424,7 @@ function triangle_orientation_2d ( t )
        all ( t(1:dim_num,2) == t(1:dim_num,3) ) .or. &
        all ( t(1:dim_num,3) == t(1:dim_num,1) ) ) then
     triangle_orientation_2d = 3
+    return
   end if
 
   det = ( t(1,1) - t(1,3) ) * ( t(2,2) - t(2,3) ) &
@@ -37237,6 +37502,7 @@ subroutine triangle_orthocenter_2d ( t, pc )
 
   if ( flag ) then
     pc(1:2) = r8_huge ( )
+    return
   end if
 !
 !  Determine a point P31 common to the line (P3,P1) and
@@ -37246,6 +37512,7 @@ subroutine triangle_orthocenter_2d ( t, pc )
 
   if ( flag ) then
     pc(1:2) = r8_huge ( )
+    return
   end if
 !
 !  Determine PC, the intersection of the lines (P1,P23) and (P2,P31).
@@ -37255,6 +37522,7 @@ subroutine triangle_orthocenter_2d ( t, pc )
   if ( ival /= 1 ) then
     pc(1:2) = r8_huge ( )
     flag = .true.
+    return
   end if
 end
 
@@ -38208,6 +38476,7 @@ subroutine vector_directions_nd ( dim_num, v, angle )
 
   if ( vnorm == 0.0D+00 ) then
     angle(1:dim_num) = 0.0D+00
+    return
   end if
 
   angle(1:dim_num) = acos ( v(1:dim_num) / vnorm )
@@ -38321,6 +38590,7 @@ subroutine vector_rotate_3d ( v1, axis, angle, v2 )
 
   if ( norm == 0.0D+00 ) then
     v2(1:3) = v1(1:3)
+    return
   end if
 !
 !  Compute the dot product of the vector and the (unit) rotation axis.
@@ -38339,6 +38609,7 @@ subroutine vector_rotate_3d ( v1, axis, angle, v2 )
 
   if ( norm_vn == 0.0D+00 ) then
     v2(1:3) = vp(1:3)
+    return
   end if
 
   vn(1:3) = vn(1:3) / norm_vn
@@ -38625,6 +38896,7 @@ subroutine voxels_line_3d ( v1, v2, n, v )
   integer v2(3)
 
   if ( n <= 0 ) then
+    return
   end if
 !
 !  Determine the number of voxels on the line.
@@ -39060,6 +39332,7 @@ subroutine voxels_step_3d ( v1, v2, inc, jnc, knc, v3 )
 !    K = V1(3) + alpha * knc
 !
   if ( inc == 0 .and. jnc == 0 .and. knc == 0 ) then
+    return
   end if
 
   alpha = 0.0D+00
@@ -39265,6 +39538,7 @@ subroutine xyz_to_radec ( p, ra, dec )
   if ( p_norm == 0.0D+00 ) then
     dec = 0.0D+00
     ra = 0.0D+00
+    return
   end if
 
   phi = r8_asin ( p(3) / p_norm )
@@ -39328,6 +39602,7 @@ subroutine xyz_to_rtp ( xyz, r, theta, phi )
   if ( r == 0.0D+00 ) then
     theta = 0.0D+00
     phi = 0.0D+00
+    return
   end if
 
   phi = r8_acos ( xyz(3) / r )
@@ -39387,78 +39662,10 @@ subroutine xyz_to_tp ( xyz, theta, phi )
   if ( r == 0.0D+00 ) then
     theta = 0.0D+00
     phi = 0.0D+00
+    return
   end if
 
   phi = r8_acos ( xyz(3) / r )
 
   theta = r8_atan ( xyz(2), xyz(1) )
-end
-
-!*****************************************************************************80
-! get_unit RESTORED 2026-07-04: the modernization pass dropped it while
-! points_plot still calls it — the modern tree could not link standalone.
-! Body carried from the original tree (already clean F90).
-!*****************************************************************************80
-subroutine get_unit ( iunit )
-
-!*****************************************************************************80
-!
-!! GET_UNIT returns a free FORTRAN unit number.
-!
-!  Discussion:
-!
-!    A "free" FORTRAN unit number is a value between 1 and 99 which
-!    is not currently associated with an I/O device.  A free FORTRAN unit
-!    number is needed in order to open a file with the OPEN command.
-!
-!  Licensing:
-!
-!    This code is distributed under the GNU LGPL license. 
-!
-!  Modified:
-!
-!    02 March 1999
-!
-!  Author:
-!
-!    John Burkardt
-!
-!  Parameters:
-!
-!    Output, integer ( kind = 4 ) IUNIT.
-!
-!    If IUNIT = 0, then no free FORTRAN unit could be found, although
-!    all 99 units were checked (except for units 5 and 6).
-!
-!    Otherwise, IUNIT is a value between 1 and 99, representing a
-!    free FORTRAN unit.  Note that GET_UNIT assumes that units 5 and 6
-!    are special, and will never return those values.
-!
-  implicit none
-
-  integer ( kind = 4 ) i
-  integer ( kind = 4 ) ios
-  integer ( kind = 4 ) iunit
-  logical ( kind = 4 ) lopen
-
-  iunit = 0
-
-  do i = 1, 99
-
-    if ( i /= 5 .and. i /= 6 ) then
-
-      inquire ( unit = i, opened = lopen, iostat = ios )
-
-      if ( ios == 0 ) then
-        if ( .not. lopen ) then
-          iunit = i
-          return
-        end if
-      end if
-
-    end if
-
-  end do
-
-  return
 end

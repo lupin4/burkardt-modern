@@ -83,6 +83,7 @@ subroutine stripack_interface ( point_file_name )
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'STRIPACK_INTERFACE - Fatal error!'
     write ( *, '(a)' ) '  The input file has no data.'
+    return
   end if
 !
 !  Allocate everything.

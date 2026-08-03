@@ -62,6 +62,7 @@ subroutine cartesian_to_hypersphere ( m, n, c, x, r, theta )
 !
   if ( m == 1 ) then
     r(1:n) = x(1,1:n) - c(1)
+    return
   end if
 !
 !  Subtract the center.

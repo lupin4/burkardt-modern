@@ -693,6 +693,7 @@ subroutine i4vec_sort_heap_index_a ( n, a, indx )
   integer l
 
   if ( n <= 1 ) then
+    return
   end if
 
   do i = 1, n
@@ -1099,10 +1100,12 @@ subroutine r82vec_sort_heap_index_a ( n, a, indx )
   integer l
 
   if ( n < 1 ) then
+    return
   end if
 
   if ( n == 1 ) then
     indx(1) = 1
+    return
   end if
 
   call i4vec_indicator ( n, indx )
@@ -1236,6 +1239,7 @@ function s_index_last ( s, sub )
   end if
 
   if ( llen1 < llen2 ) then
+    return
   end if
 
   do j = 1, llen1+1-llen2
@@ -1244,6 +1248,7 @@ function s_index_last ( s, sub )
 
     if ( s(i:i+llen2-1) == sub ) then
       s_index_last = i
+      return
     end if
 
   end do
@@ -1433,6 +1438,7 @@ subroutine swapec_lmap ( i, matrix, top, btri, bedg, point_num, point_xy, &
 
         if ( point_num < top ) then
           ierr = 8
+          return
         end if
 
         stack(top) = t
@@ -2033,6 +2039,7 @@ subroutine vbedg ( x, y, point_num, point_xy, tri_num, tri_vert, tri_nabe, &
   end do
 
   if ( ldone ) then
+    return
   end if
 
   t = ltri

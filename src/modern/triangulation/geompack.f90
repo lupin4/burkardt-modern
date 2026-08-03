@@ -234,6 +234,7 @@ function angle_rad_2d ( p1, p2, p3 )
 
   if ( p(1) == 0.0D+00 .and. p(2) == 0.0D+00 ) then
     angle_rad_2d = 0.0D+00
+    return
   end if
 
   angle_rad_2d = atan2 ( p(2), p(1) )
@@ -685,6 +686,7 @@ subroutine i4vec_sort_heap_a ( n, a )
   integer n1
 
   if ( n <= 1 ) then
+    return
   end if
 !
 !  1: Put A into descending heap form.
@@ -751,6 +753,7 @@ subroutine i4vec_sorted_unique ( n, a, nuniq )
   nuniq = 0
 
   if ( n <= 0 ) then
+    return
   end if
 
   nuniq = 1
@@ -906,6 +909,7 @@ subroutine perm_check ( n, p, ierror )
     end do
 
     if ( ierror /= 0 ) then
+      return
     end if
 
   end do
@@ -1089,6 +1093,7 @@ subroutine points_delaunay_naive_2d ( node_num, node_xy, maxtri, &
   triangle_num = 0
 
   if ( node_num < 3 ) then
+    return
   end if
 !
 !  Compute Z = X*X + Y*Y.
@@ -1196,6 +1201,7 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
 
   if ( node_num < 1 ) then
     hull_num = 0
+    return
   end if
 !
 !  If NODE_NUM = 1, the hull is the point.
@@ -1203,6 +1209,7 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
   if ( node_num == 1 ) then
     hull_num = 1
     hull(1) = 1
+    return
   end if
 !
 !  If NODE_NUM = 2, then the convex hull is either the two distinct points,
@@ -1218,6 +1225,9 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
       hull_num = 1
       hull(1) = 1
     end if
+
+    return
+
   end if
 !
 !  Find the leftmost point and call it "Q".
@@ -1506,6 +1516,7 @@ subroutine r82vec_part_quick_a ( n, a, l, r )
   else if ( n == 1 ) then
     l = 0
     r = 2
+    return
   end if
 
   key(1:dim_num) = a(1:dim_num,1)
@@ -1730,6 +1741,7 @@ subroutine r82vec_sort_heap_index_a ( n, a, indx )
   integer l
 
   if ( n < 1 ) then
+    return
   end if
 
   do i = 1, n
@@ -1737,6 +1749,7 @@ subroutine r82vec_sort_heap_index_a ( n, a, indx )
   end do
 
   if ( n == 1 ) then
+    return
   end if
 
   l = n / 2 + 1
@@ -1840,6 +1853,7 @@ subroutine r82vec_sort_quick_a ( n, a )
     write ( *, '(a)' ) '  N < 1.'
     stop
   else if ( n == 1 ) then
+    return
   end if
 
   level = 1
@@ -1883,6 +1897,7 @@ subroutine r82vec_sort_quick_a ( n, a )
       do
 
         if ( level <= 1 ) then
+          return
         end if
 
         base = rsave(level)
@@ -2127,6 +2142,7 @@ subroutine r8tris2 ( node_num, node_xy, triangle_num, triangle_node, &
       write ( *, '(a,2g14.6)' ) '  X,Y(M)  = ', node_xy(1:2,m)
       write ( *, '(a,2g14.6)' ) '  X,Y(M1) = ', node_xy(1:2,m1)
       ierr = 224
+      return
     end if
 
   end do
@@ -2144,6 +2160,7 @@ subroutine r8tris2 ( node_num, node_xy, triangle_num, triangle_node, &
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'R8TRIS2 - Fatal error!'
       ierr = 225
+      return
     end if
 
     m = j
@@ -2278,6 +2295,7 @@ subroutine r8tris2 ( node_num, node_xy, triangle_num, triangle_node, &
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'R8TRIS2 - Fatal error!'
         write ( *, '(a)' ) '  Stack overflow.'
+        return
       end if
 
       stack(top) = triangle_num
@@ -2301,6 +2319,7 @@ subroutine r8tris2 ( node_num, node_xy, triangle_num, triangle_node, &
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'R8TRIS2 - Fatal error!'
       write ( *, '(a)' ) '  Error return from SWAPEC.'
+      return
     end if
 
   end do
@@ -2689,6 +2708,7 @@ subroutine swapec ( i, top, btri, bedg, node_num, node_xy, triangle_num, &
 
         if ( node_num < top ) then
           ierr = 8
+          return
         end if
 
         stack(top) = t
@@ -2979,6 +2999,7 @@ subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_PLOT - Fatal error!'
     write ( *, '(a)' ) '  Can not open output file "', trim ( file_name ), '".'
+    return
   end if
 
   write ( file_unit, '(a)' ) '%!PS-Adobe-3.0 EPSF-3.0'
@@ -3503,6 +3524,7 @@ subroutine vbedg ( x, y, node_num, node_xy, triangle_num, triangle_node, &
   end do
 
   if ( ldone ) then
+    return
   end if
 
   t = ltri

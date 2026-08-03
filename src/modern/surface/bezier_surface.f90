@@ -711,6 +711,7 @@ subroutine i4row_compare ( m, n, a, i, j, isgn )
   isgn = 0
 
   if ( i == j ) then
+    return
   end if
 
   k = 1
@@ -722,6 +723,7 @@ subroutine i4row_compare ( m, n, a, i, j, isgn )
       return
     else if ( a(j,k) < a(i,k) ) then
       isgn = +1
+      return
     end if
 
     k = k + 1
@@ -808,9 +810,11 @@ subroutine i4row_sort_a ( m, n, a )
   integer j
 
   if ( m <= 1 ) then
+    return
   end if
 
   if ( n <= 0 ) then
+    return
   end if
 !
 !  Initialize.
@@ -905,6 +909,7 @@ subroutine i4row_swap ( m, n, a, i1, i2 )
   end if
 
   if ( i1 == i2 ) then
+    return
   end if
 
   row(1:n)  = a(i1,1:n)
@@ -1017,12 +1022,15 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -1
       i = i_save
       j = j_save
+      return
+
     end if
 
     if ( 0 < isgn ) then
       indx = 2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -1040,6 +1048,8 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
 
       i = i_save
       j = j_save
+      return
+
     end if
 
     k = k - 1
@@ -1069,6 +1079,7 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then

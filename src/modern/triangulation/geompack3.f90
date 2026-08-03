@@ -583,6 +583,7 @@ subroutine baryth ( a, b, c, d, e, alpha, degen )
 
   if ( abs ( det ) <= 0.01D+00 * tol * max ( amax, bmax, cmax, dmax ) ) then
     degen = .true. 
+    return
   end if
 
   de(1:3) = e(1:3) - d(1:3)
@@ -775,6 +776,7 @@ subroutine bcdtri ( rflag, bf_num, nbpt, nipt, sizht, fc_max, vcl, vm, nfc, &
 
   if ( fc_max < 5 * bf_num / 2 ) then
     ierr = 11
+    return
   end if
 
   ht(0:sizht-1) = 0
@@ -837,6 +839,7 @@ subroutine bcdtri ( rflag, bf_num, nbpt, nipt, sizht, fc_max, vcl, vm, nfc, &
       ht, remov, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( remov ) then
@@ -844,6 +847,7 @@ subroutine bcdtri ( rflag, bf_num, nbpt, nipt, sizht, fc_max, vcl, vm, nfc, &
     end if
 
     if ( .not. remov .and. rflag ) then
+      return
     end if
     hdavfc = fc(7,2)
     fc(7,2) = -1
@@ -876,6 +880,7 @@ subroutine bcdtri ( rflag, bf_num, nbpt, nipt, sizht, fc_max, vcl, vm, nfc, &
     ntetra, hdavfc, front, back, ind, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( nipt <= 1 ) then
@@ -927,6 +932,7 @@ subroutine bcdtri ( rflag, bf_num, nbpt, nipt, sizht, fc_max, vcl, vm, nfc, &
     end if
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( ivrt == 6 ) then
@@ -959,12 +965,14 @@ subroutine bcdtri ( rflag, bf_num, nbpt, nipt, sizht, fc_max, vcl, vm, nfc, &
     end if
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call swapes ( .true., i, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, ht, &
       ntetra, hdavfc, front, back, ind, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( ind /= 0 ) then
@@ -996,6 +1004,7 @@ subroutine bcdtri ( rflag, bf_num, nbpt, nipt, sizht, fc_max, vcl, vm, nfc, &
     ntetra, hdavfc, front, back, ind, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
    90 continue
@@ -1086,6 +1095,7 @@ subroutine bnsrt2 ( binexp, n, a, map, bin, iwk )
   nside = int ( real ( n)**( binexp / 2.0D+00 ) + 0.5D+00 )
 
   if ( nside <= 1 ) then
+    return
   end if
 
   xmin = minval ( a(1,map(1:n)) )
@@ -1198,6 +1208,7 @@ subroutine bnsrt3 ( binexp, n, a, map, bin, iwk )
   nside = int ( real(n)**( binexp / 3.0D+00 ) + 0.5D+00 )
 
   if ( nside <= 1 ) then
+    return
   end if
 
   nsidsq = nside**2
@@ -1320,6 +1331,7 @@ subroutine bnsrtk ( k, binexp, n, a, map, bin, iwk, dx )
   nside = int(real(n)**(real(binexp)/real(k)) + 0.5D+00 )
 
   if ( nside <= 1 ) then
+    return
   end if
 
   do i = 1, k
@@ -1451,6 +1463,7 @@ function ccradi ( a, b, c, d )
  
   if ( denom <= 0.0D+00 ) then
     ccradi = 0.0D+00
+    return
   end if
 
   vol = ab(1) * ( ac(2) * ad(3) - ac(3) * ad(2) ) &
@@ -1560,6 +1573,7 @@ subroutine ccsph ( intest, a, b, c, d, e, center, radsq, in )
   if ( abs ( det ) <= 0.01D+00 * tol * cmax ) then
     radsq = -1.0D+00
     in = 2
+    return
   end if
 
   center(1) = ( rhs(1) * cp1 + rhs(2) * cp2 + rhs(3) * cp3 ) / det
@@ -1789,6 +1803,7 @@ function cmcirc ( x0, y0, x1, y1, x2, y2, x3, y3 )
   det = a11 * a22 - a21 * a12
 
   if ( abs ( det ) <= tolabs ) then
+    return
   end if
 
   b1 = a11**2 + a12**2
@@ -2659,6 +2674,7 @@ subroutine cutfac ( p, nrmlc, angacc, dtol, nvc, maxvc, vcl, facep, nrml, &
   end do
 
   if ( imin == 0 ) then
+    return
   end if
 
   if ( imin < 0 ) then
@@ -2676,6 +2692,7 @@ subroutine cutfac ( p, nrmlc, angacc, dtol, nvc, maxvc, vcl, facep, nrml, &
 
     if ( maxvc < n ) then
       ierr = 14
+      return
     end if
 
     lw1 = n
@@ -2714,11 +2731,13 @@ subroutine cutfac ( p, nrmlc, angacc, dtol, nvc, maxvc, vcl, facep, nrml, &
         if ( msglvl == 4 ) then
           write ( *,600) 'rejected due to simply-connected polygon: case 1'
         end if
+        return
       end if
     end do
 
     if ( maxev <= nev ) then
       ierr = 328
+      return
     end if
 
     nev = nev + 1
@@ -2835,6 +2854,7 @@ subroutine cutfac ( p, nrmlc, angacc, dtol, nvc, maxvc, vcl, facep, nrml, &
     if ( msglvl == 4 ) then
       write ( *,600) 'rejected due to small angle'
     end if
+    return
   end if
 
   if ( 0 < ccwfl ) then
@@ -2899,6 +2919,7 @@ subroutine cutfac ( p, nrmlc, angacc, dtol, nvc, maxvc, vcl, facep, nrml, &
   if ( s < 0.0D+00 ) then
     if ( msglvl == 4 ) then
       write ( *, '(a)' ) 'Rejected due to inner boundary'
+      return
     end if
   end if
 !
@@ -2977,6 +2998,7 @@ subroutine cutfac ( p, nrmlc, angacc, dtol, nvc, maxvc, vcl, facep, nrml, &
       if ( msglvl == 4 ) then
         write ( *,600) 'rejected due to hole polygon'
       end if
+      return
     end if
 
   end do
@@ -3129,12 +3151,14 @@ subroutine cvdec2 ( angspc, angtol, nvc, npolg, nvert, maxvc, maxhv, &
         maxwk, vcl, pvl, iang, w1, w2, iwk, wk, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       call insed2 ( v ,w1, npolg, nvert, maxhv, maxpv, vcl, regnum, hvl, &
         pvl, iang, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       if ( 0 < w2 ) then
@@ -3143,6 +3167,7 @@ subroutine cvdec2 ( angspc, angtol, nvc, npolg, nvert, maxvc, maxhv, &
       end if
 
       if ( ierror /= 0 ) then
+        return
       end if
 
     end if
@@ -3319,6 +3344,7 @@ subroutine cvdec3 ( angacc, rdacc, nvc, nface, nvert, npolh, npf, maxvc, &
         nrml,fvl,eang,hfl,pfl,rflag,iwk,wk, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       if ( rflag ) then
@@ -3614,6 +3640,7 @@ subroutine cvdecf ( aspc2d, atol2d, nvc, nface, nvert, npf, maxvc, maxfp, &
       return
     else if ( maxwk < wrem ) then
       ierr = 7
+      return
     end if
 
     if ( abs(nrml(1,i)) <= tol ) then
@@ -3675,6 +3702,7 @@ subroutine cvdecf ( aspc2d, atol2d, nvc, nface, nvert, npf, maxvc, maxfp, &
         iwk(irem),wk(wrem), ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       if ( w(2) == 0 ) then
@@ -3698,6 +3726,7 @@ subroutine cvdecf ( aspc2d, atol2d, nvc, nface, nvert, npf, maxvc, maxfp, &
 
           if ( maxvc <= nvc ) then
             ierr = 14
+            return
           end if
 
           vcl(1,nvc+1) = cxy*pt(1,k) + r21*pt(2,k) + r31*zr
@@ -3708,6 +3737,7 @@ subroutine cvdecf ( aspc2d, atol2d, nvc, nface, nvert, npf, maxvc, maxfp, &
           call insvr3(a,nvc,nvert,maxfv,vcl,fvl,eang,ierr)
 
           if ( ierr /= 0 ) then
+            return
           end if
 
           iwk(locfv+nv-1) = fvl(succ,a)
@@ -3773,6 +3803,7 @@ subroutine cvdecf ( aspc2d, atol2d, nvc, nface, nvert, npf, maxvc, maxfp, &
           maxfv,maxpf,facep,factyp,nrml,fvl,eang,hfl,pfl,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         if ( ccw == succ ) then
@@ -3888,6 +3919,7 @@ subroutine cvdtri ( inter, ldv, nt, vcl, til, tedg, sptr, ierror )
 
     if ( k == nt ) then
       if ( .not. inter ) then
+        return
       end if
       mxtr = nt
       sflag = .false.
@@ -3904,6 +3936,7 @@ subroutine cvdtri ( inter, ldv, nt, vcl, til, tedg, sptr, ierror )
       call fndtri ( e, mxtr, sflag, tedg, itr, ind, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       call lop ( itr, ind, k, top, ldv, vcl, til, tedg, sptr )
@@ -4231,6 +4264,8 @@ subroutine diam2 ( nvrt, xc, yc, i1, i2, diamsq, ierr )
     end if
 
     ierr = 200
+    return
+
   end if
 
   dist = ( xc(j) - xc(k) )**2 + ( yc(j) - yc(k) )**2
@@ -4375,6 +4410,9 @@ function dless ( k, p, q )
      else
        dless = .false.
      end if
+
+     return
+
   end do
 
   dless = .false.
@@ -4749,6 +4787,7 @@ subroutine dscph ( nvc, nface, vcl, hvl, nrml, fvl, eang, htsiz, maxedg, &
         maxedg, hdfree, last, ht, edge, a, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       if ( 0 < a ) then
@@ -4765,6 +4804,7 @@ subroutine dscph ( nvc, nface, vcl, hvl, nrml, fvl, eang, htsiz, maxedg, &
 
   if ( nht /= 0 ) then
     ierr = 310
+    return
   end if
 !
 !  Compute unit outward normals of faces.
@@ -5034,6 +5074,7 @@ subroutine dsmcpr ( nhole, nvbc, vcl, maxhv, maxpv, maxho, nvc, npolg, &
     return
   else if ( maxho < nhole + nhole ) then
     ierr = 2
+    return
   end if
 !
 !  Initialize HVL, PVL arrays.
@@ -5241,6 +5282,7 @@ subroutine dsmdf2 ( hflag, nvc, npolg, maxwk, vcl, hvl, pvl, iang, ivrt, &
 
     if ( maxwk < nvrt + nvrt ) then
       ierr = 7
+      return
     end if
 
     xc = 0
@@ -5269,6 +5311,7 @@ subroutine dsmdf2 ( hflag, nvc, npolg, maxwk, vcl, hvl, pvl, iang, ivrt, &
     if ( hflag ) then
       call width2(nvrt,wk(xc),wk(yc),i,j,widsq(k), ierr )
       if ( ierr /= 0 ) then
+        return
       end if
     end if
 
@@ -5312,6 +5355,7 @@ subroutine dsmdf2 ( hflag, nvc, npolg, maxwk, vcl, hvl, pvl, iang, ivrt, &
   xivrt(npolg+1) = l
 
   if ( .not. hflag ) then
+    return
   end if
 
   vrtval(1:nvc) = 0.0D+00
@@ -5513,6 +5557,7 @@ subroutine dsmdf3 ( nvc, nface, nvert, npolh, maxiw, maxwk, vcl, facep, &
 
   if ( maxiw < nface ) then
     ierr = 6
+    return
   end if
 
   ncface = 0
@@ -5576,6 +5621,7 @@ subroutine dsmdf3 ( nvc, nface, nvert, npolh, maxiw, maxwk, vcl, facep, &
     return
   else if ( maxwk < ceang + ncvert - 1 ) then
     ierr = 7
+    return
   end if
 
   do i = 1, npolh
@@ -5596,6 +5642,7 @@ subroutine dsmdf3 ( nvc, nface, nvert, npolh, maxiw, maxwk, vcl, facep, &
       maxiw-irem+1,j,k,wid(i),iwk(irem), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
   end do
@@ -5674,6 +5721,7 @@ subroutine dsmdf3 ( nvc, nface, nvert, npolh, maxiw, maxwk, vcl, facep, &
     call width2(nvrt,wk(xc),wk(yc),i,j,widsq, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     facval(f) = min ( sqrt ( widsq ), wid(abs(facep(2,f))) )
@@ -6074,6 +6122,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv, &
     return
   else if ( maxho < ( nhole + nholi ) * 2 ) then
     ierr = 2
+    return
   end if
 !
 !  Initialize REGNUM, HVL, PVL arrays for outer boundary curves.
@@ -6127,6 +6176,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv, &
           edge, ivs, ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         if ( 0 < ivs ) then
@@ -6151,6 +6201,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv, &
 
   if ( nht /= 0 ) then
     ierr = 215
+    return
   end if
 !
 !  Initialize REGNUM, HVL, PVL arrays for the hole interfaces.
@@ -6263,6 +6314,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv, &
         go to 150
       else
         ierr = 216
+        return
       end if
     end if
 
@@ -6338,6 +6390,7 @@ subroutine dspgdc ( nvc, vcl, incr, ncur, nvbc, icur, ivrt, maxhv, maxpv, &
 
       if ( maxho < nh2 + nhola ) then
         ierr = 2
+        return
       end if
 
       holv(nh2+nhola) = kmin
@@ -6608,6 +6661,7 @@ subroutine dsphdc ( nvc, nface, npolh, vcl, facep, nrml, fvl, eang, hfl, &
   do f = 1, nface
     if ( 0 < facep(2,f) * facep(3,f) ) then
       ierr = 321
+      return
     end if
   end do
 !
@@ -6660,6 +6714,7 @@ subroutine dsphdc ( nvc, nface, npolh, vcl, facep, nrml, fvl, eang, hfl, &
           edge, k, ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         if ( k <= 0 ) then
@@ -6731,6 +6786,7 @@ subroutine dsphdc ( nvc, nface, npolh, vcl, facep, nrml, fvl, eang, hfl, &
 
     if ( nht /= 0 ) then
       ierr = 322
+      return
     end if
 
   end do
@@ -7016,6 +7072,7 @@ subroutine dsphfh ( aspc2d, atol2d, nvc, nface, nhole, npolh, maxvc, maxfv, &
 
     if ( 0 < facep(2,f) * facep(3,f) ) then
       ierr = 321
+      return
     end if
 
   end do
@@ -7025,6 +7082,7 @@ subroutine dsphfh ( aspc2d, atol2d, nvc, nface, nhole, npolh, maxvc, maxfv, &
   do i = nface+1, nface+nhole-1
     if ( abs(factyp(i+1)) < abs(factyp(i)) ) then
       ierr = 340
+      return
     end if
   end do
 
@@ -7035,6 +7093,7 @@ subroutine dsphfh ( aspc2d, atol2d, nvc, nface, nhole, npolh, maxvc, maxfv, &
 
     if ( facep(3,f) /= 0 ) then
       ierr = 341
+      return
     end if
 
     fflag = ( facep(2,f) * sf < 0 )
@@ -7163,6 +7222,7 @@ subroutine dsphfh ( aspc2d, atol2d, nvc, nface, nhole, npolh, maxvc, maxfv, &
   end do
 
   if ( ierr /= 0 ) then
+    return
   end if
 !
 !  Determine EDGA, EDGC fields and compute EANG values.  Temporarily
@@ -7206,6 +7266,7 @@ subroutine dsphfh ( aspc2d, atol2d, nvc, nface, nhole, npolh, maxvc, maxfv, &
 
       if ( ierr /= 0 ) then
         ierr = 6
+        return
       end if
 
       if ( k <= 0 ) then
@@ -7277,6 +7338,7 @@ subroutine dsphfh ( aspc2d, atol2d, nvc, nface, nhole, npolh, maxvc, maxfv, &
 
     if ( nht /= 0 ) then
       ierr = 322
+      return
     end if
 
   end do
@@ -7296,6 +7358,7 @@ subroutine dsphfh ( aspc2d, atol2d, nvc, nface, nhole, npolh, maxvc, maxfv, &
 210 continue
 
   if ( nfph < g ) then
+    return
   end if
 
   k = g
@@ -7334,6 +7397,7 @@ subroutine dsphfh ( aspc2d, atol2d, nvc, nface, nhole, npolh, maxvc, maxfv, &
     return
   else if ( maxwk < size + size ) then
     ierr = 7
+    return
   end if
 
   do i = 2,nfhol+1
@@ -7669,6 +7733,7 @@ subroutine dsphih ( aspc2d, atol2d, angacc, rdacc, nvc, nface, nvert, &
 
     if ( maxpf < npf + nfach ) then
       ierr = 17
+      return
     end if
 
     hfint = npf + 1
@@ -7743,6 +7808,7 @@ subroutine dsphih ( aspc2d, atol2d, angacc, rdacc, nvc, nface, nvert, &
 
       if ( ierr /= 0 ) then
         ierr = 6
+        return
       end if
 
       if ( k <= 0 ) then
@@ -7809,6 +7875,7 @@ subroutine dsphih ( aspc2d, atol2d, angacc, rdacc, nvc, nface, nvert, &
 
   if ( nht /= 0 ) then
     ierr = 322
+    return
   end if
 !
 !  Determine extreme point of hole face IFACE, and 3 directions on
@@ -7888,6 +7955,7 @@ subroutine dsphih ( aspc2d, atol2d, angacc, rdacc, nvc, nface, nvert, &
   end do
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( .not. rflag ) then
@@ -7895,6 +7963,7 @@ subroutine dsphih ( aspc2d, atol2d, angacc, rdacc, nvc, nface, nvert, &
     return
   else if ( maxfv < nvert + nv ) then
     ierr = 15
+    return
   end if
 !
 !  Update PFL entries for hole polyhedron + set data structure for SPDECH.
@@ -7981,6 +8050,7 @@ subroutine dsphih ( aspc2d, atol2d, angacc, rdacc, nvc, nface, nvert, &
     return
   else if ( maxwk < nv2 ) then
     ierr = 7
+    return
   end if
 
   call spdech(aspc2d,atol2d,1,nvc,nface,nvert,npf,maxvc,maxfp,maxfv, &
@@ -7989,12 +8059,14 @@ subroutine dsphih ( aspc2d, atol2d, angacc, rdacc, nvc, nface, nvert, &
     wk(nv2+1), ierr )
 
   if ( .not. holint .or. ierr /= 0 ) then
+    return
   end if
 !
 !  Add hole interface to data structure
 !
   if ( maxhf <= npolh ) then
     ierr = 18
+    return
   end if
 
   npolh = npolh + 1
@@ -8199,6 +8271,7 @@ subroutine dtrimk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
   call frsmpx ( k, .false., npt, vcl, vm, iwk, iwk(indf), wk(mat), ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( msglvl == 4 ) then
@@ -8254,6 +8327,7 @@ subroutine dtrimk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
       ivrt,iwk(ind),iwk(indf),iwk(loc),wk(alpha),wk(mat), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( ivrt == 0 ) then
@@ -8311,6 +8385,7 @@ subroutine dtrimk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
     end if
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call smpxda(k,i,npt,sizht,bf_num,nfc,bf_max,fc_max,vcl,vm,bf,fc,ht, &
@@ -8318,6 +8393,7 @@ subroutine dtrimk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
       iwk(indf),wk(alpha),wk(mat), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
   end do
@@ -8478,6 +8554,7 @@ subroutine dtris2 ( npt, maxst, vcl, ind, ntri, til, tnbr, stack, ierr )
 
     if ( npt < j ) then
       ierr = 225
+      return
     end if
 
     m = ind(j)
@@ -8619,6 +8696,7 @@ subroutine dtris2 ( npt, maxst, vcl, ind, ntri, til, tnbr, stack, ierr )
 
       if ( maxst < top ) then
         ierr = 8
+        return
       end if
 
       stack(top) = ntri
@@ -8645,6 +8723,7 @@ subroutine dtris2 ( npt, maxst, vcl, ind, ntri, til, tnbr, stack, ierr )
     call swapec(m,top,maxst,ltri,ledg,vcl,til,tnbr,stack, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
   end do
@@ -8811,6 +8890,7 @@ subroutine dtris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'DTRIS3 - Error!'
     write ( *, '(a,i6)' ) '  FRSTET returned IERR = ', ierr
+    return
   end if
 !
 !  Initialize data structures.
@@ -9017,6 +9097,7 @@ subroutine dtris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
         write ( *, '(a)' ) 'DTRIS3 - Error!'
         write ( *, '(a)' ) '  Unexpected return value from OPSIDE.'
         ierr = 301
+        return
       end if
 
       if ( op == 1 ) then
@@ -9045,6 +9126,7 @@ subroutine dtris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
       write ( *, '(a)' ) 'DTRIS3 - Error!'
       write ( *, '(a)' ) '  FRONT = 0.'
       ierr = 306
+      return
     end if
 !
 !  Find remaining visible boundary faces, add new tetrahedra with
@@ -9059,6 +9141,7 @@ subroutine dtris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'DTRIS3 - Error!'
       write ( *, '(a,i6)' ) '  NWTHOU IERR = ', ierr
+      return
     end if
 
     call swapes ( .false., i, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, ht, &
@@ -9068,6 +9151,7 @@ subroutine dtris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'DTRIS3 - Error!'
       write ( *, '(a,i6)' ) '  SWAPES returned IERR = ', ierr
+      return
     end if
 
   end do
@@ -9260,6 +9344,7 @@ subroutine dtrisk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
   call frsmpx ( k, .true., npt, vcl, vm, iwk, iwk(ind), wk(mat), ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( msglvl == 4 ) then
@@ -9440,6 +9525,7 @@ subroutine dtrisk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
 
     if ( front == 0 ) then
       ierr = 406
+      return
     end if
 !
 !  Find remaining visible boundary faces, add new simplices with
@@ -9452,6 +9538,7 @@ subroutine dtrisk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
        hdavbf,hdavfc,front,back,bfi,iwk(ind), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call swaphs(k,i,npt,sizht,bf_num,nfc,bf_max,fc_max,vcl,vm,bf,fc,ht, &
@@ -9459,6 +9546,7 @@ subroutine dtrisk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
       iwk(mv),iwk(loc),iwk(zpn),wk(alpha),wk(mat), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( l /= 0 ) then
@@ -9615,6 +9703,7 @@ subroutine dtriw2 ( npt, maxst, vcl, ind, ntri, til, tnbr, stack, ierr )
 
   if ( npt < i3 ) then
     ierr = 225
+    return
   end if
 
   m = ind(i3)
@@ -10177,6 +10266,7 @@ subroutine dtriw3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
   call frstet ( .false., npt, vcl, vm, i3, i4, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 !
 !  Initialize data structures.
@@ -10234,6 +10324,7 @@ subroutine dtriw3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
     call walkt3(vcl(1,vi),npt,sizht,ntetra,vcl,vm,fc,ht,ifac,ivrt, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( ivrt == 6 ) then
@@ -10252,6 +10343,7 @@ subroutine dtriw3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
       call vbfac ( vcl(1,vi), ctr, vcl, vm, bf, fc, front, 0 )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call nwthou ( i, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, fc, ht, ntetra, &
@@ -10269,12 +10361,14 @@ subroutine dtriw3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
     end if
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call swapes ( .false., i, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, ht, &
       ntetra, hdavfc, front, back, ind, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( ind /= 0 ) then
@@ -10453,6 +10547,7 @@ subroutine dtriwk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
   call frsmpx ( k, .false., npt, vcl, vm, iwk, iwk(indf), wk(mat), ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( msglvl == 4 ) then
@@ -10507,6 +10602,7 @@ subroutine dtriwk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
       ivrt,iwk(ind),iwk(indf),iwk(mv),wk(alpha),wk(mat), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( ivrt == 0 ) then
@@ -10561,6 +10657,7 @@ subroutine dtriwk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
     end if
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call swaphs(k,i,npt,sizht,bf_num,nfc,bf_max,fc_max,vcl,vm,bf,fc,ht, &
@@ -10568,6 +10665,7 @@ subroutine dtriwk ( k, npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, &
       iwk(mv),iwk(loc),iwk(zpn),wk(alpha),wk(mat), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( l /= 0 ) then
@@ -10719,6 +10817,8 @@ subroutine edght ( a, b, v, n, htsiz, maxedg, hdfree, last, ht, edge, w, ierr )
         edge(4,ptr) = hdfree
         hdfree = ptr
         w = edge(3,ptr)
+        return
+
       end if
 
     end if
@@ -10736,6 +10836,7 @@ subroutine edght ( a, b, v, n, htsiz, maxedg, hdfree, last, ht, edge, w, ierr )
     newp = last
     if ( maxedg < last ) then
       ierr = 1
+      return
     end if
   end if
 
@@ -11007,6 +11108,7 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
 
   if ( maxiw < m ) then
     ierr = 6
+    return
   end if
 
   widsq = 1
@@ -11017,6 +11119,7 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
     n = npolg + nvert + nvc
     if ( maxwk < n ) then
       ierr = 7
+      return
     end if
   else
     edgval = 1
@@ -11028,6 +11131,7 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
     iwk(xivrt),wk(widsq),wk(edgval),wk(vrtval),area,wk(n+1),ierr)
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   call mfdec2(hflag,umdf,kappa,angspc,angtol,dmin,nmin,ntrid,nvc, &
@@ -11036,10 +11140,12 @@ subroutine eqdis2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
     area,psi,iwk(m+1),wk(n+1), ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( maxiw < 2 * npolg ) then
     ierr = 6
+    return
   end if
 
   call trisiz(ntrid,npolg,hvl,pvl,area,psi,h,iwk,iwk(npolg+1))
@@ -11261,6 +11367,7 @@ subroutine eqdis3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
       return
     else if ( maxwk < n ) then
       ierr = 7
+      return
     end if
 
     call dsmdf3(nvc,nface,nvert,npolh,maxiw-m,maxwk-n,vcl,facep, &
@@ -11269,6 +11376,7 @@ subroutine eqdis3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
       ncedge,iwk(m+1),wk(n+1),ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     ncvc = ncedge - 2
@@ -11286,6 +11394,7 @@ subroutine eqdis3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
       return
     else if ( maxwk < n ) then
       ierr = 7
+      return
     end if
 
   else
@@ -11315,10 +11424,12 @@ subroutine eqdis3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
     iwk(listev),wk(infoev),iwk(m+1),wk(n+1), ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( maxiw < npolh + npolh ) then
     ierr = 6
+    return
   end if
 
   call tetsiz ( ntetd, npolh, facep, hfl, pfl, vol, psi, h, iwk, iwk(npolh+1) )
@@ -11457,6 +11568,7 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
   if ( indx <= 0 ) then
     ierr = 300
+    return
   end if
 
   if ( fc(4,indx) == b ) then
@@ -11469,6 +11581,7 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
   if ( ind <= 0 ) then
     ierr = 300
+    return
   end if
 
   if ( fc(4,ind) == b ) then
@@ -11487,6 +11600,7 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
     if ( ind1 <= 0 ) then
       ierr = 300
+      return
     end if
 
     if ( fc(4,ind1) /= g .and. fc(5,ind1) /= g ) then
@@ -11504,6 +11618,7 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
       if ( ind1 <= 0 ) then
         ierr = 300
+        return
       end if
 
       call ifacty(ind1,npt,sizht,vcl,vm,fc,ht,type,aa,bb,cc,ierr)
@@ -11534,10 +11649,12 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
   if ( degen ) then
     ierr = 301
+    return
   end if
 
   if ( 0.0D+00 < alpha(4) ) then
     ierr = 309
+    return
   end if
 
   kneg = 1
@@ -11563,6 +11680,7 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
   if ( indy <= 0 ) then
     ierr = 300
+    return
   end if
 
   if ( fc(7,indy) /= -1 ) then
@@ -11639,6 +11757,7 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
   if ( indx <= 0 ) then
     ierr = 300
+    return
   end if
 
   if ( fc(7,indx) /= -1 ) then
@@ -11655,6 +11774,7 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
   if ( ind2 <= 0 ) then
     ierr = 300
+    return
   end if
 
   if ( fc(4,ind2) /= g .and. fc(5,ind2) /= g ) then
@@ -11686,6 +11806,7 @@ subroutine fndmsw ( crit, npt, sizht, vcl, vm, fc, ht, a, b, d, e, f, minbef, &
 
   if ( indy <= 0 ) then
     ierr = 300
+    return
   end if
 
   if ( fc(7,indy) /= -1) go to 40
@@ -12494,6 +12615,7 @@ subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
       i = i - 1
       if ( i <= 0 ) then
         ierror = 231
+        return
       end if
     end if
 
@@ -12503,6 +12625,7 @@ subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
   ind(k) = j
 
   if ( k == 2 ) then
+    return
   end if
 
   k = 2
@@ -12514,6 +12637,7 @@ subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
 
     if ( i <= 0 ) then
       ierror = 231
+      return
     end if
 
     go to 10
@@ -12528,6 +12652,7 @@ subroutine fndtri ( iedg, mxtr, sflag, tedg, itr, ind, ierror )
 
   if ( itr(1) <= i ) then
     ierror = 231
+    return
   end if
 
    30 continue
@@ -12663,6 +12788,7 @@ subroutine frsmpx ( k, shift, nv, vcl, map, inds, ipvt, mat, ierr )
 
   if ( nv < i ) then
     ierr = 403
+    return
   end if
 
   m = map(i)
@@ -12888,6 +13014,7 @@ subroutine frstet ( shift, nv, vcl, map, i3, i4, ierr )
 
     if ( nv < k ) then
       ierr = 303
+      return
     end if
 
     m = map(k)
@@ -12915,6 +13042,7 @@ subroutine frstet ( shift, nv, vcl, map, i3, i4, ierr )
 
     if ( nv < l ) then
       ierr = 304
+      return
     end if
 
     m = map(l)
@@ -14085,6 +14213,7 @@ subroutine ifacty ( ind, npt, sizht, vcl, vm, fc, ht, type, a, b, c, ierr )
     return
   else if ( 0.0D+00 < alpha(4) ) then
     ierr = 309
+    return
   end if
 
   kneg = 1
@@ -14305,6 +14434,9 @@ function iless ( k, p, q )
     else
       iless = .false.
     end if
+
+    return
+
   end do
 
   iless = .false.
@@ -14436,6 +14568,7 @@ subroutine imptr3 ( bndcon, postlt, crit, npt, sizht, fc_max, vcl, vm, nfc, &
   end if
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( 1 <= crit .and. crit <= 3 .and. postlt ) then
@@ -14447,6 +14580,7 @@ subroutine imptr3 ( bndcon, postlt, crit, npt, sizht, fc_max, vcl, vm, nfc, &
   end if
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   nface = nfc
@@ -14617,6 +14751,7 @@ subroutine imptrd ( bndcon, npt, sizht, fc_max, vcl, vm, nfc, ntetra, hdavfc, &
   call ifacty(ind,npt,sizht,vcl,vm,fc,ht,type,a,b,c,ierr)
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( type /= 'N32' .and. type /= 'N44' ) go to 70
@@ -14633,6 +14768,7 @@ subroutine imptrd ( bndcon, npt, sizht, fc_max, vcl, vm, nfc, ntetra, hdavfc, &
 
   if ( in == 2 ) then
     ierr = 301
+    return
   end if
 
   if ( in <= 0) go to 70
@@ -15017,12 +15153,14 @@ subroutine imptrd ( bndcon, npt, sizht, fc_max, vcl, vm, nfc, ntetra, hdavfc, &
     hdavfc, front, back, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   call swapes ( bndcon, 0, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, ht, &
     ntetra, hdavfc, front, back, j, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   ind = ind + 1
@@ -15221,6 +15359,7 @@ subroutine imptrf ( bndcon, crit, npt, sizht, fc_max, vcl, vm, nfc, ntetra, &
   call ifacty ( ind, npt, sizht, vcl, vm, fc, ht, type, a, b, c, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( type /= 'N32' .and. type /= 'N44' ) then
@@ -15325,6 +15464,7 @@ subroutine imptrf ( bndcon, crit, npt, sizht, fc_max, vcl, vm, nfc, ntetra, &
         top,top2,impr,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       if ( .not. impr ) then
@@ -15457,6 +15597,7 @@ subroutine imptrf ( bndcon, crit, npt, sizht, fc_max, vcl, vm, nfc, ntetra, &
         top,top2,impr,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       if ( .not. impr ) then
@@ -15584,6 +15725,7 @@ subroutine imptrf ( bndcon, crit, npt, sizht, fc_max, vcl, vm, nfc, ntetra, &
         minbef+tol,top,top2,impr,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       if ( .not. impr) go to 50
@@ -15661,12 +15803,14 @@ subroutine imptrf ( bndcon, crit, npt, sizht, fc_max, vcl, vm, nfc, ntetra, &
     front,back, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   call swapmu(bndcon,crit,npt,sizht,nfc,fc_max,vcl,vm,bf,fc,ht, &
     ntetra,hdavfc,front,back,j, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   ind = ind + 1
@@ -15849,6 +15993,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
 
     if ( maxvc < nvc + m + 1 ) then
       ierror = 3
+      return
     end if
 
     cy = costh * y
@@ -15963,6 +16108,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
 
         if ( maxti < ntri ) then
           ierror = 9
+          return
         end if
 
         til(1,ntri) = j
@@ -16030,6 +16176,7 @@ subroutine inttri ( nvrt, xc, yc, h, ibot, costh, sinth, ldv, nvc, ntri,  &
 
   if ( rw <= lw ) then
     ierror = 10
+    return
   end if
 
   do j = rw, maxcw
@@ -16120,6 +16267,7 @@ subroutine insed2 ( v, w, npolg, nvert, maxhv, maxpv, vcl, regnum, hvl, &
     return
   else if ( maxpv < nvert+2 ) then
     ierr = 5
+    return
   end if
 !
 !  Split linked list of vertices of the polygon containing vertices
@@ -16286,6 +16434,7 @@ subroutine insed3 ( a, b, nface, nvert, npf, maxfp, maxfv, maxpf, facep, &
 
   if ( maxfv < nvert ) then
     ierr = 15
+    return
   end if
 
   fvl(loc,i) = fvl(loc,a)
@@ -16311,6 +16460,7 @@ subroutine insed3 ( a, b, nface, nvert, npf, maxfp, maxfv, maxpf, facep, &
 
   if ( maxfp < nface ) then
     ierr = 16
+    return
   end if
 
   facep(1,f) = a
@@ -16341,6 +16491,7 @@ subroutine insed3 ( a, b, nface, nvert, npf, maxfp, maxfv, maxpf, facep, &
 
   if ( maxpf < npf ) then
     ierr = 17
+    return
   end if
 
   pfl(1,npf) = sign ( nface, sp )
@@ -16353,6 +16504,7 @@ subroutine insed3 ( a, b, nface, nvert, npf, maxfp, maxfv, maxpf, facep, &
 
     if ( maxpf < npf ) then
       ierr = 17
+      return
     end if
 
     pfl(1,npf) = sign ( nface, sq )
@@ -16448,6 +16600,7 @@ subroutine inseh3 ( a, b, nvert, maxfv, facep, fvl, eang, ierr )
 
   if ( maxfv < nvert ) then
     ierr = 15
+    return
   end if
 
   fvl(loc,i) = fvl(loc,a)
@@ -16658,6 +16811,7 @@ subroutine insfac ( p, nrmlc, nce, cedge, cdang, nvc, nface, nvert, npolh, &
     call insvr3(a,nvc,nvert,maxfv,vcl,fvl,eang,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( cdang(j) < 0.0D+00 ) then
@@ -16734,6 +16888,7 @@ subroutine insfac ( p, nrmlc, nce, cedge, cdang, nvc, nface, nvert, npolh, &
       factyp,nrml,fvl,eang,hfl,pfl,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     cedge(2,i) = a
@@ -16758,6 +16913,7 @@ subroutine insfac ( p, nrmlc, nce, cedge, cdang, nvc, nface, nvert, npolh, &
     return
   else if ( maxhf < npolh ) then
     ierr = 18
+    return
   end if
 
   nv = nvert
@@ -17229,6 +17385,7 @@ subroutine insph ( a, b, c, d, center, rad )
     if ( t <= rtol ) then
       singlr = .true.
       rad = 0.0D+00
+      return
     end if
 
     mat(i,1:3) = mat(i,1:3) / t
@@ -17256,6 +17413,7 @@ subroutine insph ( a, b, c, d, center, rad )
   if ( abs ( mat(r,1) ) <= tol ) then
     singlr = .true.
     rad = 0.0D+00
+    return
   end if
 
   if ( r /= 1 ) then
@@ -17294,6 +17452,7 @@ subroutine insph ( a, b, c, d, center, rad )
 
   if ( singlr ) then
     rad = 0.0D+00
+    return
   end if
 
   center(3) = mat(3,4) / mat(3,3)
@@ -17384,6 +17543,7 @@ subroutine insvr2 ( xi, yi, wp, nvc, nvert, maxvc, maxpv, vcl, pvl, iang, &
     return
   else if ( maxpv < nvert+2 ) then
     ierr = 5
+    return
   end if
 !
 !  Update linked list of vertices of polygon containing vertex WP.
@@ -17535,6 +17695,7 @@ subroutine insvr3 ( a, nvc, nvert, maxfv, vcl, fvl, eang, ierr )
 
     if ( maxfv < k ) then
       ierr = 15
+      return
     end if
 
     fvl(loc,k) = nvc
@@ -17813,6 +17974,7 @@ subroutine intmvg ( nsvc, nface, nvert, svcl, hvl, fvl, ibot, itop, h, &
       vcl(2,nvc) = r22*y - sxy*x + r32*svcl(3,itop)
       vcl(3,nvc) = cyz*svcl(3,itop) - syz*y
     end if
+    return
   end if
 
   zr = svcl(3,itop) - dz
@@ -17828,6 +17990,7 @@ subroutine intmvg ( nsvc, nface, nvert, svcl, hvl, fvl, ibot, itop, h, &
 
   if ( f == 0 ) then
     ierr = 318
+    return
   end if
 
   do k = 0, np
@@ -17893,6 +18056,7 @@ subroutine intmvg ( nsvc, nface, nvert, svcl, hvl, fvl, ibot, itop, h, &
 
     if ( yc - 1 <= nvrt ) then
       ierr = 7
+      return
     end if
 
 90  continue
@@ -17918,6 +18082,7 @@ subroutine intmvg ( nsvc, nface, nvert, svcl, hvl, fvl, ibot, itop, h, &
     call diam2(nvrt,wk(xc+1),wk(yc+1),i1,i2,t,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call rotpg ( nvrt, wk(xc), wk(yc), i1, i2, ib, costh, sinth )
@@ -17953,6 +18118,7 @@ subroutine intmvg ( nsvc, nface, nvert, svcl, hvl, fvl, ibot, itop, h, &
 
       if ( maxvc < nvc + m + 1 ) then
         ierr = 14
+        return
       end if
 
       do j = 0, m
@@ -18668,6 +18834,7 @@ subroutine itris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
   call frstet ( .true., npt, vcl, vm, i3, i4, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   do i = 1, 3
@@ -18861,6 +19028,7 @@ subroutine itris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
 
     if ( op == 2 ) then
       ierr = 301
+      return
     end if
 
     if ( op == 1 ) then
@@ -18882,6 +19050,7 @@ subroutine itris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
 
     if ( front == 0 ) then
       ierr = 306
+      return
     end if
 !
 !  Find remaining visible boundary faces, add new tetrahedron with vertex I.
@@ -18889,12 +19058,14 @@ subroutine itris3 ( npt, sizht, bf_max, fc_max, vcl, vm, bf_num, nfc, nface, &
     call vbfac ( vcl(1,vi), ctr, vcl, vm, bf, fc, front, topnv )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call nwthou ( i, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, fc, ht, &
       ntetra, hdavbf, hdavfc, front, back, bfi, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
   end do
@@ -19042,6 +19213,7 @@ subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv, &
     return
   else if ( maxpv < nvert+5 ) then
     ierr = 5
+    return
   end if
 !
 !  Determine 'closest' vertices on outer boundary which are to the
@@ -19192,6 +19364,7 @@ subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv, &
 
   if ( ilft == 0 .or. irgt == 0 ) then
     ierr = 218
+    return
   end if
 !
 !  Temporarily modify PVL to pass the subregion 'above' top vertex
@@ -19213,6 +19386,7 @@ subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv, &
 
   if ( iang(vr) < pi - tol .or. pi + tol < iang(vr) ) then
     ierr = 219
+    return
   end if
 
   pvl(loc,vp) = nvc + 2
@@ -19257,6 +19431,7 @@ subroutine jnhole ( itophv, angspc, angtol, nvc, nvert, maxvc, maxpv, &
   end if
 
   if ( ierr /= 0 ) then
+    return
   end if
 !
 !  Update PVL with cut edge, i.e. join linked lists of vertices
@@ -19461,6 +19636,7 @@ subroutine lfcini ( k, i, ifac, ivrt, indf, npt, sizht, bf, fc, ht, nsmplx, &
 
         if ( pos <= 0 ) then
           ierr = 400
+          return
         end if
 
       end if
@@ -19523,6 +19699,7 @@ subroutine lfcini ( k, i, ifac, ivrt, indf, npt, sizht, bf, fc, ht, nsmplx, &
 
         if ( pos <= 0 ) then
           ierr = 400
+          return
         end if
 
         if ( fc(kp1,pos) == a ) then
@@ -19613,6 +19790,7 @@ subroutine lfcini ( k, i, ifac, ivrt, indf, npt, sizht, bf, fc, ht, nsmplx, &
 
         if ( pos <= 0 ) then
           ierr = 400
+          return
         end if
 
         if ( j == 1 ) then
@@ -19662,6 +19840,7 @@ subroutine lfcini ( k, i, ifac, ivrt, indf, npt, sizht, bf, fc, ht, nsmplx, &
 
         if ( pos <= 0 ) then
           ierr = 400
+          return
         end if
 
         if ( fc(kp4,pos) == -1 ) then
@@ -20016,6 +20195,7 @@ subroutine lsrct3 ( pt, n, p, nfc, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
       if ( degen ) then
         ierr = 301
+        return
       end if
 
       if ( 0.0D+00 < t(1) .and. &
@@ -20049,6 +20229,7 @@ subroutine lsrct3 ( pt, n, p, nfc, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
           if ( ifac <= 0) then
             ierr = 300
+            return
           end if
 
         else if ( zero(2) ) then
@@ -20057,6 +20238,7 @@ subroutine lsrct3 ( pt, n, p, nfc, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
           if ( ifac <= 0) then
             ierr = 300
+            return
           end if
 
         else if ( zero(3) ) then
@@ -20065,6 +20247,7 @@ subroutine lsrct3 ( pt, n, p, nfc, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
           if ( ifac <= 0 ) then
             ierr = 300
+            return
           end if
 
         end if
@@ -20089,6 +20272,7 @@ subroutine lsrct3 ( pt, n, p, nfc, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
             if ( ifac <= 0) then
               ierr = 300
+              return
             end if
 
             if ( zero(2) ) then
@@ -20103,6 +20287,7 @@ subroutine lsrct3 ( pt, n, p, nfc, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
             if ( ifac <= 0 ) then
               ierr = 300
+              return
             end if
 
             aa = c
@@ -20148,6 +20333,7 @@ subroutine lsrct3 ( pt, n, p, nfc, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
           if ( ifac <= 0 ) then
             ierr = 300
+            return
           end if
 
           if ( fc(1,ifac) == d ) then
@@ -20161,6 +20347,9 @@ subroutine lsrct3 ( pt, n, p, nfc, vcl, vm, fc, ht, ifac, ivrt, ierr )
         end if
 
       end if
+
+      return
+
     end do
 
   end do
@@ -20224,6 +20413,7 @@ subroutine lufac ( a, lda, n, tol, ipvt, singlr )
   double precision tolabs
 
   if ( n < 1 ) then
+    return
   end if
 
   singlr = .true.
@@ -20250,6 +20440,7 @@ subroutine lufac ( a, lda, n, tol, ipvt, singlr )
     a(k,k) = t
 
     if ( abs ( t ) <= tolabs ) then
+      return
     end if
 
     a(kp1:n,k) = a(kp1:n,k) / t
@@ -20747,6 +20938,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
     return
   else if ( maxwk < npolg + 3*nvrt + 2 ) then
     ierr = 7
+    return
   end if
 
   listev = 1
@@ -20886,6 +21078,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
         return
       else if ( maxwk < 3*maxn + 2 ) then
         ierr = 7
+        return
       end if
 
       yc = xc + maxn + 1
@@ -20963,18 +21156,21 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
 
             if ( maxwk < yc + 3*nvrt ) then
               ierr = 7
+              return
             end if
 
             call sepshp(angtol,nvrt,wk(xc),wk(yc), &
               iwk(indpvl),iang,i1,i2,wk(yc+nvrt+1), ierr )
 
             if ( ierr /= 0 ) then
+              return
             end if
 
           end if
 
           if ( i1 < 0 ) then
             ierr = 222
+            return
           end if
 
           v = iwk(indpvl+i1)
@@ -20983,6 +21179,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
             call insvr2(wk(xc+i1)+ctrx,wk(yc+i1)+ctry,-v, &
               nvc,nvert,maxvc,maxpv,vcl,pvl,iang,v,ierr)
             if ( ierr /= 0 ) then
+              return
             end if
           end if
 
@@ -20992,6 +21189,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
             call insvr2(wk(xc+i2)+ctrx,wk(yc+i2)+ctry,-w, &
               nvc,nvert,maxvc,maxpv,vcl,pvl,iang,w,ierr)
             if ( ierr /= 0 ) then
+              return
             end if
           end if
 
@@ -20999,6 +21197,7 @@ subroutine mfdec2 ( hflag, umdf, kappa, angspc, angtol, dmin, nmin, ntrid, &
             regnum,hvl,pvl,iang,ierr)
 
           if ( ierr /= 0 ) then
+            return
           end if
 
           nvrt = 0
@@ -21308,6 +21507,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
 
   if ( maxwk < npolh ) then
     ierr = 7
+    return
   end if
 
   nvcin = nvc
@@ -21323,6 +21523,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
         facval,edgval,vrtval,nfcev,nedev,nvrev,listev,infoev, &
         htsiz,maxedg,ht,edge, ierr )
       if ( ierr /= 0 ) then
+        return
       end if
     end if
 
@@ -21404,6 +21605,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
         facval,edgval,vrtval,nfcev,nedev,nvrev,listev,infoev, &
         htsiz,maxedg,ht,edge, ierr )
       if ( ierr /= 0 ) then
+        return
       end if
     end if
 
@@ -21450,6 +21652,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
       return
     else if ( maxwk < stdvf + nf - 1 ) then
       ierr = 7
+      return
     end if
 
     call intph(hflag,umdf,hfl(kp),widp,nfcev,nedev,nvrev, &
@@ -21511,6 +21714,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
           iwk(indf+nf), ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         if ( aflag ) then
@@ -21538,6 +21742,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
           return
         else if ( maxwk < meanf + 3*n - 1 ) then
           ierr = 7
+          return
         end if
 
         call sfc2mf(kp,f,hflag,umdf,widp,nfcev,nedev,nvrev, &
@@ -21547,6 +21752,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
           iwk(indf),wk(meanf), ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         if ( aflag ) then
@@ -21558,6 +21764,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
           iwk(cedge),wk(cdang),aflag,n,iwk(indf),wk(meanf), ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         if ( .not. aflag ) then
@@ -21568,6 +21775,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
             go to 120
           end if
           ierr = 336
+          return
         end if
 
 110     continue
@@ -21577,6 +21785,7 @@ subroutine mfdec3 ( hflag, umdf, kappa, angacc, angedg, dmin, nmin, ntetd, &
           facep,factyp,nrml,fvl,eang,hfl,pfl,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         psi(kp) = -psi(kp)
@@ -22047,6 +22256,7 @@ subroutine nwsxed ( k, i, ifac, nv, indf, npt, sizht, bf_num, nfc, bf_max, &
     call availk ( k, hdavfc, nfc, fc_max, fc, pos, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     ind(1:k) = fc(1:k,ptr)
@@ -22078,6 +22288,7 @@ subroutine nwsxed ( k, i, ifac, nv, indf, npt, sizht, bf_num, nfc, bf_max, &
 
       if ( pos <= 0 ) then
         ierr = 400
+        return
       end if
 
       if ( j == 1 ) then
@@ -22113,6 +22324,7 @@ subroutine nwsxed ( k, i, ifac, nv, indf, npt, sizht, bf_num, nfc, bf_max, &
         call availk(k,hdavfc,nfc,fc_max,fc,pos,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         ind(1:k) = fc(1:k,ptr)
@@ -22137,6 +22349,7 @@ subroutine nwsxed ( k, i, ifac, nv, indf, npt, sizht, bf_num, nfc, bf_max, &
 
       if ( pos <= 0 ) then
         ierr = 400
+        return
       end if
 
       if ( fc(kp4,pos) == -1 ) then
@@ -22212,6 +22425,7 @@ subroutine nwsxed ( k, i, ifac, nv, indf, npt, sizht, bf_num, nfc, bf_max, &
       else
         if ( bf_max <= bf_num ) then
           ierr = 23
+          return
         end if
         bf_num = bf_num + 1
         l = bf_num
@@ -22464,6 +22678,7 @@ subroutine nwsxfc ( k, i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, &
 
       if ( pos <= 0 ) then
         ierr = 400
+        return
       end if
 
       if ( fc(kp1,pos) == a ) then
@@ -22492,6 +22707,7 @@ subroutine nwsxfc ( k, i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, &
       call availk ( k, hdavfc, nfc, fc_max, fc, pos, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       ind(1:k) = fc(1:k,ifac)
@@ -22512,6 +22728,7 @@ subroutine nwsxfc ( k, i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, &
         call availk(k,hdavfc,nfc,fc_max,fc,pos,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         l = 0
@@ -22552,6 +22769,7 @@ subroutine nwsxfc ( k, i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, &
   ifac = pos
 
   if ( .not. bface ) then
+    return
   end if
 
   ifacin = hdavfc
@@ -22566,6 +22784,7 @@ subroutine nwsxfc ( k, i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, &
     else
       if ( bf_max <= bf_num ) then
         ierr = 23
+        return
       end if
       bf_num = bf_num + 1
       l = bf_num
@@ -22727,6 +22946,7 @@ subroutine nwsxin ( k, i, ifac, ivrt, npt, sizht, nfc, fc_max, fc, ht, nsmplx, &
       pos = htsrck(k,ind,npt,sizht,fc,ht)
       if ( pos <= 0 ) then
         ierr = 400
+        return
       end if
     end if
 
@@ -22765,6 +22985,7 @@ subroutine nwsxin ( k, i, ifac, ivrt, npt, sizht, nfc, fc_max, fc, ht, nsmplx, &
       call availk(k,hdavfc,nfc,fc_max,fc,pos,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       l = 0
@@ -22941,6 +23162,7 @@ subroutine nwsxou ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, fc, ht, &
       call availk(k,hdavfc,nfc,fc_max,fc,pos,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       m = -fc(kp2,nbr)
@@ -22967,6 +23189,7 @@ subroutine nwsxou ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, fc, ht, &
 
           if ( bf_max <= bf_num ) then
             ierr = 23
+            return
           end if
 
           bf_num = bf_num + 1
@@ -23021,6 +23244,7 @@ subroutine nwsxou ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, fc, ht, &
 
     if ( nbr <= 0 ) then
       ierr = 400
+      return
     end if
 
     if ( 0 < fc(kp2,nbr) ) then
@@ -23199,6 +23423,7 @@ subroutine nwthed ( i, ifac, iedg, npt, sizht, bf_num, nfc, bf_max, fc_max, &
 
     if ( fc_max < nfc + k ) then
       ierr = 11
+      return
     end if
 
     fc(1,nfc+k) = ind
@@ -23215,6 +23440,7 @@ subroutine nwthed ( i, ifac, iedg, npt, sizht, bf_num, nfc, bf_max, fc_max, &
 
     if ( ind <= 0 ) then
       ierr = 300
+      return
     end if
 
     if ( fc(5,ind) <= 0 ) then
@@ -23257,12 +23483,14 @@ subroutine nwthed ( i, ifac, iedg, npt, sizht, bf_num, nfc, bf_max, fc_max, &
 
     if ( ind <= 0 ) then
       ierr = 300
+      return
     end if
 
     k = k + 1
 
     if ( fc_max < nfc + k ) then
       ierr = 11
+      return
     end if
 
     fc(1,nfc+k) = ind
@@ -23332,6 +23560,7 @@ subroutine nwthed ( i, ifac, iedg, npt, sizht, bf_num, nfc, bf_max, fc_max, &
     call availf ( hdavfc, nfc, fc_max, fc, ind, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call htins(ind,c,d,i,a,b,npt,sizht,fc,ht)
@@ -23349,6 +23578,7 @@ subroutine nwthed ( i, ifac, iedg, npt, sizht, bf_num, nfc, bf_max, fc_max, &
 
       if ( ind <= 0 ) then
         ierr = 300
+        return
       end if
 
       if ( fc(5,ind) <= 0 ) then
@@ -23410,6 +23640,7 @@ subroutine nwthed ( i, ifac, iedg, npt, sizht, bf_num, nfc, bf_max, fc_max, &
     if ( bf_max < bf_num ) then
       bf_num = bf_max
       ierr = 12
+      return
     end if
 
     fc(5,nfcin+1) = -bfn(1)
@@ -23600,6 +23831,7 @@ subroutine nwthfc ( i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, &
       call availf ( hdavfc, nfc, fc_max, fc, ind, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htins(ind,aa,d,i,bb,cc,npt,sizht,fc,ht)
@@ -23607,6 +23839,7 @@ subroutine nwthfc ( i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, &
 
       if ( ind <= 0 ) then
         ierr = 300
+        return
       end if
 
       if ( fc(4,ind) == cc ) then
@@ -23640,6 +23873,7 @@ subroutine nwthfc ( i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, &
   call availf ( hdavfc, nfc, fc_max, fc, ind2, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( bface ) then
@@ -23676,6 +23910,7 @@ subroutine nwthfc ( i, ifac, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, &
     if ( bf_max < bf_num ) then
       bf_num = bf_max
       ierr = 12
+      return
     end if
 
     fc(5,ind) = -bf1
@@ -23835,6 +24070,7 @@ subroutine nwthin ( i, ifac, ivrt, npt, sizht, nfc, fc_max, fc, ht, ntetra, &
 
       if ( ind <= 0 ) then
         ierr = 300
+        return
       end if
 
     end if
@@ -23867,6 +24103,7 @@ subroutine nwthin ( i, ifac, ivrt, npt, sizht, nfc, fc_max, fc, ht, ntetra, &
   do j = 1, 6
     call availf ( hdavfc, nfc, fc_max, fc, indx(j), ierr )
     if ( ierr /= 0 ) then
+      return
     end if
   end do
 
@@ -24020,6 +24257,7 @@ subroutine nwthou ( i, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, fc, ht, &
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'NWTHOU - Error!'
         write ( *, '(a,i6)' ) '  AVAILF returned IERR = ', ierr
+        return
       end if
 
       l = -fc(5,nbr)
@@ -24048,6 +24286,7 @@ subroutine nwthou ( i, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, fc, ht, &
             write ( *, '(a)' ) '  BF_MAX <= BF_NUM.'
             write ( *, '(a)' ) '  Increase memory BF_MAX to proceed.'
             ierr = 12
+            return
           end if
           bf_num = bf_num + 1
           bfnew = bf_num
@@ -24100,6 +24339,7 @@ subroutine nwthou ( i, npt, sizht, bf_num, nfc, bf_max, fc_max, bf, fc, ht, &
         write ( *, '(a)' ) 'NWTHOU - Error!'
         write ( *, '(a,i6)' ) '  HTSRC returned IERR = ', ierr
         ierr = 300
+        return
       end if
 
       if ( fc(5,nbr) <= 0 ) then
@@ -24220,6 +24460,7 @@ function opside ( a, b, c, d, e )
 
   if ( abs ( ddp ) <= tol * dmax ) then
     opside = 2
+    return
   end if
 
   emax = max ( emax, abs ( e(1) ), abs ( e(2) ), abs ( e(3) ) )
@@ -24376,6 +24617,7 @@ function opsidk ( k, ind, vcl, eflag, pta, ptb, mat, vec )
       return
     else
       if ( abs ( mat(km1,k) ) <= tolabs ) then
+        return
       end if
       r = km1
     end if
@@ -24601,6 +24843,7 @@ function prime ( k )
     return
   else if ( primes(nprime) <= k ) then
     prime = primes(nprime)
+    return
   end if
 !
 !  Use binary search to find K <= prime.
@@ -24618,6 +24861,7 @@ function prime ( k )
       l = m + 1
     else
       prime = primes(m)
+      return
     end if
 
     if ( u < l ) then
@@ -24900,6 +25144,7 @@ subroutine prmdf3 ( ipolh, widp, nvc, vcl, nrml, ivrt, xivrt, ifac, xifac, &
         edge, g, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       if ( 0 < g ) then
@@ -24972,6 +25217,7 @@ subroutine prmdf3 ( ipolh, widp, nvc, vcl, nrml, ivrt, xivrt, ifac, xifac, &
 
       if ( maxedg < last ) then
         ierr = 1
+        return
       end if
 
       if ( bptr == -1 ) then
@@ -25091,6 +25337,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
   inout = -2
 
   if ( dim < 2 .or. 3 < dim ) then
+    return
   end if
 !
 !  Find edge subtending max area with PT as third triangle vertex.
@@ -25130,6 +25377,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
   end if
 
   if ( armax <= dtol**2 ) then
+    return
   end if
 !
 !  Direction of ray is from PT through midpoint of edge subtending
@@ -25257,6 +25505,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
       k = k + 1
     else if ( -dtol <= t ) then
       inout = 0
+      return
     end if
 
   else if ( s == 0 ) then
@@ -25271,6 +25520,7 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
     end if
 
     if ( i == h) then
+      return
     end if
 
     la = lb
@@ -25294,12 +25544,14 @@ subroutine ptpolg ( dim, ldv, nv, inc, pgind, vcl, pt, nrml, dtol, inout )
 
     if ( abs ( t ) <= dtol ) then
       inout = 0
+      return
     end if
 
     if ( la /= l ) then
       ta = ( vcl(m,la) - pt(m) ) / dir(m)
       if ( abs ( ta ) <= dtol .or. t * ta < 0.0D+00 ) then
         inout = 0
+        return
       end if
     end if
 
@@ -25743,9 +25995,11 @@ subroutine resedg ( u, angacc, rdacc, nvc, nface, nvert, npolh, npf, maxvc, &
   fl = fvl(facn,u)
   fr = fvl(facn,fvl(edgc,u))
   if ( abs ( facep(2,fl) ) == abs ( facep(3,fl) ) ) then
+    return
   end if
 
   if ( abs ( facep(2,fr) ) == abs ( facep(3,fr) ) ) then
+    return
   end if
 
   if ( lu < lv ) then
@@ -25816,6 +26070,7 @@ subroutine resedg ( u, angacc, rdacc, nvc, nface, nvert, npolh, npf, maxvc, &
 
       if ( maxiw < nedg ) then
         ierr = 6
+        return
       end if
 
       if ( ccw == succ ) then
@@ -25850,6 +26105,7 @@ subroutine resedg ( u, angacc, rdacc, nvc, nface, nvert, npolh, npf, maxvc, &
     return
   else if ( maxwk < nedg ) then
     ierr = 7
+    return
   end if
 !
 !  Compute unit vectors E, ENL, ENR which are directed edge UV and
@@ -26197,12 +26453,14 @@ subroutine resedg ( u, angacc, rdacc, nvc, nface, nvert, npolh, npf, maxvc, &
       fvl,eang,nedgc,iwk,nce,iwk(1,nedg+1),wk,rflag,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( rflag ) then
       call insfac(p,nrmlc,nce,iwk(1,nedg+1),wk,nvc,nface,nvert, &
         npolh,npf,maxfp,maxfv,maxhf,maxpf,vcl,facep,factyp,nrml, &
         fvl,eang,hfl,pfl,ierr)
+      return
     end if
 
   end do
@@ -26523,6 +26781,7 @@ subroutine reshol ( p, nrmlc, pt, dir, angacc, rdacc, nvc, nface, nvert, &
 
       if ( maxiw < ne ) then
         ierr = 6
+        return
       end if
 
       if ( ccw == succ ) then
@@ -26563,6 +26822,7 @@ subroutine reshol ( p, nrmlc, pt, dir, angacc, rdacc, nvc, nface, nvert, &
     return
   else if ( maxvc < nvc + 2 ) then
     ierr = 14
+    return
   end if
 !
 !  Determine first intersection point of ray PT + T*DIR, 0 < T,
@@ -26643,6 +26903,7 @@ subroutine reshol ( p, nrmlc, pt, dir, angacc, rdacc, nvc, nface, nvert, &
 
   if ( fmin == 0 ) then
     ierr = 347
+    return
   end if
 
   ipt(1:3) = pt(1:3) + tmin * dir(1:3)
@@ -26825,6 +27086,7 @@ subroutine reshol ( p, nrmlc, pt, dir, angacc, rdacc, nvc, nface, nvert, &
     wk(1) = ang - angn
 
     if ( angn < angacc .or. wk(1) < angacc ) then
+      return
     end if
 
     i = 1
@@ -26994,6 +27256,7 @@ subroutine reshol ( p, nrmlc, pt, dir, angacc, rdacc, nvc, nface, nvert, &
   if ( ( ibeg == 0 .and. ineg == 0 ) .or. &
        ( iend == 1 .and. ipos == 0 ) ) then
     ierr = 349
+    return
   end if
 
   if ( ibeg == 0 ) then
@@ -27075,6 +27338,7 @@ subroutine reshol ( p, nrmlc, pt, dir, angacc, rdacc, nvc, nface, nvert, &
   angn = pi - wk(1)
 
   if ( angn < angacc .or. wk(1) < angacc ) then
+    return
   end if
 
 300 continue
@@ -27083,6 +27347,7 @@ subroutine reshol ( p, nrmlc, pt, dir, angacc, rdacc, nvc, nface, nvert, &
      nedg,iwk,nce,iwk(nep1),wk,rflag,ierr)
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( rflag ) then
@@ -27226,6 +27491,7 @@ subroutine resvrf ( vr, aspc2d, atol2d, maxiw, maxwk, x, y, iang, link, w1, &
     return
   else if ( maxwk < maxn + maxn ) then
     ierr = 7
+    return
   end if
 
   ivis = 1
@@ -27244,6 +27510,7 @@ subroutine resvrf ( vr, aspc2d, atol2d, maxiw, maxwk, x, y, iang, link, w1, &
   call vispol(x(vr),y(vr),nvrt-1,wk(xc),wk(yc),nvis,iwk(ivis), ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 !
 !  XC, YC now contain visibility polygon coordinates. Update MAXN
@@ -27255,6 +27522,7 @@ subroutine resvrf ( vr, aspc2d, atol2d, maxiw, maxwk, x, y, iang, link, w1, &
 
   if ( maxwk < theta + maxn - 1 ) then
     ierr = 7
+    return
   end if
 
   call visvrt(aspc2d,x(vr),y(vr),nvis,wk(xc),wk(yc),iwk(ivis), &
@@ -27288,12 +27556,14 @@ subroutine resvrf ( vr, aspc2d, atol2d, maxiw, maxwk, x, y, iang, link, w1, &
     return
   else if ( maxwk < yvor + nvsvrt ) then
     ierr = 7
+    return
   end if
 
   call vornbr(x(vr),y(vr),nvsvrt,wk(xc),wk(yc),nvor,iwk(ivor), &
      wk(xvor),wk(yvor), ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 !
 !  Set up d.p. array WKANG of length NVOR+1 <= NVSVRT+1 in WK for
@@ -27459,17 +27729,20 @@ subroutine resvrh ( xh, yh, aspc2d, atol2d, nvrt, maxn, maxiw, maxwk, x, y, &
 
   if ( maxiw < maxn ) then
     ierr = 6
+    return
   end if
 
   call vispol(xh,yh,nvrt-1,xc,yc,nvis,iwk, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   nmax = maxn - nvrt + nvis + 1
 
   if ( maxwk < nmax ) then
     ierr = 7
+    return
   end if
 !
 !  XC, YC arrays are now overwritten by visibility polygon vertices,
@@ -27506,11 +27779,13 @@ subroutine resvrh ( xh, yh, aspc2d, atol2d, nvrt, maxn, maxiw, maxwk, x, y, &
     return
   else if ( maxwk < yvor + nvsvrt ) then
     ierr = 7
+    return
   end if
 
   call vornbr(xh,yh,nvsvrt,xc,yc,nvor,iwk(ivor),wk(xvor),wk(yvor), ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 !
 !  Try to find acceptable separator from Voronoi neighbors based on
@@ -27699,6 +27974,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     write ( *, * ) 'RESVRT - Fatal error!'
     write ( *, * ) '  MAXIW < MAXN + NVRT.'
     ierror = 6
+    return
   end if
 
   if ( maxwk < maxn + maxn ) then
@@ -27706,6 +27982,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     write ( *, * ) 'RESVRT - Fatal error!'
     write ( *, * ) '  MAXWK < MAXN + MAXN.'
     ierror = 7
+    return
   end if
 
   ivis = 1
@@ -27725,6 +28002,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
   call vispol ( xr, yr, nvrt-1, wk(xc), wk(yc), nvis, iwk(ivis), ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 !
 !  XC, YC now contain visibility polygon coordinates. Update MAXN
@@ -27739,6 +28017,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     write ( *, * ) 'RESVRT - Fatal error!'
     write ( *, * ) '  MAXWK < THETA + MAXN - 1.'
     ierror = 7
+    return
   end if
 
   call visvrt ( angspc, xr, yr, nvis, wk(xc), wk(yc), iwk(ivis), maxn-1, &
@@ -27766,16 +28045,19 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
 
   if ( maxiw < ivor + nvsvrt ) then
     ierror = 6
+    return
   end if
 
   if ( maxwk < yvor + nvsvrt ) then
     ierror = 7
+    return
   end if
 
   call vornbr ( xr, yr, nvsvrt, wk(xc), wk(yc), nvor, iwk(ivor), wk(xvor), &
     wk(yvor), ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 !
 !  Set up the array WKANG of length NVOR+1 <= NVSVRT+1 in WK for
@@ -27821,6 +28103,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     call insvr2 ( wk(xc+i2), wk(yc+i2), -iwk(ivis+i2), nvc, nvert, maxvc, &
       maxpv, vcl, pvl, iang, w2, ierror )
     if ( ierror /= 0 ) then
+      return
     end if
   else
     w2 = iwk(ivis+i2)
@@ -27830,6 +28113,7 @@ subroutine resvrt ( vr, angspc, angtol, nvc, nvert, maxvc, maxpv, maxiw,  &
     call insvr2 ( wk(xc+i1), wk(yc+i1), -iwk(ivis+i1), nvc, nvert, maxvc, &
       maxpv, vcl, pvl, iang, w1, ierror )
     if ( ierror /= 0 ) then
+      return
     end if
   else
     w1 = iwk(ivis+i1)
@@ -28090,6 +28374,7 @@ subroutine rmcpfc ( nface, nvert, hvl, nrml, fvl, eang, iwk )
   end do
 
   if ( np == 0 ) then
+    return
   end if
 
   do i = 1, nvert
@@ -28227,6 +28512,7 @@ subroutine rotiar ( n, arr, shift )
   end if
 
   if ( sh == 0 ) then
+    return
   end if
 
   a = n
@@ -28388,9 +28674,11 @@ subroutine rotipg ( xeye, yeye, nvrt, xc, yc, ierr )
 
   if ( irgt == n ) then
     ierr = 205
+    return
   end if
 
   if ( irgt == 0 .or. irgt == nvrt ) then
+    return
   end if
 
   if ( irgt < 0 ) then
@@ -29197,6 +29485,7 @@ subroutine sepfac ( p, cntr, nrmlc, angacc, mxcos, dtol, nvc, maxvc, vcl, &
 
     if ( e == estop ) then
       ierr = 334
+      return
     end if
 !
 !  Determine if cut plane intersects interior of face.
@@ -29345,6 +29634,7 @@ subroutine sepfac ( p, cntr, nrmlc, angacc, mxcos, dtol, nvc, maxvc, vcl, &
 
     if ( maxvc < n ) then
       ierr = 14
+      return
     end if
 
     vcl(1:3,n) = vcl(1:3,la) + t * de(1:3)
@@ -29365,6 +29655,9 @@ subroutine sepfac ( p, cntr, nrmlc, angacc, mxcos, dtol, nvc, maxvc, vcl, &
       if ( msglvl == 4 ) then
         write ( *,600) 'rejected due to short subedge'
       end if
+
+      return
+
     end if
 
     dee(1:3) = vcl(1:3,lb) - cntr(1:3)
@@ -29377,6 +29670,9 @@ subroutine sepfac ( p, cntr, nrmlc, angacc, mxcos, dtol, nvc, maxvc, vcl, &
       if ( msglvl == 4 ) then
         write ( *, '(a)' ) '  Rejected due to short subedge'
       end if
+
+      return
+
     end if
 
     lw1 = n
@@ -29394,6 +29690,7 @@ subroutine sepfac ( p, cntr, nrmlc, angacc, mxcos, dtol, nvc, maxvc, vcl, &
     go to 30
   else
     ierr = 335
+    return
   end if
 !
 !  Compute dihedral angles due to cut plane at cut edge. If any
@@ -29435,6 +29732,7 @@ subroutine sepfac ( p, cntr, nrmlc, angacc, mxcos, dtol, nvc, maxvc, vcl, &
     if ( msglvl == 4 ) then
       write ( *,600) 'rejected due to small angle'
     end if
+    return
   end if
 
   if ( 0 < ccwfl ) then
@@ -29714,6 +30012,7 @@ subroutine sepshp ( angtol, nvrt, xc, yc, indpvl, iang, i1, i2, wk, ierr )
   call diam2 ( n, wk, wk(nvrt+1), i1, i2, dist, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   if ( i2 < i1 ) then
@@ -30093,6 +30392,7 @@ subroutine sfc1mf ( p, cntr, mean, nf, indf, meanf, angacc, mxcos, dtol, nvc, &
         facep,nrml,fvl,eang,nce,cedge,cdang,aflag, ierr )
 
       if ( ierr /= 0 .or. aflag ) then
+        return
       end if
 
     end do
@@ -30316,6 +30616,7 @@ subroutine sfc2mf ( p, f, hflag, umdf, widp, nfcev, nedev, nvrev, listev, &
 
     if ( maxvc < kvc ) then
       ierr = 14
+      return
     end if
 
     vcl(1:3,kvc) = 0.5D+00*(vcl(1:3,la) + vcl(1:3,lb))
@@ -30504,6 +30805,7 @@ subroutine sfc2mf ( p, f, hflag, umdf, widp, nfcev, nedev, nvrev, listev, &
   end do
 
   if ( max ( mxcos, cos ( angacc ) ) < cosmin ) then
+    return
   end if
 !
 !  For starting edge, try 3 different cut planes.
@@ -30612,6 +30914,7 @@ subroutine sfc2mf ( p, f, hflag, umdf, widp, nfcev, nedev, nvrev, listev, &
       facep,nrml,fvl,eang,nce,cedge,cdang,aflag, ierr )
 
     if ( ierr /= 0 .or. aflag ) then
+      return
     end if
 
   end do
@@ -30918,6 +31221,7 @@ subroutine sfcshp ( p, headp, cntr, angacc, mxcos, dtol, nvc, maxvc, vcl, &
       facep,nrml,fvl,eang,nce,cedge,cdang,aflag, ierr )
 
     if ( ierr /= 0 .or. aflag ) then
+      return
     end if
 
   end do
@@ -30940,6 +31244,7 @@ subroutine sfcshp ( p, headp, cntr, angacc, mxcos, dtol, nvc, maxvc, vcl, &
 
   if ( maxvc < nvc + 4 ) then
     ierr = 14
+    return
   end if
 
   nvcp2 = nvc + 2
@@ -31178,6 +31483,7 @@ subroutine sfcshp ( p, headp, cntr, angacc, mxcos, dtol, nvc, maxvc, vcl, &
         facep,nrml,fvl,eang,nce,cedge,cdang,aflag, ierr )
 
       if ( ierr /= 0 .or. aflag ) then
+        return
       end if
 
     end do
@@ -31431,6 +31737,7 @@ subroutine shrnk2 ( nvrt, xc, yc, sdist, nshr, xs, ys, iedge, ierr )
   if ( parall ) then
     ierr = 202
     nshr = 0
+    return
   end if
 
   iedge(0) = 0
@@ -31477,6 +31784,7 @@ subroutine shrnk2 ( nvrt, xc, yc, sdist, nshr, xs, ys, iedge, ierr )
 
     if ( nshr < 1 .and. abs ( theta - pi ) <= tol ) then
       nshr = 0
+      return
     end if
 
     k = iedge(nshr)
@@ -31486,6 +31794,7 @@ subroutine shrnk2 ( nvrt, xc, yc, sdist, nshr, xs, ys, iedge, ierr )
 
     if ( parall ) then
       nshr = 0
+      return
     end if
 
     iedge(nshr) = i
@@ -31510,6 +31819,7 @@ subroutine shrnk2 ( nvrt, xc, yc, sdist, nshr, xs, ys, iedge, ierr )
 
   if ( nshr <= j ) then
     nshr = 0
+    return
   end if
 
   lr = lrline(xs(nshr),ys(nshr),xc(i),yc(i),xc(i+1), &
@@ -31528,6 +31838,7 @@ subroutine shrnk2 ( nvrt, xc, yc, sdist, nshr, xs, ys, iedge, ierr )
   if ( parall ) then
     ierr = 202
     nshr = 0
+    return
   end if
 
   iedge(nshr) = i
@@ -31548,6 +31859,7 @@ subroutine shrnk2 ( nvrt, xc, yc, sdist, nshr, xs, ys, iedge, ierr )
   if ( parall ) then
     ierr = 202
     nshr = 0
+    return
   end if
 
   xs(nshr+1) = xs(j)
@@ -31729,6 +32041,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
 
   if ( maxiw < nface ) then
     ierr = 6
+    return
   end if
 
   iedge = nface + 1
@@ -31771,6 +32084,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
       return
     else if ( maxwk < 5*n + 4 ) then
       ierr = 7
+      return
     end if
 
     ind = iedge + n + 1
@@ -31812,6 +32126,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
       iwk(iedge), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     shvl(f) = 0
@@ -31822,6 +32137,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
 
     if ( maxsv < k + nshr ) then
       ierr = 13
+      return
     end if
 
     nsface = nsface + 1
@@ -31865,6 +32181,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
       call xpghpl(ar,br,dr,j,maxsv,k,shvl(f),svcl,sfvl,empty, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       if ( empty ) then
@@ -31899,6 +32216,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
   nsvc = k
 
   if ( nsface < 4 ) then
+    return
   end if
 !
 !  Determine EDGV values by searching appropriate faces.
@@ -31948,6 +32266,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
 
   if ( .not. match ) then
     ierr = 314
+    return
   end if
 !
 !  Give vertices with same coordinates the same LOC value.
@@ -31955,6 +32274,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
 !
   if ( maxiw < nsvert ) then
     ierr = 6
+    return
   end if
 
   do i = 1, nsvert
@@ -32040,6 +32360,7 @@ subroutine shrnk3 ( sdist, nface, vcl, hvl, nrml, fvl, eang, maxsv, maxiw, &
 !  Update SHVL and SFVL(FACN,*) to get consecutive face indices.
 !
   if ( nface <= nsface ) then
+    return
   end if
 
   i = 0
@@ -32345,6 +32666,7 @@ subroutine smpxda ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
       call availk(k,hdavfc,nfc,fc_max,fc,ptr,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htinsk(k,ptr,ind,a,0,npt,sizht,fc,ht)
@@ -32363,6 +32685,7 @@ subroutine smpxda ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
   ifac = ptr
 
   if ( .not. bflag ) then
+    return
   end if
 
 90 continue
@@ -32691,6 +33014,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
       write ( *, * ) ' '
       write ( *, * ) 'SPDEC2 - Fatal error!'
       write ( *, * ) '  JNHOLE returned an error condition.'
+      return
     end if
 
   end do
@@ -32710,12 +33034,14 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
         maxwk, vcl, pvl, iang, w1, w2, iwk, wk, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       call insed2 ( vr, w1, npolg, nvert, maxhv, maxpv, vcl, regnum, hvl, &
         pvl, iang, ierror )
 
       if ( ierror /= 0 ) then
+        return
       end if
 
       if ( 0 < w2 ) then
@@ -32724,6 +33050,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
           vcl, regnum, hvl, pvl, iang, ierror )
 
         if ( ierror /= 0 ) then
+          return
         end if
 
       end if
@@ -32733,6 +33060,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
   end do
 
   if ( nhola == 0 ) then
+    return
   end if
 !
 !  Check that polygons are simple. If polygon is simply-connected and
@@ -32743,6 +33071,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
 30 continue
 
   if ( npolg < p ) then
+    return
   end if
 
   i = hvl(p)
@@ -32787,12 +33116,14 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
     maxwk, vcl, pvl, iang, w1, w2, iwk, wk, ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   call insed2 ( vr, w1, npolg, nvert, maxhv, maxpv, vcl, regnum, hvl, &
     pvl, iang, ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   if ( 0 < w2 ) then
@@ -32801,6 +33132,7 @@ subroutine spdec2 ( angspc, angtol, nvc, npolg, nvert, nhole, nhola, maxvc,  &
       vcl, regnum, hvl, pvl, iang, ierror )
 
     if ( ierror /= 0 ) then
+      return
     end if
 
   end if
@@ -32991,10 +33323,12 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
   tol = 100.0D+00 * epsilon ( tol )
 
   if ( nfhol <= 0 ) then
+    return
   end if
 
   if ( maxiw < nfhol ) then
     ierr = 6
+    return
   end if
 !
 !  Rotate normal vector of face to (0,0,1). Rotation matrix applied
@@ -33188,6 +33522,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
 
     if ( ilft == 0 .or. irgt == 0 ) then
       ierr = 344
+      return
     end if
 
     nvrt = 2
@@ -33212,6 +33547,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
       return
     else if ( maxwk < maxn + maxn ) then
       ierr = 7
+      return
     end if
 
     yc = maxn + 1
@@ -33236,6 +33572,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
       y(nv+1),iwk(niw+1),wk(wrem), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( v < 0 ) then
@@ -33247,6 +33584,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
 
       if ( maxvc < nvc ) then
         ierr = 14
+        return
       end if
 
       vcl(1,nvc+1) = cxy*x(nv) + r21*y(nv) + r31*zr
@@ -33258,6 +33596,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
       call insvr3(a,nvc,nvert,maxfv,vcl,fvl,eang,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       locfv(nv) = fvl(succ,a)
@@ -33326,6 +33665,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
     call inseh3(locfv(h),locfv(v),nvert,maxfv,facep,fvl,eang,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( ccw == succ ) then
@@ -33427,6 +33767,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
 
     if ( ilft == 0 .or. irgt == 0 ) then
       ierr = 344
+      return
     end if
 
     nvrt = 2
@@ -33450,6 +33791,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
       return
     else if ( maxwk < maxn + maxn ) then
       ierr = 7
+      return
     end if
 
     yc = maxn + 1
@@ -33474,6 +33816,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
       y(nv+1),iwk(niw+1),wk(wrem), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( v < 0 ) then
@@ -33485,6 +33828,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
 
       if ( maxvc <= nvc ) then
         ierr = 14
+        return
       end if
 
       vcl(1,nvc+1) = cxy*x(nv) + r21*y(nv) + r31*zr
@@ -33498,6 +33842,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
       call insvr3(a,nvc,nvert,maxfv,vcl,fvl,eang,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       locfv(nv) = fvl(succ,a)
@@ -33559,6 +33904,7 @@ subroutine spdech ( aspc2d, atol2d, nfhol, nvc, nface, nvert, npf, maxvc, &
       factyp,nrml,fvl,eang,hfl,pfl,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( ccw == succ ) then
@@ -33880,6 +34226,7 @@ subroutine swapdg ( k, pos, d, i, sneg, spos, szero, alpha, npt, sizht, bf_num, 
         if ( msglvl == 4 ) then
           write ( *,620) sneg,spos,'dg: other vertex not common'
         end if
+        return
       end if
 
       jj = jj + 1
@@ -34113,6 +34460,7 @@ subroutine swapdg ( k, pos, d, i, sneg, spos, szero, alpha, npt, sizht, bf_num, 
     call availk(k,hdavfc,nfc,fc_max,fc,ptr1,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( f < 0 ) then
@@ -34216,6 +34564,7 @@ subroutine swapdg ( k, pos, d, i, sneg, spos, szero, alpha, npt, sizht, bf_num, 
         call availk(k,hdavfc,nfc,fc_max,fc,ptr1,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         ind(1:k) = fc(1:k,ptr)
@@ -34247,6 +34596,7 @@ subroutine swapdg ( k, pos, d, i, sneg, spos, szero, alpha, npt, sizht, bf_num, 
         call updatk(k,ind,a,b,i,npt,sizht,front,back,fc,ht, ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
       end do
@@ -34611,6 +34961,7 @@ subroutine swapec ( i, top, maxst, btri, bedg, vcl, til, tnbr, stack, ierr )
 10 continue
 
   if ( top <= 0 ) then
+    return
   end if
 
   t = stack(top)
@@ -34682,6 +35033,7 @@ subroutine swapec ( i, top, maxst, btri, bedg, vcl, til, tnbr, stack, ierr )
 
       if ( maxst < top ) then
         ierr = 8
+        return
       end if
 
       stack(top) = t
@@ -34902,6 +35254,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
     do
 
       if ( front == 0 ) then
+        return
       end if
 
       ind = front
@@ -34945,6 +35298,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
       write ( *, '(a)' ) 'SWAPES - Fatal error!'
       write ( *, '(a)' ) '  CCSPH returned IN = 2.'
       ierr = 301
+      return
     end if
 
     if ( 1 <= in ) then
@@ -34963,6 +35317,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
         write ( *, '(a)' ) 'SWAPES - Fatal error!'
         write ( *, '(a)' ) '  BARYTH detected 0 < ALPHA(4).'
         ierr = 309
+        return
       end if
 
       kneg = 1
@@ -34991,6 +35346,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
           write ( *, '(a)' ) ' '
           write ( *, '(a)' ) 'SWAPES - Fatal error!'
           write ( *, '(a, i6)' ) '  UPDATF returned IERR = ', ierr
+          return
         end if
 
         call htdel ( ind, npt, sizht, fc, ht )
@@ -35001,6 +35357,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
           write ( *, '(a)' ) ' '
           write ( *, '(a)' ) 'SWAPES - Fatal error!'
           write ( *, '(a,i6)' ) '  AVAILF returned IERR = ', ierr
+          return
         end if
 
         call htins ( ind, b, d, e, a, c, npt, sizht, fc, ht )
@@ -35010,6 +35367,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
           write ( *, '(a)' ) ' '
           write ( *, '(a)' ) 'SWAPES - Fatal error!'
           write ( *, '(a,i6)' ) '  AVAILF returned IERR = ', ierr
+          return
         end if
 
         call htins ( ind, c, d, e, a, b, npt, sizht, fc, ht )
@@ -35037,6 +35395,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
           write ( *, '(a)' ) 'SWAPES - Fatal error!'
           write ( *, '(a)' ) '  HTSRC returned IND1 <= 0.'
           ierr = 300
+          return
         end if
 
         if ( fc(4,ind1) == e .or. fc(5,ind1) == e ) then
@@ -35052,6 +35411,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
             write ( *, '(a)' ) ' '
             write ( *, '(a)' ) 'SWAPES - Fatal error!'
             write ( *, '(a,i6)' ) '  UPDATF returned IERR = ', ierr
+            return
           end if
 
           call htdel ( ind, npt, sizht, fc, ht )
@@ -35076,6 +35436,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
             write ( *, '(a)' ) 'SWAPES - Fatal error!'
             write ( *, '(a)' ) '  HTSRC returned IND1 <= 0.'
             ierr = 300
+            return
           end if
 
           call htdel ( ind1, npt, sizht, fc, ht )
@@ -35141,6 +35502,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
           write ( *, '(a)' ) 'SWAPES - Fatal error!'
           write ( *, '(a)' ) '  HTSRC returned IND1 <= 0.'
           ierr = 300
+          return
         end if
 
         ind2 = htsrc ( a, b, e, npt, sizht, fc, ht )
@@ -35150,6 +35512,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
           write ( *, '(a)' ) 'SWAPES - Fatal error!'
           write ( *, '(a)' ) '  HTSRC returned IND2 <= 0.'
           ierr = 300
+          return
         end if
 
         if ( fc(4,ind1) == c ) then
@@ -35177,6 +35540,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
               write ( *, '(a)' ) ' '
               write ( *, '(a)' ) 'SWAPES - Fatal error!'
               write ( *, '(a,i6)' ) '  UPDATF returned IERR = ', ierr
+              return
             end if
 
             call htdel(ind,npt,sizht,fc,ht)
@@ -35265,6 +35629,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
             write ( *, '(a)' ) ' '
             write ( *, '(a)' ) 'SWAPES - Fatal error!'
             write ( *, '(a,i6)' ) '  UPDATF returned IERR = ', ierr
+            return
           end if
 
           call htdel(ind,npt,sizht,fc,ht)
@@ -35277,6 +35642,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
             write ( *, '(a)' ) 'SWAPES - Fatal error!'
             write ( *, '(a)' ) '  HTSRC returned IND <= 0.'
             ierr = 300
+            return
           end if
 
           call htdel(ind,npt,sizht,fc,ht)
@@ -35288,6 +35654,7 @@ subroutine swapes ( bndcon, i, npt, sizht, fc_num, fc_max, vcl, vm, bf, fc, ht, 
               write ( *, '(a)' ) ' '
               write ( *, '(a)' ) 'SWAPES - Fatal error!'
               write ( *, '(a,i6)' ) '  AVAILF returned IERR = ', ierr
+              return
             end if
           end if
 
@@ -35514,6 +35881,7 @@ subroutine swaphs ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
 10 continue
 
   if ( front == 0 ) then
+    return
   end if
 
   pos = front
@@ -35551,6 +35919,7 @@ subroutine swaphs ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
 
   if ( degen ) then
     ierr = 401
+    return
   end if
 
   sneg = 2
@@ -35743,6 +36112,7 @@ subroutine swaphs ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
         call availk(k,hdavfc,nfc,fc_max,fc,ptr,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         ind(1:k) = fc(1:k,pos)
@@ -35795,6 +36165,7 @@ subroutine swaphs ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
         call availk(k,hdavfc,nfc,fc_max,fc,ptr,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         if ( hdavbf /= 0 ) then
@@ -35965,6 +36336,7 @@ subroutine swaphs ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
       front,back,ifac,bfi,ind,indf,mv,loc,zpn, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
     go to 10
@@ -36027,6 +36399,7 @@ subroutine swaphs ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
         call availk ( k, hdavfc, nfc, fc_max, fc, ptr, ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         ind(1:k) = fc(1:k,pos)
@@ -36070,6 +36443,7 @@ subroutine swaphs ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
       call updatk(k,ind,a,b,i,npt,sizht,front,back,fc,ht, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
     end do
@@ -36102,6 +36476,7 @@ subroutine swaphs ( k, i, npt, sizht, bf_num, nfc, bf_max, fc_max, vcl, vm, bf, 
           call updatk(k,ind,a,b,i,npt,sizht,front,back,fc,ht, ierr )
 
           if ( ierr /= 0 ) then
+            return
           end if
 
         end do
@@ -36256,6 +36631,7 @@ subroutine swapmu ( bndcon, crit, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, &
 10 continue
 
   if ( front == 0 ) then
+    return
   end if
 
   ind = front
@@ -36296,6 +36672,7 @@ subroutine swapmu ( bndcon, crit, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, &
     return
   else if ( 0.0D+00 < alpha(4) ) then
     ierr = 309
+    return
   end if
 
   kneg = 1
@@ -36331,6 +36708,7 @@ subroutine swapmu ( bndcon, crit, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, &
       call updatf(b,c,e,a,d,0,npt,sizht,front,back,fc,ht, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htdel(ind,npt,sizht,fc,ht)
@@ -36338,12 +36716,14 @@ subroutine swapmu ( bndcon, crit, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, &
       call availf ( hdavfc, nfc, fc_max, fc, ind, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htins(ind,b,d,e,a,c,npt,sizht,fc,ht)
       call availf(hdavfc,nfc,fc_max,fc,ind,ierr)
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htins(ind,c,d,e,a,b,npt,sizht,fc,ht)
@@ -36393,6 +36773,7 @@ subroutine swapmu ( bndcon, crit, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, &
         call updatf(b,d,e,a,c,0,npt,sizht,front,back,fc,ht, ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         call htdel(ind,npt,sizht,fc,ht)
@@ -36504,6 +36885,7 @@ subroutine swapmu ( bndcon, crit, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, &
           call updatf(b,c,e,a,d,0,npt,sizht,front,back,fc,ht, ierr )
 
           if ( ierr /= 0 ) then
+            return
           end if
 
           call htdel(ind,npt,sizht,fc,ht)
@@ -36612,6 +36994,7 @@ subroutine swapmu ( bndcon, crit, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, &
         call updatf(b,e,f,a,d,0,npt,sizht,front,back,fc,ht, ierr )
 
         if ( ierr /= 0 ) then
+          return
         end if
 
         call htdel(ind,npt,sizht,fc,ht)
@@ -36625,6 +37008,7 @@ subroutine swapmu ( bndcon, crit, npt, sizht, nfc, fc_max, vcl, vm, bf, fc, &
           call availf(hdavfc,nfc,fc_max,fc,ind,ierr)
 
           if ( ierr /= 0 ) then
+            return
           end if
 
         end if
@@ -36789,6 +37173,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
 10 continue
 
   if ( top == 0 ) then
+    return
   end if
 
   ind = top
@@ -36796,6 +37181,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
 
   if ( fc(2,ind) == 0 ) then
     ierr = 308
+    return
   end if
 
   fc(7,ind) = -1
@@ -36819,10 +37205,12 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
 
   if ( degen ) then
     ierr = 301
+    return
   end if
 
   if ( 0.0D+00 < alpha(4) ) then
     ierr = 309
+    return
   end if
 
   kneg = 1
@@ -36848,6 +37236,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
     call updatf(b,c,e,a,d,0,npt,sizht,front,back,fc,ht, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call htdel(ind,npt,sizht,fc,ht)
@@ -36855,12 +37244,14 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
     call availf(hdavfc,nfc,fc_max,fc,ind,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call htins(ind,b,d,e,a,c,npt,sizht,fc,ht)
     call availf(hdavfc,nfc,fc_max,fc,ind,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call htins(ind,c,d,e,a,b,npt,sizht,fc,ht)
@@ -36884,6 +37275,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
 
     if ( ind1 <= 0 ) then
       ierr = 300
+      return
     end if
 !
 !  Swap 3 tetrahedra for 2.
@@ -36898,6 +37290,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
       call updatf(b,d,e,a,c,0,npt,sizht,front,back,fc,ht, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htdel(ind,npt,sizht,fc,ht)
@@ -36919,6 +37312,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
 
       if ( ind1 <= 0 ) then
         ierr = 300
+        return
       end if
 
       call htdel(ind1,npt,sizht,fc,ht)
@@ -36943,6 +37337,8 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
     else
 
       ierr = 308
+      return
+
     end if
 
   else if ( kneg == 1 .and. kzero == 1 ) then
@@ -36960,6 +37356,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
 
     if ( ind1 <= 0 .or. ind2 <= 0 ) then
       ierr = 300
+      return
     end if
 
     if ( fc(4,ind1) == c ) then
@@ -36991,6 +37388,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
       call updatf(b,e,f,a,d,0,npt,sizht,front,back,fc,ht, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htdel(ind,npt,sizht,fc,ht)
@@ -36999,6 +37397,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
 
       if ( ind <= 0 ) then
         ierr = 300
+        return
       end if
 
       call htdel(ind,npt,sizht,fc,ht)
@@ -37007,6 +37406,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
         fc(2,ind) = 0
         call availf(hdavfc,nfc,fc_max,fc,ind,ierr)
         if ( ierr /= 0 ) then
+          return
         end if
       end if
 
@@ -37020,6 +37420,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
         call availf(hdavfc,nfc,fc_max,fc,ind1,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
       end if
@@ -37032,6 +37433,7 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
         fc(2,ind2) = 0
         call availf(hdavfc,nfc,fc_max,fc,ind2,ierr)
         if ( ierr /= 0 ) then
+          return
         end if
       end if
 
@@ -37056,6 +37458,8 @@ subroutine swaptf ( top, npt, sizht, nfc, fc_max, vcl, vm, fc, ht, ntetra, &
   else
 
     ierr = 308
+    return
+
   end if
 
   go to 10
@@ -37243,6 +37647,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
     return
   else if ( 0.0D+00 < alpha(4) ) then
     ierr = 309
+    return
   end if
 
   kneg = 1
@@ -37272,6 +37677,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
     call updatr(b,d,i,a,c,.true.,npt,sizht,front,back,fc,ht, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call htdel(ind,npt,sizht,fc,ht)
@@ -37279,12 +37685,14 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
     call availf(hdavfc,nfc,fc_max,fc,ind,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call htins(ind,b,c,d,a,i,npt,sizht,fc,ht)
     call availf(hdavfc,nfc,fc_max,fc,ind,ierr)
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     call htins(ind,c,d,i,a,b,npt,sizht,fc,ht)
@@ -37308,6 +37716,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
 
     if ( ind1 <= 0 ) then
       ierr = 300
+      return
     end if
 !
 !  Swap 3 tetrahedra for 2.
@@ -37324,6 +37733,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
       call updatr(c,d,i,a,b,.true.,npt,sizht,front,back,fc,ht, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htdel(ind,npt,sizht,fc,ht)
@@ -37349,6 +37759,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
 
       if ( ind1 <= 0 ) then
         ierr = 300
+        return
       end if
 
       call htdel(ind1,npt,sizht,fc,ht)
@@ -37392,6 +37803,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
 
     if ( ind1 <= 0 .or. ind2 <= 0 ) then
       ierr = 300
+      return
     end if
 
     if ( fc(4,ind1) == a ) then
@@ -37423,6 +37835,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
       call updatr(d,e,i,b,c,.true.,npt,sizht,front,back,fc,ht, ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       call htdel(ind,npt,sizht,fc,ht)
@@ -37431,6 +37844,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
 
       if ( ind <= 0 ) then
         ierr = 300
+        return
       end if
 
       call htdel(ind,npt,sizht,fc,ht)
@@ -37440,6 +37854,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
         call availf(hdavfc,nfc,fc_max,fc,ind,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
       end if
@@ -37452,6 +37867,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
         call availf(hdavfc,nfc,fc_max,fc,ind1,ierr)
 
         if ( ierr /= 0 ) then
+          return
         end if
 
       end if
@@ -37520,6 +37936,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
     call updatr(b,c,d,i,a,.false.,npt,sizht,front,back,fc,ht, ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     aa = a
@@ -37554,6 +37971,7 @@ subroutine swprem ( bf_num, nbpt, sizht, fc_max, nfc, ntetra, vcl, vm, fc, ht, &
 
       if ( ind <= 0 ) then
         ierr = 300
+        return
       end if
 
     end do
@@ -37965,6 +38383,7 @@ subroutine tmerge ( inter, nbl, ncr, chbl, chcr, ldv, vcl, til, tedg, &
 
     tedg(2,1) = ibndry
     if ( nbl + ncr <= 3 ) then
+      return
     end if
 
     nl = nbl - 1
@@ -38054,6 +38473,7 @@ subroutine tmerge ( inter, nbl, ncr, chbl, chcr, ldv, vcl, til, tedg, &
 
         if ( 0 <= lri ) then
           ierror = 230
+          return
         end if
 
       end if
@@ -38347,6 +38767,7 @@ subroutine tribfc ( h, nvc, nface, nvert, maxvc, maxbt, maxiw, maxwk, vcl, &
 
       if ( maxvc < nvc + n ) then
         ierr = 14
+        return
       end if
 
       do k = 1, n
@@ -38454,6 +38875,7 @@ subroutine tribfc ( h, nvc, nface, nvert, maxvc, maxbt, maxiw, maxwk, vcl, &
 
     if ( maxwk < n + n + 2 ) then
       ierr = 7
+      return
     end if
 
     xc = 1
@@ -38520,6 +38942,7 @@ subroutine tribfc ( h, nvc, nface, nvert, maxvc, maxbt, maxiw, maxwk, vcl, &
 
     if ( maxiw < nbc + 1 ) then
       ierr = 6
+      return
     end if
 
     do i = 1, nbc
@@ -38543,6 +38966,7 @@ subroutine tribfc ( h, nvc, nface, nvert, maxvc, maxbt, maxiw, maxwk, vcl, &
     end if
 
     if ( ierr /= 0 ) then
+      return
     end if
 !
 !  Fix up indices of BTL and rotate interior mesh vertices.
@@ -38863,6 +39287,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
      nrml,fvl,edst,edno,fcst,btst,btl,iwk,wk, ierr )
 
   if ( ierr /= 0 ) then
+    return
   end if
 
   chvl = nvc + 1
@@ -38877,6 +39302,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
     return
   else if ( maxwk < drem - 1 ) then
     ierr = 7
+    return
   end if
 
   iwk(1:nvc) = 0
@@ -38897,6 +39323,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
 
     if ( maxiw < irem + ncvert - 1 ) then
       ierr = 6
+      return
     end if
 
     call rmcpfc(ncface,ncvert,iwk(chvl),wk(cnrml),iwk(cfvl), &
@@ -38916,6 +39343,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
       return
     else if ( maxwk < drem ) then
       ierr = 7
+      return
     end if
 
     call shrnk3(shrf*h(p),ncface,vcl,iwk(chvl),wk(cnrml),iwk(cfvl), &
@@ -38927,6 +39355,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
     end if
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( 4 <= nsface ) then
@@ -38937,6 +39366,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
         wk(drem), ierr )
 
       if ( ierr /= 0 ) then
+        return
       end if
 
       nvc = nvc + nimv
@@ -38969,6 +39399,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
 
         if ( maxvm < ivm ) then
           ierr = 20
+          return
         end if
 
         vm(ivm) = lj
@@ -39020,6 +39451,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
 
       if ( maxvm < ivm + n ) then
         ierr = 20
+        return
       end if
 
       nbmv = nbmv + n
@@ -39043,6 +39475,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
 
       if ( maxvm < ivm + n ) then
         ierr = 20
+        return
       end if
 
       nbmv = nbmv + n
@@ -39065,6 +39498,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
 
       if ( maxvm < ivm + nimv ) then
         ierr = 20
+        return
       end if
 
       do l = nvc-nimv+1,nvc
@@ -39081,6 +39515,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
         return
       else if ( maxvc <= nvc ) then
         ierr = 14
+        return
       end if
 
       vm(ivm) = nvc + 1
@@ -39121,6 +39556,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
       return
     else if ( fc_max < kfc + bf_num ) then
       ierr = 11
+      return
     end if
 !
 !  Set up boundary faces with local vertex indices.
@@ -39160,6 +39596,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
       nfc,ntrif(p),ntetra(p),fc(1,kfc+1),ht(kht+1), ierr )
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     if ( nimv == 0 .and. 0 < vm(ivm) ) then
@@ -39193,6 +39630,7 @@ subroutine tripr3 ( h, shrf, crit, nvc, nface, nvert, npolh, maxvc, maxbt, &
     end if
 
     if ( ierr /= 0 ) then
+      return
     end if
 
     kfc = kfc + nfc
@@ -39448,10 +39886,12 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
 
   if ( maxiw < nvrt + 1 ) then
     ierror = 6
+    return
   end if
 
   if ( maxwk < 3*nvrt + 2 ) then
     ierror = 7
+    return
   end if
 
   xs = 1
@@ -39465,6 +39905,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
     ierror )
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   inter = ( 0 < nshr )
@@ -39474,6 +39915,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
     call diam2 ( nshr, wk(xs+1), wk(ys+1), i1, i2, dist, ierror )
 
     if ( ierror /= 0 ) then
+      return
     end if
 
     call rotpg ( nshr, wk(xs), wk(ys), i1, i2, ibot, costh, sinth )
@@ -39482,6 +39924,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
 
     if ( maxiw < maxcw + 1 ) then
       ierror = 6
+      return
     end if
 
     cwalk = 1
@@ -39490,6 +39933,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
       maxvc, maxti, maxcw, vcl, til, ncw, iwk(cwalk), ierror )
 
     if ( ierror /= 0 ) then
+      return
     end if
 !
 !  Determine the mesh vertex which should be moved to front of
@@ -39535,6 +39979,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
     call diam2 ( nvrt, xc(1), yc(1), i1, i2, dist, ierror )
 
     if ( ierror /= 0 ) then
+      return
     end if
 
     ind = 0
@@ -39596,6 +40041,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
     return
   else if ( maxiw < tedg + 4*nt - 1 ) then
     ierror = 6
+    return
   end if
 
   if ( inter ) then
@@ -39607,6 +40053,7 @@ subroutine trpolg ( nvrt, xc, yc, h, nbc, bndcyc, ldv, nvc, ntri, maxvc,  &
   end if
 
   if ( ierror /= 0 ) then
+    return
   end if
 
   sptr = tedg + 3 * nt
@@ -39770,6 +40217,7 @@ subroutine updatf ( a, b, c, d, e, i, n, p, front, back, fc, ht, ierr )
 
   if ( ind <= 0 ) then
     ierr = 300
+    return
   end if
 
   if ( fc(4,ind) == d ) then
@@ -39860,6 +40308,7 @@ subroutine updatk ( k, ind, d, e, i, n, p, front, back, fc, ht, ierr )
 
   if ( pos <= 0 ) then
     ierr = 400
+    return
   end if
 
   if ( fc(k+1,pos) == d ) then
@@ -39949,6 +40398,7 @@ subroutine updatr ( a, b, c, d, e, qflag, n, p, front, back, fc, ht, ierr )
 
   if ( ind <= 0 ) then
     ierr = 300
+    return
   end if
 
   if ( fc(4,ind) == d ) then
@@ -40169,6 +40619,7 @@ subroutine vbedg ( x, y, vcl, til, tnbr, ltri, ledg, rtri, redg )
   end do
 
   if ( ldone ) then
+    return
   end if
 
   t = ltri
@@ -40306,6 +40757,7 @@ subroutine vbfac ( pt, ctr, vcl, vm, bf, fc, topv, topnv )
 
     if ( op == 2 ) then
       ierr = 301
+      return
     end if
 
     if ( op == 1 ) then
@@ -40683,6 +41135,7 @@ subroutine vispol ( xeye, yeye, nvrt, xc, yc, nvis, ivis, ierr )
 
   if ( ierr /= 0 ) then
     nvis = top
+    return
   end if
 
   if ( oper <= 6 ) then
@@ -41175,6 +41628,7 @@ subroutine vornbr ( xeye, yeye, nvrt, xc, yc, nvor, ivor, xvor, yvor, ierr )
 
     if ( abs(det) <= tolabs ) then
       ierr = 212
+      return
     end if
 
     b1 = ( a11**2 + a12**2 ) * 0.5D+00
@@ -41210,6 +41664,7 @@ subroutine vornbr ( xeye, yeye, nvrt, xc, yc, nvor, ivor, xvor, yvor, ierr )
 
       if ( abs ( det ) <= tolabs ) then
         ierr = 212
+        return
       end if
 
       b1 = ( a11**2 + a12**2 ) * 0.5D+00
@@ -41305,6 +41760,7 @@ subroutine vpleft ( xc, yc, ivis )
 
   if ( cur == nv ) then
     oper = 7
+    return
   end if
 
   if ( ( .not. beye ) .and. top <= 2 ) go to 20
@@ -41327,6 +41783,9 @@ subroutine vpleft ( xc, yc, ivis )
       yc(top) = yu
       ivis(top) = -cur
     end if
+
+    return
+
   end if
 !
 !  Process next edge.
@@ -41948,6 +42407,7 @@ subroutine vpscnb ( xc, yc, ivis, ierr )
       if ( lr == 1 ) then
         oper = 2
         cur = k + 1
+        return
       end if
 
     end if
@@ -42093,6 +42553,7 @@ subroutine vpscnc ( xc, yc, ivis, ierr )
       if ( lr == 1 ) then
         oper = 2
         cur = k + 1
+        return
       end if
 
     end if
@@ -42215,6 +42676,8 @@ subroutine vpscnd ( xc, yc, ivis, ierr )
       xc(top) = xc(cur)
       yc(top) = yc(cur)
       ivis(top) = cur
+      return
+
     end if
 
   end if
@@ -42316,6 +42779,7 @@ subroutine walkt2 ( x, y, ntri, vcl, til, tnbr, itri, iedg, ierr )
 
   if ( ntri < cnt ) then
     ierr = 226
+    return
   end if
 
   a = til(1,itri)
@@ -42341,6 +42805,7 @@ subroutine walkt2 ( x, y, ntri, vcl, til, tnbr, itri, iedg, ierr )
     i = tnbr(2,itri)
     if ( i <= 0 ) then
       iedg = -2
+      return
     end if
 
   else if ( beta < -tol ) then
@@ -42348,6 +42813,7 @@ subroutine walkt2 ( x, y, ntri, vcl, til, tnbr, itri, iedg, ierr )
     i = tnbr(3,itri)
     if ( i <= 0 ) then
       iedg = -3
+      return
     end if
 
   else if ( gamma < -tol ) then
@@ -42355,6 +42821,7 @@ subroutine walkt2 ( x, y, ntri, vcl, til, tnbr, itri, iedg, ierr )
     i = tnbr(1,itri)
     if ( i <= 0 ) then
       iedg = -1
+      return
     end if
 
   else if ( alpha <= tol ) then
@@ -42380,6 +42847,8 @@ subroutine walkt2 ( x, y, ntri, vcl, til, tnbr, itri, iedg, ierr )
   else
 
     iedg = 1
+    return
+
   end if
 
   itri = i
@@ -42483,12 +42952,14 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
     if ( fc(ivrt,ifac) <= 0 ) then
       ivrt = 0
+      return
     end if
 
     cnt = cnt + 1
 
     if ( ntetra < cnt ) then
       ierr = 307
+      return
     end if
 
     a = fc(1,ifac)
@@ -42504,6 +42975,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
     if ( degen ) then
       ierr = 301
+      return
     end if
 
     if ( 0.0D+00 < t(1) .and. &
@@ -42523,6 +42995,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
       if ( ifac <= 0 ) then
         ierr = 300
+        return
       end if
 
       if ( fc(4,ifac) == a ) then
@@ -42537,6 +43010,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
       if ( ifac <= 0 ) then
         ierr = 300
+        return
       end if
 
       if ( fc(4,ifac) == b ) then
@@ -42551,6 +43025,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
       if ( ifac <= 0 ) then
         ierr = 300
+        return
       end if
 
       if ( fc(4,ifac) == c ) then
@@ -42580,16 +43055,19 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
           ifac = htsrc(b,c,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
             ierr = 300
+            return
           end if
         else if ( zero(2) ) then
           ifac = htsrc(a,c,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
             ierr = 300
+            return
           end if
         else if ( zero(3) ) then
           ifac = htsrc(a,b,d,n,p,fc,ht)
           if ( ifac <= 0 ) then
             ierr = 300
+            return
           end if
         end if
 
@@ -42613,6 +43091,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
             if ( ifac <= 0 ) then
               ierr = 300
+              return
             end if
 
             if ( zero(2) ) then
@@ -42627,6 +43106,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
             if ( ifac <= 0 ) then
               ierr = 300
+              return
             end if
 
             aa = c
@@ -42679,6 +43159,7 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
 
           if ( ifac <= 0 ) then
             ierr = 300
+            return
           end if
 
           if ( fc(1,ifac) == d ) then
@@ -42692,6 +43173,9 @@ subroutine walkt3 ( pt, n, p, ntetra, vcl, vm, fc, ht, ifac, ivrt, ierr )
         end if
 
       end if
+
+      return
+
     end if
 
   end do
@@ -42814,12 +43298,14 @@ subroutine walktk ( k, pt, n, p, nsmplx, vcl, vm, fc, ht, ifac, ivrt, indl, &
 
   if ( fc(ivrt,ifac) <= 0 ) then
     ivrt = 0
+    return
   end if
 
   cnt = cnt + 1
 
   if ( nsmplx < cnt ) then
     ierr = 407
+    return
   end if
 
   indl(1:k) = fc(1:k,ifac)
@@ -42831,6 +43317,7 @@ subroutine walktk ( k, pt, n, p, nsmplx, vcl, vm, fc, ht, ifac, ivrt, indl, &
 
   if ( degen ) then
     ierr = 401
+    return
   end if
 
   npos = 0
@@ -42867,6 +43354,7 @@ subroutine walktk ( k, pt, n, p, nsmplx, vcl, vm, fc, ht, ifac, ivrt, indl, &
 
     if ( ifac <= 0 ) then
       ierr = 400
+      return
     end if
 
     if ( fc(kp1,ifac) == a ) then
@@ -42921,9 +43409,13 @@ subroutine walktk ( k, pt, n, p, nsmplx, vcl, vm, fc, ht, ifac, ivrt, indl, &
 
       if ( ifac <= 0 ) then
         ierr = 400
+        return
       end if
 
     end if
+
+    return
+
   end if
 
   go to 10
@@ -43081,6 +43573,8 @@ subroutine width2 ( nvrt, xc, yc, i1, i2, widsq, ierr )
     end if
 
     ierr = 201
+    return
+
   end if
 
   dx = xc(c) - xc(b)
@@ -43215,6 +43709,7 @@ subroutine width3 ( nface, vcl, hvl, nrml, fvl, maxiw, i1, i2, wid, iwk, ierr )
 
       if ( maxiw < nv ) then
         ierr = 6
+        return
       end if
 
       iwk(nv) = a
@@ -43235,6 +43730,7 @@ subroutine width3 ( nface, vcl, hvl, nrml, fvl, maxiw, i1, i2, wid, iwk, ierr )
 
   if ( maxiw < ne ) then
     ierr = 6
+    return
   end if
 !
 !  For each face, find vertex furthest from face and its distance.
@@ -43466,11 +43962,13 @@ subroutine xedge ( mode, xv1, yv1, xv2, yv2, xw1, yw1, xw2, yw2, xu, yu, &
   denom = dyv * dxw - dxv * dyw
 
   if ( abs ( denom ) <= tolabs) then
+    return
   end if
 
   t = ( dyv * ( xv1 - xw1 ) - dxv * ( yv1 - yw1 ) ) / denom
 
   if ( t < -tol .or. 1.0D+00 + tol < t ) then
+    return
   end if
 
   xu = xw1 + t * dxw
@@ -43565,6 +44063,7 @@ subroutine xline ( xv1, yv1, xv2, yv2, xw1, yw1, xw2, yw2, dv, dw, &
   det = a11 * a22 - a21 * a12
 
   if ( abs ( det ) <= tolabs ) then
+    return
   end if
 
   b1 = xv1 * a11 + yv1 * a12
@@ -43728,6 +44227,7 @@ subroutine xpghpl ( ar, br, dr, g, maxsv, k, head, svcl, sfvl, empty, ierr )
   else if ( fkeep == 0 ) then
     empty = .true.
     head = 0
+    return
   end if
 !
 !  Update polygon to include part of line and remove at least 1 vertex.
@@ -43755,6 +44255,7 @@ subroutine xpghpl ( ar, br, dr, g, maxsv, k, head, svcl, sfvl, empty, ierr )
 
     if ( t <= tol .or. 1.0D+00 - tol <= t ) then
       ierr = 313
+      return
     end if
 
     if ( ii /= fdel ) then
@@ -43767,6 +44268,7 @@ subroutine xpghpl ( ar, br, dr, g, maxsv, k, head, svcl, sfvl, empty, ierr )
 
       if ( maxsv < k ) then
         ierr = 13
+        return
       end if
 
       a = k
@@ -43813,6 +44315,7 @@ subroutine xpghpl ( ar, br, dr, g, maxsv, k, head, svcl, sfvl, empty, ierr )
 
     if ( t <= tol .or. 1.0D+00 - tol <= t ) then
       ierr = 313
+      return
     end if
 
     svcl(1,jj) = svcl(1,j) + t * dx

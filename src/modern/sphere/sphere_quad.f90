@@ -516,6 +516,8 @@ function r8_gamma ( x )
 
       res = xinf
       r8_gamma = res
+      return
+
     end if
 
   end if
@@ -531,6 +533,7 @@ function r8_gamma ( x )
     else
       res = xinf
       r8_gamma = res
+      return
     end if
 
   else if ( y < 12.0D+00 ) then
@@ -602,6 +605,8 @@ function r8_gamma ( x )
 
       res = xinf
       r8_gamma = res
+      return
+
     end if
 
   end if
@@ -822,6 +827,7 @@ subroutine r8vec_polarize ( n, a, p, a_normal, a_parallel )
   if ( p_norm == 0.0D+00 ) then
     a_normal(1:n) = a(1:n)
     a_parallel(1:n) = 0.0D+00
+    return
   end if
 
   a_dot_p = dot_product ( a(1:n), p(1:n) ) / p_norm
@@ -2907,6 +2913,7 @@ subroutine sphere01_triangle_project2 ( a_xyz, b_xyz, c_xyz, f1, f2, f3, &
     return
   else if ( f1 == 0 .and. f2 == 0 ) then
     node_xyz(1:3) = c_xyz(1:3)
+    return
   end if
 !
 !  Determine the angular distances (A,B) and (A,C).

@@ -234,6 +234,7 @@ function angle_rad_2d ( p1, p2, p3 )
 
   if ( p(1) == 0.0D+00 .and. p(2) == 0.0D+00 ) then
     angle_rad_2d = 0.0D+00
+    return
   end if
 
   angle_rad_2d = atan2 ( p(2), p(1) )
@@ -1410,6 +1411,7 @@ subroutine i4col_compare ( m, n, a, i, j, isgn )
   isgn = 0
 
   if ( i == j ) then
+    return
   end if
 
   k = 1
@@ -1421,6 +1423,7 @@ subroutine i4col_compare ( m, n, a, i, j, isgn )
       return
     else if ( a(k,j) < a(k,i) ) then
       isgn = +1
+      return
     end if
 
     k = k + 1
@@ -1482,9 +1485,11 @@ subroutine i4col_sort_a ( m, n, a )
   integer j
 
   if ( m <= 0 ) then
+    return
   end if
 
   if ( n <= 1 ) then
+    return
   end if
 !
 !  Initialize.
@@ -1564,6 +1569,7 @@ subroutine i4col_sorted_unique_count ( m, n, a, unique_num )
 
   if ( n <= 0 ) then
     unique_num = 0
+    return
   end if
 
   unique_num = 1
@@ -1648,6 +1654,7 @@ subroutine i4col_swap ( m, n, a, i, j )
   end if
 
   if ( i == j ) then
+    return
   end if
 
   col(1:m) = a(1:m,i)
@@ -1887,6 +1894,7 @@ subroutine i4vec_sort_heap_a ( n, a )
   integer n1
 
   if ( n <= 1 ) then
+    return
   end if
 !
 !  1: Put A into descending heap form.
@@ -1954,6 +1962,7 @@ subroutine i4vec_sorted_unique ( n, a, unique_num )
   unique_num = 0
 
   if ( n <= 0 ) then
+    return
   end if
 
   unique_num = 1
@@ -2075,6 +2084,7 @@ subroutine i4vec2_sort_a ( n, a1, a2 )
   integer temp
 
   if ( n <= 1 ) then
+    return
   end if
 !
 !  Initialize.
@@ -2167,6 +2177,7 @@ subroutine i4vec2_sorted_unique ( n, a1, a2, unique_num )
   unique_num = 0
 
   if ( n <= 0 ) then
+    return
   end if
 
   unique_num = 1
@@ -3159,6 +3170,7 @@ subroutine ns_adj_insert ( v1, v2, variable_num, adj_num, adj_col_free, &
   adj_col_free(v1) = adj_col_free(v1) + 1
 
   if ( v1 == v2 ) then
+    return
   end if
 
   adj_row(adj_col_free(v2)) = v1
@@ -3849,6 +3861,7 @@ subroutine points_delaunay_naive_2d ( node_num, node_xy, maxtri, &
   element_num = 0
 
   if ( node_num < 3 ) then
+    return
   end if
 !
 !  Compute Z = X*X + Y*Y.
@@ -3956,6 +3969,7 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
 
   if ( node_num < 1 ) then
     hull_num = 0
+    return
   end if
 !
 !  If NODE_NUM = 1, the hull is the point.
@@ -3963,6 +3977,7 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
   if ( node_num == 1 ) then
     hull_num = 1
     hull(1) = 1
+    return
   end if
 !
 !  If NODE_NUM = 2, then the convex hull is either the two distinct points,
@@ -3978,6 +3993,9 @@ subroutine points_hull_2d ( node_num, node_xy, hull_num, hull )
       hull_num = 1
       hull(1) = 1
     end if
+
+    return
+
   end if
 !
 !  Find the leftmost point and call it "Q".
@@ -4719,6 +4737,7 @@ subroutine r82vec_sort_heap_index_a ( n, a, indx )
   integer l
 
   if ( n < 1 ) then
+    return
   end if
 
   do i = 1, n
@@ -4726,6 +4745,7 @@ subroutine r82vec_sort_heap_index_a ( n, a, indx )
   end do
 
   if ( n == 1 ) then
+    return
   end if
 
   l = n / 2 + 1
@@ -5276,6 +5296,7 @@ subroutine r8vec_bracket ( n, x, xval, left, right )
     if ( xval < x(i) ) then
       left = i - 1
       right = i
+      return
     end if
 
    end do
@@ -5483,12 +5504,15 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -1
       i = i_save
       j = j_save
+      return
+
     end if
 
     if ( 0 < isgn ) then
       indx = 2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -5506,6 +5530,8 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
 
       i = i_save
       j = j_save
+      return
+
     end if
 
     k = k - 1
@@ -5535,6 +5561,7 @@ subroutine sort_heap_external ( n, indx, i, j, isgn )
       indx = -2
       i = i_save
       j = j_save
+      return
     end if
 
     if ( k <= 1 ) then
@@ -5751,6 +5778,7 @@ subroutine swapec ( i, top, btri, bedg, node_num, node_xy, element_num, &
 
         if ( node_num < top ) then
           ierr = 8
+          return
         end if
 
         stack(top) = t
@@ -5883,6 +5911,7 @@ subroutine triangle_angles_2d ( t, angle )
 !
   if ( a == 0.0D+00 .and. b == 0.0D+00 .and. c == 0.0D+00 ) then
     angle(1:3) = 2.0D+00 * pi / 3.0D+00
+    return
   end if
 
   if ( c == 0.0D+00 .or. a == 0.0D+00 ) then
@@ -7899,6 +7928,7 @@ subroutine triangulation_order3_check ( node_num, element_num, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
     write ( *, '(a)' ) '  The number of nodes is less than 3!'
+    return
   end if
 
   if ( element_num < 1 ) then
@@ -7906,6 +7936,7 @@ subroutine triangulation_order3_check ( node_num, element_num, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
     write ( *, '(a)' ) '  The number of triangles is less than 1!'
+    return
   end if
 !
 !  Checks 3 and 4:
@@ -7917,6 +7948,7 @@ subroutine triangulation_order3_check ( node_num, element_num, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
     write ( *, '(a)' ) '  Some nodes are less than 1!'
+    return
   end if
 
   if ( any ( node_num < element_node(1:3,1:element_num) ) ) then
@@ -7924,6 +7956,7 @@ subroutine triangulation_order3_check ( node_num, element_num, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
     write ( *, '(a)' ) '  Some nodes are greater than NODE_NUM!'
+    return
   end if
 !
 !  Check 5:
@@ -7943,6 +7976,7 @@ subroutine triangulation_order3_check ( node_num, element_num, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
     write ( *, '(a)' ) '  Some nodes are never used as triangle vertices!'
+    return
   end if
 !
 !  Check 6:
@@ -7956,6 +7990,7 @@ subroutine triangulation_order3_check ( node_num, element_num, &
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
       write ( *, '(a)' ) '  A triangle contains a null edge!'
+      return
     end if
   end do
 !
@@ -7972,6 +8007,7 @@ subroutine triangulation_order3_check ( node_num, element_num, &
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
     write ( *, '(a)' ) '  Some edges are repeated,'
     write ( *, '(a)' ) '  or given in the wrong direction!'
+    return
   end if
 !
 !  Check 8:
@@ -7986,6 +8022,7 @@ subroutine triangulation_order3_check ( node_num, element_num, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_CHECK - Warning!'
     write ( *, '(a)' ) '  The triangulation fails Euler''s criterion!'
+    return
   end if
 end
 
@@ -8110,6 +8147,7 @@ subroutine triangulation_order3_edge_check ( element_num, element_node, &
           write ( *, '(a)' ) ' '
           write ( *, '(a)' ) 'TRIANGULATION_ORDER3_EDGE_CHECK - Warning!'
           write ( *, '(a)' ) '  An edge occurs twice.'
+          return
         end if
 
         i = i + 1
@@ -8574,6 +8612,7 @@ subroutine triangulation_order3_neighbor ( element_num, element_node, &
         if ( element_node(ss,t) == n2 ) then
           t2 = t
           s2 = ss
+          return
         end if
       end if
     end do
@@ -8942,6 +8981,7 @@ subroutine triangulation_order3_plot ( file_name, node_num, node_xy, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER3_PLOT - Fatal error!'
     write ( *, '(a)' ) '  Can not open output file.'
+    return
   end if
 
   write ( file_unit, '(a)' ) '%!PS-Adobe-3.0 EPSF-3.0'
@@ -10063,6 +10103,7 @@ subroutine triangulation_order4_plot ( file_name, node_num, node_xy, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER4_PLOT - Fatal error!'
     write ( *, '(a)' ) '  Can not open output file.'
+    return
   end if
 
   write ( file_unit, '(a)' ) '%!PS-Adobe-3.0 EPSF-3.0'
@@ -11638,6 +11679,7 @@ subroutine triangulation_order6_neighbor ( element_num, element_node, &
         if ( element_node(ss,t) == n2 ) then
           t2 = t
           s2 = ss
+          return
         end if
       end if
     end do
@@ -11793,6 +11835,7 @@ subroutine triangulation_order6_plot ( file_name, node_num, node_xy, &
     write ( *, '(a)' ) ' '
     write ( *, '(a)' ) 'TRIANGULATION_ORDER6_PLOT - Fatal error!'
     write ( *, '(a)' ) '  Can not open output file.'
+    return
   end if
 !
 !  Write the header.
@@ -13177,6 +13220,7 @@ subroutine triangulation_search_naive ( node_num, node_xy, &
          0.0D+00 <= beta  .and. &
          0.0D+00 <= gamma ) then
       triangle_index = triangle
+      return
     end if
 
   end do
@@ -13310,6 +13354,7 @@ subroutine vbedg ( x, y, node_num, node_xy, element_num, element_node, &
   end do
 
   if ( ldone ) then
+    return
   end if
 
   t = ltri

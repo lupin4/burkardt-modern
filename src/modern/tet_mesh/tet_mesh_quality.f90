@@ -284,6 +284,7 @@ subroutine r8mat_solve ( n, rhs_num, a, info )
 
     if ( apivot == 0.0D+00 ) then
       info = j
+      return
     end if
 !
 !  Interchange.
@@ -983,6 +984,7 @@ subroutine tetrahedron_circumsphere_3d ( tetra, r, pc )
   if ( info /= 0 ) then
     r = -1.0D+00
     pc(1:dim_num) = 0.0D+00
+    return
   end if
 !
 !  Compute the radius and center.

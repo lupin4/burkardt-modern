@@ -244,6 +244,7 @@ subroutine dtris2 ( point_num, point_xy, tri_num, tri_vert, tri_nabe )
       write ( *, '(a,2g14.6)' ) '  X,Y(M)  = ', point_xy(1,m), point_xy(2,m)
       write ( *, '(a,2g14.6)' ) '  X,Y(M1) = ', point_xy(1,m1), point_xy(2,m1)
       ierr = 224
+      return
     end if
 
   end do
@@ -261,6 +262,7 @@ subroutine dtris2 ( point_num, point_xy, tri_num, tri_vert, tri_nabe )
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'DTRIS2 - Fatal error!'
       ierr = 225
+      return
     end if
 
     m = j
@@ -395,6 +397,7 @@ subroutine dtris2 ( point_num, point_xy, tri_num, tri_vert, tri_nabe )
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'DTRIS2 - Fatal error!'
         write ( *, '(a)' ) '  Stack overflow.'
+        return
       end if
 
       stack(top) = tri_num
@@ -418,6 +421,7 @@ subroutine dtris2 ( point_num, point_xy, tri_num, tri_vert, tri_nabe )
       write ( *, '(a)' ) ' '
       write ( *, '(a)' ) 'DTRIS2 - Fatal error!'
       write ( *, '(a)' ) '  Error return from SWAPEC.'
+      return
     end if
 
   end do
@@ -1124,6 +1128,7 @@ subroutine r82vec_sort_heap_index_a ( n, a, indx )
   integer l
 
   if ( n < 1 ) then
+    return
   end if
 
   do i = 1, n
@@ -1131,6 +1136,7 @@ subroutine r82vec_sort_heap_index_a ( n, a, indx )
   end do
 
   if ( n == 1 ) then
+    return
   end if
 
   l = n / 2 + 1
@@ -1369,6 +1375,7 @@ subroutine swapec ( i, top, btri, bedg, point_num, point_xy, tri_num, &
 
         if ( point_num < top ) then
           ierr = 8
+          return
         end if
 
         stack(top) = t
@@ -1574,6 +1581,7 @@ subroutine vbedg ( x, y, point_num, point_xy, tri_num, tri_vert, tri_nabe, &
   end do
 
   if ( ldone ) then
+    return
   end if
 
   t = ltri
