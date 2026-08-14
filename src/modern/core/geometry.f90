@@ -37584,23 +37584,181 @@ subroutine triangle_point_dist_2d ( t, p, dist )
   end do
 end
 
+subroutine triangle_point_near_3d ( t, p, pn, dist )
+
+!*****************************************************************************80
+!
+!! TRIANGLE_POINT_NEAR_3D: nearest point on a triangle to a point in 3D.
+!
+!  Discussion:
+!
+!    Returns the closest point PN on the triangle (including its INTERIOR)
+!    to the query point P, and the distance to it.
+!
+!    The 3D counterpart of TRIANGLE_POINT_NEAR_2D, which forGeo had while the
+!    3D case was missing entirely.  Consumers that need the closest POINT (SDF
+!    baking, mesh distance fields, collision response) could not use
+!    TRIANGLE_POINT_DIST_3D, which returns only a scalar.
+!
+!    Method: Voronoi-region classification over the triangle's 3 vertex
+!    regions, 3 edge regions and 1 face region, evaluated with barycentric
+!    sign tests (Ericson, "Real-Time Collision Detection", section 5.1.5).
+!    Branch-free of any square root until the final distance.
+!
+!    forGeo addition, 2026-08-13.  Not present in the Burkardt original.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Parameters:
+!
+!    Input, double precision T(3,3), the triangle vertices.
+!
+!    Input, double precision P(3), the point which is to be checked.
+!
+!    Output, double precision PN(3), the nearest point on the triangle.
+!
+!    Output, double precision DIST, the distance from P to PN.  Zero if P
+!    lies on the triangle.
+!
+  implicit none
+
+  integer , parameter :: dim_num = 3
+
+  double precision ab(dim_num)
+  double precision ac(dim_num)
+  double precision ap(dim_num)
+  double precision bc(dim_num)
+  double precision bp(dim_num)
+  double precision cp(dim_num)
+  double precision d1, d2, d3, d4, d5, d6
+  double precision denom
+  double precision dist
+  double precision p(dim_num)
+  double precision pn(dim_num)
+  double precision t(dim_num,3)
+  double precision va, vb, vc
+  double precision v, w
+
+  ab(1:dim_num) = t(1:dim_num,2) - t(1:dim_num,1)
+  ac(1:dim_num) = t(1:dim_num,3) - t(1:dim_num,1)
+  ap(1:dim_num) = p(1:dim_num)   - t(1:dim_num,1)
+
+  d1 = dot_product ( ab, ap )
+  d2 = dot_product ( ac, ap )
+!
+!  Vertex region A.
+!
+  if ( d1 <= 0.0D+00 .and. d2 <= 0.0D+00 ) then
+    pn(1:dim_num) = t(1:dim_num,1)
+    dist = sqrt ( dot_product ( p - pn, p - pn ) )
+    return
+  end if
+
+  bp(1:dim_num) = p(1:dim_num) - t(1:dim_num,2)
+  d3 = dot_product ( ab, bp )
+  d4 = dot_product ( ac, bp )
+!
+!  Vertex region B.
+!
+  if ( 0.0D+00 <= d3 .and. d4 <= d3 ) then
+    pn(1:dim_num) = t(1:dim_num,2)
+    dist = sqrt ( dot_product ( p - pn, p - pn ) )
+    return
+  end if
+!
+!  Edge region AB.
+!
+  vc = d1 * d4 - d3 * d2
+
+  if ( vc <= 0.0D+00 .and. 0.0D+00 <= d1 .and. d3 <= 0.0D+00 ) then
+    v = d1 / ( d1 - d3 )
+    pn(1:dim_num) = t(1:dim_num,1) + v * ab(1:dim_num)
+    dist = sqrt ( dot_product ( p - pn, p - pn ) )
+    return
+  end if
+
+  cp(1:dim_num) = p(1:dim_num) - t(1:dim_num,3)
+  d5 = dot_product ( ab, cp )
+  d6 = dot_product ( ac, cp )
+!
+!  Vertex region C.
+!
+  if ( 0.0D+00 <= d6 .and. d5 <= d6 ) then
+    pn(1:dim_num) = t(1:dim_num,3)
+    dist = sqrt ( dot_product ( p - pn, p - pn ) )
+    return
+  end if
+!
+!  Edge region AC.
+!
+  vb = d5 * d2 - d1 * d6
+
+  if ( vb <= 0.0D+00 .and. 0.0D+00 <= d2 .and. d6 <= 0.0D+00 ) then
+    w = d2 / ( d2 - d6 )
+    pn(1:dim_num) = t(1:dim_num,1) + w * ac(1:dim_num)
+    dist = sqrt ( dot_product ( p - pn, p - pn ) )
+    return
+  end if
+!
+!  Edge region BC.
+!
+  va = d3 * d6 - d5 * d4
+
+  if ( va <= 0.0D+00 .and. 0.0D+00 <= ( d4 - d3 ) .and. &
+       0.0D+00 <= ( d5 - d6 ) ) then
+    w = ( d4 - d3 ) / ( ( d4 - d3 ) + ( d5 - d6 ) )
+    bc(1:dim_num) = t(1:dim_num,3) - t(1:dim_num,2)
+    pn(1:dim_num) = t(1:dim_num,2) + w * bc(1:dim_num)
+    dist = sqrt ( dot_product ( p - pn, p - pn ) )
+    return
+  end if
+!
+!  Face region: project onto the plane of the triangle using barycentrics.
+!  This is the case the old TRIANGLE_POINT_DIST_3D never handled.
+!
+  denom = 1.0D+00 / ( va + vb + vc )
+  v = vb * denom
+  w = vc * denom
+
+  pn(1:dim_num) = t(1:dim_num,1) + ab(1:dim_num) * v + ac(1:dim_num) * w
+  dist = sqrt ( dot_product ( p - pn, p - pn ) )
+end
+
 subroutine triangle_point_dist_3d ( t, p, dist )
 
 !*****************************************************************************80
 !
 !! TRIANGLE_POINT_DIST_3D: distance ( triangle, point ) in 3D.
 !
+!  Discussion:
+!
+!    CORRECTED 2026-08-13 (forGeo).  The Burkardt original computed
+!
+!      dist = min over the THREE EDGES of segment_point_dist_3d
+!
+!    which ignores the triangle's INTERIOR.  For any point whose nearest
+!    feature is the face rather than an edge it returned the distance to the
+!    nearest edge instead.  Measured on the unit right triangle
+!    (0,0,0),(1,0,0),(0,1,0):
+!
+!      point (0.25,0.25,0.0001)  analytic 0.0001   returned 0.2500000200
+!      point (0.25,0.25,0.0)     analytic 0.0      returned 0.2500000000
+!
+!    A point lying exactly ON the triangle reported a distance of 0.25.
+!    Points beyond an edge were correct, which is why it survived.
+!
+!    Now delegates to TRIANGLE_POINT_NEAR_3D, which classifies all 7 Voronoi
+!    regions (3 vertex, 3 edge, 1 face).  Edge-region answers are unchanged.
+!
 !  Licensing:
 !
-!    This code is distributed under the GNU LGPL license. 
-!
-!  Modified:
-!
-!    28 December 2004
+!    This code is distributed under the GNU LGPL license.
 !
 !  Author:
 !
-!    John Burkardt
+!    John Burkardt (original), forGeo (interior-region correction)
 !
 !  Parameters:
 !
@@ -37616,23 +37774,11 @@ subroutine triangle_point_dist_3d ( t, p, dist )
   integer , parameter :: dim_num = 3
 
   double precision dist
-  double precision dist2
   double precision p(dim_num)
+  double precision pn(dim_num)
   double precision t(dim_num,3)
-!
-!  Compute the distances from the point to each of the sides.
-!
-  call segment_point_dist_3d ( t(1:dim_num,1), t(1:dim_num,2), p, dist2 )
 
-  dist = dist2
-
-  call segment_point_dist_3d ( t(1:dim_num,2), t(1:dim_num,3), p, dist2 )
-
-  dist = min ( dist, dist2 )
-
-  call segment_point_dist_3d ( t(1:dim_num,3), t(1:dim_num,1), p, dist2 )
-
-  dist = min ( dist, dist2 )
+  call triangle_point_near_3d ( t, p, pn, dist )
 end
 
 subroutine triangle_point_dist_signed_2d ( t, p, dist_signed )
